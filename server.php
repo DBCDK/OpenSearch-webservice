@@ -27,10 +27,10 @@
 
 // resttest: http://vision.dbc.dk/~fvs/broend/opensearch/?action=searchRequest&query=dc.title:danmark&format=dc&facets.number=10&facets.facetName=dc.creator&facetName=dc.title&outputType=json
 
-require_once "OLS_clas_lib/inifile_class.php";
-require_once "OLS_clas_lib/curl_class.php";
-require_once "OLS_clas_lib/verbose_class.php";
-require_once "OLS_clas_lib/timer_class.php";
+require_once "OLS_class_lib/inifile_class.php";
+require_once "OLS_class_lib/curl_class.php";
+require_once "OLS_class_lib/verbose_class.php";
+require_once "OLS_class_lib/timer_class.php";
 
 // create timer and define timer format
 $timer = new stopwatch("", " ", "", "%s:%01.3f");
