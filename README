@@ -45,7 +45,7 @@ In the php.ini file:
 - Soap server and Soap client must be enabled
 - soap.wsdl_cache = 1
 
-Copy opensearch.ini_INSTALL to opensearch.ini and edit it
+Copy opensearch.ini_INSTALL to opensearch.ini and edit it to reflect your setup
 
 Copy opensearch.wsdl_INSTALL to opensearch.wsdl and modify 
 the location of the service (at the end of the file)

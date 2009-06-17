@@ -2,6 +2,8 @@
 
 [setup]
 
+version = 0.1
+
 ; wsdl for service
 wsdl = opensearch.wsdl
 
