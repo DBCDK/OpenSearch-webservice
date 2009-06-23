@@ -1,204 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ting="http://gnit.dk/ting_wsdl" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://gnit.dk/ting_wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:types="http://oss.dbc.dk/ns/opensearch" xmlns:osw="http://oss.dbc.dk/ns/opensearch_wsdl"  xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://oss.dbc.dk/ns/opensearch_wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 	<wsdl:types>
-		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://gnit.dk/ting_wsdl" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:docbook="http://docbook.org/ns/docbook" xmlns="info:lc/xmlns/marcxchange-v1">
-			<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
-			<xs:import namespace="info:lc/xmlns/marcxchange-v1" schemaLocation="http://www.loc.gov/standards/iso25577/marcxchange-1-1.xsd"/>
-			<xs:import namespace="http://docbook.org/ns/docbook" schemaLocation="http://www.docbook.org/xml/5.0/xsd/docbook.xsd"/>
-			<xs:element name="searchRequest">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ting:query"/>
-						<xs:element ref="ting:source" minOccurs="0"/>
-						<xs:element ref="ting:facets" minOccurs="0"/>
-						<xs:element ref="ting:format" minOccurs="0"/>
-						<xs:element ref="ting:start" minOccurs="0"/>
-						<xs:element ref="ting:stepValue" minOccurs="0"/>
-						<xs:element ref="ting:sort" minOccurs="0"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="searchResponse">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ting:searchResult"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="dc">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="dc:title" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:creator" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:subject" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:description" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:publisher" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:contributor" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:date" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:type" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:format" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:identifier" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:source" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:language" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:relation" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:coverage" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:rights" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="facet">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ting:facetName"/>
-						<xs:element ref="ting:facetTerm" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="facetName" type="ting:facetType"/>
-			<xs:element name="facetResult">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ting:facet" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="facets">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ting:number" minOccurs="0"/>
-						<xs:element ref="ting:facetName" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="facetTerm">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ting:frequence"/>
-						<xs:element ref="ting:term"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="format" type="ting:formatType"/>
-			<xs:element name="frequence" type="xs:int"/>
-			<xs:element name="hitCount" type="xs:int"/>
-			<xs:element name="identifier" type="xs:anyURI"/>
-			<xs:element name="number" type="xs:int"/>
-			<xs:element name="query" type="xs:string"/>
-			<xs:element name="rawRecord" type="xs:string"/>
-			<xs:element name="records">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ting:tingRecord" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="relation">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ting:relationType"/>
-						<xs:element ref="ting:relationDescription"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="relationAbstract" type="xs:string"/>
-			<xs:element name="relationDescription">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ting:relationAbstract" minOccurs="0"/>
-						<xs:element ref="ting:relationLink" minOccurs="0"/>
-						<xs:element ref="ting:relationLinkText" minOccurs="0"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="relations">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ting:relation" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="relationLink" type="xs:anyURI"/>
-			<xs:element name="relationLinkText" type="xs:string"/>
-			<xs:element name="relationType" type="xs:string"/>
-			<xs:element name="searchResult">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ting:hitCount"/>
-						<xs:element ref="ting:records" minOccurs="0"/>
-						<xs:element ref="ting:facetResult" minOccurs="0"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="short">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="dc:title" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:creator" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:date" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="dc:type" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="sort" type="ting:sortType"/>
-			<xs:element name="source" type="xs:string"/>
-			<xs:element name="start" type="xs:int"/>
-			<xs:element name="stepValue" type="xs:int"/>
-			<xs:element name="term" type="xs:string"/>
-			<xs:element name="tingRecord">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ting:identifier"/>
-						<xs:element ref="ting:relations" minOccurs="0"/>
-						<xs:choice>
-							<xs:element ref="ting:dc"/>
-							<xs:element ref="ting:rawRecord"/>
-							<xs:element ref="record"/>
-							<xs:element ref="docbook:article"/>
-							<xs:element ref="ting:short"/>
-						</xs:choice>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:simpleType name="facetType">
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="dc.title"/>
-					<xs:enumeration value="dc.creator"/>
-					<xs:enumeration value="dc.subject"/>
-					<xs:enumeration value="dc.type"/>
-					<xs:enumeration value="dc.date"/>
-					<xs:enumeration value="dc.language"/>
-				</xs:restriction>
-			</xs:simpleType>
-			<xs:simpleType name="formatType">
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="dublinCore"/>
-					<xs:enumeration value="short"/>
-					<xs:enumeration value="full"/>
-				</xs:restriction>
-			</xs:simpleType>
-			<xs:simpleType name="sortType">
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="date"/>
-				</xs:restriction>
-			</xs:simpleType>
+		<xs:schema elementFormDefault="qualified">
+			<xs:import namespace="http://oss.dbc.dk/ns/opensearch" schemaLocation="opensearch.xsd"/>
 		</xs:schema>
 	</wsdl:types>
 	<wsdl:message name="searchRequest">
-		<wsdl:part name="parameters" element="ting:searchRequest"/>
+		<wsdl:part name="parameters" element="types:searchRequest"/>
 	</wsdl:message>
 	<wsdl:message name="searchResponse">
-		<wsdl:part name="parameters" element="ting:searchResponse"/>
+		<wsdl:part name="parameters" element="types:searchResponse"/>
 	</wsdl:message>
-	<wsdl:portType name="tingSearchServicePortType">
+	<wsdl:portType name="osSearchServicePortType">
 		<wsdl:operation name="search">
-			<wsdl:input message="ting:searchRequest"/>
-			<wsdl:output message="ting:searchResponse"/>
+			<wsdl:input message="osw:searchRequest"/>
+			<wsdl:output message="osw:searchResponse"/>
 		</wsdl:operation>
 	</wsdl:portType>
-	<wsdl:binding name="tingSearchServiceSoapBinding" type="ting:tingSearchServicePortType">
+	<wsdl:binding name="osSearchServiceSoapBinding" type="osw:osSearchServicePortType">
 		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
 		<wsdl:operation name="search">
-			<soap:operation soapAction="openSearch"/>
+			<soap:operation soapAction="http://didicas.dbc.dk/opensearch"/>
 			<wsdl:input name="searchRequest">
 				<soap:body use="literal"/>
 			</wsdl:input>
@@ -207,9 +29,9 @@
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
-	<wsdl:service name="tingService">
-		<wsdl:port name="tingSearchService" binding="ting:tingSearchServiceSoapBinding">
-			<soap:address location="http://gnit.dk/ting"/>
+	<wsdl:service name="osService">
+		<wsdl:port name="osSearchService" binding="osw:osSearchServiceSoapBinding">
+			<soap:address location="http://didicas.dbc.dk/opensearch"/>
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
