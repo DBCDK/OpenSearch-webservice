@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="http://milne.dbc.dk/twiki/pub/Databroend/OpenSearchWebservices/xsd_html.xsl"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" xmlns:dc="http://purl.org/dc/elements/1.1/" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="eng">Opensearch Service</xs:documentation>
