@@ -179,7 +179,7 @@ class search_it {
               $numFound = $response->getAttribute("numFound");
               $start = $response->getAttribute("start");
               $maxScore = $response->getAttribute("maxScore");
-              $dc_records = parse_for_dc_records(&$response);
+              $dc_records = parse_for_dc_records(&$response, "fedoraPid");
               break;
             case "lst" : 
               switch ($response->getAttribute("name")) {
@@ -194,7 +194,7 @@ class search_it {
           
 
     foreach ($dc_records as $dc_rec)
-      $records->tingRecord[] = array("identifier" => "dc", "dc" => $dc_rec);
+      $records->tingRecord[] = array("identifier" => $dc_rec["record_id"], "dc" => $dc_rec["record"]);
 
 		return array("searchResult" => array("hitCount" => $numFound, 
                                          "records" => $records, 
@@ -207,8 +207,8 @@ class search_it {
 /** \brief Parse a record and extract the dc-records as a dc record
  *
  */
-function parse_for_dc_records(&$docs) {
-  $ret = array();
+function parse_for_dc_records(&$docs, $rec_id_tag) {
+  $ret = array(); 
   $valids = explode(" ", trim(VALID_DC_TAGS));
 
   foreach ($docs->childNodes as $doc)
@@ -228,8 +228,9 @@ function parse_for_dc_records(&$docs) {
                   $rec[$tag->getAttribute("name")][] = trim($item->nodeValue);
               break;
           }
-        }
-      $ret[] = $rec;
+        } elseif ($tag->getAttribute("name") == $rec_id_tag)
+          $rec_id = trim($tag->nodeValue);
+      $ret[] = array("record_id" => $rec_id, "record" => $rec);
     }
   //print_r($ret);
   return $ret;
