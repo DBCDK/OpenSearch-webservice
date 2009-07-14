@@ -2,13 +2,16 @@
 
 [setup]
 
-version = 0.1
+version = 0.2
 
 ; wsdl for service
 wsdl = opensearch.wsdl
 
 ; url to solr interface
-solr_uri = http://andrus.dbc.dk:8080/apache-solr-1.3.0/select
+solr_uri = http://andrus.dbc.dk:8080/apache-solr-nightly/select
+
+; fedora urls
+fedora_get = http://sempu.dbc.dk:8080/fedora/get/%s/originalData.0
 
 ; number of second to wait for a solr reply
 solr_timeout = 20
@@ -33,7 +36,7 @@ verbose = WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG+Z3950+OCI
 
 
 [rest]
-soap_header = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?><SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns=&quot;http://gnit.dk/ting_wsdl&quot;><SOAP-ENV:Body>
+soap_header = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?><SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>
 
 soap_footer = </SOAP-ENV:Body></SOAP-ENV:Envelope>
 
@@ -54,17 +57,19 @@ soap_footer = </SOAP-ENV:Body></SOAP-ENV:Envelope>
 ; from url: action=thisSoapAction&some.number=nn&another.number=mm
 ;
 action[searchRequest][] = query
-action[searchRequest][] = source
+action[searchRequest][] = allObjects
+action[searchRequest][] = callback
+action[searchRequest][] = collectionType
 action[searchRequest][facets][] = facets.number
 action[searchRequest][facets][] = number
 action[searchRequest][facets][] = facets.facetName
 action[searchRequest][facets][] = facetName
 action[searchRequest][] = format
+action[searchRequest][] = outputType
+action[searchRequest][] = source
 action[searchRequest][] = start
 action[searchRequest][] = stepValue
 action[searchRequest][] = sort
-action[searchRequest][] = outputType
-action[searchRequest][] = callback
 
 [howru]
 ; triples of solr_test and solr_match and solr_error
@@ -84,13 +89,13 @@ solr_error[1] = Error 1: Failed search on dc.creator
 
 debug_info = <br/>Parameters:<ul><li>query:</li> <a href=&quot;http://www.loc.gov/standards/sru/specs/cql.html&quot;>cql</a>-query<li>source:</li> source of data (currently not supported)<li>facets:</li> number and list of facets<li>format:</li> (currently not supported)<li>start:</li> First record counting from 1<li>stepValue:</li> number of records<li>sort:</li> (currently not supported)</ul><a href=&quot;opensearch.wsdl&quot;>The WSDL is here</a>
 
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://gnit.dk/ting_wsdl&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>danmark</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets/>\n <ns1:start>1</ns1:start>\n <ns1:stepValue>2</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
+debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>danmark</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets/>\n <ns1:start>1</ns1:start>\n <ns1:stepValue>2</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
 
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://gnit.dk/ting_wsdl&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>danmark</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets>\n  <ns1:number>10</ns1:number>\n  <ns1:facetName>dc.creator</ns1:facetName>\n </ns1:facets>\n <ns1:start>1</ns1:start>\n <ns1:stepValue>2</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
+debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>danmark</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets>\n  <ns1:number>10</ns1:number>\n  <ns1:facetName>dc.creator</ns1:facetName>\n </ns1:facets>\n <ns1:start>1</ns1:start>\n <ns1:stepValue>2</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
 
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://gnit.dk/ting_wsdl&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>dc.creator:(danmarks%20statistik)</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets>\n  <ns1:number>50</ns1:number>\n  <ns1:facetName>dc.creator</ns1:facetName>\n  <ns1:facetName>creator</ns1:facetName>\n  <ns1:facetName>dc.title</ns1:facetName>\n  <ns1:facetName>title</ns1:facetName>\n </ns1:facets>\n <ns1:start>0</ns1:start>\n <ns1:stepValue>10</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
+debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>dc.creator:(danmarks%20statistik)</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets>\n  <ns1:number>50</ns1:number>\n  <ns1:facetName>dc.creator</ns1:facetName>\n  <ns1:facetName>creator</ns1:facetName>\n  <ns1:facetName>dc.title</ns1:facetName>\n  <ns1:facetName>title</ns1:facetName>\n </ns1:facets>\n <ns1:start>0</ns1:start>\n <ns1:stepValue>10</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
 
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://gnit.dk/ting_wsdl&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>dc.title:zorro</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets>\n  <ns1:number>10</ns1:number>\n  <ns1:facetName>dc.creator</ns1:facetName>\n  <ns1:facetName>creator</ns1:facetName>\n  <ns1:facetName>dc.title</ns1:facetName>\n  <ns1:facetName>title</ns1:facetName>\n </ns1:facets>\n <ns1:start>0</ns1:start>\n <ns1:stepValue>10</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
+debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>dc.title:zorro</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets>\n  <ns1:number>10</ns1:number>\n  <ns1:facetName>dc.creator</ns1:facetName>\n  <ns1:facetName>creator</ns1:facetName>\n  <ns1:facetName>dc.title</ns1:facetName>\n  <ns1:facetName>title</ns1:facetName>\n </ns1:facets>\n <ns1:start>0</ns1:start>\n <ns1:stepValue>10</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
 
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://gnit.dk/ting_wsdl&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>dan*</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets>\n  <ns1:number>10</ns1:number>\n  <ns1:facetName>dc.creator</ns1:facetName>\n  <ns1:facetName>dc.title</ns1:facetName>\n </ns1:facets>\n <ns1:start>1</ns1:start>\n <ns1:stepValue>4</ns1:stepValue>\n <ns1:sort></ns1:sort>\n <ns1:outputType>json</ns1:outputType></ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
+debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>dan*</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets>\n  <ns1:number>10</ns1:number>\n  <ns1:facetName>dc.creator</ns1:facetName>\n  <ns1:facetName>dc.title</ns1:facetName>\n </ns1:facets>\n <ns1:start>1</ns1:start>\n <ns1:stepValue>4</ns1:stepValue>\n <ns1:sort></ns1:sort>\n <ns1:outputType>json</ns1:outputType></ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
 
