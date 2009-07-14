@@ -22,12 +22,12 @@
 define("WSDL", "opensearch.wsdl");
 
 try {
-  //$client = new SoapClient(WSDL,  array('trace' => 1, "cache_wsdl" => WSDL_CACHE_NONE));
+  $client = new SoapClient(WSDL,  array('trace' => 1, "cache_wsdl" => WSDL_CACHE_NONE));
   //$client = new SoapClient(WSDL,  array('trace' => 1));
   $options = array('proxy_host' => "phobos.dbc.dk", 'proxy_port' => 3128);
   $options = array('connection_timeout' => 2);
-  $client = new SoapClient(WSDL, $options);
-  $client->__setLocation('http://vision.dbc.dk/~fvs/broend/opensearch/');
+  //$client = new SoapClient(WSDL, $options);
+  $client->__setLocation('http://vision.dbc.dk/~fvs/broend/OpenLibrary/OpenSearch/trunk/');
 
   $params = array("query" => "dc.title:fødes",
   //$params = array("query" => "dc.title:dan*",
@@ -61,36 +61,30 @@ if (FALSE) {
 //echo "RequestHeaders:<br/>" . str_replace("<", "&lt;", $client->__getLastRequestHeaders()) . "<br/>";
 //echo "Response:<br/>" . str_replace("<", "&lt;", $client->__getLastResponse()) . "<br/>";
 //echo "Result:<br/>"; var_dump($result);
-//echo "Records:<br/>"; var_dump($result->searchResult->records->tingRecord);
-echo "hitCount: " . $result->searchResult->hitCount . "<br/>";
+//echo "Records:<br/>"; var_dump($result->result->searchResult->records->tingRecord);
+echo "hitCount: " . $result->result->hitCount . "<br/>";
 echo "Records:<br/>"; 
 
-
-// 2do: if (!is_array($result->searchResult->records->tingRecord)) ...
-foreach ($result->searchResult->records->tingRecord as $rec) {
-  //var_dump($rec);
-  switch ($rec->identifier) {
-    case "dc":
-      echo "<br/>DC<br/>";
-      foreach ($rec->dc as $tag => $dc)
-        if (is_array($dc))
-          foreach ($dc as $key => $var)
-            echo $tag . ": " . $var . "<br/>";
-        else
-          echo $tag . ": " . $dc . "<br/>";
-      break;
-    case "short":
-      echo "SHORT";
-      break;
-    case "rawRecord":
-      echo "RAW";
-      echo $rec->rawRecord;
-      break;
-  }
+//var_dump($result->result->searchResult->collection);
+foreach ($result->result->searchResult->collection->object as $rec) {
+  if ($rec->dc) {
+    echo "<br/>" . $rec->identifier . "<br/>";
+    foreach ($rec->dc as $tag => $dc)
+      if (is_array($dc))
+        foreach ($dc as $key => $var)
+          echo $tag . ": " . $var . "<br/>";
+      else
+        echo $tag . ": " . $dc . "<br/>";
+  } elseif ($rec->rawData) {
+    echo "RAW";
+  } elseif ($rec->short) {
+    echo "short";
+  } else
+    echo "Unknown recordType";
 }
-//echo "Result:<br/>"; var_dump($result->searchResult->facetResult);
-echo "Facets:<br/>"; 
-foreach ($result->searchResult->facetResult->facet as $facet) {
+//echo "Result:<br/>"; var_dump($result->result->facetResult);
+echo "<br/>Facets:<br/>"; 
+foreach ($result->result->facetResult->facet as $facet) {
   echo $facet->facetName . ":<br/>";
   foreach ($facet->facetTerm as $term)
     echo "&nbsp; " . $term->frequence . " " . $term->term . "<br/>";
