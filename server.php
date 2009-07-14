@@ -25,8 +25,6 @@
  * 2do: error handling in wsdl and below
  */
 
-// resttest: http://vision.dbc.dk/~fvs/broend/opensearch/?action=searchRequest&query=dc.title:danmark&format=dc&facets.number=10&facets.facetName=dc.creator&facetName=dc.title&outputType=json
-
 require_once "OLS_class_lib/inifile_class.php";
 require_once "OLS_class_lib/curl_class.php";
 require_once "OLS_class_lib/verbose_class.php";
@@ -109,8 +107,8 @@ if ($HTTP_RAW_POST_DATA) {
     $timer->stop("Solr");
   } else {
     $timer->start("SoapServer");
-    //$server = new SoapServer(WSDL, array("cache_wsdl" => WSDL_CACHE_NONE));
-    $server = new SoapServer(WSDL);
+    $server = new SoapServer(WSDL, array("cache_wsdl" => WSDL_CACHE_NONE));
+    //$server = new SoapServer(WSDL);
     $timer->stop("SoapServer");
 
     $timer->start("Solr");
@@ -132,6 +130,8 @@ if ($HTTP_RAW_POST_DATA) {
    *
    */
 class search_it {
+	public function searchRequest($param) {
+  }
 	public function search($param) {
     global $verbose;
 //var_dump($param);
@@ -194,11 +194,19 @@ class search_it {
           
 
     foreach ($dc_records as $dc_rec)
-      $records->tingRecord[] = array("identifier" => $dc_rec["record_id"], "dc" => $dc_rec["record"]);
+      $records[] = array("identifier" => $dc_rec["record_id"], "relations" => $dc_rec["relations"], "dc" => $dc_rec["record"]);
 
-		return array("searchResult" => array("hitCount" => $numFound, 
-                                         "records" => $records, 
-                                         "facetResult" => $facets));
+    //return array("error" => "Return error-string");
+
+		return array("result" => 
+             array("hitCount" => $numFound, 
+                   "collectionCount" => null,
+                   "searchResult" => 
+                     array("collection" => 
+                       array("resultPosition" => $this->start,
+                             "numberOfObjects" => count($dc_records),
+                             "object" => $records)),
+                   "facetResult" => $facets));
 	}
 }
 
