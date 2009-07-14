@@ -107,8 +107,8 @@ if ($HTTP_RAW_POST_DATA) {
     $timer->stop("Solr");
   } else {
     $timer->start("SoapServer");
-    $server = new SoapServer(WSDL, array("cache_wsdl" => WSDL_CACHE_NONE));
-    //$server = new SoapServer(WSDL);
+    //$server = new SoapServer(WSDL, array("cache_wsdl" => WSDL_CACHE_NONE));
+    $server = new SoapServer(WSDL);
     $timer->stop("SoapServer");
 
     $timer->start("Solr");
