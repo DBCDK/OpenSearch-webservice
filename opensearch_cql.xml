@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<explain xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://explain.z3950.org/dtd/2.0/ http://explain.z3950.org/dtd/zeerex-2.0.xsd" xmlns="http://explain.z3950.org/dtd/2.0/">
+	<serverInfo>
+		<host/>
+		<port/>
+		<database/>
+	</serverInfo>
+	<indexInfo>
+		<set identifier="info:srw/cql-context-set/1/cql-v1.1" name="cql"/>
+		<set identifier="info:srw/cql-context-set/1/dc-v1.1" name="dc"/>
+		<set identifier="info:srw/cql-context-set/2/rec-1.1" name="rec"/>
+		<set identifier="http://oss.dbc.dk/ns/facet" name="facet"/>
+		<set identifier="http://oss.dbc.dk/ns/phrase" name="phrase"/>
+		<index>
+			<title lang="da">Fritekst</title>
+			<title lang="en">Full text</title>
+			<map>
+				<name set="cql">anyIndexes</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Ophav</title>
+			<title lang="en">Creator</title>
+			<map>
+				<name set="dc">creator</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Titel</title>
+			<title lang="en">Title</title>
+			<map>
+				<name set="dc">title</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Beskrivelse</title>
+			<title lang="en">Description</title>
+			<map>
+				<name set="dc">description</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Emne</title>
+			<title lang="en">Subject</title>
+			<map>
+				<name set="dc">subject</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Materialetype</title>
+			<title lang="en">Type of material</title>
+			<map>
+				<name set="dc">type</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Sprog</title>
+			<title lang="en">Language</title>
+			<map>
+				<name set="dc">language</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">År</title>
+			<title lang="en">Year</title>
+			<map>
+				<name set="dc">date</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Kilde</title>
+			<title lang="en">Source</title>
+			<map>
+				<name set="dc">source</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Udgiver</title>
+			<title lang="en">Publisher</title>
+			<map>
+				<name set="dc">publisher</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Id-nummer</title>
+			<title lang="en">Identifier</title>
+			<map>
+				<name set="dc">identifier</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Ophav (frase)</title>
+			<title lang="en">Creator (phrase)</title>
+			<map>
+				<name set="phrase">creator</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Titel (frase)</title>
+			<title lang="en">Title (phrase)</title>
+			<map>
+				<name set="phrase">title</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Beskrivelse (frase)</title>
+			<title lang="en">Description (phrase)</title>
+			<map>
+				<name set="phrase">description</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Emne (frase)</title>
+			<title lang="en">Subject (phrase)</title>
+			<map>
+				<name set="phrase">subject</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Materialetype (frase)</title>
+			<title lang="en">Type of material (phrase)</title>
+			<map>
+				<name set="phrase">type</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Sprog (frase)</title>
+			<title lang="en">Language (phrase)</title>
+			<map>
+				<name set="phrase">language</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">År (frase)</title>
+			<title lang="en">Year (phrase)</title>
+			<map>
+				<name set="phrase">date</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Kilde (frase)</title>
+			<title lang="en">Source (phrase)</title>
+			<map>
+				<name set="phrase">source</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Udgiver (frase)</title>
+			<title lang="en">Publisher (phrase)</title>
+			<map>
+				<name set="phrase">publisher</name>
+			</map>
+		</index>
+				<index>
+			<title lang="da">Fritekst (frase)</title>
+			<title lang="en">Full text (phrase)</title>
+			<map>
+				<name set="phrase">anyIndexes</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Id-nummer</title>
+			<title lang="en">Identifier (phrase)</title>
+			<map>
+				<name set="phrase">identifier</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Objektidentifikator</title>
+			<title lang="en">Object identifier</title>
+			<map>
+				<name set="rec">id</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Ophavsfacet</title>
+			<title lang="en">Creator facet</title>
+			<map>
+				<name set="facet">creator</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Materialetypefacet</title>
+			<title lang="en">Type facet</title>
+			<map>
+				<name set="facet">type</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Emnefacet</title>
+			<title lang="en">Subject facet</title>
+			<map>
+				<name set="facet">subject</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Udgivelsesårsfacet</title>
+			<title lang="en">Date facet</title>
+			<map>
+				<name set="facet">date</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Sprogfacet</title>
+			<title lang="en">Language facet</title>
+			<map>
+				<name set="facet">language</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Geografisk facet</title>
+			<title lang="en">Geographic facet</title>
+			<map>
+				<name set="facet">geographic</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Periodefacet</title>
+			<title lang="en">Period facet</title>
+			<map>
+				<name set="facet">period</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Skønlitterære emneordsfacet</title>
+			<title lang="en">Fiction subject facet</title>
+			<map>
+				<name set="facet">fiction</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Faglitterære emneordsfacet</title>
+			<title lang="en">Non-fiction subject facet</title>
+			<map>
+				<name set="facet">nonFiction</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Musikemneordsfacet</title>
+			<title lang="en">Music subject facet</title>
+			<map>
+				<name set="facet">music</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">DK5-facet</title>
+			<title lang="en">DK5 facet</title>
+			<map>
+				<name set="facet">dk5</name>
+			</map>
+		</index>
+	</indexInfo>
+	<configInfo>
+		<supports type="booleanModifier">and</supports>
+		<supports type="booleanModifier">or</supports>
+		<supports type="booleanModifier">not</supports>
+		<supports type="relation">&gt;</supports>
+		<supports type="relation">&lt;</supports>
+		<supports type="relation">=</supports>
+		<supports type="relation">any</supports>
+		<supports type="relation">all</supports>
+		<supports type="maskingCharacter">?</supports>
+		<supports type="maskingCharacter">*</supports>
+	</configInfo>
+</explain>
