@@ -20,6 +20,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="os:query"/>
+				<xs:element ref="os:agency"/>
 				<xs:element ref="os:allObjects" minOccurs="0"/>
 				<xs:element ref="os:callback" minOccurs="0"/>
 				<xs:element ref="os:collectionType" minOccurs="0"/>
@@ -43,6 +44,11 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:error"/>
 			</xs:choice>
 		</xs:complexType>
+	</xs:element>
+	<xs:element name="agency" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="eng">Identifier of the agency using this service</xs:documentation>
+		</xs:annotation>
 	</xs:element>
 	<xs:element name="allObjects" type="xs:boolean">
 		<xs:annotation>
