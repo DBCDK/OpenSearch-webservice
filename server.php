@@ -148,7 +148,7 @@ class search_it {
                 "&rows=" . $param->stepValue .
                 "&fl=fedoraPid";
     $solr_query = SOLR_URI . "?wt=phps" . 
-                "&q=" . $param->query . 
+                "&q=" . $q_solr . 
                 "&start=0" . 
                 "&rows=10000" . 
                 "&fl=fedoraPid";
@@ -161,6 +161,7 @@ class search_it {
         $solr_query .= "&facet.field=" . $param->facets->facetName;
     }
 
+		$verbose->log(TRACE, "CQL to SOLR: " . $param->query . " -> " . $q_solr);
 		$verbose->log(TRACE, "Query: " . $solr_query);
 
 // do the query
