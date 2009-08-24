@@ -1,3 +1,15 @@
+0.4
+===
+New xsd describing collections
+Work relations found using RIsearch
+First try with correct work-collections
+allObjects supported
+
+0.3
+===
+Data from Fedora object store
+format rawData and dc
+
 0.2
 ===
 xsd in separate file and changed quite a bit
