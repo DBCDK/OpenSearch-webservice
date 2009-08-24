@@ -27,6 +27,7 @@
 
 require_once "OLS_class_lib/inifile_class.php";
 require_once "OLS_class_lib/curl_class.php";
+require_once "OLS_class_lib/cql2solr_class.php";
 require_once "OLS_class_lib/verbose_class.php";
 require_once "OLS_class_lib/timer_class.php";
 
@@ -42,6 +43,11 @@ if ($config->error)
 // some constants
 define("WSDL", $config->get_value("wsdl", "setup"));
 define("SOLR_URI", $config->get_value("solr_uri", "setup"));
+define("FEDORA_GET_RAW", $config->get_value("fedora_get_raw", "setup"));
+define("FEDORA_GET_DC", $config->get_value("fedora_get_dc", "setup"));
+define("FEDORA_GET_RELS_EXT", $config->get_value("fedora_get_rels_ext", "setup"));
+define("RI_SEARCH", $config->get_value("ri_search", "setup"));
+define("RI_SELECT_WORK", $config->get_value("ri_select_work", "setup"));
 if ($tmp = $config->get_value("solr_timeour", "setup"))
   define("SOLR_TIMEOUT", $tmp);
 else
@@ -83,7 +89,6 @@ if ($HTTP_RAW_POST_DATA) {
   $request_obj = soap_to_obj($HTTP_RAW_POST_DATA);
   $search_request = &$request_obj->{'Envelope'}->{'Body'}->{'searchRequest'};
   if ($search_request->outputType) {
-    $timer->start("Solr");
     $search_it = new search_it();
     $res = $search_it->search($search_request);
     switch ($search_request->outputType) {
@@ -104,17 +109,12 @@ if ($HTTP_RAW_POST_DATA) {
       default:
         echo "Unknown outputType: " . $search_request->outputType;
     }
-    $timer->stop("Solr");
   } else {
-    $timer->start("SoapServer");
     //$server = new SoapServer(WSDL, array("cache_wsdl" => WSDL_CACHE_NONE));
     $server = new SoapServer(WSDL);
-    $timer->stop("SoapServer");
 
-    $timer->start("Solr");
     $server->setClass('search_it');
     $server->handle();
-    $timer->stop("Solr");
   }
 
   $verbose->log(TIMER, $timer->dump());
@@ -130,28 +130,36 @@ if ($HTTP_RAW_POST_DATA) {
    *
    */
 class search_it {
-	public function searchRequest($param) {
-  }
 	public function search($param) {
-    global $verbose;
-//var_dump($param);
-		$this->query = $param->query;
-		$this->source = $param->source;
-		$this->facets = $param->facets;
-		$this->start = $param->start;
-		$this->step_value = $param->stepValue;
-		$this->sort = $param->sort;
+    global $verbose, $timer;
 
-    $solr_query = SOLR_URI . "?wt=xml" . 
-                "&q=" . $this->query . 
-                "&start=" . max(0, $this->start - 1).
-                "&rows=" . $this->step_value .
-                "&facet=true&facet.limit=" . $this->facets->number;
-    if (is_array($this->facets->facetName))
-      foreach ($this->facets->facetName as $facet_name)
-        $solr_query .= "&facet.field=" . $facet_name;
-    else
-      $solr_query .= "&facet.field=" . $this->facets->facetName;
+    if ($param->format == "short")
+      return array("error" => "Error: format short is not supported");
+    if ($param->format == "full")
+      return array("error" => "Error: format full is not supported");
+
+//var_dump($param);
+    $timer->start("Solr");
+    $cql2solr = new cql2solr('opensearch_cql.xml');
+    $q_solr = $cql2solr->convert($param->query);
+    $solr_query = SOLR_URI . "?wt=phps" . 
+                "&q=" . $param->query . 
+                "&start=" . max(0, $param->start - 1).
+                "&rows=" . $param->stepValue .
+                "&fl=fedoraPid";
+    $solr_query = SOLR_URI . "?wt=phps" . 
+                "&q=" . $param->query . 
+                "&start=0" . 
+                "&rows=10000" . 
+                "&fl=fedoraPid";
+    if ($param->facets->facetName) {
+      $solr_query .= "&facet=true&facet.limit=" . $param->facets->numberOfTerms;
+      if (is_array($param->facets->facetName))
+        foreach ($param->facets->facetName as $facet_name)
+          $solr_query .= "&facet.field=" . $facet_name;
+      else
+        $solr_query .= "&facet.field=" . $param->facets->facetName;
+    }
 
 		$verbose->log(TRACE, "Query: " . $solr_query);
 
@@ -159,117 +167,163 @@ class search_it {
     $curl = new curl();
     $curl->set_option(CURLOPT_TIMEOUT, SOLR_TIMEOUT);
     $solr_result = $curl->get($solr_query);
+    $timer->stop("Solr");
 
     if (empty($solr_result))
-      usage("No result back from solr");  // 2do real error answer
+      return array("error" => "Internal problem: No answer from Solr");
 
-    $dom = new DomDocument();
-    $dom->preserveWhiteSpace = false;
-    $dom->formatOutput = true;
-    if (!$dom->loadXML($solr_result))
-      usage("No god xml back from solr");  // 2do real error answer
-    //$encoding = $dom->xmlEncoding;
-    $root_node = $dom->documentElement;
+    if (!$solr_arr = unserialize($solr_result))
+      return array("error" => "Internal problem: Cannot decode Solr result");
 
-    foreach ($dom->childNodes as $node)
-      if($node->nodeName == "response")
-        foreach ($node->childNodes as $response)
-          switch ($response->nodeName) {
-            case "result" : 
-              $numFound = $response->getAttribute("numFound");
-              $start = $response->getAttribute("start");
-              $maxScore = $response->getAttribute("maxScore");
-              $dc_records = parse_for_dc_records(&$response, "fedoraPid");
-              break;
-            case "lst" : 
-              switch ($response->getAttribute("name")) {
-                case "responseHeader":
-                  break;
-                case "facet_counts":
-                  $facets = parse_for_facets(&$response);
-                  break;
-              }
-              break;
-          }
-          
+    $search_ids = array();
+    foreach ($solr_arr["response"]["docs"] as $fpid)
+      $search_ids[] = $fpid["fedoraPid"];
 
-    foreach ($dc_records as $dc_rec)
-      $records[] = array("identifier" => $dc_rec["record_id"], "relations" => $dc_rec["relations"], "dc" => $dc_rec["record"]);
+    $numFound = $solr_arr["response"]["numFound"];
+    $start = $solr_arr["response"]["start"];
+    $facets = parse_for_facets(&$solr_arr["facet_counts"]);
 
-    //return array("error" => "Return error-string");
+    $timer->start("RIsearch");
+    $work_ids = $used_search_keys = array();
+    reset($solr_arr["response"]["docs"]);
+    while (count($work_ids) < $param->start + $param->stepValue - 1) {
+      list($key, $fid) = each($search_ids);
+      if (!$fid) break;
+      if ($used_search_keys[$key]) continue;
+
+// find relations for the record in fedora
+      $fedora_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
+      $fedora_result = $curl->get($fedora_uri);
+
+      if ($work_id = parse_rels_for_work_id($fedora_result)) {
+// find other recs sharing the work-relation
+        $risearch_uri =  RI_SEARCH . urlencode(sprintf(RI_SELECT_WORK, $work_id));
+        $risearch_result = $curl->get($risearch_uri);
+        $pid_array = parse_work_for_fedora_pid($risearch_result);
+      } else {
+        $pid_array = array($fid);
+      }
+
+// pick ids in work found in searchresult
+      $hit_pid_array = $no_hit_pid_array = array();
+      foreach ($pid_array as $id)
+        if (!is_null($key = array_search($id, $search_ids))) {
+          $hit_pid_array[$key] = $id;
+          $used_search_keys[$key] = TRUE;
+        } else
+          $no_hit_pid_array[] = $id;
+      ksort($hit_pid_array);		// to keep same order as search_result
+      if ($param->allObjects)
+        $work_ids[] = array_merge($hit_pid_array, $no_hit_pid_array);
+      else
+        $work_ids[] = $hit_pid_array;
+    }
+    $timer->stop("RIsearch");
+    
+// now fetch the records for each work/collection
+    $timer->start("Fedora");
+    $collections = array();
+    for ($rec_no = $param->start - 1; count($collections) < $param->stepValue; $rec_no++) {
+      if (empty($work_ids[$rec_no])) 
+        return array("error" => "Fatal: Internal error, to few recs in work_ids");
+      $objects = array();
+      reset($work_ids);
+      foreach ($work_ids[$rec_no] as $fid) {
+        $fedora_get =  sprintf(FEDORA_GET_RAW, $fid);
+        $fedora_result = $curl->get($fedora_get);
+        $curl_err = $curl->get_status();
+        if ($curl_err["http_code"] > 299)
+          return array("error" => "Error: Cannot fetch record: " . $fid . " - http-error: " . $curl_err["http_code"]);
+        $timer->start("dc_parse");
+        $objects[] = parse_for_dc(&$fedora_result, $fid);
+        $timer->stop("dc_parse");
+      }
+      $collections[] = array("resultPosition" => $rec_no + 1,
+                             "numberOfObjects" => count($objects),
+                             "object" => $objects);
+    }
+    $timer->stop("Fedora");
+      
+//print_r($collections); die();
+//print_r($solr_arr); die();
 
 		return array("result" => 
              array("hitCount" => $numFound, 
-                   "collectionCount" => null,
-                   "searchResult" => 
-                     array("collection" => 
-                       array("resultPosition" => $this->start,
-                             "numberOfObjects" => count($dc_records),
-                             "object" => $records)),
+                   "collectionCount" => count($collections),
+                   "searchResult" => $collections,
                    "facetResult" => $facets));
 	}
 }
 
 /* ------------------------------------------------- */
 
+/** \brief Parse a rels-ext record and extract the work id
+ *
+ */
+function parse_rels_for_work_id($rels_ext) {
+  static $dom;
+  if (empty($dom)) $dom = new DomDocument();
+  $dom->preserveWhiteSpace = false;
+  if ($dom->loadXML($rels_ext)) {
+    $imo = $dom->getElementsByTagName("isMemberOf");
+    if ($imo->item(0))
+      return($imo->item(0)->getAttribute("rdf:resource"));
+  }
+
+  return FALSE;
+}
+
+/** \brief Parse a work relation and return array of pids
+ *
+ */
+function parse_work_for_fedora_pid($w_rel) {
+  static $dom;
+  $res = array();
+  if (empty($dom)) $dom = new DomDocument();
+  $dom->preserveWhiteSpace = false;
+  if ($dom->loadXML($w_rel)) {
+    $r_list = $dom->getElementsByTagName("result");
+    foreach ($r_list as $r) {
+      list($dummy, $res[]) = split("/", $r->getElementsByTagName("s")->item(0)->getAttribute("uri"), 2);
+    }
+    return $res;
+  }
+}
+
 /** \brief Parse a record and extract the dc-records as a dc record
  *
  */
-function parse_for_dc_records(&$docs, $rec_id_tag) {
-  $ret = array(); 
-  $valids = explode(" ", trim(VALID_DC_TAGS));
+function parse_for_dc(&$doc, $rec_id) {
+  static $dom;
+  //$valids = explode(" ", trim(VALID_DC_TAGS));
+  if (empty($dom)) $dom = new DomDocument();
+  $dom->preserveWhiteSpace = false;
+  if (!$dom->loadXML($doc))
+    return array();
 
-  foreach ($docs->childNodes as $doc)
-    if ($doc->nodeName == "doc") {
-      $rec = array();
-      foreach ($doc->childNodes as $tag)
-        if (in_array($tag->getAttribute("name"), $valids)) {
-          switch ($tag->nodeName) {
-            case "str":
-              $rec[$tag->getAttribute("name")][] = trim($tag->nodeValue);
-              break;
-            case "arr":
-              foreach ($tag->childNodes as $item)
-// BUG ??? only forward unique entries
-                if (!is_array($rec[$tag->getAttribute("name")]) || 
-                    !in_array(trim($item->nodeValue), $rec[$tag->getAttribute("name")]))
-                  $rec[$tag->getAttribute("name")][] = trim($item->nodeValue);
-              break;
-          }
-        } elseif ($tag->getAttribute("name") == $rec_id_tag)
-          $rec_id = trim($tag->nodeValue);
-      $ret[] = array("record_id" => $rec_id, "record" => $rec);
-    }
-  //print_r($ret);
-  return $ret;
+  $dc = $dom->getElementsByTagName("record");
+  $rec = array();
+  foreach ($dc->item(0)->childNodes as $tag) {
+    if ($tag->prefix == "dc")
+      $rec[$tag->localName][] = trim($tag->nodeValue);
+  }
+
+  return array("identifier" => $rec_id, "relations" => $relations, "dc" => $rec);
 }
 
 /** \brief Parse solr facets and build reply
  *
+ * array("facet_queries" => ..., "facet_fields" => ..., "facet_dates" => ...)
+ *
  */
 function parse_for_facets(&$facets) {
   $ret = array();
-  //echo "parse_for_facets";
-  foreach ($facets->childNodes as $facet)
-    if ($facet->nodeName == "lst")
-      switch ($facet->getAttribute("name")) {
-        case "facet_fields": 
-          foreach ($facet->childNodes as $facet_tag)
-            if ($facet_tag->nodeName == "lst") {
-              $facet_array = array("facetName" => $facet_tag->getAttribute("name"), "facetTerm" => array());
-              foreach ($facet_tag->childNodes as $facet_item)
-                if ($facet_item->nodeValue)
-                  $facet_array["facetTerm"][] = array("term" => $facet_item->getAttribute("name"),
-                                                    "frequence" => $facet_item->nodeValue);
-              $ret[] = $facet_array;
-            }
-
-          break;
-        case "facet_queries": 
-        case "facet_dates": 
-          break;
-      }
-  //print_r($ret);
+  foreach ($facets["facet_fields"] as $facet_name => $facet_field) {
+    $r_arr = array("facetName" => $facet_name);
+    foreach ($facet_field as $term => $freq)
+      $r_arr["facetTerm"][] = array("term" => $term, "frequence" => $freq);
+    $ret[] = $r_arr;
+  }
   return $ret;
 }
 
