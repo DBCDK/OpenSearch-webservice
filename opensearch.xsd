@@ -179,6 +179,11 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="eng">Unik identifier of an object.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="more" type="xs:boolean">
+		<xs:annotation>
+			<xs:documentation xml:lang="eng">Indicates whether the search result has more hits or the client has reached the end of the result.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="object">
 		<xs:annotation>
 			<xs:documentation xml:lang="eng">Representation of a digital object in the OpenSearch repository. An object might for example be a bibliographic record or a full text document. One of the formats that can be returned from the service.</xs:documentation>
@@ -265,6 +270,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:sequence>
 				<xs:element ref="os:hitCount"/>
 				<xs:element ref="os:collectionCount"/>
+				<xs:element ref="os:more"/>
 				<xs:element ref="os:searchResult" minOccurs="0"/>
 				<xs:element ref="os:facetResult" minOccurs="0"/>
 			</xs:sequence>
