@@ -327,12 +327,13 @@ function parse_for_dc(&$doc, $rec_id) {
  */
 function parse_for_facets(&$facets) {
   $ret = array();
-  foreach ($facets["facet_fields"] as $facet_name => $facet_field) {
-    $r_arr = array("facetName" => $facet_name);
-    foreach ($facet_field as $term => $freq)
-      $r_arr["facetTerm"][] = array("term" => $term, "frequence" => $freq);
-    $ret[] = $r_arr;
-  }
+  if ($facets["facet_fields"])
+    foreach ($facets["facet_fields"] as $facet_name => $facet_field) {
+      $r_arr = array("facetName" => $facet_name);
+      foreach ($facet_field as $term => $freq)
+        $r_arr["facetTerm"][] = array("term" => $term, "frequence" => $freq);
+      $ret[] = $r_arr;
+    }
   return $ret;
 }
 
