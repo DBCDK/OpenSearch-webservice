@@ -110,8 +110,8 @@ if ($HTTP_RAW_POST_DATA) {
         echo "Unknown outputType: " . $search_request->outputType;
     }
   } else {
-    //$server = new SoapServer(WSDL, array("cache_wsdl" => WSDL_CACHE_NONE));
-    $server = new SoapServer(WSDL);
+    $server = new SoapServer(WSDL, array("cache_wsdl" => WSDL_CACHE_NONE));
+    //$server = new SoapServer(WSDL);
 
     $server->setClass('search_it');
     $server->handle();
@@ -188,9 +188,9 @@ class search_it {
     $work_ids = $used_search_keys = array();
     reset($solr_arr["response"]["docs"]);
     while (count($work_ids) < $param->start + $param->stepValue - 1) {
-      list($key, $fid) = each($search_ids);
+      list($search_idx, $fid) = each($search_ids);
       if (!$fid) break;
-      if ($used_search_keys[$key]) continue;
+      if ($used_search_keys[$search_idx]) continue;
 
 // find relations for the record in fedora
       $fedora_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
@@ -208,9 +208,9 @@ class search_it {
 // pick ids in work found in searchresult
       $hit_pid_array = $no_hit_pid_array = array();
       foreach ($pid_array as $id)
-        if (!is_null($key = array_search($id, $search_ids))) {
-          $hit_pid_array[$key] = $id;
-          $used_search_keys[$key] = TRUE;
+        if (!is_null($search_idx = array_search($id, $search_ids))) {
+          $hit_pid_array[$search_idx] = $id;
+          $used_search_keys[$search_idx] = TRUE;
         } else
           $no_hit_pid_array[] = $id;
       ksort($hit_pid_array);		// to keep same order as search_result
@@ -219,6 +219,13 @@ class search_it {
       else
         $work_ids[] = $hit_pid_array;
     }
+    $more = FALSE;
+    if ($search_idx)
+      for ($i = $search_idx; $i < $numFound; $i++) {
+        if ($used_search_keys[$i]) continue;
+        $more = TRUE;
+        break;
+      }
     $timer->stop("RIsearch");
     
 // now fetch the records for each work/collection
@@ -226,7 +233,7 @@ class search_it {
     $collections = array();
     for ($rec_no = $param->start - 1; count($collections) < $param->stepValue; $rec_no++) {
       if (empty($work_ids[$rec_no])) 
-        return array("error" => "Fatal: Internal error, to few recs in work_ids");
+        break;
       $objects = array();
       reset($work_ids);
       foreach ($work_ids[$rec_no] as $fid) {
@@ -251,6 +258,7 @@ class search_it {
 		return array("result" => 
              array("hitCount" => $numFound, 
                    "collectionCount" => count($collections),
+                   "more" => $more,
                    "searchResult" => $collections,
                    "facetResult" => $facets));
 	}
