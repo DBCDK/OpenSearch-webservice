@@ -243,7 +243,7 @@ class search_it {
         if ($curl_err["http_code"] > 299)
           return array("error" => "Error: Cannot fetch record: " . $fid . " - http-error: " . $curl_err["http_code"]);
         $timer->start("dc_parse");
-        $objects[] = parse_for_dc(&$fedora_result, $fid);
+        $objects[] = parse_for_dc_abm(&$fedora_result, $fid, $param->format);
         $timer->stop("dc_parse");
       }
       $collections[] = array("resultPosition" => $rec_no + 1,
@@ -302,9 +302,11 @@ function parse_work_for_fedora_pid($w_rel) {
 /** \brief Parse a record and extract the dc-records as a dc record
  *
  */
-function parse_for_dc(&$doc, $rec_id) {
+function parse_for_dc_abm(&$doc, $rec_id, $format) {
   static $dom;
   //$valids = explode(" ", trim(VALID_DC_TAGS));
+  if (empty($format)) $format = "abm";
+  $format = "dc";    // abm is somehow faulty
   if (empty($dom)) $dom = new DomDocument();
   $dom->preserveWhiteSpace = false;
   if (!$dom->loadXML($doc))
@@ -313,11 +315,11 @@ function parse_for_dc(&$doc, $rec_id) {
   $dc = $dom->getElementsByTagName("record");
   $rec = array();
   foreach ($dc->item(0)->childNodes as $tag) {
-    if ($tag->prefix == "dc")
+    if ($format <> "dc" || $tag->prefix == "dc")
       $rec[$tag->localName][] = trim($tag->nodeValue);
   }
 
-  return array("identifier" => $rec_id, "relations" => $relations, "dc" => $rec);
+  return array("identifier" => $rec_id, "relations" => $relations, $format => $rec);
 }
 
 /** \brief Parse solr facets and build reply
