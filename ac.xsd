@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xml="http://www.w3.org/XML/1998/namespace" targetNamespace="http://biblstandard.dk/ac/namespace/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+      XML Schema for the http://biblstandard.dk/ac/namespace .
+
+      Updated 2008-11-19 by Leif Andresen.
+
+      Created 2003-05-01 on a projekt at IT University of Copenhagen and for the
+      Danish Bibliographic Center.
+
+      Created by
+
+      Martin Everhoej (martin@everhoj.dk)
+      Niels Erik Gilvad (ngn@dk.ibm.com)
+
+      This schema declares XML elements for the Administrative Components as
+      proposed to the Dublin Core Metadata Initiative by the AC working group.
+
+      The schema is supposed to be made redundant when the Administrative Component
+      proposal is upgraded to a recommendation and provides an official schema.
+
+      The schema utilises a Dublin Core base element called dc:any from the
+      http://purl.org/dc/elements/1.1/ namespace. This is because this schema is
+      exspected to be used in conjunction with the Dublin Core metadata element set
+      that is also based on this element - so the same base element is used for
+      compatibility
+
+      Modified 2005-09-01 by Per M. Hansen, Index Data. The source element was added.
+    </xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
+	<xs:element name="database" substitutionGroup="dc:any"/>
+	<xs:element name="transmitter" substitutionGroup="dc:any"/>
+	<xs:element name="filename" substitutionGroup="dc:any"/>
+	<xs:element name="technicalFormat" substitutionGroup="dc:any"/>
+	<xs:element name="characterSet" substitutionGroup="dc:any"/>
+	<xs:element name="bibliographicFormat" substitutionGroup="dc:any"/>
+	<xs:element name="resultFile" substitutionGroup="dc:any"/>
+	<xs:element name="identifier" substitutionGroup="dc:any"/>
+	<xs:element name="source" substitutionGroup="dc:any"/>
+	<xs:element name="scope" substitutionGroup="dc:any"/>
+	<xs:element name="comment" substitutionGroup="dc:any"/>
+	<xs:element name="location" substitutionGroup="dc:any"/>
+	<xs:element name="language" substitutionGroup="dc:any"/>
+	<xs:element name="rights" substitutionGroup="dc:any"/>
+	<xs:element name="dateRange" substitutionGroup="dc:any"/>
+	<xs:element name="handling" substitutionGroup="dc:any"/>
+	<xs:element name="activity" substitutionGroup="dcterms:anyElements">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ac:action" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="ac:name" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="ac:email" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="ac:contact" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="ac:date" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="ac:affiliation" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="action" substitutionGroup="dc:any"/>
+	<xs:element name="name" substitutionGroup="dc:any"/>
+	<xs:element name="email" substitutionGroup="dc:any"/>
+	<xs:element name="contact" substitutionGroup="dc:any"/>
+	<xs:element name="date" substitutionGroup="dc:any"/>
+	<xs:element name="affiliation" substitutionGroup="dc:any"/>
+	<xs:complexType name="TypeOfActivity">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:Name">
+						<xs:enumeration value="submitted"/>
+						<xs:enumeration value="created"/>
+						<xs:enumeration value="modified"/>
+						<xs:enumeration value="link-collected"/>
+						<xs:enumeration value="resource-harvested"/>
+						<xs:enumeration value="checked"/>
+						<xs:enumeration value="resource-disappeared"/>
+						<xs:enumeration value="expired"/>
+						<xs:enumeration value="deleted-error-record"/>
+					</xs:restriction>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="TypeOfHandling">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:Name">
+						<xs:enumeration value="Harvest"/>
+						<xs:enumeration value="Public"/>
+						<xs:enumeration value="Manual"/>
+						<xs:enumeration value="Keep"/>
+						<xs:enumeration value="Mail"/>
+					</xs:restriction>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="RFC822">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="[\w\-_]{1,}(\.[\w\-_]{1,})*@[\w\-_]{1,}(\.[\w\-_]{1,})*"/>
+					</xs:restriction>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="RightsList">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:Name">
+						<xs:enumeration value="AccessUnrestricted"/>
+						<xs:enumeration value="AccessRestricted"/>
+						<xs:enumeration value="AccessNo"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>
