@@ -12,8 +12,8 @@ OpenSearch is distributed in the hope that it will be useful, but WITHOUT ANY WA
 
 You should have received a copy of the GNU Affero General Public License along with OpenSearch.  If not, see http://www.gnu.org/licenses/</xs:documentation>
 	</xs:annotation>
-        <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="http://dublincore.org/schemas/xmls/qdc/2003/04/02/dc.xsd"/>
-	<xs:import namespace="http://biblstandard.dk/abm/namespace/dkabm/" schemaLocation="http://biblstandard.dk/abm/schemas/dkabm_2008-11-19.xsd"/>
+        <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
+	<xs:import namespace="http://biblstandard.dk/abm/namespace/dkabm/" schemaLocation="dkabm.xsd"/>
 	<xs:element name="searchRequest">
 		<xs:annotation>
 			<xs:documentation xml:lang="eng">The service request.</xs:documentation>
