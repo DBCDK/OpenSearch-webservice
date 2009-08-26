@@ -365,6 +365,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="dublinCore"/>
+			<xs:enumeration value="dkabm"/>
 			<xs:enumeration value="short"/>
 			<xs:enumeration value="full"/>
 		</xs:restriction>
