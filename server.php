@@ -139,18 +139,21 @@ class search_it {
       return array("error" => "Error: format full is not supported");
 
 //var_dump($param);
+    if (empty($param->start) && $param->stepValue) $param->start = 1;
     $timer->start("Solr");
     $cql2solr = new cql2solr('opensearch_cql.xml');
     $q_solr = $cql2solr->convert($param->query);
+/*
     $solr_query = SOLR_URI . "?wt=phps" . 
                 "&q=" . $param->query . 
                 "&start=" . max(0, $param->start - 1).
                 "&rows=" . $param->stepValue .
                 "&fl=fedoraPid";
+*/
     $solr_query = SOLR_URI . "?wt=phps" . 
                 "&q=" . $q_solr . 
                 "&start=0" . 
-                "&rows=10000" . 
+                "&rows=20000" . 
                 "&fl=fedoraPid";
     if ($param->facets->facetName) {
       $solr_query .= "&facet=true&facet.limit=" . $param->facets->numberOfTerms;
@@ -252,7 +255,7 @@ class search_it {
     }
     $timer->stop("Fedora");
       
-//print_r($collections); die();
+print_r($collections); die();
 //print_r($solr_arr); die();
 
 		return array("result" => 
@@ -306,7 +309,6 @@ function parse_for_dc_abm(&$doc, $rec_id, $format) {
   static $dom;
   //$valids = explode(" ", trim(VALID_DC_TAGS));
   if (empty($format)) $format = "abm";
-  $format = "dc";    // abm is somehow faulty
   if (empty($dom)) $dom = new DomDocument();
   $dom->preserveWhiteSpace = false;
   if (!$dom->loadXML($doc))
