@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by Dansk BiblioteksCenter (Dansk BiblioteksCenter) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" targetNamespace="http://biblstandard.dk/abm/namespace/dkabm/">
+	<xs:annotation>
+		<xs:documentation>
+      Example implementation of the ABM schema complex.
+
+      2006-11-22: Anders Sønderberg Mortensen.
+    </xs:documentation>
+	</xs:annotation>
+	<xs:import schemaLocation="dkabm_types.xsd"/>
+	<xs:element name="record" type="elementsAndRefinementsGroup"/>
+	<xs:element name="collection">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dkabm:record" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

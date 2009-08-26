@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:dcterms="http://purl.org/dc/terms/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation>
+      Imports various DKABM types.
+      Updated 2008-11-19 by Leif Andresen.
+
+      This XML schema shall support the Archives-Libraries-Museum standard
+      working group Dublin Core based format for common presentation of records
+      from archives, libraries and museums. Created in accordance with the
+      naming convention used in the Dublin Core Metadata Initiative (DCMI)
+
+      Created 2005-09-09 by
+      Per Moerkegaard Hansen (perhans@indexdata.dk)
+      with assistance from
+      Soeren Pedersen (sorenpedersen@makeitright.dk)
+    </xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
+	<xs:import namespace="http://biblstandard.dk/ac/namespace/" schemaLocation="ac.xsd"/>
+	<xs:import namespace="http://biblstandard.dk/abm/namespace/dkdcplus/" schemaLocation="dkdcplus.xsd"/>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+	<xs:complexType name="elementsAndRefinementsGroup">
+		<xs:choice>
+			<xs:group ref="dcterms:elementsAndRefinementsGroup"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:schema>
