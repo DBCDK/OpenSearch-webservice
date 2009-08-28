@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:ISO639-2="http://lcweb.loc.gov/standards/iso639-2/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" xmlns:osdc="http://oss.dbc.dk/ns/opensearch_dc" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:ISO639-2="http://lcweb.loc.gov/standards/iso639-2/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="eng">Opensearch Service</xs:documentation>
 		<xs:documentation xml:lang="eng">This XML Schema describes the data and structure of data of the Opensearch search service.</xs:documentation>
@@ -12,8 +12,12 @@ OpenSearch is distributed in the hope that it will be useful, but WITHOUT ANY WA
 
 You should have received a copy of the GNU Affero General Public License along with OpenSearch.  If not, see http://www.gnu.org/licenses/</xs:documentation>
 	</xs:annotation>
-        <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
-	<xs:import namespace="http://biblstandard.dk/abm/namespace/dkabm/" schemaLocation="dkabm.xsd"/>
+	<xs:import namespace="http://oss.dbc.dk/ns/opensearch_dc" schemaLocation="osdc.xsd"/>
+	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
+	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
+	<xs:import namespace="http://biblstandard.dk/ac/namespace/" schemaLocation="ac.xsd"/>
+	<xs:import namespace="http://biblstandard.dk/abm/namespace/dkdcplus/" schemaLocation="dkdcplus.xsd"/>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
 	<xs:element name="searchRequest">
 		<xs:annotation>
 			<xs:documentation xml:lang="eng">The service request.</xs:documentation>
@@ -107,6 +111,37 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="dkabm">
+		<xs:annotation>
+			<xs:documentation xml:lang="eng">OpenSearch DKABM. One of the formats that can be returned from the service.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ac:identifier" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="ac:source" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:title" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:creator" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:subject" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:description" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:publisher" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:contributor" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:date" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:type" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:format" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:identifier" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:source" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:language" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:relation" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="dcterms:isPartOf" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="dcterms:replaces" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="dcterms:isReplacedBy" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="dcterms:spatial" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="dcterms:temporal" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:coverage" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:rights" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="error" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="eng">Message returned by the service, if an error occurs.</xs:documentation>
@@ -185,6 +220,16 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="eng">Indicates whether the search result has more hits or the client has reached the end of the result.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="numberOfObjects" type="xs:int">
+		<xs:annotation>
+			<xs:documentation xml:lang="eng">Number of objects in a collection in a search result.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="numberOfTerms" type="xs:int">
+		<xs:annotation>
+			<xs:documentation xml:lang="eng">The number of terms that you want to be returned by the service in the facet requested. Used in the search request.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="object">
 		<xs:annotation>
 			<xs:documentation xml:lang="eng">Representation of a digital object in the OpenSearch repository. An object might for example be a bibliographic record or a full text document. One of the formats that can be returned from the service.</xs:documentation>
@@ -195,22 +240,12 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:relations" minOccurs="0"/>
 				<xs:choice>
 					<xs:element ref="os:dc"/>
-					<xs:element ref="dkabm:record"/>
+					<xs:element ref="os:dkabm"/>
 					<xs:element ref="os:rawData"/>
 					<xs:element ref="os:short"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
-	</xs:element>
-	<xs:element name="numberOfObjects" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="eng">Number of objects in a collection in a search result.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="numberOfTerms" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="eng">The number of terms that you want to be returned by the service in the facet requested. Used in the search request.</xs:documentation>
-		</xs:annotation>
 	</xs:element>
 	<xs:element name="outputType" type="os:outputTypeType">
 		<xs:annotation>
@@ -299,10 +334,10 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="dc:title" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:creator" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:date" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:type" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:title" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:creator" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:date" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="osdc:type" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -326,7 +361,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="eng">The number of collections you want the service to return, counted from the value in start.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="term" type="xs:string">
+	<xs:element name=" term" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="eng">Facet term.</xs:documentation>
 		</xs:annotation>

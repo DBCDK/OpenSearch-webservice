@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:osdc="http://oss.dbc.dk/ns/opensearch_dc" targetNamespace="http://oss.dbc.dk/ns/opensearch_dc" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="title" type="xs:string"/>
+	<xs:element name="creator" type="xs:string"/>
+	<xs:element name="subject" type="osdc:subjectType"/>
+	<xs:element name="description" type="xs:string"/>
+	<xs:element name="publisher" type="xs:string"/>
+	<xs:element name="contributor" type="xs:string"/>
+	<xs:element name="date" type="xs:string"/>
+	<xs:element name="type" type="osdc:typeType"/>
+	<xs:element name="format" type="xs:string"/>
+	<xs:element name="identifier" type="osdc:identifierType"/>
+	<xs:element name="source" type="xs:string"/>
+	<xs:element name="language" type="xs:string"/>
+	<xs:element name="relation" type="xs:string"/>
+	<xs:element name="coverage" type="xs:string"/>
+	<xs:element name="rights" type="xs:string"/>
+	<xs:complexType name="identifierType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" type="osdc:identifierAtt"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="subjectType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" type="osdc:subjectAtt"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="typeType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" type="osdc:typeAtt"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="identifierAtt">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ISBN"/>
+			<xs:enumeration value="ISSN"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="subjectAtt">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DK5"/>
+			<xs:enumeration value="DK5-Text"/>
+			<xs:enumeration value="DBCS"/>
+			<xs:enumeration value="DBCF"/>
+			<xs:enumeration value="DBCM"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typeAtt">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BibDK-Type"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
