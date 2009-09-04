@@ -25,7 +25,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="os:query"/>
-				<xs:element ref="os:agency"/>
+				<xs:element ref="os:agency" minOccurs="0"/>
 				<xs:element ref="os:allObjects" minOccurs="0"/>
 				<xs:element ref="os:callback" minOccurs="0"/>
 				<xs:element ref="os:collectionType" minOccurs="0"/>
@@ -361,7 +361,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="eng">The number of collections you want the service to return, counted from the value in start.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name=" term" type="xs:string">
+	<xs:element name="term" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="eng">Facet term.</xs:documentation>
 		</xs:annotation>
