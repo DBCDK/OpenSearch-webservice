@@ -53,6 +53,7 @@ if ($tmp = $config->get_value("solr_timeour", "setup"))
 else
   define("SOLR_TIMEOUT", 20);
 define("VALID_DC_TAGS", $config->get_value("valid_dc_tags", "setup"));
+define("MAX_COLLECTIONS", $config->get_value("max_collections", "setup"));
 
 // for logging
 $verbose = new verbose($config->get_value("logfile", "setup"), 
@@ -102,7 +103,7 @@ if ($HTTP_RAW_POST_DATA) {
         echo serialize($res);
         break;
       case "xml":
-        header("Content-Type: text/xml");
+        //header("Content-Type: text/xml");
         echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . 
              array_to_xml($res);
         break;
@@ -128,32 +129,35 @@ if ($HTTP_RAW_POST_DATA) {
 
   /** \brief Handles the request and set up the response
    *
+   * Sofar all records er matchet via the work-relation
+   * if/when formats without this match is needed, the 
+   * code must branch according to that
+   *
    */
 class search_it {
 	public function search($param) {
-    global $verbose, $timer;
+    global $verbose, $timer, $config;
 
     if ($param->format == "short")
       return array("error" => "Error: format short is not supported");
     if ($param->format == "full")
       return array("error" => "Error: format full is not supported");
 
-//var_dump($param);
+    if ($param->agency) {
+      $agencies = $config->get_value("agency", "agency");
+      $filter_agency = $agencies[$param->agency];
+    }
+
+    // No defaulting if (!isset($param->stepValue)) $param->stepValue = 10;
+    $param->stepValue = min($param->stepValue, MAX_COLLECTIONS);
     if (empty($param->start) && $param->stepValue) $param->start = 1;
     $timer->start("Solr");
     $cql2solr = new cql2solr('opensearch_cql.xml');
-    $q_solr = $cql2solr->convert($param->query);
-/*
-    $solr_query = SOLR_URI . "?wt=phps" . 
-                "&q=" . $param->query . 
-                "&start=" . max(0, $param->start - 1).
-                "&rows=" . $param->stepValue .
-                "&fl=fedoraPid";
-*/
+    $q_solr = urlencode($cql2solr->convert(urldecode($param->query)) . ($filter_agency ? " " . $filter_agency : ""));
     $solr_query = SOLR_URI . "?wt=phps" . 
                 "&q=" . $q_solr . 
                 "&start=0" . 
-                "&rows=20000" . 
+                "&rows=" . ($param->start + $param->stepValue + 50) * 3 . 
                 "&fl=fedoraPid";
     if ($param->facets->facetName) {
       $solr_query .= "&facet=true&facet.limit=" . $param->facets->numberOfTerms;
@@ -166,6 +170,36 @@ class search_it {
 
 		$verbose->log(TRACE, "CQL to SOLR: " . $param->query . " -> " . $q_solr);
 		$verbose->log(TRACE, "Query: " . $solr_query);
+
+/*
+ *  Approach 1:
+ *  a. Do the solr search and fecth all fedoraPids in result
+ *  b. Fetch work-relation from fedora using itql (risearch) unless the
+ *     records is included in a earlier found work-relation
+ *  c. Fetch fedoraPids in the work-relation from fedora using itql (risearch)
+ *  d. Remove fedoraPids which are not in search result unless allObjects is set
+ *  e. Repeat b. to d. until the requeste number of objects is found
+ *  f. Read full records fom fedora for objects in result
+ *
+ *  Approach 2:
+ *  a. as above
+ *  b. as above
+ *  c. as above
+ *  d. repeat b. and c. until the requeste number of objects is found
+ *  e. if allObject is not set, do a new search combined the users search
+ *     with an or'ed list of the fedoraPids in the active objects and
+ *     remove the fedoraPids not found in the result
+ *  f. as above
+ * 
+ */
+    $approach = 2;
+
+/*
+ * Caching of the process would speed up the paging thru a search-result
+ * 
+ * relation_cache should be cached to facilitate this
+ *
+ */
 
 // do the query
     $curl = new curl();
@@ -187,59 +221,152 @@ class search_it {
     $start = $solr_arr["response"]["start"];
     $facets = parse_for_facets(&$solr_arr["facet_counts"]);
 
-    $timer->start("RIsearch");
-    $work_ids = $used_search_keys = array();
-    reset($solr_arr["response"]["docs"]);
-    while (count($work_ids) < $param->start + $param->stepValue - 1) {
-      list($search_idx, $fid) = each($search_ids);
-      if (!$fid) break;
-      if ($used_search_keys[$search_idx]) continue;
+    if ($approach == 1) {
+      $work_ids = $used_search_fids = array();
+      $w_no = 0;
+      reset($solr_arr["response"]["docs"]);
+print_r($search_ids);
+      $timer->start("RIsearch");
+      while (count($work_ids) < $param->stepValue) {
+        list($search_idx, $fid) = each($search_ids);
+        if (!$fid) break;
+        if ($used_search_fids[$fid]) continue;
 
+        $w_no++;
 // find relations for the record in fedora
-      $fedora_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
-      $fedora_result = $curl->get($fedora_uri);
+        if ($relation_cache[$w_no]) 
+          $fid_array = $relation_cache[$w_no];
+        else {
+          $fedora_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
+          $fedora_result = $curl->get($fedora_uri);
 
-      if ($work_id = parse_rels_for_work_id($fedora_result)) {
+          if ($work_id = parse_rels_for_work_id($fedora_result)) {
 // find other recs sharing the work-relation
-        $risearch_uri =  RI_SEARCH . urlencode(sprintf(RI_SELECT_WORK, $work_id));
-        $risearch_result = $curl->get($risearch_uri);
-        $pid_array = parse_work_for_fedora_pid($risearch_result);
-      } else {
-        $pid_array = array($fid);
-      }
+            $risearch_uri =  RI_SEARCH . urlencode(sprintf(RI_SELECT_WORK, $work_id));
+            $risearch_result = $curl->get($risearch_uri);
+            $fid_array = parse_work_for_fedora_id($risearch_result);
+          } else 
+            $fid_array = array($fid);
+          $relation_cache[$w_no] = $fid_array;
+        }
+
+        foreach ($fid_array as $id)
+          $used_search_fids[$id] = TRUE;
+        if ($w_no < $param->start) continue;
 
 // pick ids in work found in searchresult
-      $hit_pid_array = $no_hit_pid_array = array();
-      foreach ($pid_array as $id)
-        if (!is_null($search_idx = array_search($id, $search_ids))) {
-          $hit_pid_array[$search_idx] = $id;
-          $used_search_keys[$search_idx] = TRUE;
-        } else
-          $no_hit_pid_array[] = $id;
-      ksort($hit_pid_array);		// to keep same order as search_result
-      if ($param->allObjects)
-        $work_ids[] = array_merge($hit_pid_array, $no_hit_pid_array);
-      else
-        $work_ids[] = $hit_pid_array;
-    }
-    $more = FALSE;
-    if ($search_idx)
-      for ($i = $search_idx; $i < $numFound; $i++) {
-        if ($used_search_keys[$i]) continue;
-        $more = TRUE;
-        break;
+        if (count($fid_array) == 1) 
+          $work_ids[$w_no] = $fid_array;
+        else {
+          $hit_fid_array = $no_hit_fid_array = array();
+          foreach ($fid_array as $id)
+            if (is_int($idx = array_search($id, $search_ids)))
+              $hit_fid_array[$idx] = $id;
+            else
+              $no_hit_fid_array[] = $id;
+          ksort($hit_fid_array);		// to keep same order as search_result
+          if ($param->allObjects)
+            $work_ids[$w_no] = array_merge($hit_fid_array, $no_hit_fid_array);
+          else
+            $work_ids[$w_no] = $hit_fid_array;
+        }
       }
-    $timer->stop("RIsearch");
+      $timer->stop("RIsearch");
+      $more = ($param->stepValue == 0 && $numFound);
+      if (!is_null($search_idx))
+        for ($i = $search_idx; $i < $numFound; $i++) {
+          if ($used_search_fids[$i]) continue;
+          $more = TRUE;
+          break;
+        }
+    }
+    if ($approach == 2) {
+      $work_ids = $used_search_fids = array();
+      $w_no = 0;
+print_r($search_ids);
+      foreach ($search_ids as $fid) {
+        if ($used_search_fids[$fid]) continue;
+        if (count($work_ids) >= $param->stepValue) break;
+
+        $w_no++;
+// find relations for the record in fedora
+        if ($relation_cache[$w_no]) 
+          $fid_array = $relation_cache[$w_no];
+        else {
+          $timer->start("Get rels_ext");
+          $fedora_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
+          $fedora_result = $curl->get($fedora_uri);
+          $timer->stop("Get rels_ext");
+
+          if ($work_id = parse_rels_for_work_id($fedora_result)) {
+// find other recs sharing the work-relation
+            $timer->start("Get work");
+            $risearch_uri =  RI_SEARCH . urlencode(sprintf(RI_SELECT_WORK, $work_id));
+		        $verbose->log(TRACE, "GetWork: " . $risearch_uri);
+            $risearch_result = $curl->get($risearch_uri);
+            $timer->stop("Get work");
+            $fid_array = parse_work_for_fedora_id($risearch_result);
+          } else
+            $fid_array = array($fid);
+          $relation_cache[$w_no] = $fid_array;
+        }
+print_r($fid_array);
+        foreach ($fid_array as $id) {
+          $used_search_fids[$id] = TRUE;
+          if ($w_no >= $param->start) $work_ids[$w_no][] = $id;
+        }
+        if ($w_no >= $param->start) $work_ids[$w_no] = $fid_array;
+      }
+
+      if (count($work_ids) < $param->stepValue && count($search_ids) < $numFound) 
+		    $verbose->log(FATAL, "To few search_ids fetched from solr. Query: " . $q_solr);
+      
+
+// check if the search result contains the ids
+      $add_query = "";
+      foreach ($work_ids as $w_no => $w)
+        if (count($w) > 1)
+          foreach ($w as $id)
+            $add_query .= (empty($add_query) ? "" : " OR ") . str_replace(":", "?", $id);
+      if (!empty($add_query)) {			// use post here because query can be very long
+        $curl->set_post(array("wt" => "phps", 
+                              "q" => urldecode($q_solr) . " AND fedoraPid:(" . $add_query . ")", 
+                              "start" => "0", 
+                              "rows" => "50000", 
+                              "fl" => "fedoraPid"));
+        $timer->start("Solr 2");
+        $solr_result = $curl->get(SOLR_URI);
+        $timer->stop("Solr 2");
+        if (!$solr_arr = unserialize($solr_result))
+          return array("error" => "Internal problem: Cannot decode Solr re-search");
+      foreach ($work_ids as $w_no => $w)
+        if (count($w) > 1) {
+          $hit_fid_array = array();
+          foreach ($solr_arr["response"]["docs"] as $fpid)
+            if (in_array($fpid["fedoraPid"], $w))
+              $hit_fid_array[] = $fpid["fedoraPid"];
+          if ($param->allObjects)
+            $work_ids[$w_no] = array_merge($hit_fid_array, array_diff_assoc($w, $hit_fid_array));
+          else
+            $work_ids[$w_no] = $hit_fid_array;
+        }
+      }
+
+
+      echo "txt: " . $txt . "\n";
+      print_r($solr_arr);
+      print_r($add_query);
+      print_r($used_search_fids);
+    }
+      print_r($work_ids); 
     
+// work_ids now contains the work-records and the fedoraPids the consist of
 // now fetch the records for each work/collection
     $timer->start("Fedora");
     $collections = array();
-    for ($rec_no = $param->start - 1; count($collections) < $param->stepValue; $rec_no++) {
-      if (empty($work_ids[$rec_no])) 
-        break;
+    foreach ($work_ids as $work) {
       $objects = array();
-      reset($work_ids);
-      foreach ($work_ids[$rec_no] as $fid) {
+      foreach ($work as $fid) {
         $fedora_get =  sprintf(FEDORA_GET_RAW, $fid);
         $fedora_result = $curl->get($fedora_get);
         $curl_err = $curl->get_status();
@@ -255,7 +382,8 @@ class search_it {
     }
     $timer->stop("Fedora");
       
-print_r($collections); die();
+//print_r($relation_cache); die();
+//print_r($collections); die();
 //print_r($solr_arr); die();
 
 		return array("result" => 
@@ -285,10 +413,10 @@ function parse_rels_for_work_id($rels_ext) {
   return FALSE;
 }
 
-/** \brief Parse a work relation and return array of pids
+/** \brief Parse a work relation and return array of ids
  *
  */
-function parse_work_for_fedora_pid($w_rel) {
+function parse_work_for_fedora_id($w_rel) {
   static $dom;
   $res = array();
   if (empty($dom)) $dom = new DomDocument();
@@ -308,7 +436,7 @@ function parse_work_for_fedora_pid($w_rel) {
 function parse_for_dc_abm(&$doc, $rec_id, $format) {
   static $dom;
   //$valids = explode(" ", trim(VALID_DC_TAGS));
-  if (empty($format)) $format = "abm";
+  if (empty($format)) $format = "dkabm";
   if (empty($dom)) $dom = new DomDocument();
   $dom->preserveWhiteSpace = false;
   if (!$dom->loadXML($doc))
@@ -317,11 +445,35 @@ function parse_for_dc_abm(&$doc, $rec_id, $format) {
   $dc = $dom->getElementsByTagName("record");
   $rec = array();
   foreach ($dc->item(0)->childNodes as $tag) {
-    if ($format <> "dc" || $tag->prefix == "dc")
-      $rec[$tag->localName][] = trim($tag->nodeValue);
+    if ($format == "dkabm" || $tag->prefix == "dc")
+      if (trim($tag->nodeValue)) {
+        $nmsp = xmlify_namespace($dc->item(0)->lookupNamespaceURI($tag->prefix));
+        $rec[$nmsp . "." . $tag->localName][] = trim($tag->nodeValue);
+      }
   }
 
   return array("identifier" => $rec_id, "relations" => $relations, $format => $rec);
+}
+
+/** \brief Create a path from a namespace 
+ *
+ * Given: http://aaa.bbb.ccc/ddd/eee/
+ * Returns: ccc.bbb.aaa.ddd.eee
+ *
+ */
+function xmlify_namespace($uri) {
+  static $cache = array();
+  if (empty($cache[$uri])) {
+    $parts = parse_url($uri);
+    $h = split("[\.]", $parts["host"]);
+    $p = split("[/]", $parts["path"]);
+    for ($i = count($h); $i; $i--)
+      if ($h[$i - 1]) $ret .= ($ret ? "." : "") . $h[$i - 1];
+    for ($i = 0; $i < count($p); $i++)
+      if ($p[$i]) $ret .= ($ret ? "." : "") . $p[$i];
+    $cache[$uri] = $ret;
+  }
+  return $cache[$uri];
 }
 
 /** \brief Parse solr facets and build reply
@@ -335,7 +487,8 @@ function parse_for_facets(&$facets) {
     foreach ($facets["facet_fields"] as $facet_name => $facet_field) {
       $r_arr = array("facetName" => $facet_name);
       foreach ($facet_field as $term => $freq)
-        $r_arr["facetTerm"][] = array("term" => $term, "frequence" => $freq);
+        if ($term && $freq)
+          $r_arr["facetTerm"][] = array("term" => $term, "frequence" => $freq);
       $ret[] = $r_arr;
     }
   return $ret;
@@ -412,7 +565,7 @@ function xml_to_obj($domobj) {
 function array_to_xml($arr) {
   if (is_scalar($arr))
     return htmlspecialchars($arr);
-  else {
+  elseif ($arr) {
     foreach ($arr as $key => $val)
       if (is_array($val) && is_numeric(array_shift(array_keys($val))))
         foreach ($val as $num_val)
@@ -443,7 +596,7 @@ function build_xml($action, $query) {
     else
       foreach ($query as $parval) {
         list($par, $val) = par_split($parval);
-        if ($tag == $par && $val) $ret .= tag_me($tag, $val);
+        if ($tag == $par) $ret .= tag_me($tag, $val);
       }
   return $ret;
 }
@@ -454,12 +607,9 @@ function par_split($parval) {
 }
 
 function tag_me($tag, $val) {
-  if ($val) {
-    if ($i = strrpos($tag, "."))
-      $tag = substr($tag, $i+1);
-    return "<$tag>$val</$tag>"; 
-  }
-  return;
+//  if ($i = strrpos($tag, "."))
+//    $tag = substr($tag, $i+1);
+  return "<$tag>$val</$tag>"; 
 }
 
 /** \brief For browsertesting

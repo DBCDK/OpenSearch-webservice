@@ -39,12 +39,13 @@ try {
                                                          "dc.title", 
                                                          "title")),
                   "formatType" => "",
+                  "agency" => "",
                   "start" => "1",
                   "stepValue" => "4",
                   "sort" => "");
 
-//var_dump($client->__getFunctions());
-//var_dump($client->__getTypes());
+var_dump($client->__getFunctions());
+var_dump($client->__getTypes());
   $result = $client->search($params);
 } catch (SoapFault $fault) {
   echo "Fejl: ";
