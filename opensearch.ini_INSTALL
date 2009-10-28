@@ -1,31 +1,57 @@
 ; Inifile for opensearch
 
 [setup]
+version = 0.6
 
-version = 0.4
+; servicename
+servicename=opensearch
 
 ; wsdl for service
 wsdl = opensearch.wsdl
+; validate
+;validate[request] = opensearch.xsd
+;validate[response] = opensearch.xsd
+
+; prefixes and namespaces
+xmlns[NONE] = http://oss.dbc.dk/ns/opensearch
+xmlns[xs] = http://www.w3.org/2001/XMLSchema
+xmlns[xsi] = http://www.w3.org/2001/XMLSchema-instance
+xmlns[osdc] = http://oss.dbc.dk/ns/opensearch_dc
+xmlns[dc] = http://purl.org/dc/elements/1.1/
+xmlns[dkabm] = http://biblstandard.dk/abm/namespace/dkabm/
+xmlns[dcmitype] = http://purl.org/dc/dcmitype/
+xmlns[dcterms] = http://purl.org/dc/terms/
+xmlns[ac] = http://biblstandard.dk/ac/namespace/
+xmlns[dkdcplus] = http://biblstandard.dk/abm/namespace/dkdcplus/
+
+; path to xml-examples
+xmldir = ./xml
 
 ; url to solr interface
-;solr_uri = http://andrus.dbc.dk:8080/apache-solr-nightly/select
-solr_uri = http://dempo.dbc.dk:8087/apache-solr-nightly/select
+solr_uri = http://bola.dbc.dk:8080/apache-solr-nightly/select
 
 ; fedora urls
-fedora_get_raw = http://dempo.dbc.dk:8080/fedora/get/%s/originalData.0
-fedora_get_dc = http://dempo.dbc.dk:8080/fedora/get/%s/DC
-fedora_get_rels_ext = http://dempo.dbc.dk:8080/fedora/get/%s/RELS-EXT
+fedora_get_raw = http://kuju.dbc.dk:8080/fedora/get/%s/originalData.0
+fedora_get_dc = http://kuju.dbc.dk:8080/fedora/get/%s/DC
+fedora_get_rels_ext = http://kuju.dbc.dk:8080/fedora/get/%s/RELS-EXT
 
 ; Fedora Resource Index Query Service 
-ri_search = http://dempo.dbc.dk:8080/fedora/risearch?type=tuples&flush=true&lang=iTQL&format=Sparql&limit=1000&query=
+ri_search = http://kuju.dbc.dk:8080/fedora/risearch?type=tuples&flush=true&lang=iTQL&format=Sparql&limit=1000&query=
 ; select $s from <#ri> where $s <fedora-rels-ext:isMemberOf> <work:1> 
-;							finder alle pid'er i work:1
+;							find all pids in work:1
 ; select $o from <#ri> where <info:fedora/kkb:1> <fedora-rels-ext:isMemberOf> $o  
-;							finder alle work-id som kkb:1 findes i - bør kun være et
+;							find all work-ids which kkb:1 is part of - should be only one
+; select $fpid $coll from <#ri> where $fpid <fedora-rels-ext:isMemberOf> <work:1> 
+;                                 and $fpid <fedora-rels-ext:isMemberOfCollection> $coll
+;							find all pids and collections in work:1 
+
 ri_select_work = select $s from <#ri> where $s <fedora-rels-ext:isMemberOf> <%s>
 
 ; number of second to wait for a solr reply
 solr_timeout = 30
+
+; Max number of collection returned
+max_collections = 50
 
 ; logfile for verbose output
 logfile = /tmp/nypunkt_fvs/opensearch.log
@@ -68,6 +94,7 @@ soap_footer = </SOAP-ENV:Body></SOAP-ENV:Envelope>
 ; from url: action=thisSoapAction&some.number=nn&another.number=mm
 ;
 action[searchRequest][] = query
+action[searchRequest][] = agency
 action[searchRequest][] = allObjects
 action[searchRequest][] = callback
 action[searchRequest][] = collectionType
@@ -81,6 +108,12 @@ action[searchRequest][] = source
 action[searchRequest][] = start
 action[searchRequest][] = stepValue
 action[searchRequest][] = sort
+
+
+[agency]
+agency[710100] = AND (submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink) OR (submitter:710100 AND original_format:katalog))
+agency[775100] = AND (submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink) OR (submitter:775100 AND original_format:(katalog OR ebsco OR ebrary)))
+
 
 [howru]
 ; triples of solr_test and solr_match and solr_error
@@ -98,7 +131,7 @@ solr_error[1] = Error 1: Failed search on dc.creator
 ; Shown and used when the services is calld from a browser
 ;
 
-debug_info = <br/>Parameters:<ul><li>query:</li> <a href=&quot;http://www.loc.gov/standards/sru/specs/cql.html&quot;>cql</a>-query<li>source:</li> source of data (currently not supported)<li>facets:</li> number and list of facets<li>format:</li> (currently not supported)<li>start:</li> First record counting from 1<li>stepValue:</li> number of records<li>sort:</li> (currently not supported)<li>agency:</li> (currently not supported)<li>outputType:</li> json, php, xml<li>callback:</li> for json-callback<li>allObjects:</li> (currently not supported)</ul><a href=&quot;opensearch.wsdl&quot;>The WSDL is here</a>
+debug_info = <br/>Parameters:<ul><li>query:</li> <a href=&quot;http://www.loc.gov/standards/sru/specs/cql.html&quot;>cql</a>-query, <a href=&quot;http://zing.z3950.org/cql/intro.html&quot;>A Gentle Introduction to cql</a><li>source:</li> source of data (currently not supported)<li>facets:</li> number and list of facets<li>format:</li> (currently not supported)<li>start:</li> First record counting from 1<li>stepValue:</li> number of records<li>sort:</li> (currently not supported)<li>agency:</li> (currently not supported)<li>outputType:</li> json, php, xml<li>callback:</li> for json-callback<li>allObjects:</li> (currently not supported)</ul><a href=&quot;opensearch.wsdl&quot;>The WSDL is here</a>
 
 debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>danmark</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets/>\n <ns1:start>1</ns1:start>\n <ns1:stepValue>2</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
 
