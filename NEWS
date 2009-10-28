@@ -1,3 +1,8 @@
+0.6
+===
+Moved code to abstract class 
+Support for atributes and namespaces
+
 0.4
 ===
 Structure fro caching made
