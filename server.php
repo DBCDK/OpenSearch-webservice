@@ -90,7 +90,7 @@ class openAgency extends webServiceServer {
 
 /*
  *  Approach 1:
- *  a. Do the solr search and fecth all fedoraPids in result
+ *  a. Do the solr search and fetch all fedoraPids in result
  *  b. Fetch work-relation from fedora using itql (risearch) unless the
  *     records is included in a earlier found work-relation
  *  c. Fetch fedoraPids in the work-relation from fedora using itql (risearch)
