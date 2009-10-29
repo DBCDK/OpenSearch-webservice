@@ -76,11 +76,11 @@ class openAgency extends webServiceServer {
                 "&start=0" .
                 "&rows=" . ($start + $step_value + 50) * 3 .
                 "&fl=fedoraPid";
-    if ($param->facets->_value->facetName->_value) {
+    if ($param->facets->_value->facetName) {
       $solr_query .= "&facet=true&facet.limit=" . $param->facets->_value->numberOfTerms->_value;
-      if (is_array($param->facets->_value->facetName->_value))
-        foreach ($param->facets->_value->facetName->_value as $facet_name)
-          $solr_query .= "&facet.field=" . $facet_name;
+      if (is_array($param->facets->_value->facetName))
+        foreach ($param->facets->_value->facetName as $facet_name)
+          $solr_query .= "&facet.field=" . $facet_name->_value;
       else
         $solr_query .= "&facet.field=" . $param->facets->_value->facetName->_value;
     }
