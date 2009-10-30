@@ -116,30 +116,3 @@ agency[775100] = AND (submitter:dbc AND original_format:(anmeld OR artikler OR m
 
 
 [howru]
-; triples of solr_test and solr_match and solr_error
-; solr_test specify the solr_url to try
-; solr_match holds the regular expression to test the reply 
-;
-solr_test[1] = wt=xml&q=dc.creator%3A%28danmarks+statistik%29&start=0&rows=1&facet=true&facet.limit=10&facet.field=dc.creator&facet.field=creator
-solr_match[1] = <response>.*result name=.response.*facet_counts.*</response>
-solr_error[1] = Error 1: Failed search on dc.creator
-
-
-[debug]
-; Examples of valid requests
-;
-; Shown and used when the services is calld from a browser
-;
-
-debug_info = <br/>Parameters:<ul><li>query:</li> <a href=&quot;http://www.loc.gov/standards/sru/specs/cql.html&quot;>cql</a>-query, <a href=&quot;http://zing.z3950.org/cql/intro.html&quot;>A Gentle Introduction to cql</a><li>source:</li> source of data (currently not supported)<li>facets:</li> number and list of facets<li>format:</li> (currently not supported)<li>start:</li> First record counting from 1<li>stepValue:</li> number of records<li>sort:</li> (currently not supported)<li>agency:</li> (currently not supported)<li>outputType:</li> json, php, xml<li>callback:</li> for json-callback<li>allObjects:</li> (currently not supported)</ul><a href=&quot;opensearch.wsdl&quot;>The WSDL is here</a>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>danmark</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets/>\n <ns1:start>1</ns1:start>\n <ns1:stepValue>2</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>danmark</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets>\n  <ns1:numberOfTerms>10</ns1:numberOfTerms>\n  <ns1:facetName>dc.creator</ns1:facetName>\n </ns1:facets>\n <ns1:start>1</ns1:start>\n <ns1:stepValue>2</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>dc.creator:(danmarks%20statistik)</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets>\n  <ns1:numberOfTerms>50</ns1:numberOfTerms>\n  <ns1:facetName>dc.creator</ns1:facetName>\n  <ns1:facetName>creator</ns1:facetName>\n  <ns1:facetName>dc.title</ns1:facetName>\n  <ns1:facetName>title</ns1:facetName>\n </ns1:facets>\n <ns1:start>0</ns1:start>\n <ns1:stepValue>10</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>dc.title:zorro</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets>\n  <ns1:numberOfTerms>10</ns1:numberOfTerms>\n  <ns1:facetName>dc.creator</ns1:facetName>\n  <ns1:facetName>creator</ns1:facetName>\n  <ns1:facetName>dc.title</ns1:facetName>\n  <ns1:facetName>title</ns1:facetName>\n </ns1:facets>\n <ns1:start>0</ns1:start>\n <ns1:stepValue>10</ns1:stepValue>\n <ns1:sort></ns1:sort>\n</ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-debug_request[] = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ns1=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>\n<ns1:searchRequest>\n <ns1:query>dan*</ns1:query>\n <ns1:source></ns1:source>\n <ns1:facets>\n  <ns1:numberOfTerms>10</ns1:numberOfTerms>\n  <ns1:facetName>dc.creator</ns1:facetName>\n  <ns1:facetName>dc.title</ns1:facetName>\n </ns1:facets>\n <ns1:start>1</ns1:start>\n <ns1:stepValue>4</ns1:stepValue>\n <ns1:sort></ns1:sort>\n <ns1:outputType>json</ns1:outputType></ns1:searchRequest>\n</SOAP-ENV:Body></SOAP-ENV:Envelope>
-
