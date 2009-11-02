@@ -70,9 +70,11 @@ class openAgency extends webServiceServer {
     if (empty($start) && $step_value) $start = 1;
     $this->watch->start("Solr");
     $cql2solr = new cql2solr('opensearch_cql.xml');
-    $q_solr = urlencode($cql2solr->convert(urldecode($param->query->_value)) . ($filter_agency ? " " . $filter_agency : ""));
+    $query = $cql2solr->convert(urldecode($param->query->_value));
+    $rank_q = urlencode(' AND _query_:"{dismax qf=$qq}' . $query . '"qq=cql.anyIndexes dc.title^4 dc.creator^4 dc.subject^2') . '&tie=0.1';
+    $q_solr = urlencode($query . ($filter_agency ? " " . $filter_agency : ""));
     $solr_query = SOLR_URI . "?wt=phps" .
-                "&q=" . $q_solr .
+                "&q=" . $q_solr . $rank_q . 
                 "&start=0" .
                 "&rows=" . ($start + $step_value + 50) * 3 .
                 "&fl=fedoraPid";
@@ -136,10 +138,11 @@ class openAgency extends webServiceServer {
       $search_ids[] = $fpid["fedoraPid"];
 
     $numFound = $solr_arr["response"]["numFound"];
-    $start = $solr_arr["response"]["start"];
+    //$start = $solr_arr["response"]["start"];
     $facets = $this->parse_for_facets(&$solr_arr["facet_counts"]);
 
     if ($approach == 1) {
+      $more = ($step_value == 0 && $numFound);
       $work_ids = $used_search_fids = array();
       $w_no = 0;
       reset($solr_arr["response"]["docs"]);
@@ -190,7 +193,6 @@ if (DEBUG) print_r($search_ids);
         }
       }
       $this->watch->stop("RIsearch");
-      $more = ($step_value == 0 && $numFound);
       if (!is_null($search_idx))
         for ($i = $search_idx; $i < $numFound; $i++) {
           if ($used_search_fids[$i]) continue;
@@ -204,7 +206,10 @@ if (DEBUG) print_r($search_ids);
 if (DEBUG) print_r($search_ids);
       foreach ($search_ids as $fid) {
         if ($used_search_fids[$fid]) continue;
-        if (count($work_ids) >= $step_value) break;
+        if (count($work_ids) >= $step_value) {
+          $more = TRUE;
+          break;
+        }
 
         $w_no++;
 // find relations for the record in fedora
@@ -307,7 +312,7 @@ if (DEBUG) print_r($fid_array);
     $result = &$ret->searchResponse->_value->result->_value;
     $result->hitCount->_value = $numFound;
     $result->collectionCount->_value = count($collections);
-    $result->more->_value = $more;
+    $result->more->_value = ($more ? "TRUE" : "FALSE");
     $result->searchResult = $collections;
     $result->facetResult->_value = $facets;
     return $ret;
@@ -376,7 +381,8 @@ if (DEBUG) print_r($fid_array);
 
     $ret->identifier->_value = $rec_id;
     $ret->relations->_value = $relations;
-    $ret->$format->_value = $rec;
+    $ret->record->_value = $rec;
+    $ret->record->_namespace =  $dc->item(0)->lookupNamespaceURI("dkabm");
     if (DEBUG) var_dump($ret);
     return $ret;
   }
@@ -398,7 +404,7 @@ if (DEBUG) print_r($fid_array);
   private function parse_for_facets(&$facets) {
     if ($facets["facet_fields"])
       foreach ($facets["facet_fields"] as $facet_name => $facet_field) {
-        $r_arr->facetName->_value = $facet_name;
+        $facet->facetName->_value = $facet_name;
         foreach ($facet_field as $term => $freq)
           if ($term && $freq) {
             $o->frequence->_value = $freq;
