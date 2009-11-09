@@ -41,8 +41,6 @@ class openAgency extends webServiceServer {
     define("FEDORA_GET_RAW", $this->config->get_value("fedora_get_raw", "setup"));
     define("FEDORA_GET_DC", $this->config->get_value("fedora_get_dc", "setup"));
     define("FEDORA_GET_RELS_EXT", $this->config->get_value("fedora_get_rels_ext", "setup"));
-    define("RI_SEARCH", $this->config->get_value("ri_search", "setup"));
-    define("RI_SELECT_WORK", $this->config->get_value("ri_select_work", "setup"));
     if ($tmp = $this->config->get_value("solr_timeour", "setup"))
       define("SOLR_TIMEOUT", $tmp);
     else
@@ -111,6 +109,8 @@ class openAgency extends webServiceServer {
  *  f. as above
  *
  */
+
+
     $approach = 2;
 
 /*
@@ -158,14 +158,16 @@ if (DEBUG) print_r($search_ids);
         if ($relation_cache[$w_no])
           $fid_array = $relation_cache[$w_no];
         else {
-          $fedora_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
-          $fedora_result = $curl->get($fedora_uri);
+          $record_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
+          $record_result = $curl->get($record_uri);
 
-          if ($work_id = parse_rels_for_work_id($fedora_result)) {
+          if ($work_id = parse_rels_for_work_id($record_result)) {
 // find other recs sharing the work-relation
-            $risearch_uri =  RI_SEARCH . urlencode(sprintf(RI_SELECT_WORK, $work_id));
-            $risearch_result = $curl->get($risearch_uri);
-            $fid_array = parse_work_for_fedora_id($risearch_result);
+            $this->watch->start("Get work");
+            $work_uri = sprintf(FEDORA_GET_RELS_EXT, $work_id);
+            $work_result = $curl->get($work_uri);
+            $this->watch->stop("Get work");
+            $fid_array = $this->parse_work_for_fedora_id($work_result);
           } else
             $fid_array = array($fid);
           $relation_cache[$w_no] = $fid_array;
@@ -216,19 +218,19 @@ if (DEBUG) print_r($search_ids);
         if ($relation_cache[$w_no])
           $fid_array = $relation_cache[$w_no];
         else {
-          $this->watch->start("Get rels_ext");
-          $fedora_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
-          $fedora_result = $curl->get($fedora_uri);
-          $this->watch->stop("Get rels_ext");
+          $this->watch->start("Get record rels_ext");
+          $record_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
+          $record_result = $curl->get($record_uri);
+          $this->watch->stop("Get record rels_ext");
 
-          if ($work_id = $this->parse_rels_for_work_id($fedora_result)) {
+          if ($work_id = $this->parse_rels_for_work_id($record_result)) {
 // find other recs sharing the work-relation
             $this->watch->start("Get work");
-            $risearch_uri =  RI_SEARCH . urlencode(sprintf(RI_SELECT_WORK, $work_id));
-            $this->verbose->log(TRACE, "GetWork: " . $risearch_uri);
-            $risearch_result = $curl->get($risearch_uri);
+            $work_uri = sprintf(FEDORA_GET_RELS_EXT, $work_id);
+            $work_result = $curl->get($work_uri);
+if (DEBUG) echo $work_result;
             $this->watch->stop("Get work");
-            $fid_array = $this->parse_work_for_fedora_id($risearch_result);
+            $fid_array = $this->parse_work_for_fedora_id($work_result);
           } else
             $fid_array = array($fid);
           $relation_cache[$w_no] = $fid_array;
@@ -326,9 +328,9 @@ if (DEBUG) print_r($fid_array);
     if (empty($dom)) $dom = new DomDocument();
     $dom->preserveWhiteSpace = false;
     if ($dom->loadXML($rels_ext)) {
-      $imo = $dom->getElementsByTagName("isMemberOf");
+      $imo = $dom->getElementsByTagName("isMemberOfWork");
       if ($imo->item(0))
-        return($imo->item(0)->getAttribute("rdf:resource"));
+        return($imo->item(0)->nodeValue);
     }
   
     return FALSE;
@@ -343,10 +345,9 @@ if (DEBUG) print_r($fid_array);
     if (empty($dom)) $dom = new DomDocument();
     $dom->preserveWhiteSpace = false;
     if ($dom->loadXML($w_rel)) {
-      $r_list = $dom->getElementsByTagName("result");
-      foreach ($r_list as $r) {
-        list($dummy, $res[]) = split("/", $r->getElementsByTagName("s")->item(0)->getAttribute("uri"), 2);
-      }
+      $r_list = $dom->getElementsByTagName("hasManifestation");
+      foreach ($r_list as $r) 
+        $res[] = $r->nodeValue;
       return $res;
     }
   }
@@ -370,10 +371,10 @@ if (DEBUG) print_r($fid_array);
           if ($tag->hasAttributes())
             foreach ($tag->attributes as $attr) {
               $o->_attributes->{$attr->localName}->_namespace = $dc->item(0)->lookupNamespaceURI($attr->prefix);
-              $o->_attributes->{$attr->localName}->_value = $attr->nodeValue;
+              $o->_attributes->{$attr->localName}->_value = htmlspecialchars($attr->nodeValue);
             }
           $o->_namespace = $dc->item(0)->lookupNamespaceURI($tag->prefix);
-          $o->_value = trim($tag->nodeValue);
+          $o->_value = htmlspecialchars(trim($tag->nodeValue));
           $rec->{$tag->localName}[] = $o;
           unset($o);
         }
@@ -381,8 +382,8 @@ if (DEBUG) print_r($fid_array);
 
     $ret->identifier->_value = $rec_id;
     $ret->relations->_value = $relations;
-    $ret->record->_value = $rec;
-    $ret->record->_namespace =  $dc->item(0)->lookupNamespaceURI("dkabm");
+    $ret->dkabm->_value = $rec;
+    //$ret->dkabm->_namespace =  "http://oss.dbc.dk/ns/opensearch";
     if (DEBUG) var_dump($ret);
     return $ret;
   }
