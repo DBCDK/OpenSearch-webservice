@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by Dansk BiblioteksCenter (Dansk BiblioteksCenter) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" targetNamespace="http://biblstandard.dk/abm/namespace/dkabm/">
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" targetNamespace="http://biblstandard.dk/abm/namespace/dkabm/">
 	<xs:annotation>
 		<xs:documentation>
-      Example implementation of the ABM schema complex.
-
-      2006-11-22: Anders Sønderberg Mortensen.
+      DKABM. Bibliotek og Medier, 20-aug-2009.
     </xs:documentation>
 	</xs:annotation>
+	<xs:import namespace="http://oss.dbc.dk/ns/osstypes" schemaLocation="osstypes.xsd"/>
 	<xs:import schemaLocation="dkabm_types.xsd"/>
-	<xs:element name="record" type="dkabm:elementsAndRefinementsGroup"/>
+	<xs:import namespace="http://biblstandard.dk/ac/namespace/" schemaLocation="ac.xsd"/>
+	<xs:element name="record" type="elementsAndRefinementsGroup"/>
 	<xs:element name="collection">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="ac:database" minOccurs="0"/>
+				<xs:element ref="ac:transmitter" minOccurs="0"/>
+				<xs:element ref="ac:filename" minOccurs="0"/>
+				<xs:element ref="ac:technicalFormat" minOccurs="0"/>
+				<xs:element ref="ac:characterSet" minOccurs="0"/>
+				<xs:element ref="ac:bibliographicFormat" minOccurs="0"/>
+				<xs:element ref="ac:resultFile" minOccurs="0"/>
 				<xs:element ref="dkabm:record" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>

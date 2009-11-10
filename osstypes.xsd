@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
+<xs:schema xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://oss.dbc.dk/ns/osstypes" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation xml:lang="eng">
+      XML Schema for the oss namespace used with DKABM.
+    </xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
+	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
+	<xs:complexType name="act">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="age">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="aut">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="cmp">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="cre">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dkind">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="drt">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="genre">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="actionfilm"/>
+						<xs:enumeration value="adventurefilm"/>
+						<xs:enumeration value="allegorier"/>
+						<xs:enumeration value="americana"/>
+						<xs:enumeration value="anime"/>
+						<xs:enumeration value="arbejderromaner"/>
+						<xs:enumeration value="barndomserindringer"/>
+						<xs:enumeration value="bibelhistorier"/>
+						<xs:enumeration value="biografiske film"/>
+						<xs:enumeration value="biografiske romaner"/>
+						<xs:enumeration value="biografiske skuespil"/>
+						<xs:enumeration value="blues"/>
+						<xs:enumeration value="brevromaner"/>
+						<xs:enumeration value="børnefilm"/>
+						<xs:enumeration value="chick lit"/>
+						<xs:enumeration value="computeranimerede film"/>
+						<xs:enumeration value="cyberpunk"/>
+						<xs:enumeration value="dagbøger"/>
+						<xs:enumeration value="dansk filmkanon"/>
+						<xs:enumeration value="dansk pop"/>
+						<xs:enumeration value="danske filmklassikere"/>
+						<xs:enumeration value="dick lit"/>
+						<xs:enumeration value="dokumentarfilm"/>
+						<xs:enumeration value="drama"/>
+						<xs:enumeration value="dukkefilm"/>
+						<xs:enumeration value="dyrefortællinger"/>
+						<xs:enumeration value="dystopier"/>
+						<xs:enumeration value="electronica"/>
+						<xs:enumeration value="erhvervsskildringer"/>
+						<xs:enumeration value="erindringer"/>
+						<xs:enumeration value="erotik"/>
+						<xs:enumeration value="europæiske klassikere"/>
+						<xs:enumeration value="eventyr"/>
+						<xs:enumeration value="eventyr"/>
+						<xs:enumeration value="eventyrlige fortællinger"/>
+						<xs:enumeration value="evergreen"/>
+						<xs:enumeration value="fabler"/>
+						<xs:enumeration value="fantastiske fortællinger"/>
+						<xs:enumeration value="fantasy"/>
+						<xs:enumeration value="farcer"/>
+						<xs:enumeration value="folk"/>
+						<xs:enumeration value="folkekomedier"/>
+						<xs:enumeration value="folkemusik"/>
+						<xs:enumeration value="for børn"/>
+						<xs:enumeration value="fremtidsfortællinger"/>
+						<xs:enumeration value="godmorgenhistorier"/>
+						<xs:enumeration value="godnathistorier"/>
+						<xs:enumeration value="gys og horror"/>
+						<xs:enumeration value="gys"/>
+						<xs:enumeration value="gå på opdagelse"/>
+						<xs:enumeration value="heavy metal"/>
+						<xs:enumeration value="heavy rock"/>
+						<xs:enumeration value="heltesagn"/>
+						<xs:enumeration value="hip hop"/>
+						<xs:enumeration value="house - lounge"/>
+						<xs:enumeration value="humor"/>
+						<xs:enumeration value="jazzfilm"/>
+						<xs:enumeration value="kalenderhistorier"/>
+						<xs:enumeration value="klassiske symfonier"/>
+						<xs:enumeration value="klaverkoncerter"/>
+						<xs:enumeration value="komedier"/>
+						<xs:enumeration value="kor"/>
+						<xs:enumeration value="krigsfilm"/>
+						<xs:enumeration value="krimi"/>
+						<xs:enumeration value="krimi"/>
+						<xs:enumeration value="kunst og kunstnere"/>
+						<xs:enumeration value="kærlighed"/>
+						<xs:enumeration value="latin"/>
+						<xs:enumeration value="legender"/>
+						<xs:enumeration value="løgnehistorier"/>
+						<xs:enumeration value="mom lit"/>
+						<xs:enumeration value="musicalfilm"/>
+						<xs:enumeration value="myter"/>
+						<xs:enumeration value="new age"/>
+						<xs:enumeration value="nonsensfortællinger"/>
+						<xs:enumeration value="novellefilm"/>
+						<xs:enumeration value="opbyggelige bøger"/>
+						<xs:enumeration value="opera"/>
+						<xs:enumeration value="operafilm"/>
+						<xs:enumeration value="operetter"/>
+						<xs:enumeration value="operetteklassikere"/>
+						<xs:enumeration value="parafraser"/>
+						<xs:enumeration value="politifilm"/>
+						<xs:enumeration value="pop"/>
+						<xs:enumeration value="popfilm"/>
+						<xs:enumeration value="progressiv rock"/>
+						<xs:enumeration value="psykologisk thriller"/>
+						<xs:enumeration value="punk"/>
+						<xs:enumeration value="r&amp;b"/>
+						<xs:enumeration value="reggae"/>
+						<xs:enumeration value="religiøse bøger"/>
+						<xs:enumeration value="remser"/>
+						<xs:enumeration value="rim"/>
+						<xs:enumeration value="road movies"/>
+						<xs:enumeration value="robinsonader"/>
+						<xs:enumeration value="rock"/>
+						<xs:enumeration value="rockfilm"/>
+						<xs:enumeration value="sagaer"/>
+						<xs:enumeration value="sagn"/>
+						<xs:enumeration value="samfundskritik"/>
+						<xs:enumeration value="samfundssatire"/>
+						<xs:enumeration value="samfundsskildringer"/>
+						<xs:enumeration value="science fiction"/>
+						<xs:enumeration value="science fiction"/>
+						<xs:enumeration value="singer/songwriter"/>
+						<xs:enumeration value="sjove bøger"/>
+						<xs:enumeration value="slægtsromaner"/>
+						<xs:enumeration value="socialrealisme"/>
+						<xs:enumeration value="soul"/>
+						<xs:enumeration value="spændende bøger"/>
+						<xs:enumeration value="swing"/>
+						<xs:enumeration value="søfortællinger"/>
+						<xs:enumeration value="sørgelige bøger"/>
+						<xs:enumeration value="techno - dance"/>
+						<xs:enumeration value="tegnefilm"/>
+						<xs:enumeration value="thriller"/>
+						<xs:enumeration value="utopier"/>
+						<xs:enumeration value="verdensmusik"/>
+						<xs:enumeration value="violinkoncerter"/>
+						<xs:enumeration value="westerns"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="medieraad">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="mus">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="pgvaerk">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="bog"/>
+						<xs:enumeration value="film"/>
+						<xs:enumeration value="mobil"/>
+						<xs:enumeration value="musik"/>
+						<xs:enumeration value="spil"/>
+						<xs:enumeration value="web"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="pegi">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="series">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="sort">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="spoken">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="subtitles">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="titleProper">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="track">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="type">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>

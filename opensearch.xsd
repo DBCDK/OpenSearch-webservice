@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" xmlns:osdc="http://oss.dbc.dk/ns/opensearch_dc" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:ISO639-2="http://lcweb.loc.gov/standards/iso639-2/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:ISO639-2="http://lcweb.loc.gov/standards/iso639-2/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="eng">Opensearch Service</xs:documentation>
 		<xs:documentation xml:lang="eng">This XML Schema describes the data and structure of data of the Opensearch search service.</xs:documentation>
@@ -12,12 +12,8 @@ OpenSearch is distributed in the hope that it will be useful, but WITHOUT ANY WA
 
 You should have received a copy of the GNU Affero General Public License along with OpenSearch.  If not, see http://www.gnu.org/licenses/</xs:documentation>
 	</xs:annotation>
-	<xs:import namespace="http://oss.dbc.dk/ns/opensearch_dc" schemaLocation="osdc.xsd"/>
 	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
-	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
-	<xs:import namespace="http://biblstandard.dk/ac/namespace/" schemaLocation="ac.xsd"/>
-	<xs:import namespace="http://biblstandard.dk/abm/namespace/dkdcplus/" schemaLocation="dkdcplus.xsd"/>
-	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+	<xs:import namespace="http://biblstandard.dk/abm/namespace/dkabm/" schemaLocation="dkabm.xsd"/>
 	<xs:element name="searchRequest">
 		<xs:annotation>
 			<xs:documentation xml:lang="eng">The service request.</xs:documentation>
@@ -108,37 +104,6 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="dc:relation" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="dc:coverage" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="dc:rights" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="dkabm">
-		<xs:annotation>
-			<xs:documentation xml:lang="eng">OpenSearch DKABM. One of the formats that can be returned from the service.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="ac:identifier" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="ac:source" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:title" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:creator" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:subject" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:description" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:publisher" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:contributor" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:date" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:type" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:format" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:identifier" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:source" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:language" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:relation" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dcterms:isPartOf" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dcterms:replaces" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dcterms:isReplacedBy" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dcterms:spatial" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dcterms:temporal" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:coverage" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:rights" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -240,7 +205,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:relations" minOccurs="0"/>
 				<xs:choice>
 					<xs:element ref="os:dc"/>
-					<xs:element ref="os:dkabm"/>
+					<xs:element ref="dkabm:record"/>
 					<xs:element ref="os:rawData"/>
 					<xs:element ref="os:short"/>
 				</xs:choice>
@@ -334,10 +299,10 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="osdc:title" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:creator" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:date" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="osdc:type" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="dc:title" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="dc:creator" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="dc:date" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="dc:type" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

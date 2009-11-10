@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by Dansk BiblioteksCenter (Dansk BiblioteksCenter) -->
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
 <!DOCTYPE xs:schema PUBLIC "-//W3C//DTD XMLSCHEMA 200102//EN" "XMLSchema.dtd">
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" targetNamespace="http://www.w3.org/XML/1998/namespace" xml:lang="en">
+<xs:schema targetNamespace="http://www.w3.org/XML/1998/namespace" xmlns:xs="http://www.w3.org/2001/XMLSchema" xml:lang="en">
 	<xs:annotation>
 		<xs:documentation>
    See http://www.w3.org/XML/1998/namespace.html and
