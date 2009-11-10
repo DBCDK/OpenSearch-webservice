@@ -1,13 +1,11 @@
 ; Inifile for opensearch
 
 [setup]
-version = 0.6
-
-; servicename
-servicename=opensearch
+version = 0.7
 
 ; wsdl for service
 wsdl = opensearch.wsdl
+
 ; validate
 ;validate[request] = opensearch.xsd
 ;validate[response] = opensearch.xsd
@@ -16,7 +14,7 @@ wsdl = opensearch.wsdl
 xmlns[NONE] = http://oss.dbc.dk/ns/opensearch
 xmlns[xs] = http://www.w3.org/2001/XMLSchema
 xmlns[xsi] = http://www.w3.org/2001/XMLSchema-instance
-xmlns[osdc] = http://oss.dbc.dk/ns/opensearch_dc
+xmlns[oss] = http://oss.dbc.dk/ns/osstypes
 xmlns[dc] = http://purl.org/dc/elements/1.1/
 xmlns[dkabm] = http://biblstandard.dk/abm/namespace/dkabm/
 xmlns[dcmitype] = http://purl.org/dc/dcmitype/
@@ -34,18 +32,6 @@ solr_uri = http://bola.dbc.dk:8080/apache-solr-nightly/select
 fedora_get_raw = http://kuju.dbc.dk:8080/fedora/get/%s/originalData.0
 fedora_get_dc = http://kuju.dbc.dk:8080/fedora/get/%s/DC
 fedora_get_rels_ext = http://kuju.dbc.dk:8080/fedora/get/%s/RELS-EXT
-
-; Fedora Resource Index Query Service 
-ri_search = http://kuju.dbc.dk:8080/fedora/risearch?type=tuples&flush=true&lang=iTQL&format=Sparql&limit=1000&query=
-; select $s from <#ri> where $s <fedora-rels-ext:isMemberOf> <work:1> 
-;							find all pids in work:1
-; select $o from <#ri> where <info:fedora/kkb:1> <fedora-rels-ext:isMemberOf> $o  
-;							find all work-ids which kkb:1 is part of - should be only one
-; select $fpid $coll from <#ri> where $fpid <fedora-rels-ext:isMemberOf> <work:1> 
-;                                 and $fpid <fedora-rels-ext:isMemberOfCollection> $coll
-;							find all pids and collections in work:1 
-
-ri_select_work = select $s from <#ri> where $s <fedora-rels-ext:isMemberOf> <%s>
 
 ; number of second to wait for a solr reply
 solr_timeout = 30
@@ -93,17 +79,20 @@ soap_footer = </SOAP-ENV:Body></SOAP-ENV:Envelope>
 ; </thisSoapAction>
 ; from url: action=thisSoapAction&some.number=nn&another.number=mm
 ;
+; action[ALL] defines parameter used in all defined soap-actions
+;
+action[ALL][] = outputType
+action[ALL][] = callback
+
 action[searchRequest][] = query
 action[searchRequest][] = agency
 action[searchRequest][] = allObjects
-action[searchRequest][] = callback
 action[searchRequest][] = collectionType
 action[searchRequest][facets][] = facets.numberOfTerms
 action[searchRequest][facets][] = numberOfTerms
 action[searchRequest][facets][] = facets.facetName
 action[searchRequest][facets][] = facetName
 action[searchRequest][] = format
-action[searchRequest][] = outputType
 action[searchRequest][] = source
 action[searchRequest][] = start
 action[searchRequest][] = stepValue
