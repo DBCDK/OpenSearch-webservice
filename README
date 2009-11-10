@@ -42,8 +42,6 @@ Installation
 ------------
 In the php.ini file:
 - make sure that always_populate_raw_post_data = On
-- Soap server and Soap client must be enabled
-- soap.wsdl_cache = 1
 
 Copy opensearch.ini_INSTALL to opensearch.ini and edit it to reflect your setup
 
