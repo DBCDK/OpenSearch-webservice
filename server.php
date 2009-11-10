@@ -25,7 +25,7 @@ define(DEBUG, FALSE);
 require_once("OLS_class_lib/webServiceServer_class.php");
 require_once "OLS_class_lib/cql2solr_class.php";
 
-class openAgency extends webServiceServer {
+class openSearch extends webServiceServer {
 
   /** \brief Handles the request and set up the response
    *
@@ -34,7 +34,7 @@ class openAgency extends webServiceServer {
    * code must branch according to that
    *
    */
-  function handle_searchRequest($param) { 
+  function search($param) { 
 // set some defines
     define("WSDL", $this->config->get_value("wsdl", "setup"));
     define("SOLR_URI", $this->config->get_value("solr_uri", "setup"));
@@ -70,7 +70,10 @@ class openAgency extends webServiceServer {
     $cql2solr = new cql2solr('opensearch_cql.xml');
     $query = $cql2solr->convert(urldecode($param->query->_value));
     $rank_q = urlencode(' AND _query_:"{dismax qf=$qq}' . $query . '"qq=cql.anyIndexes dc.title^4 dc.creator^4 dc.subject^2') . '&tie=0.1';
-    $q_solr = urlencode($query . ($filter_agency ? " " . $filter_agency : ""));
+    if ($filter_agency)
+      $q_solr = urlencode("(" . $query .") " . $filter_agency);
+    else
+      $q_solr = urlencode($query);
     $solr_query = SOLR_URI . "?wt=phps" .
                 "&q=" . $q_solr . $rank_q . 
                 "&start=0" .
@@ -142,12 +145,12 @@ class openAgency extends webServiceServer {
     $facets = $this->parse_for_facets(&$solr_arr["facet_counts"]);
 
     if ($approach == 1) {
+      $this->watch->start("Build id");
       $more = ($step_value == 0 && $numFound);
       $work_ids = $used_search_fids = array();
       $w_no = 0;
       reset($solr_arr["response"]["docs"]);
 if (DEBUG) print_r($search_ids);
-      $this->watch->start("RIsearch");
       while (count($work_ids) < $step_value) {
         list($search_idx, $fid) = each($search_ids);
         if (!$fid) break;
@@ -158,15 +161,17 @@ if (DEBUG) print_r($search_ids);
         if ($relation_cache[$w_no])
           $fid_array = $relation_cache[$w_no];
         else {
+          $this->watch->start("get_w_id");
           $record_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
           $record_result = $curl->get($record_uri);
+          $this->watch->stop("get_w_id");
 
           if ($work_id = parse_rels_for_work_id($record_result)) {
 // find other recs sharing the work-relation
-            $this->watch->start("Get work");
+            $this->watch->start("get_fids");
             $work_uri = sprintf(FEDORA_GET_RELS_EXT, $work_id);
             $work_result = $curl->get($work_uri);
-            $this->watch->stop("Get work");
+            $this->watch->stop("get_f_ids");
             $fid_array = $this->parse_work_for_fedora_id($work_result);
           } else
             $fid_array = array($fid);
@@ -194,15 +199,16 @@ if (DEBUG) print_r($search_ids);
             $work_ids[$w_no] = $hit_fid_array;
         }
       }
-      $this->watch->stop("RIsearch");
       if (!is_null($search_idx))
         for ($i = $search_idx; $i < $numFound; $i++) {
           if ($used_search_fids[$i]) continue;
           $more = TRUE;
           break;
         }
+      $this->watch->stop("Build id");
     }
     if ($approach == 2) {
+      $this->watch->start("Build id");
       $work_ids = $used_search_fids = array();
       $w_no = 0;
 if (DEBUG) print_r($search_ids);
@@ -218,18 +224,18 @@ if (DEBUG) print_r($search_ids);
         if ($relation_cache[$w_no])
           $fid_array = $relation_cache[$w_no];
         else {
-          $this->watch->start("Get record rels_ext");
+          $this->watch->start("get_w_id");
           $record_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
           $record_result = $curl->get($record_uri);
-          $this->watch->stop("Get record rels_ext");
+          $this->watch->stop("get_w_id");
 
           if ($work_id = $this->parse_rels_for_work_id($record_result)) {
 // find other recs sharing the work-relation
-            $this->watch->start("Get work");
+            $this->watch->start("get_fids");
             $work_uri = sprintf(FEDORA_GET_RELS_EXT, $work_id);
             $work_result = $curl->get($work_uri);
 if (DEBUG) echo $work_result;
-            $this->watch->stop("Get work");
+            $this->watch->stop("get_fids");
             $fid_array = $this->parse_work_for_fedora_id($work_result);
           } else
             $fid_array = array($fid);
@@ -281,11 +287,12 @@ if (DEBUG) print_r($fid_array);
       if (DEBUG) print_r($solr_arr);
       if (DEBUG) print_r($add_query);
       if (DEBUG) print_r($used_search_fids);
+      $this->watch->stop("Build id");
     }
       if (DEBUG) print_r($work_ids);
 // work_ids now contains the work-records and the fedoraPids the consist of
 // now fetch the records for each work/collection
-    $this->watch->start("Fedora");
+    $this->watch->start("get_recs");
     $collections = array();
     foreach ($work_ids as $work) {
       $objects = array();
@@ -295,9 +302,7 @@ if (DEBUG) print_r($fid_array);
         $curl_err = $curl->get_status();
         if ($curl_err["http_code"] > 299)
           return array("error" => "Error: Cannot fetch record: " . $fid . " - http-error: " . $curl_err["http_code"]);
-        $this->watch->start("dc_parse");
         $objects[]->_value = $this->parse_for_dc_abm(&$fedora_result, $fid, $param->format->_value);
-        $this->watch->stop("dc_parse");
       }
       $o->collection->_value->resultPosition->_value = $rec_no + 1;
       $o->collection->_value->numberOfObjects->_value = count($objects);
@@ -305,7 +310,7 @@ if (DEBUG) print_r($fid_array);
       $collections[]->_value = $o;
       unset($o);
     }
-    $this->watch->stop("Fedora");
+    $this->watch->stop("get_recs");
 
 //if (DEBUG) print_r($relation_cache); die();
 //if (DEBUG) print_r($collections); die();
@@ -317,6 +322,8 @@ if (DEBUG) print_r($fid_array);
     $result->more->_value = ($more ? "TRUE" : "FALSE");
     $result->searchResult = $collections;
     $result->facetResult->_value = $facets;
+
+    $this->verbose->log(TIMER, "opensearch:: " . $this->watch->dump());
     return $ret;
   }
 
@@ -382,8 +389,8 @@ if (DEBUG) print_r($fid_array);
 
     $ret->identifier->_value = $rec_id;
     $ret->relations->_value = $relations;
-    $ret->dkabm->_value = $rec;
-    //$ret->dkabm->_namespace =  "http://oss.dbc.dk/ns/opensearch";
+    $ret->record->_value = $rec;
+    $ret->record->_namespace = $dc->item(0)->lookupNamespaceURI("dkabm");
     if (DEBUG) var_dump($ret);
     return $ret;
   }
@@ -425,7 +432,7 @@ if (DEBUG) print_r($fid_array);
  * MAIN
  */
 
-$ws=new openAgency('opensearch.ini');
+$ws=new openSearch('opensearch.ini');
 
 
 $ws->handle_request();
