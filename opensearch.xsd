@@ -398,8 +398,12 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="eng">The sort orders you can choose from.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="date"/>
-			<xs:enumeration value="popularity"/>
+			<xs:enumeration value="title_ascending"/>
+			<xs:enumeration value="title_descending"/>
+			<xs:enumeration value="creator_ascending"/>
+			<xs:enumeration value="creator_descending"/>
+			<xs:enumeration value="date_ascending"/>
+			<xs:enumeration value="date_descending"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
