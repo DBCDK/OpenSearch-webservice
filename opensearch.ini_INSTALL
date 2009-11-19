@@ -42,8 +42,17 @@ max_collections = 50
 ; logfile for verbose output
 logfile = /tmp/nypunkt_fvs/opensearch.log
 
-; DC tags
-valid_dc_tags = title creator subject description publisher contributor date type format identifier source language relation coverage rights
+; DC tags - not used
+; valid_dc_tags = title creator subject description publisher contributor date type format identifier source language relation coverage rights
+
+; sorting
+;sort[title_ascending] = sort.title asc
+;sort[title_descending] = sort.title desc
+sort[creator_ascending] = sort.creator asc
+sort[creator_descending] = sort.creator desc
+sort[date_ascending] = sort.date asc
+sort[date_descending] = sort.date desc
+
 
 ; set verboselevel
 ;   WARNING - simple warnings
@@ -100,8 +109,8 @@ action[searchRequest][] = sort
 
 
 [agency]
-agency[710100] = AND (submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink) OR (submitter:710100 AND original_format:katalog))
-agency[775100] = AND (submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink) OR (submitter:775100 AND original_format:(katalog OR ebsco OR ebrary)))
+agency[710100] = AND ((submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink)) OR (submitter:710100 AND original_format:katalog))
+agency[775100] = AND ((submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink)) OR (submitter:775100 AND original_format:(katalog OR ebsco OR ebrary)))
 
 
 [howru]

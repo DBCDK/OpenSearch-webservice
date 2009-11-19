@@ -65,19 +65,25 @@ class openSearch extends webServiceServer {
 
     $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
     $start = $param->start->_value;
+    if ($sort = $param->sort->_value) {
+      $sort_type = $this->config->get_value("sort", "setup");
+      if ($s = $sort_type[$sort])
+        $sort_q = "&sort=" . urlencode($s);
+    }
     if (empty($start) && $step_value) $start = 1;
     $this->watch->start("Solr");
     $cql2solr = new cql2solr('opensearch_cql.xml');
     $query = $cql2solr->convert(urldecode($param->query->_value));
-    $rank_q = urlencode(' AND _query_:"{dismax qf=$qq}' . $query . '"qq=cql.anyIndexes dc.title^4 dc.creator^4 dc.subject^2') . '&tie=0.1';
+    //$rank_q = urlencode(' AND _query_:"{dismax qf=$qq}' . $query . '"qq=cql.anyIndexes dc.title^4 dc.creator^4 dc.subject^2') . '&tie=0.1';
     if ($filter_agency)
-      $q_solr = urlencode("(" . $query .") " . $filter_agency);
+      $q_solr = rawurlencode("(" . $query .") " . $filter_agency);
     else
-      $q_solr = urlencode($query);
+      $q_solr = rawurlencode($query);
     $solr_query = SOLR_URI . "?wt=phps" .
                 "&q=" . $q_solr . $rank_q . 
                 "&start=0" .
                 "&rows=" . ($start + $step_value + 50) * 3 .
+                $sort_q .
                 "&fl=fedoraPid";
     if ($param->facets->_value->facetName) {
       $solr_query .= "&facet=true&facet.limit=" . $param->facets->_value->numberOfTerms->_value;
