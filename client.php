@@ -29,15 +29,12 @@ try {
   //$client = new SoapClient(WSDL, $options);
   $client->__setLocation('http://vision.dbc.dk/~fvs/broend/OpenLibrary/OpenSearch/trunk/');
 
-  $params = array("query" => "dc.title:fødes",
   //$params = array("query" => "dc.title:dan*",
   //$params = array("query" => "dc.title:oplagsbulletin",
+  $params = array("query" => "dc.title:danmark",
                   "source" => "",
-                  "facets" => array("number" => 10, 
-                                    "facetName" => array("dc.creator", 
-                                                         "creator", 
-                                                         "dc.title", 
-                                                         "title")),
+//                  "facets" => array("number" => 10, 
+//                                    "facetName" => array("facet.creator")), 
                   "formatType" => "",
                   "agency" => "",
                   "start" => "1",
@@ -61,7 +58,7 @@ if (FALSE) {
 //echo "Request:<br/>" . str_replace("<", "&lt;", $client->__getLastRequest()) . "<br/>";
 //echo "RequestHeaders:<br/>" . str_replace("<", "&lt;", $client->__getLastRequestHeaders()) . "<br/>";
 //echo "Response:<br/>" . str_replace("<", "&lt;", $client->__getLastResponse()) . "<br/>";
-//echo "Result:<br/>"; var_dump($result);
+echo "Result:<br/>"; print_r($result);
 //echo "Records:<br/>"; var_dump($result->result->searchResult->records->tingRecord);
 echo "hitCount: " . $result->result->hitCount . "<br/>";
 echo "Records:<br/>"; 
