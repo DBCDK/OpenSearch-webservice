@@ -115,7 +115,7 @@ agency[775100] = AND ((submitter:dbc AND original_format:(anmeld OR artikler OR 
 
 [howru]
 [howru]
-test[] = searchRequest&query=danmark&stepValue=1
+test[] = search&query=danmark&stepValue=1
 preg_match[] = hitCount
 error[] = ERROR searching for danmark
 
