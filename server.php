@@ -73,7 +73,7 @@ class openSearch extends webServiceServer {
     }
     if (empty($start) && $step_value) $start = 1;
     $this->watch->start("Solr");
-    $cql2solr = new cql2solr('opensearch_cql.xml');
+    $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
     $query = $cql2solr->convert(urldecode($param->query->_value));
     //$rank_q = urlencode(' AND _query_:"{dismax qf=$qq}' . $query . '"qq=cql.anyIndexes dc.title^4 dc.creator^4 dc.subject^2') . '&tie=0.1';
     if ($filter_agency)
