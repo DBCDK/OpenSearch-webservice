@@ -1,7 +1,7 @@
 ; Inifile for opensearch
 
 [setup]
-version = 0.7
+version = 0.8
 
 ; wsdl for service
 wsdl = opensearch.wsdl
@@ -9,6 +9,10 @@ wsdl = opensearch.wsdl
 ; validate
 ;validate[request] = opensearch.xsd
 ;validate[response] = opensearch.xsd
+
+; soapActions and their corresponding request structure
+; Can be found in the wsdl but is stated here for convenience
+soapAction[search] = searchRequest
 
 ; prefixes and namespaces
 xmlns[NONE] = http://oss.dbc.dk/ns/opensearch
@@ -26,12 +30,16 @@ xmlns[dkdcplus] = http://biblstandard.dk/abm/namespace/dkdcplus/
 xmldir = ./xml
 
 ; url to solr interface
-solr_uri = http://bola.dbc.dk:8080/apache-solr-nightly/select
+solr_uri = http://someserver:8080/apache-solr-1.4-dev/select
 
 ; fedora urls
-fedora_get_raw = http://kuju.dbc.dk:8080/fedora/get/%s/originalData.0
-fedora_get_dc = http://kuju.dbc.dk:8080/fedora/get/%s/DC
-fedora_get_rels_ext = http://kuju.dbc.dk:8080/fedora/get/%s/RELS-EXT
+fedora_get_raw = http://gsomeserver.dbc.dk:8080/fedora/get/%s/originalData.0
+fedora_get_dc = http://someserver.dbc.dk:8080/fedora/get/%s/DC
+fedora_get_rels_ext = http://someserver.dbc.dk:8080/fedora/get/%s/RELS-EXT
+
+; raw_index
+raw_index[] = facet.
+raw_index[] = phrase.
 
 ; number of second to wait for a solr reply
 solr_timeout = 30
@@ -40,14 +48,14 @@ solr_timeout = 30
 max_collections = 50
 
 ; logfile for verbose output
-logfile = /tmp/nypunkt_fvs/opensearch.log
+logfile = /tmp/opensearch.log
 
-; DC tags - not used
+; DC tags - not used 
 ; valid_dc_tags = title creator subject description publisher contributor date type format identifier source language relation coverage rights
 
 ; sorting
-;sort[title_ascending] = sort.title asc
-;sort[title_descending] = sort.title desc
+sort[title_ascending] = sort.title asc
+sort[title_descending] = sort.title desc
 sort[creator_ascending] = sort.creator asc
 sort[creator_descending] = sort.creator desc
 sort[date_ascending] = sort.date asc
@@ -68,11 +76,7 @@ verbose = WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG+Z3950+OCI
 
 
 [rest]
-soap_header = <?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?><SOAP-ENV:Envelope xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns=&quot;http://oss.dbc.dk/ns/opensearch&quot;><SOAP-ENV:Body>
-
-soap_footer = </SOAP-ENV:Body></SOAP-ENV:Envelope>
-
-; REST parameters for SOAPactions
+; REST parameters for SOAPAction
 ;
 ; use xml.path.to.par notation to solve name-conflicts
 ; action[thisSoapAction][foo][] = some.number
@@ -93,29 +97,28 @@ soap_footer = </SOAP-ENV:Body></SOAP-ENV:Envelope>
 action[ALL][] = outputType
 action[ALL][] = callback
 
-action[searchRequest][] = query
-action[searchRequest][] = agency
-action[searchRequest][] = allObjects
-action[searchRequest][] = collectionType
-action[searchRequest][facets][] = facets.numberOfTerms
-action[searchRequest][facets][] = numberOfTerms
-action[searchRequest][facets][] = facets.facetName
-action[searchRequest][facets][] = facetName
-action[searchRequest][] = format
-action[searchRequest][] = source
-action[searchRequest][] = start
-action[searchRequest][] = stepValue
-action[searchRequest][] = sort
+action[search][] = query
+action[search][] = agency
+action[search][] = allObjects
+action[search][] = collectionType
+action[search][facets][] = facets.numberOfTerms
+action[search][facets][] = numberOfTerms
+action[search][facets][] = facets.facetName
+action[search][facets][] = facetName
+action[search][] = format
+action[search][] = source
+action[search][] = start
+action[search][] = stepValue
+action[search][] = sort
 
 
 [agency]
 agency[710100] = AND ((submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink)) OR (submitter:710100 AND original_format:katalog))
 agency[775100] = AND ((submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink)) OR (submitter:775100 AND original_format:(katalog OR ebsco OR ebrary)))
+agency[150013] = 
 
 
-[howru]
 [howru]
 test[] = search&query=danmark&stepValue=1
 preg_match[] = hitCount
 error[] = ERROR searching for danmark
-
