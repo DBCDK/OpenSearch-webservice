@@ -20,7 +20,6 @@
 	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
 	<xs:import namespace="http://biblstandard.dk/ac/namespace/" schemaLocation="ac.xsd"/>
 	<xs:import namespace="http://biblstandard.dk/abm/namespace/dkdcplus/" schemaLocation="dkdcplus.xsd"/>
-	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
 	<xs:complexType name="elementsAndRefinementsGroup">
 		<xs:choice>
 			<xs:group ref="dcterms:elementsAndRefinementsGroup"/>

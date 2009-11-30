@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xml="http://www.w3.org/XML/1998/namespace" targetNamespace="http://biblstandard.dk/ac/namespace/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://biblstandard.dk/ac/namespace/" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="en">
       XML Schema for the http://biblstandard.dk/ac/namespace .
@@ -31,7 +31,6 @@
     </xs:documentation>
 	</xs:annotation>
 	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
-	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
 	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
 	<xs:element name="database" substitutionGroup="dc:any"/>
 	<xs:element name="transmitter" substitutionGroup="dc:any"/>
