@@ -385,12 +385,11 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="eng">The types of relations that the service can return.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="coverImage"/>
-			<xs:enumeration value="descriptionCreator"/>
-			<xs:enumeration value="descriptionSubject"/>
-			<xs:enumeration value="geoTag"/>
-			<xs:enumeration value="fullText"/>
-			<xs:enumeration value="review"/>
+			<xs:enumeration value="rev:hasReview"/>
+			<xs:enumeration value="dbcaddi:hasCoverImage"/>
+			<xs:enumeration value="dbcaddi:hasUserCreatedContent"/>
+			<xs:enumeration value="dbcaddi:hasSoundClip"/>
+			<xs:enumeration value="dbcaddi:isPartOfTheme"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="sortType">
