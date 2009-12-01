@@ -390,6 +390,9 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="dbcaddi:hasUserCreatedContent"/>
 			<xs:enumeration value="dbcaddi:hasSoundClip"/>
 			<xs:enumeration value="dbcaddi:isPartOfTheme"/>
+			<xs:enumeration value="dbcaddi:hasThemeMember"/>
+			<xs:enumeration value="dbcbib:hasTrack"/>
+			<xs:enumeration value="dbcbib:isPartOfAlbum"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="sortType">
