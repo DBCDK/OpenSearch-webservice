@@ -115,7 +115,7 @@ action[search][] = sort
 [agency]
 agency[710100] = AND ((submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink)) OR (submitter:710100 AND original_format:katalog))
 agency[775100] = AND ((submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink)) OR (submitter:775100 AND original_format:(katalog OR ebsco OR ebrary)))
-agency[150013] = AND submitter:150013
+agency[150013] = AND (submitter:150013 AND original_format:pg)
 
 
 [howru]
