@@ -74,6 +74,7 @@ class openSearch extends webServiceServer {
     if (empty($start) && $step_value) $start = 1;
     $this->watch->start("Solr");
     $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
+    $key_relation_cache = $param->query->_value . "_" . $param->agency->_value;
     $query = $cql2solr->convert(urldecode($param->query->_value));
     //$rank_q = urlencode(' AND _query_:"{dismax qf=$qq}' . $query . '"qq=cql.anyIndexes dc.title^4 dc.creator^4 dc.subject^2') . '&tie=0.1';
     if ($filter_agency)
@@ -126,7 +127,7 @@ class openSearch extends webServiceServer {
 /*
  * Caching of the process would speed up the paging thru a search-result
  *
- * relation_cache should be cached to facilitate this
+ * relation_cache should be cached to facilitate this, key_relation_cache can be used as key
  *
  */
 
@@ -244,6 +245,9 @@ if (DEBUG) print_r($search_ids);
 if (DEBUG) echo $work_result;
             $this->watch->stop("get_fids");
             $fid_array = $this->parse_work_for_fedora_id($work_result);
+if ($_REQUEST["work"] == "debug") {  
+  echo "fid: " . $fid . " -> " . $work_id . " " . $work_uri . " with manifestations:\n"; print_r($fid_array);
+}
           } else
             $fid_array = array($fid);
           $relation_cache[$w_no] = $fid_array;
@@ -260,32 +264,39 @@ if (DEBUG) print_r($fid_array);
         $this->verbose->log(FATAL, "To few search_ids fetched from solr. Query: " . $q_solr);
 
 // check if the search result contains the ids
+// allObject=0 - remove objects not included in the search result
+// allObject=1 & agency - remove objects not included in agency
       $add_query = "";
       foreach ($work_ids as $w_no => $w)
         if (count($w) > 1)
           foreach ($w as $id)
-            $add_query .= (empty($add_query) ? "" : " OR ") . str_replace(":", "?", $id);
+            $add_query .= (empty($add_query) ? "" : " OR ") . str_replace(":", "_", $id);
       if (!empty($add_query)) {     // use post here because query can be very long
-        $curl->set_post(array("wt" => "phps",
-                              "q" => urldecode($q_solr) . " AND fedoraPid:(" . $add_query . ")",
-                              "start" => "0",
-                              "rows" => "50000",
-                              "fl" => "fedoraPid"));
-        $this->watch->start("Solr 2");
-        $solr_result = $curl->get(SOLR_URI);
-        $this->watch->stop("Solr 2");
-        if (!$solr_arr = unserialize($solr_result))
-          return array("error" => "Internal problem: Cannot decode Solr re-search");
-      foreach ($work_ids as $w_no => $w)
-        if (count($w) > 1) {
-          $hit_fid_array = array();
-          foreach ($solr_arr["response"]["docs"] as $fpid)
-            if (in_array($fpid["fedoraPid"], $w))
-              $hit_fid_array[] = $fpid["fedoraPid"];
-          if ($param->allObjects->_value)
-            $work_ids[$w_no] = array_merge($hit_fid_array, array_diff_assoc($w, $hit_fid_array));
-          else
-            $work_ids[$w_no] = $hit_fid_array;
+        if (empty($param->allObjects->_value))
+          $q = urldecode($q_solr) . " AND fedoraNormPid:(" . $add_query . ")";
+        elseif ($filter_agency)
+          $q = urldecode("fedoraNormPid:(" . $add_query . ") " . $filter_agency);
+        else
+          $q = "";
+        if ($q) {			// need to remove unwanted object from work_ids
+          $curl->set_post(array("wt" => "phps",
+                                "q" => $q,
+                                "start" => "0",
+                                "rows" => "50000",
+                                "fl" => "fedoraPid"));
+          $this->watch->start("Solr 2");
+          $solr_result = $curl->get(SOLR_URI);
+          $this->watch->stop("Solr 2");
+          if (!$solr_arr = unserialize($solr_result))
+            return array("error" => "Internal problem: Cannot decode Solr re-search");
+          foreach ($work_ids as $w_no => $w)
+            if (count($w) > 1) {
+              $hit_fid_array = array();
+              foreach ($solr_arr["response"]["docs"] as $fpid)
+                if (in_array($fpid["fedoraPid"], $w))
+                  $hit_fid_array[] = $fpid["fedoraPid"];
+              $work_ids[$w_no] = $hit_fid_array;
+            }
         }
       }
 
@@ -301,6 +312,7 @@ if (DEBUG) print_r($fid_array);
 // now fetch the records for each work/collection
     $this->watch->start("get_recs");
     $collections = array();
+    $rec_no = max(1,$start);
     foreach ($work_ids as $work) {
       $objects = array();
       foreach ($work as $fid) {
@@ -311,7 +323,7 @@ if (DEBUG) print_r($fid_array);
           return array("error" => "Error: Cannot fetch record: " . $fid . " - http-error: " . $curl_err["http_code"]);
         $objects[]->_value = $this->parse_for_dc_abm(&$fedora_result, $fid, $param->format->_value);
       }
-      $o->collection->_value->resultPosition->_value = $rec_no + 1;
+      $o->collection->_value->resultPosition->_value = $rec_no++;
       $o->collection->_value->numberOfObjects->_value = count($objects);
       $o->collection->_value->object = $objects;
       $collections[]->_value = $o;
@@ -319,9 +331,13 @@ if (DEBUG) print_r($fid_array);
     }
     $this->watch->stop("get_recs");
 
-//if (DEBUG) print_r($relation_cache); die();
-//if (DEBUG) print_r($collections); die();
-//if (DEBUG) print_r($solr_arr); die();
+
+if ($_REQUEST["work"] == "debug") {  
+  echo "returned_work_ids: \n"; print_r($work_ids); echo "cache: \n"; print_r($relation_cache); die();
+}
+//if (DEBUG) { print_r($relation_cache); die(); }
+//if (DEBUG) { print_r($collections); die(); }
+//if (DEBUG) { print_r($solr_arr); die(); }
 
     $result = &$ret->searchResponse->_value->result->_value;
     $result->hitCount->_value = $numFound;
@@ -389,7 +405,8 @@ if (DEBUG) print_r($fid_array);
             }
           $o->_namespace = $dc->item(0)->lookupNamespaceURI($tag->prefix);
           $o->_value = htmlspecialchars(trim($tag->nodeValue));
-          $rec->{$tag->localName}[] = $o;
+          if (!($tag->localName == "subject" && $tag->nodeValue == "undefined"))
+            $rec->{$tag->localName}[] = $o;
           unset($o);
         }
     }
@@ -440,7 +457,6 @@ if (DEBUG) print_r($fid_array);
  */
 
 $ws=new openSearch('opensearch.ini');
-
 
 $ws->handle_request();
 
