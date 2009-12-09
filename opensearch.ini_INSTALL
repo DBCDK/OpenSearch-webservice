@@ -1,7 +1,7 @@
 ; Inifile for opensearch
 
 [setup]
-version = 0.8
+version = 0.9
 
 ; wsdl for service
 wsdl = opensearch.wsdl

@@ -391,8 +391,10 @@ if ($_REQUEST["work"] == "debug") {
     if (empty($format)) $format = "dkabm";
     if (empty($dom)) $dom = new DomDocument();
     $dom->preserveWhiteSpace = false;
-    if (!$dom->loadXML($doc))
+    if (!$dom->loadXML($doc)) {
+      $this->verbose->log(FATAL, "Cannot load recid " . $rec_id . " into DomXml");
       return ;
+    }
   
     $dc = $dom->getElementsByTagName("record");
     foreach ($dc->item(0)->childNodes as $tag) {
@@ -404,7 +406,7 @@ if ($_REQUEST["work"] == "debug") {
               $o->_attributes->{$attr->localName}->_value = htmlspecialchars($attr->nodeValue);
             }
           $o->_namespace = $dc->item(0)->lookupNamespaceURI($tag->prefix);
-          $o->_value = htmlspecialchars(trim($tag->nodeValue));
+          $o->_value = htmlspecialchars($this->char_norm(trim($tag->nodeValue)));
           if (!($tag->localName == "subject" && $tag->nodeValue == "undefined"))
             $rec->{$tag->localName}[] = $o;
           unset($o);
@@ -418,8 +420,11 @@ if ($_REQUEST["work"] == "debug") {
     if (DEBUG) var_dump($ret);
     return $ret;
   }
-  private function node2obj(&$node) {
-   
+
+  private function char_norm($s) {
+    $from[] = "\xEA\x9C\xB2"; $to[] = "Aa";
+    $from[] = "\xEA\x9C\xB3"; $to[] = "aa";
+    return str_replace($from, $to, $s);
   }
 
   /** \brief Parse solr facets and build reply
