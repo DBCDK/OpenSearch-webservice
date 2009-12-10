@@ -37,6 +37,11 @@ fedora_get_raw = http://gsomeserver.dbc.dk:8080/fedora/get/%s/originalData.0
 fedora_get_dc = http://someserver.dbc.dk:8080/fedora/get/%s/DC
 fedora_get_rels_ext = http://someserver.dbc.dk:8080/fedora/get/%s/RELS-EXT
 
+; memcache
+cache_host = localhost
+cache_port = 11211
+cache_expire = 600
+
 ; raw_index
 raw_index[] = facet.
 raw_index[] = phrase.
