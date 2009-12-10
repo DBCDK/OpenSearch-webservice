@@ -139,7 +139,9 @@ class openSearch extends webServiceServer {
     $facets = $this->parse_for_facets(&$solr_arr["facet_counts"]);
 
     $this->watch->start("Build id");
-    $cache = new cache("localhost", 11211, 600);
+    $cache = new cache($this->config->get_value("cache_host", "setup"), 
+                       $this->config->get_value("cache_port", "setup"), 
+                       $this->config->get_value("cache_expire", "setup"));
     if ($relation_cache = $cache->get($key_relation_cache))
       $this->verbose->log(STAT, "Cache hit, lines: " . count($relation_cache));
     else
