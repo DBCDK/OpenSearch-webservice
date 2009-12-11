@@ -71,6 +71,13 @@ class openSearch extends webServiceServer {
       $unsupported->error->_value = "Error: format full is not supported";
     if (empty($param->query->_value))
       $unsupported->error->_value = "Error: No query found in request";
+    if ($agency = $param->agency->_value) {
+      $agencies = $this->config->get_value("agency", "agency");
+      if (isset($agencies[$agency]))
+        $filter_agency = $agencies[$agency];
+      else
+        $unsupported->error->_value = "Error: Unknown agancy: " . $agency;
+    }
 
     if ($unsupported) return $unsupported;
 
@@ -88,10 +95,6 @@ class openSearch extends webServiceServer {
  *
  */
 
-    if ($param->agency->_value) {
-      $agencies = $this->config->get_value("agency", "agency");
-      $filter_agency = $agencies[$param->agency->_value];
-    }
 
     $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
     $start = $param->start->_value;
