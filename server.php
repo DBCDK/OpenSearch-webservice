@@ -78,6 +78,11 @@ class openSearch extends webServiceServer {
       else
         $unsupported->error->_value = "Error: Unknown agancy: " . $agency;
     }
+    if ($sort = $param->sort->_value) {
+      $sort_type = $this->config->get_value("sort", "setup");
+      if (!isset($sort_type[$sort]))
+        $unsupported->error->_value = "Error: Unknown sort: " . $sort;
+    }
 
     if ($unsupported) return $unsupported;
 
@@ -98,15 +103,12 @@ class openSearch extends webServiceServer {
 
     $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
     $start = $param->start->_value;
-    if ($sort = $param->sort->_value) {
-      $sort_type = $this->config->get_value("sort", "setup");
-      if ($s = $sort_type[$sort])
-        $sort_q = "&sort=" . urlencode($s);
-    }
+    if ($sort)
+      $sort_q = "&sort=" . urlencode($sort_type[$sort]);
     if (empty($start) && $step_value) $start = 1;
     $this->watch->start("Solr");
     $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
-    $key_relation_cache = $param->query->_value . "_" . $param->agency->_value;
+    $key_relation_cache = md5($param->query->_value . "_" . $agency . "_" . $sort);
     $query = $cql2solr->convert(urldecode($param->query->_value));
     //$rank_q = urlencode(' AND _query_:"{dismax qf=$qq}' . $query . '"qq=cql.anyIndexes dc.title^4 dc.creator^4 dc.subject^2') . '&tie=0.1';
     if ($filter_agency)
@@ -124,7 +126,6 @@ class openSearch extends webServiceServer {
     }
 
     $this->verbose->log(TRACE, "CQL to SOLR: " . $param->query->_value . " -> " . $q_solr);
-    $this->verbose->log(TRACE, "Query: " . $solr_query);
 
 // do the query
     if ($err = $this->get_solr_array($q_solr . $rank_q, $rows, $sort_q, $facet_q, $solr_arr))
@@ -301,6 +302,7 @@ if ($_REQUEST["work"] == "debug") {
 
     private function get_solr_array($q, $rows, $sort, $facets, &$solr_arr) {
       $solr_query = SOLR_URI . "?wt=phps&q=$q&start=0&rows=$rows$sort&fl=fedoraPid$facets";
+      $this->verbose->log(TRACE, "Query: " . $solr_query);
       $solr_result = $this->curl->get($solr_query);
       if (empty($solr_result))
         return "Internal problem: No answer from Solr";
