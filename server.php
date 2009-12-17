@@ -65,26 +65,27 @@ class openSearch extends webServiceServer {
     define("MAX_COLLECTIONS", $this->config->get_value("max_collections", "setup"));
 
 // check for unsupported stuff
+    $ret_error->searchResponse->_value->error->_value = &$unsupported;
     if ($param->format->_value == "short")
-      $unsupported->error->_value = "Error: format short is not supported";
+      $unsupported = "Error: format short is not supported";
     if ($param->format->_value == "full")
-      $unsupported->error->_value = "Error: format full is not supported";
+      $unsupported = "Error: format full is not supported";
     if (empty($param->query->_value))
-      $unsupported->error->_value = "Error: No query found in request";
+      $unsupported = "Error: No query found in request";
     if ($agency = $param->agency->_value) {
       $agencies = $this->config->get_value("agency", "agency");
       if (isset($agencies[$agency]))
         $filter_agency = $agencies[$agency];
       else
-        $unsupported->error->_value = "Error: Unknown agancy: " . $agency;
+        $unsupported = "Error: Unknown agancy: " . $agency;
     }
     if ($sort = $param->sort->_value) {
       $sort_type = $this->config->get_value("sort", "setup");
       if (!isset($sort_type[$sort]))
-        $unsupported->error->_value = "Error: Unknown sort: " . $sort;
+        $unsupported = "Error: Unknown sort: " . $sort;
     }
 
-    if ($unsupported) return $unsupported;
+    if ($unsupported) return $ret_error;
 
 /*
  *  Approach
@@ -100,6 +101,7 @@ class openSearch extends webServiceServer {
  *
  */
 
+    $ret_error->searchResponse->_value->error->_value = &$error;
 
     $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
     $start = $param->start->_value;
@@ -129,10 +131,10 @@ class openSearch extends webServiceServer {
 
 // do the query
     if ($err = $this->get_solr_array($q_solr . $rank_q, $rows, $sort_q, $facet_q, $solr_arr))
-      $error->error->_value = $err;
+      $error = $err;
     $this->watch->stop("Solr");
 
-    if ($error) return $error;
+    if ($error) return $ret_error;
 
     $search_ids = array();
     foreach ($solr_arr["response"]["docs"] as $fpid)
@@ -160,9 +162,10 @@ if (DEBUG) print_r($search_ids);
         $this->watch->start("Solr_add");
         $this->verbose->log(FATAL, "To few search_ids fetched from solr. Query: " . $q_solr);
         $rows *= 2;
-        if ($err = $this->get_solr_array($q_solr . $rank_q, $rows, $sort_q, "", $solr_arr))
-          $error->error->_value = $err;
-        else {
+        if ($err = $this->get_solr_array($q_solr . $rank_q, $rows, $sort_q, "", $solr_arr)) {
+          $error = $err;
+          return $ret_error;
+        } else {
           $search_ids = array();
           foreach ($solr_arr["response"]["docs"] as $fpid) $search_ids[] = $fpid["fedoraPid"];
           $numFound = $solr_arr["response"]["numFound"];
@@ -235,8 +238,11 @@ if (DEBUG) print_r($fid_array);
         $this->watch->start("Solr 2");
         $solr_result = $this->curl->get(SOLR_URI);
         $this->watch->stop("Solr 2");
-        if (!$solr_arr = unserialize($solr_result))
-          return array("error" => "Internal problem: Cannot decode Solr re-search");
+        if (!$solr_arr = unserialize($solr_result)) {
+          $this->verbose->log(FATAL, "Internal problem: Cannot decode Solr re-search");
+          $error = "Internal problem: Cannot decode Solr re-search";
+          return $ret_error;
+        }
         foreach ($work_ids as $w_no => $w)
           if (count($w) > 1) {
             $hit_fid_array = array();
@@ -269,8 +275,10 @@ if (DEBUG) print_r($fid_array);
         $fedora_get =  sprintf(FEDORA_GET_RAW, $fid);
         $fedora_result = $this->curl->get($fedora_get);
         $curl_err = $this->curl->get_status();
-        if ($curl_err["http_code"] > 299)
-          return array("error" => "Error: Cannot fetch record: " . $fid . " - http-error: " . $curl_err["http_code"]);
+        if ($curl_err["http_code"] > 299) {
+          $error = "Error: Cannot fetch record: " . $fid . " - http-error: " . $curl_err["http_code"];
+          return $ret_error;
+        }
         $objects[]->_value = $this->parse_for_dc_abm(&$fedora_result, $fid, $param->format->_value);
       }
       $o->collection->_value->resultPosition->_value = $rec_no++;
