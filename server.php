@@ -113,8 +113,10 @@ class openSearch extends webServiceServer {
     $key_relation_cache = md5($param->query->_value . "_" . $agency . "_" . $sort);
     $query = $cql2solr->convert(urldecode($param->query->_value));
     //$rank_q = urlencode(' AND _query_:"{dismax qf=$qq}' . $query . '"qq=cql.anyIndexes dc.title^4 dc.creator^4 dc.subject^2') . '&tie=0.1';
+// 2DO - use fq (filterquery) for angency-filterering instead of expanding the query
     if ($filter_agency)
-      $q_solr = rawurlencode("(" . $query .") " . $filter_agency);
+      //$q_solr = rawurlencode("(" . $query .") " . $filter_agency);
+      $q_solr = rawurlencode($query) . "&fq=" . rawurlencode($filter_agency);
     else
       $q_solr = rawurlencode($query);
     $rows = ($start + $step_value + 100) * 2;
