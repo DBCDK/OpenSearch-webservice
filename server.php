@@ -114,11 +114,9 @@ class openSearch extends webServiceServer {
     $query = $cql2solr->convert(urldecode($param->query->_value));
     //$rank_q = urlencode(' AND _query_:"{dismax qf=$qq}' . $query . '"qq=cql.anyIndexes dc.title^4 dc.creator^4 dc.subject^2') . '&tie=0.1';
 // 2DO - use fq (filterquery) for angency-filterering instead of expanding the query
+    $solr_q = rawurlencode($query);
     if ($filter_agency)
-      //$q_solr = rawurlencode("(" . $query .") " . $filter_agency);
-      $q_solr = rawurlencode($query) . "&fq=" . rawurlencode($filter_agency);
-    else
-      $q_solr = rawurlencode($query);
+      $filter_q = rawurlencode($filter_agency);
     $rows = ($start + $step_value + 100) * 2;
     if ($param->facets->_value->facetName) {
       $facet_q .= "&facet=true&facet.limit=" . $param->facets->_value->numberOfTerms->_value;
@@ -129,10 +127,10 @@ class openSearch extends webServiceServer {
         $facet_q .= "&facet.field=" . $param->facets->_value->facetName->_value;
     }
 
-    $this->verbose->log(TRACE, "CQL to SOLR: " . $param->query->_value . " -> " . $q_solr);
+    $this->verbose->log(TRACE, "CQL to SOLR: " . $param->query->_value . " -> " . $solr_q);
 
 // do the query
-    if ($err = $this->get_solr_array($q_solr . $rank_q, $rows, $sort_q, $facet_q, $solr_arr))
+    if ($err = $this->get_solr_array($solr_q . $rank_q, $rows, $sort_q, $facet_q, $filter_q, $solr_arr))
       $error = $err;
     $this->watch->stop("Solr");
 
@@ -162,9 +160,9 @@ if (DEBUG) print_r($search_ids);
       $fid = &$search_ids[$s_idx];
       if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
         $this->watch->start("Solr_add");
-        $this->verbose->log(FATAL, "To few search_ids fetched from solr. Query: " . $q_solr);
+        $this->verbose->log(FATAL, "To few search_ids fetched from solr. Query: " . $solr_q);
         $rows *= 2;
-        if ($err = $this->get_solr_array($q_solr . $rank_q, $rows, $sort_q, "", $solr_arr)) {
+        if ($err = $this->get_solr_array($solr_q . $rank_q, $rows, $sort_q, "", $filter_q, $solr_arr)) {
           $error = $err;
           return $ret_error;
         } else {
@@ -214,7 +212,7 @@ if (DEBUG) print_r($fid_array);
     }
 
     if (count($work_ids) < $step_value && count($search_ids) < $numFound)
-      $this->verbose->log(FATAL, "To few search_ids fetched from solr. Query: " . $q_solr);
+      $this->verbose->log(FATAL, "To few search_ids fetched from solr. Query: " . $solr_q);
 
 // check if the search result contains the ids
 // allObject=0 - remove objects not included in the search result
@@ -226,14 +224,15 @@ if (DEBUG) print_r($fid_array);
           $add_query .= (empty($add_query) ? "" : " OR ") . str_replace(":", "_", $id);
     if (!empty($add_query)) {     // use post here because query can be very long
       if (empty($param->allObjects->_value))
-        $q = urldecode($q_solr) . " AND fedoraNormPid:(" . $add_query . ")";
+        $q = urldecode($solr_q) . " AND fedoraNormPid:(" . $add_query . ")";
       elseif ($filter_agency)
-        $q = urldecode("fedoraNormPid:(" . $add_query . ") " . $filter_agency);
+        $q = urldecode("fedoraNormPid:(" . $add_query . ") ");
       else
         $q = "";
       if ($q) {			// need to remove unwanted object from work_ids
         $this->curl->set_post(array("wt" => "phps",
                               "q" => $q,
+                              "fq" => $filter_q,
                               "start" => "0",
                               "rows" => "50000",
                               "fl" => "fedoraPid"));
@@ -310,8 +309,8 @@ if ($_REQUEST["work"] == "debug") {
     return $ret;
   }
 
-    private function get_solr_array($q, $rows, $sort, $facets, &$solr_arr) {
-      $solr_query = SOLR_URI . "?wt=phps&q=$q&start=0&rows=$rows$sort&fl=fedoraPid$facets";
+    private function get_solr_array($q, $rows, $sort, $facets, $filter, &$solr_arr) {
+      $solr_query = SOLR_URI . "?wt=phps&q=$q&fq=$filter&start=0&rows=$rows$sort&fl=fedoraPid$facets";
       $this->verbose->log(TRACE, "Query: " . $solr_query);
       $solr_result = $this->curl->get($solr_query);
       if (empty($solr_result))
