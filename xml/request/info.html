@@ -1,11 +1,17 @@
 Parameters:
 <ul>
   <li>query:</li> <a href="opensearch_cql.xml">cql</a>-query, <a href="http://zing.z3950.org/cql/intro.html">A Gentle Introduction to cql</a>
-  <li>agency:</li> (currently partially supported)
+  <li>source:</li> source of data (currently not supported)
+  <li>facets:</li> number and list of facets
+  <li>format:</li> (currently not supported)
   <li>start:</li> First record counting from 1
   <li>stepValue:</li> number of records
-  <li>outputType:</li> json, php, xml
+  <li>sort:</li> date_ascending, date_descending, creator_ascending, creator_descending
+  <li>agency:</li> (currently partially supported)
+  <li>collectionType:</li> manifestation or work (defaults to work)
+  <li>allObjects:</li> returns all objects in a collection
+  <li>outputType:</li> <a href="show_enc.php?encoding=json">json</a>, php, xml
   <li>callback:</li> for json-callback
 </ul>
 
-<a href="openfindorder.wsdl">The WSDL is here</a>
+<a href="opensearch.wsdl">The WSDL is here</a>
