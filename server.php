@@ -47,11 +47,6 @@ class openSearch extends webServiceServer {
   }
 
   /** \brief Handles the request and set up the response
-   *
-   * Sofar all records er matchet via the work-relation
-   * if/when formats without this match is needed, the
-   * code must branch according to that
-   *
    */
 
   function search($param) { 
@@ -87,18 +82,20 @@ class openSearch extends webServiceServer {
 
     if ($unsupported) return $ret_error;
 
+    $use_work_collection = ($param->collectionType->_value <> "manifestation");
 /*
  *  Approach
- *  a. Do the solr search and fetch all fedoraPids in result
- *  b. Fetch work-relation from fedora using itql (risearch) unless the
+ *  a) Do the solr search and fetch all fedoraPids in result
+ *  b) Fetch work-relation from fedora using itql (risearch) unless the
  *     records is included in a earlier found work-relation
- *  c. Fetch fedoraPids in the work-relation from fedora using itql (risearch)
- *  d. repeat b. and c. until the requeste number of objects is found
- *  e. if allObject is not set, do a new search combined the users search
+ *  c) Fetch fedoraPids in the work-relation from fedora using itql (risearch)
+ *  d) repeat b. and c. until the requeste number of objects is found
+ *  e) if allObject is not set, do a new search combined the users search
  *     with an or'ed list of the fedoraPids in the active objects and
  *     remove the fedoraPids not found in the result
- *  f. as above
+ *  f) Read full records fom fedora for objects in result
  *
+ *  if $use_work_collection is FALSE skip b) to e)
  */
 
     $ret_error->searchResponse->_value->error->_value = &$error;
@@ -110,7 +107,7 @@ class openSearch extends webServiceServer {
     if (empty($start) && $step_value) $start = 1;
     $this->watch->start("Solr");
     $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
-    $key_relation_cache = md5($param->query->_value . "_" . $agency . "_" . $sort);
+    $key_relation_cache = md5($param->query->_value . "_" . $agency . "_" . $use_work_collection . "_" . $sort);
     $query = $cql2solr->convert(urldecode($param->query->_value));
     //$rank_q = urlencode(' AND _query_:"{dismax qf=$qq}' . $query . '"qq=cql.anyIndexes dc.title^4 dc.creator^4 dc.subject^2') . '&tie=0.1';
 // 2DO - use fq (filterquery) for angency-filterering instead of expanding the query
@@ -183,22 +180,25 @@ if (DEBUG) print_r($search_ids);
       if ($relation_cache[$w_no])
         $fid_array = $relation_cache[$w_no];
       else {
-        $this->watch->start("get_w_id");
-        $record_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
-        $record_result = $this->curl->get($record_uri);
-        $this->watch->stop("get_w_id");
+        if ($use_work_collection) {
+          $this->watch->start("get_w_id");
+          $record_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
+          $record_result = $this->curl->get($record_uri);
+          $this->watch->stop("get_w_id");
 
-        if ($work_id = $this->parse_rels_for_work_id($record_result)) {
+          if ($work_id = $this->parse_rels_for_work_id($record_result)) {
 // find other recs sharing the work-relation
-          $this->watch->start("get_fids");
-          $work_uri = sprintf(FEDORA_GET_RELS_EXT, $work_id);
-          $work_result = $this->curl->get($work_uri);
+            $this->watch->start("get_fids");
+            $work_uri = sprintf(FEDORA_GET_RELS_EXT, $work_id);
+            $work_result = $this->curl->get($work_uri);
 if (DEBUG) echo $work_result;
-          $this->watch->stop("get_fids");
-          $fid_array = $this->parse_work_for_fedora_id($work_result);
+            $this->watch->stop("get_fids");
+            $fid_array = $this->parse_work_for_fedora_id($work_result);
 if ($_REQUEST["work"] == "debug") {  
   echo "fid: " . $fid . " -> " . $work_id . " " . $work_uri . " with manifestations:\n"; print_r($fid_array);
 }
+          } else
+            $fid_array = array($fid);
         } else
           $fid_array = array($fid);
         $relation_cache[$w_no] = $fid_array;
@@ -217,41 +217,43 @@ if (DEBUG) print_r($fid_array);
 // check if the search result contains the ids
 // allObject=0 - remove objects not included in the search result
 // allObject=1 & agency - remove objects not included in agency
-    $add_query = "";
-    foreach ($work_ids as $w_no => $w)
-      if (count($w) > 1)
-        foreach ($w as $id)
-          $add_query .= (empty($add_query) ? "" : " OR ") . str_replace(":", "_", $id);
-    if (!empty($add_query)) {     // use post here because query can be very long
-      if (empty($param->allObjects->_value))
-        $q = urldecode($solr_q) . " AND fedoraNormPid:(" . $add_query . ")";
-      elseif ($filter_agency)
-        $q = urldecode("fedoraNormPid:(" . $add_query . ") ");
-      else
-        $q = "";
-      if ($q) {			// need to remove unwanted object from work_ids
-        $this->curl->set_post(array("wt" => "phps",
-                              "q" => $q,
-                              "fq" => $filter_q,
-                              "start" => "0",
-                              "rows" => "50000",
-                              "fl" => "fedoraPid"));
-        $this->watch->start("Solr 2");
-        $solr_result = $this->curl->get(SOLR_URI);
-        $this->watch->stop("Solr 2");
-        if (!$solr_arr = unserialize($solr_result)) {
-          $this->verbose->log(FATAL, "Internal problem: Cannot decode Solr re-search");
-          $error = "Internal problem: Cannot decode Solr re-search";
-          return $ret_error;
-        }
-        foreach ($work_ids as $w_no => $w)
-          if (count($w) > 1) {
-            $hit_fid_array = array();
-            foreach ($solr_arr["response"]["docs"] as $fpid)
-              if (in_array($fpid["fedoraPid"], $w))
-                $hit_fid_array[] = $fpid["fedoraPid"];
-            $work_ids[$w_no] = $hit_fid_array;
+    if ($use_work_collection) {
+      $add_query = "";
+      foreach ($work_ids as $w_no => $w)
+        if (count($w) > 1)
+          foreach ($w as $id)
+            $add_query .= (empty($add_query) ? "" : " OR ") . str_replace(":", "_", $id);
+      if (!empty($add_query)) {     // use post here because query can be very long
+        if (empty($param->allObjects->_value))
+          $q = urldecode($solr_q) . " AND fedoraNormPid:(" . $add_query . ")";
+        elseif ($filter_agency)
+          $q = urldecode("fedoraNormPid:(" . $add_query . ") ");
+        else
+          $q = "";
+        if ($q) {			// need to remove unwanted object from work_ids
+          $this->curl->set_post(array("wt" => "phps",
+                                "q" => $q,
+                                "fq" => $filter_q,
+                                "start" => "0",
+                                "rows" => "50000",
+                                "fl" => "fedoraPid"));
+          $this->watch->start("Solr 2");
+          $solr_result = $this->curl->get(SOLR_URI);
+          $this->watch->stop("Solr 2");
+          if (!$solr_arr = unserialize($solr_result)) {
+            $this->verbose->log(FATAL, "Internal problem: Cannot decode Solr re-search");
+            $error = "Internal problem: Cannot decode Solr re-search";
+            return $ret_error;
           }
+          foreach ($work_ids as $w_no => $w)
+            if (count($w) > 1) {
+              $hit_fid_array = array();
+              foreach ($solr_arr["response"]["docs"] as $fpid)
+                if (in_array($fpid["fedoraPid"], $w))
+                  $hit_fid_array[] = $fpid["fedoraPid"];
+              $work_ids[$w_no] = $hit_fid_array;
+            }
+        }
       }
     }
 
