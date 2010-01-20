@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ofo="http://oss.dbc.dk/ns/openfindorder"><SOAP-ENV:Body>
-<ofo:findOrderRequest>
- <ofo:query>dc.title:zorro</ofo:query>
- <ofo:agency>170000</ofo:agency>
- <ofo:start>1</ofo:start>
- <ofo:stepValue>2</ofo:stepValue>
-</ofo:findOrderRequest>
-</SOAP-ENV:Body></SOAP-ENV:Envelope>
