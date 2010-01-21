@@ -15,6 +15,7 @@ wsdl = opensearch.wsdl
 soapAction[search] = searchRequest
 
 ; prefixes and namespaces
+; NONE is the default namespace for the service
 xmlns[NONE] = http://oss.dbc.dk/ns/opensearch
 xmlns[xs] = http://www.w3.org/2001/XMLSchema
 xmlns[xsi] = http://www.w3.org/2001/XMLSchema-instance
@@ -65,6 +66,7 @@ sort[creator_ascending] = sort.creator asc
 sort[creator_descending] = sort.creator desc
 sort[date_ascending] = sort.date asc
 sort[date_descending] = sort.date desc
+sort[random] = random
 
 
 ; set verboselevel

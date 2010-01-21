@@ -74,6 +74,7 @@ class openSearch extends webServiceServer {
       else
         $unsupported = "Error: Unknown agancy: " . $agency;
     }
+    $use_work_collection = ($param->collectionType->_value <> "manifestation");
     if ($sort = $param->sort->_value) {
       $sort_type = $this->config->get_value("sort", "setup");
       if (!isset($sort_type[$sort]))
@@ -82,7 +83,6 @@ class openSearch extends webServiceServer {
 
     if ($unsupported) return $ret_error;
 
-    $use_work_collection = ($param->collectionType->_value <> "manifestation");
 /*
  *  Approach
  *  a) Do the solr search and fetch all fedoraPids in result
@@ -100,6 +100,7 @@ class openSearch extends webServiceServer {
 
     $ret_error->searchResponse->_value->error->_value = &$error;
 
+    $use_work_collection |= $sort_type[$sort] == "random";
     $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
     $start = $param->start->_value;
     if ($sort)
@@ -110,7 +111,6 @@ class openSearch extends webServiceServer {
     $key_relation_cache = md5($param->query->_value . "_" . $agency . "_" . $use_work_collection . "_" . $sort);
     $query = $cql2solr->convert(urldecode($param->query->_value));
     //$rank_q = urlencode(' AND _query_:"{dismax qf=$qq}' . $query . '"qq=cql.anyIndexes dc.title^4 dc.creator^4 dc.subject^2') . '&tie=0.1';
-// 2DO - use fq (filterquery) for angency-filterering instead of expanding the query
     $solr_q = rawurlencode($query);
     if ($filter_agency)
       $filter_q = rawurlencode($filter_agency);
@@ -127,88 +127,102 @@ class openSearch extends webServiceServer {
     $this->verbose->log(TRACE, "CQL to SOLR: " . $param->query->_value . " -> " . $solr_q);
 
 // do the query
-    if ($err = $this->get_solr_array($solr_q . $rank_q, $rows, $sort_q, $facet_q, $filter_q, $solr_arr))
-      $error = $err;
+    $search_ids = array();
+    if ($sort == "random") {
+      if ($err = $this->get_solr_array($solr_q, 0, 0, "", $facet_q, $filter_q, $solr_arr))
+        $error = $err;
+    } else {
+      if ($err = $this->get_solr_array($solr_q . $rank_q, 0, $rows, $sort_q, $facet_q, $filter_q, $solr_arr))
+        $error = $err;
+      foreach ($solr_arr["response"]["docs"] as $fpid)
+        $search_ids[] = $fpid["fedoraPid"];
+    }
     $this->watch->stop("Solr");
 
     if ($error) return $ret_error;
 
-    $search_ids = array();
-    foreach ($solr_arr["response"]["docs"] as $fpid)
-      $search_ids[] = $fpid["fedoraPid"];
-
     $numFound = $solr_arr["response"]["numFound"];
-    //$start = $solr_arr["response"]["start"];
     $facets = $this->parse_for_facets(&$solr_arr["facet_counts"]);
 
     $this->watch->start("Build id");
-    $cache = new cache($this->config->get_value("cache_host", "setup"), 
-                       $this->config->get_value("cache_port", "setup"), 
-                       $this->config->get_value("cache_expire", "setup"));
-    if ($relation_cache = $cache->get($key_relation_cache))
-      $this->verbose->log(STAT, "Cache hit, lines: " . count($relation_cache));
-    else
-      $this->verbose->log(STAT, "Cache miss");
-
     $work_ids = $used_search_fids = array();
-    $w_no = 0;
-if (DEBUG) print_r($search_ids);
-    for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
-      $fid = &$search_ids[$s_idx];
-      if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
-        $this->watch->start("Solr_add");
-        $this->verbose->log(FATAL, "To few search_ids fetched from solr. Query: " . $solr_q);
-        $rows *= 2;
-        if ($err = $this->get_solr_array($solr_q . $rank_q, $rows, $sort_q, "", $filter_q, $solr_arr)) {
-          $error = $err;
-          return $ret_error;
-        } else {
-          $search_ids = array();
-          foreach ($solr_arr["response"]["docs"] as $fpid) $search_ids[] = $fpid["fedoraPid"];
-          $numFound = $solr_arr["response"]["numFound"];
+    if ($sort == "random") {
+      $rows = min($step_value, $numFound);
+      $more = $step_value < $numFound;
+      for ($w_idx = 0; $w_idx < $rows; $w_idx++) {
+        do { $no = rand(0, $numFound-1); } while (isset($used_search_fid[$no]));
+        $used_search_fid[$no] = TRUE;
+        $this->get_solr_array($solr_q, $no, 1, "", "", $filter_q, $solr_arr);
+        $work_ids[] = array($solr_arr["response"]["docs"][0]["fedoraPid"]);
+      }
+    } else {
+      $cache = new cache($this->config->get_value("cache_host", "setup"), 
+                         $this->config->get_value("cache_port", "setup"), 
+                         $this->config->get_value("cache_expire", "setup"));
+      if ($relation_cache = $cache->get($key_relation_cache))
+        $this->verbose->log(STAT, "Cache hit, lines: " . count($relation_cache));
+      else
+        $this->verbose->log(STAT, "Cache miss");
+  
+      $w_no = 0;
+  if (DEBUG) print_r($search_ids);
+      for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
+        $fid = &$search_ids[$s_idx];
+        if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
+          $this->watch->start("Solr_add");
+          $this->verbose->log(FATAL, "To few search_ids fetched from solr. Query: " . $solr_q);
+          $rows *= 2;
+          if ($err = $this->get_solr_array($solr_q . $rank_q, 0, $rows, $sort_q, "", $filter_q, $solr_arr)) {
+            $error = $err;
+            return $ret_error;
+          } else {
+            $search_ids = array();
+            foreach ($solr_arr["response"]["docs"] as $fpid) $search_ids[] = $fpid["fedoraPid"];
+            $numFound = $solr_arr["response"]["numFound"];
+          }
+          $this->watch->stop("Solr_add");
         }
-        $this->watch->stop("Solr_add");
-      }
-      if ($used_search_fids[$fid]) continue;
-      if (count($work_ids) >= $step_value) {
-        $more = TRUE;
-        break;
-      }
-
-      $w_no++;
-// find relations for the record in fedora
-      if ($relation_cache[$w_no])
-        $fid_array = $relation_cache[$w_no];
-      else {
-        if ($use_work_collection) {
-          $this->watch->start("get_w_id");
-          $record_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
-          $record_result = $this->curl->get($record_uri);
-          $this->watch->stop("get_w_id");
-
-          if ($work_id = $this->parse_rels_for_work_id($record_result)) {
-// find other recs sharing the work-relation
-            $this->watch->start("get_fids");
-            $work_uri = sprintf(FEDORA_GET_RELS_EXT, $work_id);
-            $work_result = $this->curl->get($work_uri);
-if (DEBUG) echo $work_result;
-            $this->watch->stop("get_fids");
-            $fid_array = $this->parse_work_for_fedora_id($work_result);
-if ($_REQUEST["work"] == "debug") {  
-  echo "fid: " . $fid . " -> " . $work_id . " " . $work_uri . " with manifestations:\n"; print_r($fid_array);
-}
+        if ($used_search_fids[$fid]) continue;
+        if (count($work_ids) >= $step_value) {
+          $more = TRUE;
+          break;
+        }
+  
+        $w_no++;
+  // find relations for the record in fedora
+        if ($relation_cache[$w_no])
+          $fid_array = $relation_cache[$w_no];
+        else {
+          if ($use_work_collection) {
+            $this->watch->start("get_w_id");
+            $record_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
+            $record_result = $this->curl->get($record_uri);
+            $this->watch->stop("get_w_id");
+  
+            if ($work_id = $this->parse_rels_for_work_id($record_result)) {
+  // find other recs sharing the work-relation
+              $this->watch->start("get_fids");
+              $work_uri = sprintf(FEDORA_GET_RELS_EXT, $work_id);
+              $work_result = $this->curl->get($work_uri);
+  if (DEBUG) echo $work_result;
+              $this->watch->stop("get_fids");
+              $fid_array = $this->parse_work_for_fedora_id($work_result);
+  if ($_REQUEST["work"] == "debug") {  
+    echo "fid: " . $fid . " -> " . $work_id . " " . $work_uri . " with manifestations:\n"; print_r($fid_array);
+  }
+            } else
+              $fid_array = array($fid);
           } else
             $fid_array = array($fid);
-        } else
-          $fid_array = array($fid);
-        $relation_cache[$w_no] = $fid_array;
+          $relation_cache[$w_no] = $fid_array;
+        }
+  if (DEBUG) print_r($fid_array);
+        foreach ($fid_array as $id) {
+          $used_search_fids[$id] = TRUE;
+          if ($w_no >= $start) $work_ids[$w_no][] = $id;
+        }
+        if ($w_no >= $start) $work_ids[$w_no] = $fid_array;
       }
-if (DEBUG) print_r($fid_array);
-      foreach ($fid_array as $id) {
-        $used_search_fids[$id] = TRUE;
-        if ($w_no >= $start) $work_ids[$w_no][] = $id;
-      }
-      if ($w_no >= $start) $work_ids[$w_no] = $fid_array;
     }
 
     if (count($work_ids) < $step_value && count($search_ids) < $numFound)
@@ -264,7 +278,7 @@ if (DEBUG) print_r($fid_array);
     if (DEBUG) print_r($used_search_fids);
     $this->watch->stop("Build id");
 
-    $cache->set($key_relation_cache, $relation_cache);
+    if ($cache) $cache->set($key_relation_cache, $relation_cache);
 
       if (DEBUG) print_r($work_ids);
 // work_ids now contains the work-records and the fedoraPids they consist of
@@ -311,8 +325,8 @@ if ($_REQUEST["work"] == "debug") {
     return $ret;
   }
 
-    private function get_solr_array($q, $rows, $sort, $facets, $filter, &$solr_arr) {
-      $solr_query = SOLR_URI . "?wt=phps&q=$q&fq=$filter&start=0&rows=$rows$sort&fl=fedoraPid$facets";
+    private function get_solr_array($q, $start, $rows, $sort, $facets, $filter, &$solr_arr) {
+      $solr_query = SOLR_URI . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort&fl=fedoraPid$facets";
       $this->verbose->log(TRACE, "Query: " . $solr_query);
       $solr_result = $this->curl->get($solr_query);
       if (empty($solr_result))
