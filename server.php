@@ -19,14 +19,6 @@
  * along with Open Library System.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
- * Caching of the process would speed up the paging thru a search-result
- *
- * relation_cache should be cached to facilitate this, key_relation_cache can be used as key
- *
-*/
-
-
 define(DEBUG, FALSE);
 
 require_once("OLS_class_lib/webServiceServer_class.php");
@@ -76,14 +68,19 @@ class openSearch extends webServiceServer {
     }
     $use_work_collection = ($param->collectionType->_value <> "manifestation");
     if ($sort = $param->sort->_value) {
-      $sort_type = $this->config->get_value("sort", "setup");
-      if (!isset($sort_type[$sort]))
-        $unsupported = "Error: Unknown sort: " . $sort;
+      $rank_type = $this->config->get_value("rank", "setup");
+      if ($rank = $rank_type[$sort])
+        unset($sort);
+      else {
+        $sort_type = $this->config->get_value("sort", "setup");
+        if (!isset($sort_type[$sort]))
+          $unsupported = "Error: Unknown sort: " . $sort;
+      }
     }
 
     if ($unsupported) return $ret_error;
 
-/*
+/**
  *  Approach
  *  a) Do the solr search and fetch all fedoraPids in result
  *  b) Fetch work-relation from fedora using itql (risearch) unless the
@@ -100,17 +97,27 @@ class openSearch extends webServiceServer {
 
     $ret_error->searchResponse->_value->error->_value = &$error;
 
-    $use_work_collection |= $sort_type[$sort] == "random";
-    $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
+    $this->watch->start("Solr");
     $start = $param->start->_value;
+    if (empty($start) && $step_value) $start = 1;
+    $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
+    $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
+    $use_work_collection |= $sort_type[$sort] == "random";
+    $key_relation_cache = md5($param->query->_value . "_" . $agency . "_" . $use_work_collection . "_" . $param->sort->_value);
+    $query = $cql2solr->convert(urldecode($param->query->_value));
     if ($sort)
       $sort_q = "&sort=" . urlencode($sort_type[$sort]);
-    if (empty($start) && $step_value) $start = 1;
-    $this->watch->start("Solr");
-    $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
-    $key_relation_cache = md5($param->query->_value . "_" . $agency . "_" . $use_work_collection . "_" . $sort);
-    $query = $cql2solr->convert(urldecode($param->query->_value));
-    //$rank_q = urlencode(' AND _query_:"{dismax qf=$qq}' . $query . '"qq=cql.anyIndexes dc.title^4 dc.creator^4 dc.subject^2') . '&tie=0.1';
+    if ($rank) {
+      //var_dump($rank); 
+      $rank_q = $cql2solr->dismax(urldecode($param->query->_value), $rank);
+      //var_dump($rank_q);
+    }
+/**
+ * Ranking
+ * qf: QueryField - boost on words
+ * pf: PhraseField - boost on phrases
+ * tie: m
+ */
     $solr_q = rawurlencode($query);
     if ($filter_agency)
       $filter_q = rawurlencode($filter_agency);
@@ -124,7 +131,7 @@ class openSearch extends webServiceServer {
         $facet_q .= "&facet.field=" . $param->facets->_value->facetName->_value;
     }
 
-    $this->verbose->log(TRACE, "CQL to SOLR: " . $param->query->_value . " -> " . $solr_q);
+    verbose::log(TRACE, "CQL to SOLR: " . $param->query->_value . " -> " . $solr_q);
 
 // do the query
     $search_ids = array();
@@ -159,10 +166,11 @@ class openSearch extends webServiceServer {
       $cache = new cache($this->config->get_value("cache_host", "setup"), 
                          $this->config->get_value("cache_port", "setup"), 
                          $this->config->get_value("cache_expire", "setup"));
-      if ($relation_cache = $cache->get($key_relation_cache))
-        $this->verbose->log(STAT, "Cache hit, lines: " . count($relation_cache));
-      else
-        $this->verbose->log(STAT, "Cache miss");
+      if (empty($_GET["skipCache"]))
+        if ($relation_cache = $cache->get($key_relation_cache))
+          verbose::log(STAT, "Cache hit, lines: " . count($relation_cache));
+        else
+          verbose::log(STAT, "Cache miss");
   
       $w_no = 0;
   if (DEBUG) print_r($search_ids);
@@ -170,7 +178,7 @@ class openSearch extends webServiceServer {
         $fid = &$search_ids[$s_idx];
         if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
           $this->watch->start("Solr_add");
-          $this->verbose->log(FATAL, "To few search_ids fetched from solr. Query: " . $solr_q);
+          verbose::log(FATAL, "To few search_ids fetched from solr. Query: " . $solr_q);
           $rows *= 2;
           if ($err = $this->get_solr_array($solr_q . $rank_q, 0, $rows, $sort_q, "", $filter_q, $solr_arr)) {
             $error = $err;
@@ -226,7 +234,7 @@ class openSearch extends webServiceServer {
     }
 
     if (count($work_ids) < $step_value && count($search_ids) < $numFound)
-      $this->verbose->log(FATAL, "To few search_ids fetched from solr. Query: " . $solr_q);
+      verbose::log(FATAL, "To few search_ids fetched from solr. Query: " . $solr_q);
 
 // check if the search result contains the ids
 // allObject=0 - remove objects not included in the search result
@@ -255,7 +263,7 @@ class openSearch extends webServiceServer {
           $solr_result = $this->curl->get(SOLR_URI);
           $this->watch->stop("Solr 2");
           if (!$solr_arr = unserialize($solr_result)) {
-            $this->verbose->log(FATAL, "Internal problem: Cannot decode Solr re-search");
+            verbose::log(FATAL, "Internal problem: Cannot decode Solr re-search");
             $error = "Internal problem: Cannot decode Solr re-search";
             return $ret_error;
           }
@@ -321,13 +329,13 @@ if ($_REQUEST["work"] == "debug") {
     $result->searchResult = $collections;
     $result->facetResult->_value = $facets;
 
-    $this->verbose->log(TIMER, "opensearch:: " . $this->watch->dump());
+    verbose::log(TIMER, "opensearch:: " . $this->watch->dump());
     return $ret;
   }
 
     private function get_solr_array($q, $start, $rows, $sort, $facets, $filter, &$solr_arr) {
       $solr_query = SOLR_URI . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort&fl=fedoraPid$facets";
-      $this->verbose->log(TRACE, "Query: " . $solr_query);
+      verbose::log(TRACE, "Query: " . $solr_query);
       $solr_result = $this->curl->get($solr_query);
       if (empty($solr_result))
         return "Internal problem: No answer from Solr";
@@ -349,6 +357,20 @@ if ($_REQUEST["work"] == "debug") {
     }
   
     return FALSE;
+  }
+
+  /** \brief Echos config-settings
+   *
+   */
+  public function show_info() {
+    echo "<pre>";
+    echo "version             " . $this->config->get_value("version", "setup") . "<br/>";
+    echo "SOLR_URI            " . $this->config->get_value("solr_uri", "setup") . "<br/>";
+    echo "FEDORA_GET_RAW      " . $this->config->get_value("fedora_get_raw", "setup") . "<br/>";
+    echo "FEDORA_GET_DC       " . $this->config->get_value("fedora_get_dc", "setup") . "<br/>";
+    echo "FEDORA_GET_RELS_EXT " . $this->config->get_value("fedora_get_rels_ext", "setup") . "<br/>";
+    echo "</pre>";
+    die();
   }
 
   /** \brief Parse a work relation and return array of ids
@@ -377,7 +399,7 @@ if ($_REQUEST["work"] == "debug") {
     if (empty($dom)) $dom = new DomDocument();
     $dom->preserveWhiteSpace = false;
     if (!$dom->loadXML($doc)) {
-      $this->verbose->log(FATAL, "Cannot load recid " . $rec_id . " into DomXml");
+      verbose::log(FATAL, "Cannot load recid " . $rec_id . " into DomXml");
       return ;
     }
   
