@@ -15,7 +15,17 @@ require_once("OLS_class_lib/inifile_class.php");
   if (!$step = $_REQUEST["step"]) $step = 10;
 $fields = array("creator" => "dc_creator", "title" => "dc_title");
 
-  echo '<html><head><title>Simple OpenSearch Browser</title><style>td {vertical-align:top; padding-right:1em}</style></<head><body>
+  echo '<html><head><title>Simple OpenSearch Browser</title><style>td {vertical-align:top; padding-right:1em}</style><script type="text/javascript">
+function show_div(id) {
+  if (document.getElementById(id).style.display == "none") {
+    document.getElementById(id).style.display = "block";
+    document.f.boosts.value = "1";
+  } else {
+    document.getElementById(id).style.display = "none";
+    document.f.boosts.value = "";
+  }
+}
+</script></<head><body>
         <form name="f" method="get"><table>
         <tr><td>Fedora</td><td><input type="text" name="fedora" size="80" value="' . $fedora . '"></td></tr>
         <tr><td>OpenSearch</td><td style="padding-bottom:1em"><input type="text" name="uri" size="80" value="' . $uri . '"></td></tr>';
@@ -30,6 +40,12 @@ $fields = array("creator" => "dc_creator", "title" => "dc_title");
     if ($_REQUEST[$dtag]) $disp_tag[$dtag] = TRUE;
     echo $dtag . ':<input type="checkbox" name="' . $dtag . '" ' . ($disp_tag[$dtag] ? "checked" : "") . '> &nbsp; ';
   }
+/*
+  echo '<tr><td></td><td colspan="2"><a href="javascript:show_div(\'boost\');">Boost</a></td></tr>';
+  echo '<tr id="boost" style="display:' . ($_REQUEST["boosts"] ? "block" : "none") . '"><td></td><td>';
+  echo '<input type="hidden" name="boosts" value="">';
+  echo '</td></tr>';
+*/
   echo '<tr><td colspan="2"><input type="submit" value="Try me"></td></tr></table></form>';
 
   if ($query) {
