@@ -71,7 +71,10 @@ class openSearch extends webServiceServer {
       $rank_type = $this->config->get_value("rank", "setup");
       if ($rank = $rank_type[$sort])
         unset($sort);
-      else {
+      elseif (substr($sort, 0, 12) == "rank_define:") {
+        $rank = $sort;
+        unset($sort);
+      } else {
         $sort_type = $this->config->get_value("sort", "setup");
         if (!isset($sort_type[$sort]))
           $unsupported = "Error: Unknown sort: " . $sort;
@@ -82,10 +85,10 @@ class openSearch extends webServiceServer {
 
 /**
  *  Approach
- *  a) Do the solr search and fetch all fedoraPids in result
- *  b) Fetch work-relation from fedora using itql (risearch) unless the
- *     records is included in a earlier found work-relation
- *  c) Fetch fedoraPids in the work-relation from fedora using itql (risearch)
+ *  a) Do the solr search and fetch enough fedoraPids in result
+ *  b) Fetch a fedoraPids work-object unless the record has been found
+ *     in an earlier handled work-objects
+ *  c) Collect fedoraPids in this work-object 
  *  d) repeat b. and c. until the requeste number of objects is found
  *  e) if allObject is not set, do a new search combined the users search
  *     with an or'ed list of the fedoraPids in the active objects and
@@ -101,9 +104,10 @@ class openSearch extends webServiceServer {
     $start = $param->start->_value;
     if (empty($start) && $step_value) $start = 1;
     $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
-    $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
     $use_work_collection |= $sort_type[$sort] == "random";
     $key_relation_cache = md5($param->query->_value . "_" . $agency . "_" . $use_work_collection . "_" . $param->sort->_value);
+
+    $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
     $query = $cql2solr->convert(urldecode($param->query->_value));
     if ($sort)
       $sort_q = "&sort=" . urlencode($sort_type[$sort]);
@@ -112,12 +116,7 @@ class openSearch extends webServiceServer {
       $rank_q = $cql2solr->dismax(urldecode($param->query->_value), $rank);
       //var_dump($rank_q);
     }
-/**
- * Ranking
- * qf: QueryField - boost on words
- * pf: PhraseField - boost on phrases
- * tie: m
- */
+
     $solr_q = rawurlencode($query);
     if ($filter_agency)
       $filter_q = rawurlencode($filter_agency);
@@ -141,8 +140,9 @@ class openSearch extends webServiceServer {
     } else {
       if ($err = $this->get_solr_array($solr_q . $rank_q, 0, $rows, $sort_q, $facet_q, $filter_q, $solr_arr))
         $error = $err;
-      foreach ($solr_arr["response"]["docs"] as $fpid)
-        $search_ids[] = $fpid["fedoraPid"];
+      else
+        foreach ($solr_arr["response"]["docs"] as $fpid)
+          $search_ids[] = $fpid["fedoraPid"];
     }
     $this->watch->stop("Solr");
 
