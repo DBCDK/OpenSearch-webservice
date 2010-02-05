@@ -19,7 +19,7 @@
  * along with Open Library System.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-define(DEBUG, FALSE);
+define(DEBUG_ON, FALSE);
 
 require_once("OLS_class_lib/webServiceServer_class.php");
 require_once "OLS_class_lib/memcache_class.php";
@@ -48,7 +48,6 @@ class openSearch extends webServiceServer {
     define("FEDORA_GET_RAW", $this->config->get_value("fedora_get_raw", "setup"));
     define("FEDORA_GET_DC", $this->config->get_value("fedora_get_dc", "setup"));
     define("FEDORA_GET_RELS_EXT", $this->config->get_value("fedora_get_rels_ext", "setup"));
-    //define("VALID_DC_TAGS", $this->config->get_value("valid_dc_tags", "setup"));
     define("MAX_COLLECTIONS", $this->config->get_value("max_collections", "setup"));
 
 // check for unsupported stuff
@@ -108,16 +107,16 @@ class openSearch extends webServiceServer {
     $key_relation_cache = md5($param->query->_value . "_" . $agency . "_" . $use_work_collection . "_" . $param->sort->_value);
 
     $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
-    $query = $cql2solr->convert(urldecode($param->query->_value));
+    // urldecode ???? $query = $cql2solr->convert(urldecode($param->query->_value));
+    $query = $cql2solr->convert($param->query->_value, $rank);
     if ($sort)
       $sort_q = "&sort=" . urlencode($sort_type[$sort]);
     if ($rank) {
       //var_dump($rank); 
-      $rank_q = $cql2solr->dismax(urldecode($param->query->_value), $rank);
+      //$rank_q = $cql2solr->dismax(urldecode($param->query->_value), $rank);
       //var_dump($rank_q);
     }
 
-    $solr_q = rawurlencode($query);
     if ($filter_agency)
       $filter_q = rawurlencode($filter_agency);
     $rows = ($start + $step_value + 100) * 2;
@@ -130,15 +129,15 @@ class openSearch extends webServiceServer {
         $facet_q .= "&facet.field=" . $param->facets->_value->facetName->_value;
     }
 
-    verbose::log(TRACE, "CQL to SOLR: " . $param->query->_value . " -> " . $solr_q);
+    verbose::log(TRACE, "CQL to SOLR: " . $param->query->_value . " -> " . urldecode($query["solr"]));
 
 // do the query
     $search_ids = array();
     if ($sort == "random") {
-      if ($err = $this->get_solr_array($solr_q, 0, 0, "", $facet_q, $filter_q, $solr_arr))
+      if ($err = $this->get_solr_array($query["solr"], 0, 0, "", $facet_q, $filter_q, $solr_arr))
         $error = $err;
     } else {
-      if ($err = $this->get_solr_array($solr_q . $rank_q, 0, $rows, $sort_q, $facet_q, $filter_q, $solr_arr))
+      if ($err = $this->get_solr_array($query["dismax"], 0, $rows, $sort_q, $facet_q, $filter_q, $solr_arr))
         $error = $err;
       else
         foreach ($solr_arr["response"]["docs"] as $fpid)
@@ -159,7 +158,7 @@ class openSearch extends webServiceServer {
       for ($w_idx = 0; $w_idx < $rows; $w_idx++) {
         do { $no = rand(0, $numFound-1); } while (isset($used_search_fid[$no]));
         $used_search_fid[$no] = TRUE;
-        $this->get_solr_array($solr_q, $no, 1, "", "", $filter_q, $solr_arr);
+        $this->get_solr_array($query["solr"], $no, 1, "", "", $filter_q, $solr_arr);
         $work_ids[] = array($solr_arr["response"]["docs"][0]["fedoraPid"]);
       }
     } else {
@@ -173,14 +172,14 @@ class openSearch extends webServiceServer {
           verbose::log(STAT, "Cache miss");
   
       $w_no = 0;
-  if (DEBUG) print_r($search_ids);
+  if (DEBUG_ON) print_r($search_ids);
       for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
         $fid = &$search_ids[$s_idx];
         if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
           $this->watch->start("Solr_add");
-          verbose::log(FATAL, "To few search_ids fetched from solr. Query: " . $solr_q);
+          verbose::log(FATAL, "To few search_ids fetched from solr. Query: " . urldecode($query["solr"]));
           $rows *= 2;
-          if ($err = $this->get_solr_array($solr_q . $rank_q, 0, $rows, $sort_q, "", $filter_q, $solr_arr)) {
+          if ($err = $this->get_solr_array($query["dismax"], 0, $rows, $sort_q, "", $filter_q, $solr_arr)) {
             $error = $err;
             return $ret_error;
           } else {
@@ -212,7 +211,7 @@ class openSearch extends webServiceServer {
               $this->watch->start("get_fids");
               $work_uri = sprintf(FEDORA_GET_RELS_EXT, $work_id);
               $work_result = $this->curl->get($work_uri);
-  if (DEBUG) echo $work_result;
+  if (DEBUG_ON) echo $work_result;
               $this->watch->stop("get_fids");
               $fid_array = $this->parse_work_for_fedora_id($work_result);
   if ($_REQUEST["work"] == "debug") {  
@@ -224,7 +223,7 @@ class openSearch extends webServiceServer {
             $fid_array = array($fid);
           $relation_cache[$w_no] = $fid_array;
         }
-  if (DEBUG) print_r($fid_array);
+  if (DEBUG_ON) print_r($fid_array);
         foreach ($fid_array as $id) {
           $used_search_fids[$id] = TRUE;
           if ($w_no >= $start) $work_ids[$w_no][] = $id;
@@ -234,7 +233,7 @@ class openSearch extends webServiceServer {
     }
 
     if (count($work_ids) < $step_value && count($search_ids) < $numFound)
-      verbose::log(FATAL, "To few search_ids fetched from solr. Query: " . $solr_q);
+      verbose::log(FATAL, "To few search_ids fetched from solr. Query: " . urldecode($query["solr"]));
 
 // check if the search result contains the ids
 // allObject=0 - remove objects not included in the search result
@@ -247,7 +246,7 @@ class openSearch extends webServiceServer {
             $add_query .= (empty($add_query) ? "" : " OR ") . str_replace(":", "_", $id);
       if (!empty($add_query)) {     // use post here because query can be very long
         if (empty($param->allObjects->_value))
-          $q = urldecode($solr_q) . " AND fedoraNormPid:(" . $add_query . ")";
+          $q = urldecode($query["solr"]) . " AND fedoraNormPid:(" . $add_query . ")";
         elseif ($filter_agency)
           $q = urldecode("fedoraNormPid:(" . $add_query . ") ");
         else
@@ -280,15 +279,15 @@ class openSearch extends webServiceServer {
     }
 
 
-    if (DEBUG) echo "txt: " . $txt . "\n";
-    if (DEBUG) print_r($solr_arr);
-    if (DEBUG) print_r($add_query);
-    if (DEBUG) print_r($used_search_fids);
+    if (DEBUG_ON) echo "txt: " . $txt . "\n";
+    if (DEBUG_ON) print_r($solr_arr);
+    if (DEBUG_ON) print_r($add_query);
+    if (DEBUG_ON) print_r($used_search_fids);
     $this->watch->stop("Build id");
 
     if ($cache) $cache->set($key_relation_cache, $relation_cache);
 
-      if (DEBUG) print_r($work_ids);
+      if (DEBUG_ON) print_r($work_ids);
 // work_ids now contains the work-records and the fedoraPids they consist of
 // now fetch the records for each work/collection
     $this->watch->start("get_recs");
@@ -318,9 +317,9 @@ class openSearch extends webServiceServer {
 if ($_REQUEST["work"] == "debug") {  
   echo "returned_work_ids: \n"; print_r($work_ids); echo "cache: \n"; print_r($relation_cache); die();
 }
-//if (DEBUG) { print_r($relation_cache); die(); }
-//if (DEBUG) { print_r($collections); die(); }
-//if (DEBUG) { print_r($solr_arr); die(); }
+//if (DEBUG_ON) { print_r($relation_cache); die(); }
+//if (DEBUG_ON) { print_r($collections); die(); }
+//if (DEBUG_ON) { print_r($solr_arr); die(); }
 
     $result = &$ret->searchResponse->_value->result->_value;
     $result->hitCount->_value = $numFound;
@@ -336,6 +335,7 @@ if ($_REQUEST["work"] == "debug") {
     private function get_solr_array($q, $start, $rows, $sort, $facets, $filter, &$solr_arr) {
       $solr_query = SOLR_URI . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort&fl=fedoraPid$facets";
       verbose::log(TRACE, "Query: " . $solr_query);
+      verbose::log(DEBUG, "Query: " . SOLR_URI . "?q=$q&fq=$filter&start=$start&rows=1&fl=fedoraPid$facets&debugQuery=on");
       $solr_result = $this->curl->get($solr_query);
       if (empty($solr_result))
         return "Internal problem: No answer from Solr";
@@ -424,7 +424,7 @@ if ($_REQUEST["work"] == "debug") {
     $ret->relations->_value = $relations;
     $ret->record->_value = $rec;
     $ret->record->_namespace = $dc->item(0)->lookupNamespaceURI("dkabm");
-    if (DEBUG) var_dump($ret);
+    if (DEBUG_ON) var_dump($ret);
     return $ret;
   }
 
