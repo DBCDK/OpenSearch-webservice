@@ -210,6 +210,24 @@
 			</xs:restriction>
 		</xs:simpleContent>
 	</xs:complexType>
+	<xs:complexType name="isrc">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="lyr">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
 	<xs:complexType name="medieraad">
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -220,6 +238,15 @@
 		</xs:simpleContent>
 	</xs:complexType>
 	<xs:complexType name="mus">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="pegi">
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
 				<xs:simpleType>
@@ -244,7 +271,7 @@
 			</xs:restriction>
 		</xs:simpleContent>
 	</xs:complexType>
-	<xs:complexType name="pegi">
+	<xs:complexType name="prf">
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
 				<xs:simpleType>
