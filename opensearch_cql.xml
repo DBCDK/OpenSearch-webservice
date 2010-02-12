@@ -17,6 +17,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<set identifier="info:srw/cql-context-set/1/cql-v1.1" name="cql"/>
 		<set identifier="info:srw/cql-context-set/1/dc-v1.1" name="dc"/>
 		<set identifier="info:srw/cql-context-set/2/rec-1.1" name="rec"/>
+		<set identifier="http://biblstandard.dk/ac/namespace/" name="ac"/>
 		<set identifier="http://oss.dbc.dk/ns/facet" name="facet"/>
 		<set identifier="http://oss.dbc.dk/ns/phrase" name="phrase"/>
 		<index>
@@ -94,6 +95,13 @@ You should have received a copy of the GNU Affero General Public License along w
 			<title lang="en">Identifier</title>
 			<map>
 				<name set="dc">identifier</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Brøndkilde</title>
+			<title lang="en">Data well source</title>
+			<map>
+				<name set="ac">source</name>
 			</map>
 		</index>
 		<index>
