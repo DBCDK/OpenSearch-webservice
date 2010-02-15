@@ -150,7 +150,7 @@ class openSearch extends webServiceServer {
     $numFound = $solr_arr["response"]["numFound"];
     $facets = $this->parse_for_facets(&$solr_arr["facet_counts"]);
 
-    $this->watch->start("Build id");
+    $this->watch->start("Build_id");
     $work_ids = $used_search_fids = array();
     if ($sort == "random") {
       $rows = min($step_value, $numFound);
@@ -204,6 +204,12 @@ class openSearch extends webServiceServer {
             $this->watch->start("get_w_id");
             $record_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
             $record_result = $this->curl->get($record_uri);
+            $curl_err = $this->curl->get_status();
+            if ($curl_err["http_code"] < 200 || $curl_err["http_code"] > 299) {
+              $error = "Error: Cannot fetch record: " . $fid . " - http-error: " . $curl_err["http_code"];
+              verbose::log(FATAL, "Fedora http-error: " . $curl_err["http_code"] . " " . $curl_err["error"] . " from: " . $record_uri);
+              return $ret_error;
+            }
             $this->watch->stop("get_w_id");
   
             if ($work_id = $this->parse_rels_for_work_id($record_result)) {
@@ -254,7 +260,7 @@ class openSearch extends webServiceServer {
         if ($q) {			// need to remove unwanted object from work_ids
           $this->curl->set_post(array("wt" => "phps",
                                 "q" => $q,
-                                "fq" => $filter_q,
+                                "fq" => urldecode($filter_q),
                                 "start" => "0",
                                 "rows" => "50000",
                                 "fl" => "fedoraPid"));
@@ -283,7 +289,7 @@ class openSearch extends webServiceServer {
     if (DEBUG_ON) print_r($solr_arr);
     if (DEBUG_ON) print_r($add_query);
     if (DEBUG_ON) print_r($used_search_fids);
-    $this->watch->stop("Build id");
+    $this->watch->stop("Build_id");
 
     if ($cache) $cache->set($key_relation_cache, $relation_cache);
 
@@ -299,8 +305,9 @@ class openSearch extends webServiceServer {
         $fedora_get =  sprintf(FEDORA_GET_RAW, $fid);
         $fedora_result = $this->curl->get($fedora_get);
         $curl_err = $this->curl->get_status();
-        if ($curl_err["http_code"] > 299) {
+        if ($curl_err["http_code"] < 200 || $curl_err["http_code"] > 299) {
           $error = "Error: Cannot fetch record: " . $fid . " - http-error: " . $curl_err["http_code"];
+          verbose::log(FATAL, "Fedora http-error: " . $curl_err["http_code"] . " from: " . $fedora_get);
           return $ret_error;
         }
         $objects[]->_value = $this->parse_for_dc_abm(&$fedora_result, $fid, $param->format->_value);
@@ -398,7 +405,7 @@ if ($_REQUEST["work"] == "debug") {
     if (empty($format)) $format = "dkabm";
     if (empty($dom)) $dom = new DomDocument();
     $dom->preserveWhiteSpace = false;
-    if (!$dom->loadXML($doc)) {
+    if (@ !$dom->loadXML($doc)) {
       verbose::log(FATAL, "Cannot load recid " . $rec_id . " into DomXml");
       return ;
     }
@@ -410,10 +417,10 @@ if ($_REQUEST["work"] == "debug") {
           if ($tag->hasAttributes())
             foreach ($tag->attributes as $attr) {
               $o->_attributes->{$attr->localName}->_namespace = $dc->item(0)->lookupNamespaceURI($attr->prefix);
-              $o->_attributes->{$attr->localName}->_value = htmlspecialchars($attr->nodeValue);
+              $o->_attributes->{$attr->localName}->_value = $attr->nodeValue;
             }
           $o->_namespace = $dc->item(0)->lookupNamespaceURI($tag->prefix);
-          $o->_value = htmlspecialchars($this->char_norm(trim($tag->nodeValue)));
+          $o->_value = $this->char_norm(trim($tag->nodeValue));
           if (!($tag->localName == "subject" && $tag->nodeValue == "undefined"))
             $rec->{$tag->localName}[] = $o;
           unset($o);
