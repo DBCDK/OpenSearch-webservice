@@ -34,7 +34,7 @@ function show_div(id) {
     if ($val = $_REQUEST[$field])
       $query .= (empty($query) ? "" : " AND ") . str_replace("_", ".", $field) . "=" . $val;
   }
-  echo '<tr><td>agency: </td><td><input type="test" size="6" value="' . $_REQUEST["agency"] . '"> Start: <input type="text" size="2" name="start" value="' . $start . '"> Step: <input type="text" size="2" name="step" value="' . $step . '"></td></tr><br/><tr><td>fields</td><td>'; 
+  echo '<tr><td>agency: </td><td><input type="test" name="agency" size="6" value="' . $_REQUEST["agency"] . '"> Start: <input type="text" size="2" name="start" value="' . $start . '"> Step: <input type="text" size="2" name="step" value="' . $step . '"></td></tr><br/><tr><td>fields</td><td>'; 
   $disps = array("type", "title", "creator", "source", "all");
   foreach ($disps as $dtag) {
     if ($_REQUEST[$dtag]) $disp_tag[$dtag] = TRUE;
