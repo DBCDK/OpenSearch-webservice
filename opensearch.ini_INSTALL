@@ -1,7 +1,7 @@
 ; Inifile for opensearch
 
 [setup]
-version = 0.10
+version = 0.11
 
 ; wsdl for service
 wsdl = opensearch.wsdl
@@ -56,10 +56,38 @@ max_collections = 50
 ; logfile for verbose output
 logfile = /tmp/opensearch.log
 
-; DC tags - not used 
-; valid_dc_tags = title creator subject description publisher contributor date type format identifier source language relation coverage rights
+; sorting & ranking
+; rank[<rank_name>][<rank_parameter>][<rank_register>] = boost_value
+;   rank_name is the sort-name that will trigger this ranking
+;   rank_parameter, "word_boost", "phrase_boost" or "tie"
+;   - must specify at least one word_boost and/or phrase_boost and just one tie
+;   - boosts must be placed in descending boost order
+;   rank_register name of register to rank towards
+;   boost_value for rank_register
+;
 
-; sorting
+rank[rank_title][word_boost]["dc.title"] = 4
+rank[rank_title][phrase_boost]["dc.title"] = 8
+rank[rank_title][word_boost]["cql.anyIndexes"] = 1
+rank[rank_title][phrase_boost]["cql.anyIndexes"] = 1
+rank[rank_title][tie] = 0.1
+
+rank[rank_creator][word_boost]["dc.creator"] = 4
+rank[rank_creator][phrase_boost]["dc.creator"] = 8
+rank[rank_creator][word_boost]["cql.anyIndexes"] = 1
+rank[rank_creator][phrase_boost]["cql.anyIndexes"] = 1
+rank[rank_creator][tie] = 0.1
+
+rank[rank_general][word_boost]["dc.title"] = 3
+rank[rank_general][phrase_boost]["dc.title"] = 6
+rank[rank_general][word_boost]["dc.creator"] = 4
+rank[rank_general][phrase_boost]["dc.creator"] = 8
+rank[rank_general][word_boost]["dc.subject"] = 2
+rank[rank_general][phrase_boost]["dc.subject"] = 3
+rank[rank_general][word_boost]["cql.anyIndexes"] = 1
+rank[rank_general][phrase_boost]["cql.anyIndexes"] = 1
+rank[rank_general][tie] = 0.1
+
 sort[title_ascending] = sort.title asc
 sort[title_descending] = sort.title desc
 sort[creator_ascending] = sort.creator asc
@@ -122,7 +150,7 @@ action[search][] = sort
 [agency]
 agency[710100] = (submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink)) OR (submitter:710100 AND original_format:katalog)
 agency[775100] = (submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink)) OR (submitter:775100 AND original_format:(katalog OR ebsco OR ebrary))
-agency[150013] = (submitter:150013 AND original_format:(pg OR dbc))
+agency[150013] = (submitter:150013 AND original_format:(pg OR dbc)) OR submitter:150014
 
 
 
