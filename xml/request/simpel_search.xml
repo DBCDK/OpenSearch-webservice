@@ -3,9 +3,7 @@
 <ns1:searchRequest>
  <ns1:query>danmark</ns1:query>
  <ns1:source></ns1:source>
- <ns1:facets/>
  <ns1:start>1</ns1:start>
  <ns1:stepValue>2</ns1:stepValue>
- <ns1:sort></ns1:sort>
 </ns1:searchRequest>
 </SOAP-ENV:Body></SOAP-ENV:Envelope>

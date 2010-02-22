@@ -2,8 +2,8 @@
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch"><SOAP-ENV:Body>
 <ns1:searchRequest>
  <ns1:query>gormenghast</ns1:query>
- <ns1:source></ns1:source>
  <ns1:facets/>
+ <ns1:source></ns1:source>
  <ns1:start>1</ns1:start>
  <ns1:stepValue>4</ns1:stepValue>
  <ns1:sort>random</ns1:sort>
