@@ -6,7 +6,14 @@ version = 0.11
 ; wsdl for service
 wsdl = opensearch.wsdl
 
+; in_house_domain may use ?ShowInfo and use create_sample form
+; in_house_domain = .mycompany.dk
+
+; set to TRUE to expose the create_sample form
+;show_samples = 1
+
 ; validate
+;validate[soap_request] = soap.xsd
 ;validate[request] = opensearch.xsd
 ;validate[response] = opensearch.xsd
 
@@ -34,7 +41,7 @@ xmldir = ./xml
 solr_uri = http://someserver:8080/apache-solr-1.4-dev/select
 
 ; fedora urls
-fedora_get_raw = http://gsomeserver.dbc.dk:8080/fedora/get/%s/originalData.0
+fedora_get_raw = http://someserver.dbc.dk:8080/fedora/get/%s/originalData.0
 fedora_get_dc = http://someserver.dbc.dk:8080/fedora/get/%s/DC
 fedora_get_rels_ext = http://someserver.dbc.dk:8080/fedora/get/%s/RELS-EXT
 
