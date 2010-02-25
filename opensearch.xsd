@@ -23,6 +23,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:query"/>
 				<xs:element ref="os:agency" minOccurs="0"/>
 				<xs:element ref="os:allObjects" minOccurs="0"/>
+				<xs:element ref="os:authentication" minOccurs="0"/>
 				<xs:element ref="os:callback" minOccurs="0"/>
 				<xs:element ref="os:collectionType" minOccurs="0"/>
 				<xs:element ref="os:facets" minOccurs="0"/>
@@ -55,6 +56,18 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:annotation>
 			<xs:documentation xml:lang="en">If true, all objects in a collection will be returned, no matter if the objects are part of the search result. If false, only objects that are part of the search result will be returned.</xs:documentation>
 		</xs:annotation>
+	</xs:element>
+	<xs:element name="authentication">
+		<xs:annotation>
+			<xs:documentation>Parameters used for authentication purposes</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="os:userIdAut"/>
+				<xs:element ref="os:groupIdAut"/>
+				<xs:element ref="os:passwordAut"/>
+			</xs:sequence>
+		</xs:complexType>
 	</xs:element>
 	<xs:element name="callback" type="xs:string">
 		<xs:annotation>
@@ -170,6 +183,11 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Frequency of a specific facet term in the search result.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="groupIdAut">
+		<xs:annotation>
+			<xs:documentation>Identifier of the group (most often a library number) the user belongs to (for authentication purposes)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="hitCount" type="xs:int">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Number of objects in the search result.</xs:documentation>
@@ -215,6 +233,11 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="outputType" type="os:outputTypeType">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">E.g. xml, json or php.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="passwordAut">
+		<xs:annotation>
+			<xs:documentation>Password (for authenticaiton purposes)</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="query" type="xs:string">
@@ -329,6 +352,11 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="term" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Facet term.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="userIdAut">
+		<xs:annotation>
+			<xs:documentation>User identifier (for authentication purposes)</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:simpleType name="collectionTypeType">
