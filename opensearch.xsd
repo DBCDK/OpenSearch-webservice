@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:ISO639-2="http://lcweb.loc.gov/standards/iso639-2/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="en">Opensearch Service</xs:documentation>
@@ -59,13 +60,13 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="authentication">
 		<xs:annotation>
-			<xs:documentation>Parameters used for authentication purposes</xs:documentation>
+			<xs:documentation xml:lang="en">Parameters used for authentication purposes</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="os:userIdAut"/>
 				<xs:element ref="os:groupIdAut"/>
 				<xs:element ref="os:passwordAut"/>
+				<xs:element ref="os:userIdAut"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -185,7 +186,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="groupIdAut">
 		<xs:annotation>
-			<xs:documentation>Identifier of the group (most often a library number) the user belongs to (for authentication purposes)</xs:documentation>
+			<xs:documentation xml:lang="en">Identifier of the group (most often a library number) the user belongs to (for authentication purposes)</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="hitCount" type="xs:int">
@@ -237,7 +238,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="passwordAut">
 		<xs:annotation>
-			<xs:documentation>Password (for authenticaiton purposes)</xs:documentation>
+			<xs:documentation xml:lang="en">Password (for authentication purposes)</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="query" type="xs:string">
@@ -356,7 +357,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="userIdAut">
 		<xs:annotation>
-			<xs:documentation>User identifier (for authentication purposes)</xs:documentation>
+			<xs:documentation xml:lang="en">User identifier (for authentication purposes)</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:simpleType name="collectionTypeType">
