@@ -47,3 +47,5 @@ Copy opensearch.ini_INSTALL to opensearch.ini and edit it to reflect your setup
 
 Copy opensearch.wsdl_INSTALL to opensearch.wsdl and modify 
 the location of the service (at the end of the file)
+
+Consider copying robots.txt_INSTALL to robots.txt

@@ -440,6 +440,9 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="date_ascending"/>
 			<xs:enumeration value="date_descending"/>
 			<xs:enumeration value="random"/>
+			<xs:enumeration value="rank_general"/>
+			<xs:enumeration value="rank_title"/>
+			<xs:enumeration value="rank_creator"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
