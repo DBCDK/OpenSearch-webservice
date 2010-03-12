@@ -22,8 +22,7 @@ wsdl = opensearch.wsdl
 soapAction[search] = searchRequest
 
 ; prefixes and namespaces
-; NONE is the default namespace for the service
-xmlns[NONE] = http://oss.dbc.dk/ns/opensearch
+xmlns[] = http://oss.dbc.dk/ns/opensearch
 xmlns[xs] = http://www.w3.org/2001/XMLSchema
 xmlns[xsi] = http://www.w3.org/2001/XMLSchema-instance
 xmlns[oss] = http://oss.dbc.dk/ns/osstypes
