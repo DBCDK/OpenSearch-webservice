@@ -108,7 +108,9 @@ class openSearch extends webServiceServer {
 
     $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
     // urldecode ???? $query = $cql2solr->convert(urldecode($param->query->_value));
-    $query = $cql2solr->convert($param->query->_value, $rank);
+// ' is handled differently in indexing and searching, so remove it until this is solved
+    $query = $cql2solr->convert(str_replace("'", "", $param->query->_value), $rank);
+    //$query = $cql2solr->convert($param->query->_value, $rank);
     if ($sort)
       $sort_q = "&sort=" . urlencode($sort_type[$sort]);
     if ($rank) {
