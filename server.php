@@ -43,6 +43,10 @@ class openSearch extends webServiceServer {
 
   function search($param) { 
 // set some defines
+    if (!$this->aaa->has_right("opensearch", 500)) {
+      $ret_error->searchResponse->_value->error->_value = "authentication_error";
+      return $ret_error;
+    }
     define("WSDL", $this->config->get_value("wsdl", "setup"));
     define("SOLR_URI", $this->config->get_value("solr_uri", "setup"));
     define("FEDORA_GET_RAW", $this->config->get_value("fedora_get_raw", "setup"));
@@ -337,7 +341,6 @@ if ($_REQUEST["work"] == "debug") {
     $result->searchResult = $collections;
     $result->facetResult->_value = $facets;
 
-    verbose::log(TIMER, "opensearch:: " . $this->watch->dump());
     return $ret;
   }
 

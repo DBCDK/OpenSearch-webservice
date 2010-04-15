@@ -1,7 +1,7 @@
 ; Inifile for opensearch
 
 [setup]
-version = 0.12
+version = 0.13
 
 ; wsdl for service
 wsdl = opensearch.wsdl
@@ -114,6 +114,29 @@ sort[random] = random
 ;   Z3959   - calls to z3950 services
 ;   OCI     - oracle
 verbose = WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG+Z3950+OCI
+
+; format for automatic timer dump %s is the soap-action used
+dump_timer = opensearch
+
+[aaa]
+; aaa Authentication, Access control and Accounting
+; if aaa_credentials is set, the rights-object is created from
+; the FORS-server or aaa_ip_rights below
+;
+; oci credentials for FORS server
+aaa_credentials = some_user/some_pwd@some.server.dbc.dk
+; memcache server - use localhost in one-webserver environment
+;aaa_cache_address = localhost:11211
+; number of seconds to cache authentication and access rights info
+;aaa_cache_seconds = 3600
+;
+; As an alternative to FORS rights, rights can be set here for selected ip-addresses
+; aaa_ip_rights[group-identifier][ip_list] = list of ip's
+; aaa_ip_rights[group-identifier][ressource][<named ressource>] = right to <named ressource>
+; aaa_ip_rights[group-identifier][ressource][<named ressource 2>] = right to <named ressource 2>
+;
+;aaa_ip_rights[dbc][ip_list] = 172.16.0.0-172.31.255.255;193.111.162.0-193.111.162.255
+;aaa_ip_rights[dbc][ressource][opensearch] = 500
 
 
 [rest]
