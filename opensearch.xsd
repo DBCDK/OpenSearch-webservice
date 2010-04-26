@@ -393,11 +393,11 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">The formats that you can choose from to be returned by the service.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="danmarcxchange"/>
 			<xs:enumeration value="dkabm"/>
 			<xs:enumeration value="docbook"/>
 			<xs:enumeration value="dublinCore"/>
 			<xs:enumeration value="full"/>
+			<xs:enumeration value="marcxchange"/>
 			<xs:enumeration value="short"/>
 		</xs:restriction>
 	</xs:simpleType>
