@@ -136,6 +136,8 @@ class openSearch extends webServiceServer {
     }
 
     verbose::log(TRACE, "CQL to SOLR: " . $param->query->_value . " -> " . urldecode($query["solr"]));
+    if ($query["dismax"])
+      verbose::log(TRACE, "CQL to DISMAX: " . $param->query->_value . " -> " . urldecode($query["dismax"]));
 
 // do the query
     $search_ids = array();
