@@ -62,7 +62,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="allRelations" type="xs:boolean">
 		<xs:annotation>
-			<xs:documentation xml:lang="en">Type of the relation from the list in relationTypeType.</xs:documentation>
+			<xs:documentation xml:lang="en">If true, all relations are returned. The default is false.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="authentication">
