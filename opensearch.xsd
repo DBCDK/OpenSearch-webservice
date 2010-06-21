@@ -30,6 +30,8 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:facets" minOccurs="0"/>
 				<xs:element ref="os:format" minOccurs="0"/>
 				<xs:element ref="os:outputType" minOccurs="0"/>
+				<xs:element ref="os:allRelations" minOccurs="0"/>
+				<xs:element ref="os:relationData" minOccurs="0"/>
 				<xs:element ref="os:source" minOccurs="0"/>
 				<xs:element ref="os:start" minOccurs="0"/>
 				<xs:element ref="os:stepValue" minOccurs="0"/>
@@ -56,6 +58,11 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="allObjects" type="xs:boolean">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">If true, all objects in a collection will be returned, no matter if the objects are part of the search result. If false, only objects that are part of the search result will be returned.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="allRelations" type="xs:boolean">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Type of the relation from the list in relationTypeType.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="authentication">
@@ -258,10 +265,15 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="os:relationType"/>
-				<xs:element ref="os:relationLink"/>
-				<xs:element ref="os:relationSource" minOccurs="0"/>
+				<xs:element ref="os:relationUri" minOccurs="0"/>
+				<xs:element ref="os:relationObject" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
+	</xs:element>
+	<xs:element name="relationData" type="os:relationDataType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Type of the relation from the list in relationTypeType.</xs:documentation>
+		</xs:annotation>
 	</xs:element>
 	<xs:element name="relations">
 		<xs:annotation>
@@ -273,19 +285,24 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="relationLink" type="xs:anyURI">
+	<xs:element name="relationObject">
 		<xs:annotation>
-			<xs:documentation xml:lang="en">URI of the relation.</xs:documentation>
+			<xs:documentation xml:lang="en">The related object.</xs:documentation>
 		</xs:annotation>
-	</xs:element>
-	<xs:element name="relationSource" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The source of the relation.</xs:documentation>
-		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="os:object"/>
+			</xs:sequence>
+		</xs:complexType>
 	</xs:element>
 	<xs:element name="relationType" type="os:relationTypeType">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Type of the relation from the list in relationTypeType.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="relationUri" type="xs:anyURI">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">URI of the relation.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="result">
@@ -411,13 +428,25 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="php"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="relationDataType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The types of relations that the service can return.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="type"/>
+			<xs:enumeration value="uri"/>
+			<xs:enumeration value="full"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="relationTypeType">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The types of relations that the service can return.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="rev:hasReview"/>
-			<xs:enumeration value="dbcaddi:hasCoverImage"/>
+			<xs:enumeration value="dbcaddi:hasReview"/>
+			<xs:enumeration value="dbcaddi:isReviewOf"/>
+			<xs:enumeration value="dbcaddi:hasCover"/>
+			<xs:enumeration value="dbcaddi:isCoverOf"/>
 			<xs:enumeration value="dbcaddi:hasUserCreatedContent"/>
 			<xs:enumeration value="dbcaddi:hasSoundClip"/>
 			<xs:enumeration value="dbcaddi:hasDemo"/>
@@ -428,6 +457,8 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="dbcaddi:hasThemeMember"/>
 			<xs:enumeration value="dbcbib:hasTrack"/>
 			<xs:enumeration value="dbcbib:isPartOfAlbum"/>
+			<xs:enumeration value="dbcbib:hasArticle"/>
+			<xs:enumeration value="dbcbib:isPartOfManifestation"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="sortType">
