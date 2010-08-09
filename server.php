@@ -310,15 +310,20 @@ class openSearch extends webServiceServer {
     foreach ($work_ids as $work) {
       $objects = array();
       foreach ($work as $fid) {
+        $work_uri = sprintf(FEDORA_GET_RELS_EXT, $work_id);
         $fedora_get =  sprintf(FEDORA_GET_RAW, $fid);
         $fedora_result = $this->curl->get($fedora_get);
         $curl_err = $this->curl->get_status();
+        //verbose::log(TRACE, "Fedora get: " . $fedora_get);
         if ($curl_err["http_code"] < 200 || $curl_err["http_code"] > 299) {
           $error = "Error: Cannot fetch record: " . $fid . " - http-error: " . $curl_err["http_code"];
           verbose::log(FATAL, "Fedora http-error: " . $curl_err["http_code"] . " from: " . $fedora_get);
           return $ret_error;
         }
-        $objects[]->_value = $this->parse_for_dc_abm(&$fedora_result, $fid, $param->format->_value);
+        if (strtoupper($param->allRelations->_value) == "TRUE"
+         || $param->allRelations->_value == "1")
+          $fedora_relation = $this->curl->get(sprintf(FEDORA_GET_RELS_EXT, $fid));
+        $objects[]->_value = $this->parse_fedora_object(&$fedora_result, &$fedora_relation, $param->relationData->_value, $fid, $param->format->_value);
       }
       $o->collection->_value->resultPosition->_value = $rec_no++;
       $o->collection->_value->numberOfObjects->_value = count($objects);
@@ -403,42 +408,82 @@ if ($_REQUEST["work"] == "debug") {
     }
   }
 
-  /** \brief Parse a record and extract the dc-records as a dc record
+  /** \brief Parse a fedora object and extract record and relations
    *
    */
-  private function parse_for_dc_abm(&$doc, $rec_id, $format) {
-    static $dom;
+  private function parse_fedora_object(&$fedora_obj, $fedora_rels_obj, $rels_type, $rec_id, $format) {
+    static $dom, $rels_dom, $allowed_relation;
     //$valids = explode(" ", trim(VALID_DC_TAGS));
     if (empty($format)) $format = "dkabm";
     if (empty($dom)) $dom = new DomDocument();
     $dom->preserveWhiteSpace = false;
-    if (@ !$dom->loadXML($doc)) {
+    if (@ !$dom->loadXML($fedora_obj)) {
       verbose::log(FATAL, "Cannot load recid " . $rec_id . " into DomXml");
       return ;
     }
   
-    $dc = $dom->getElementsByTagName("record");
-    foreach ($dc->item(0)->childNodes as $tag) {
+    $rec = $this->extract_record($dom, $rec_id, $format);
+
+    if ($fedora_rels_obj) {
+      if (!isset($allowed_relation)) 
+        $allowed_relation = $this->config->get_value("relation", "setup");
+      if (empty($rels_dom)) 
+        $rels_dom = new DomDocument();
+      if (@ !$rels_dom->loadXML($fedora_rels_obj)) 
+        verbose::log(FATAL, "Cannot load RELS_EXT for " . $rec_id . " into DomXml");
+      foreach ($rels_dom->getElementsByTagName("Description")->item(0)->childNodes as $tag)
+        if ($tag->nodeType == XML_ELEMENT_NODE && $allowed_relation[$tag->tagName]) {
+          //echo $tag->localName . " " . $tag->nodeValue . $tag->nodeType . "<br/>";
+          $relation->relationType->_value = $tag->localName;
+          if ($rels_type == "uri" || $rels_type == "full")
+            $relation->relationUri->_value = $tag->nodeValue;
+          if ($rels_type == "full") {
+            $related_obj = $this->curl->get(sprintf(FEDORA_GET_RAW, $tag->nodeValue));
+            if (@ !$rels_dom->loadXML($related_obj)) 
+              verbose::log(FATAL, "Cannot load " . $tag->tagName . " object for " . $rec_id . " into DomXml");
+            else {
+              $rel_obj = &$relation->relationObject->_value->object->_value;
+              $rel_obj->identifier->_value = $tag->nodeValue;
+              $rel_obj->record = $this->extract_record($rels_dom, $tag->nodeValue, $format);
+            }
+          }
+          $relations->relation[]->_value = $relation;
+          unset($relation);
+        }
+      //print_r($relations);
+      //echo $rels;
+    }
+
+    $ret->identifier->_value = $rec_id;
+    $ret->relations->_value = $relations;
+    $ret->record = $rec;
+    if (DEBUG_ON) var_dump($ret);
+    return $ret;
+  }
+
+  /** \brief Extract record and namespace for it
+   *
+   */
+  private function extract_record(&$dom, $rec_id, $format) {
+    $record = &$dom->getElementsByTagName("record");
+    if ($record->item(0))
+      $ret->_namespace = $record->item(0)->lookupNamespaceURI("dkabm");
+    $rec = &$ret->_value;
+    foreach ($record->item(0)->childNodes as $tag) {
       if ($format == "dkabm" || $tag->prefix == "dc")
         if (trim($tag->nodeValue)) {
           if ($tag->hasAttributes())
             foreach ($tag->attributes as $attr) {
-              $o->_attributes->{$attr->localName}->_namespace = $dc->item(0)->lookupNamespaceURI($attr->prefix);
+              $o->_attributes->{$attr->localName}->_namespace = $record->item(0)->lookupNamespaceURI($attr->prefix);
               $o->_attributes->{$attr->localName}->_value = $attr->nodeValue;
             }
-          $o->_namespace = $dc->item(0)->lookupNamespaceURI($tag->prefix);
+          $o->_namespace = $record->item(0)->lookupNamespaceURI($tag->prefix);
           $o->_value = $this->char_norm(trim($tag->nodeValue));
           if (!($tag->localName == "subject" && $tag->nodeValue == "undefined"))
             $rec->{$tag->localName}[] = $o;
           unset($o);
         }
     }
-
-    $ret->identifier->_value = $rec_id;
-    $ret->relations->_value = $relations;
-    $ret->record->_value = $rec;
-    $ret->record->_namespace = $dc->item(0)->lookupNamespaceURI("dkabm");
-    if (DEBUG_ON) var_dump($ret);
     return $ret;
   }
 
