@@ -2,7 +2,7 @@
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch"><SOAP-ENV:Body>
 <ns1:searchRequest>
  <ns1:query>dc.title=zorro</ns1:query>
- <ns1:agency></ns1:agency>
+ <ns1:agency>710100</ns1:agency>
  <ns1:facets>
   <ns1:numberOfTerms>10</ns1:numberOfTerms>
   <ns1:facetName>facet.creator</ns1:facetName>
