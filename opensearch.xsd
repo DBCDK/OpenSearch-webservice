@@ -35,7 +35,10 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:source" minOccurs="0"/>
 				<xs:element ref="os:start" minOccurs="0"/>
 				<xs:element ref="os:stepValue" minOccurs="0"/>
-				<xs:element ref="os:sort" minOccurs="0"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="os:userDefinedRanking"/>
+					<xs:element ref="os:sort"/>
+				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -181,6 +184,16 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="fieldName" type="os:fieldNameType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fieldType" type="os:fieldTypeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="format" type="os:formatType">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The format that you want the service to return.</xs:documentation>
@@ -252,6 +265,18 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The query language of this service is CQL, and the specific implementation of CQL in this service is described in the opensearch_cql.xml file.</xs:documentation>
 		</xs:annotation>
+	</xs:element>
+	<xs:element name="rankField">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">...</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="os:fieldName"/>
+				<xs:element ref="os:fieldType"/>
+				<xs:element ref="os:weight"/>
+			</xs:sequence>
+		</xs:complexType>
 	</xs:element>
 	<xs:element name="rawData" type="xs:string">
 		<xs:annotation>
@@ -373,14 +398,32 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Facet term.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="tieValue" type="xs:decimal">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="time" type="xs:int">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Number of milliseconds used in the service</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="userDefinedRanking">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="os:tieValue" minOccurs="0"/>
+				<xs:element ref="os:rankField" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="userIdAut">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">User identifier (for authentication purposes)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="weight" type="xs:int">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">...</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:simpleType name="collectionTypeType">
@@ -411,6 +454,37 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="facet.dk5"/>
 			<xs:enumeration value="facet.acSource"/>
 			<xs:enumeration value="facet.category"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="fieldNameType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">...</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="dc.title"/>
+			<xs:enumeration value="dc.creator"/>
+			<xs:enumeration value="dc.subject"/>
+			<xs:enumeration value="dc.description"/>
+			<xs:enumeration value="dc.publisher"/>
+			<xs:enumeration value="dc.contributor"/>
+			<xs:enumeration value="dc.date"/>
+			<xs:enumeration value="dc.type"/>
+			<xs:enumeration value="dc.format"/>
+			<xs:enumeration value="dc.identifier"/>
+			<xs:enumeration value="dc.source"/>
+			<xs:enumeration value="dc.language"/>
+			<xs:enumeration value="dc.relation"/>
+			<xs:enumeration value="dc.coverage"/>
+			<xs:enumeration value="dc.rights"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="fieldTypeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">...</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="phrase"/>
+			<xs:enumeration value="word"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="formatType">
