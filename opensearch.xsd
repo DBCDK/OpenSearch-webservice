@@ -316,6 +316,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:more"/>
 				<xs:element ref="os:searchResult" minOccurs="0"/>
 				<xs:element ref="os:facetResult" minOccurs="0"/>
+				<xs:element ref="os:time"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -370,6 +371,11 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="term" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Facet term.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="time" type="xs:int">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Number of milliseconds used in the service</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="userIdAut">
