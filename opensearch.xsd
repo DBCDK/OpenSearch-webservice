@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2010 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:ISO639-2="http://lcweb.loc.gov/standards/iso639-2/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:ISO639-2="http://lcweb.loc.gov/standards/iso639-2/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:marcx="info:lc/xmlns/marcxchange-v1" xmlns:docbook="http://docbook.org/ns/docbook" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="en">Opensearch Service</xs:documentation>
 		<xs:documentation xml:lang="en">This XML Schema describes the data and structure of data of the Opensearch search service.</xs:documentation>
@@ -15,6 +15,19 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:annotation>
 	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
 	<xs:import namespace="http://biblstandard.dk/abm/namespace/dkabm/" schemaLocation="dkabm.xsd"/>
+	<xs:import namespace="info:lc/xmlns/marcxchange-v1" schemaLocation="marcxchange-1-1.xsd"/>
+	<xs:import namespace="http://docbook.org/ns/docbook" schemaLocation="docbook.xsd"/>
+	<xs:element name="getObjectRequest">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Request for a specific object.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="os:identifier"/>
+				<xs:element ref="os:objectFormat"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="searchRequest">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The service request.</xs:documentation>
@@ -199,6 +212,16 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">The format that you want the service to return.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="formatsAvailable">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The format that you want the service to return.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="os:format" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="frequence" type="xs:int">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Frequency of a specific facet term in the search result.</xs:documentation>
@@ -242,14 +265,21 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:sequence>
 				<xs:element ref="os:identifier"/>
 				<xs:element ref="os:relations" minOccurs="0"/>
+				<xs:element ref="os:formatsAvailable"/>
 				<xs:choice>
 					<xs:element ref="os:dc"/>
 					<xs:element ref="dkabm:record"/>
-					<xs:element ref="os:rawData"/>
+					<xs:element ref="marcx:collection"/>
+					<xs:element ref="docbook:article"/>
 					<xs:element ref="os:short"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
+	</xs:element>
+	<xs:element name="objectFormat" type="os:objectFormatType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Here you can specify the sort order of the search result. Choose from the list in sortType.</xs:documentation>
+		</xs:annotation>
 	</xs:element>
 	<xs:element name="outputType" type="os:outputTypeType">
 		<xs:annotation>
@@ -492,12 +522,19 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">The formats that you can choose from to be returned by the service.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="dkabm"/>
-			<xs:enumeration value="docbook"/>
 			<xs:enumeration value="dublinCore"/>
 			<xs:enumeration value="full"/>
-			<xs:enumeration value="marcxchange"/>
 			<xs:enumeration value="short"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="objectFormatType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The object formats that you can choose from to be returned by the service.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="dkabm"/>
+			<xs:enumeration value="docbook"/>
+			<xs:enumeration value="marcxchange"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="outputTypeType">
