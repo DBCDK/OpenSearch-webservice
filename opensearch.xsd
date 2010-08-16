@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2010 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:ISO639-2="http://lcweb.loc.gov/standards/iso639-2/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:marcx="info:lc/xmlns/marcxchange-v1" xmlns:docbook="http://docbook.org/ns/docbook" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="en">Opensearch Service</xs:documentation>
@@ -30,7 +29,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="searchRequest">
 		<xs:annotation>
-			<xs:documentation xml:lang="en">The service request.</xs:documentation>
+			<xs:documentation xml:lang="en">Request for searching Open Search.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -199,12 +198,12 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="fieldName" type="os:fieldNameType">
 		<xs:annotation>
-			<xs:documentation xml:lang="en">...</xs:documentation>
+			<xs:documentation xml:lang="en">Name of field used in user defined ranking.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="fieldType" type="os:fieldTypeType">
 		<xs:annotation>
-			<xs:documentation xml:lang="en">...</xs:documentation>
+			<xs:documentation xml:lang="en">Type of field used in user defined ranking.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="format" type="os:formatType">
@@ -298,7 +297,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="rankField">
 		<xs:annotation>
-			<xs:documentation xml:lang="en">...</xs:documentation>
+			<xs:documentation xml:lang="en">Specification of a specific field used in user defined ranking.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -430,7 +429,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:element>
 	<xs:element name="tieValue" type="xs:decimal">
 		<xs:annotation>
-			<xs:documentation xml:lang="en">...</xs:documentation>
+			<xs:documentation xml:lang="en">How much the final score of the query will be influenced by the scores of the lower scoring fields compared to the highest scoring field.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="time" type="xs:int">
@@ -439,6 +438,9 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="userDefinedRanking">
+	<xs:annotation>
+			<xs:documentation xml:lang="en">Used to define a custom ranking algorithm.</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="os:tieValue" minOccurs="0"/>
@@ -510,7 +512,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	</xs:simpleType>
 	<xs:simpleType name="fieldTypeType">
 		<xs:annotation>
-			<xs:documentation xml:lang="en">...</xs:documentation>
+			<xs:documentation xml:lang="en">Ranking field as phrase or word.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="phrase"/>
