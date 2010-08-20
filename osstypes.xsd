@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
 <xs:schema xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://oss.dbc.dk/ns/osstypes" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="en">
       XML Schema for the oss namespace used with DKABM.
     </xs:documentation>
 	</xs:annotation>
-	<!--<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
-	//<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>-->
+	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
+	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
 	<xs:complexType name="act">
 		<xs:annotation>
 			<xs:documentation xml:lang="dan">Skuespiller</xs:documentation>
@@ -401,7 +400,6 @@
 			</xs:restriction>
 		</xs:simpleContent>
 	</xs:complexType>
-	
 	<xs:complexType name="dkmdt">
 		<xs:annotation>
 			<xs:documentation xml:lang="dan">Medredaktør</xs:documentation>
