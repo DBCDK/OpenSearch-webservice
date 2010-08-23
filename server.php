@@ -347,6 +347,7 @@ if ($_REQUEST["work"] == "debug") {
     $result->more->_value = ($more ? "TRUE" : "FALSE");
     $result->searchResult = $collections;
     $result->facetResult->_value = $facets;
+    $result->time->_value = $this->watch->splittime("Total");
 
     return $ret;
   }
