@@ -432,9 +432,9 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">How much the final score of the query will be influenced by the scores of the lower scoring fields compared to the highest scoring field.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="time" type="xs:int">
+	<xs:element name="time" type="xs:decimal">
 		<xs:annotation>
-			<xs:documentation xml:lang="en">Number of milliseconds used in the service</xs:documentation>
+			<xs:documentation xml:lang="en">Number of seconds used in the service</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="userDefinedRanking">
