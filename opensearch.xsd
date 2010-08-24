@@ -40,7 +40,6 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:callback" minOccurs="0"/>
 				<xs:element ref="os:collectionType" minOccurs="0"/>
 				<xs:element ref="os:facets" minOccurs="0"/>
-				<xs:element ref="os:format" minOccurs="0"/>
 				<xs:element ref="os:outputType" minOccurs="0"/>
 				<xs:element ref="os:allRelations" minOccurs="0"/>
 				<xs:element ref="os:relationData" minOccurs="0"/>
@@ -119,30 +118,6 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">E.g presented as single manifestations or as collections of works.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="dc">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Dublin Core. One of the formats that can be returned from the service.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="dc:title" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:creator" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:subject" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:description" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:publisher" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:contributor" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:date" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:type" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:format" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:identifier" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:source" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:language" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:relation" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:coverage" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:rights" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="error" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Message returned by the service, if an error occurs.</xs:documentation>
@@ -206,7 +181,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Type of field used in user defined ranking.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="format" type="os:formatType">
+	<xs:element name="format" type="os:objectFormatType">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The format that you want the service to return.</xs:documentation>
 		</xs:annotation>
@@ -266,11 +241,9 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:relations" minOccurs="0"/>
 				<xs:element ref="os:formatsAvailable"/>
 				<xs:choice>
-					<xs:element ref="os:dc"/>
 					<xs:element ref="dkabm:record"/>
 					<xs:element ref="marcx:collection"/>
 					<xs:element ref="docbook:article"/>
-					<xs:element ref="os:short"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
@@ -389,19 +362,6 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="short">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">A very brief format. One of the formats that can be returned from the service.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="dc:title" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:creator" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:date" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="dc:type" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="sort" type="os:sortType">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Here you can specify the sort order of the search result. Choose from the list in sortType.</xs:documentation>
@@ -438,7 +398,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="userDefinedRanking">
-	<xs:annotation>
+		<xs:annotation>
 			<xs:documentation xml:lang="en">Used to define a custom ranking algorithm.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
@@ -517,16 +477,6 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="phrase"/>
 			<xs:enumeration value="word"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="formatType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The formats that you can choose from to be returned by the service.</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="dublinCore"/>
-			<xs:enumeration value="full"/>
-			<xs:enumeration value="short"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="objectFormatType">
