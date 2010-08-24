@@ -7,32 +7,6 @@
 	</xs:annotation>
 	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
 	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
-	<xs:complexType name="act">
-		<xs:annotation>
-			<xs:documentation xml:lang="dan">Skuespiller</xs:documentation>
-			<xs:documentation xml:lang="en">Actor</xs:documentation>
-		</xs:annotation>
-		<xs:simpleContent>
-			<xs:restriction base="dc:SimpleLiteral">
-				<xs:simpleType>
-					<xs:restriction base="xs:string"/>
-				</xs:simpleType>
-			</xs:restriction>
-		</xs:simpleContent>
-	</xs:complexType>
-	<xs:complexType name="aft">
-		<xs:annotation>
-			<xs:documentation xml:lang="dan">Forfatter til efterord, efterskrift etc.</xs:documentation>
-			<xs:documentation xml:lang="en">Author of afterword, colophon etc.</xs:documentation>
-		</xs:annotation>
-		<xs:simpleContent>
-			<xs:restriction base="dc:SimpleLiteral">
-				<xs:simpleType>
-					<xs:restriction base="xs:string"/>
-				</xs:simpleType>
-			</xs:restriction>
-		</xs:simpleContent>
-	</xs:complexType>
 	<xs:complexType name="age">
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
