@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch"><SOAP-ENV:Body>
 <ns1:getObjectRequest>
- <ns1:identifier>danmark</ns1:identifier>
- <ns1:objectFormat></ns1:objectFormat>
+ <ns1:identifier>775100:42944610</ns1:identifier>
+ <ns1:objectFormat>dkabm</ns1:objectFormat>
 </ns1:getObjectRequest>
 </SOAP-ENV:Body></SOAP-ENV:Envelope>
