@@ -41,7 +41,7 @@ class openSearch extends webServiceServer {
   /** \brief Handles the request and set up the response
    */
 
-  function search($param) { 
+  public function search($param) { 
 // set some defines
     if (!$this->aaa->has_right("opensearch", 500)) {
       $ret_error->searchResponse->_value->error->_value = "authentication_error";
@@ -352,6 +352,53 @@ if ($_REQUEST["work"] == "debug") {
     return $ret;
   }
 
+  /** \brief Get an object in a specific format
+   *
+   * param: identifier
+   *        objectFormat - one of dkabm, docbook, marcxchange
+   */
+
+
+  public function getObject($param) { 
+    $ret_error->searchResponse->_value->error->_value = &$error;
+    if (!$this->aaa->has_right("opensearch", 500)) {
+      $error = "authentication_error";
+      return $ret_error;
+    }
+    define("FEDORA_GET_RAW", $this->config->get_value("fedora_get_raw", "setup"));
+    $fid = $param->identifier->_value;
+    $record_uri =  sprintf(FEDORA_GET_RAW, $fid);
+    $fedora_result = $this->curl->get($record_uri);
+    $curl_err = $this->curl->get_status();
+    if ($curl_err["http_code"] < 200 || $curl_err["http_code"] > 299) {
+      $error = "Error: Cannot fetch record: " . $fid . " - http-error: " . $curl_err["http_code"];
+      verbose::log(FATAL, "Fedora http-error: " . $curl_err["http_code"] . " from: " . $fedora_get);
+      return $ret_error;
+    }
+
+    $format = &$param->objectFormat->_value;
+    $o->collection->_value->resultPosition->_value = 1;
+    $o->collection->_value->numberOfObjects->_value = 1;
+    $o->collection->_value->object[]->_value = $this->parse_fedora_object(&$fedora_result, "", "", $fid, $format);
+    $collections[]->_value = $o;
+
+    $result = &$ret->searchResponse->_value->result->_value;
+    $result->hitCount->_value = 1;
+    $result->collectionCount->_value = count($collections);
+    $result->more->_value = "FALSE";
+    $result->searchResult = $collections;
+    $result->facetResult->_value = "";
+    $result->time->_value = $this->watch->splittime("Total");
+
+    //print_r($param);
+    //print_r($fedora_result);
+    //print_r($objects);
+    //print_r($ret); die();
+    return $ret;
+  }
+
+/*******************************************************************************/
+
     private function get_solr_array($q, $start, $rows, $sort, $facets, $filter, &$solr_arr) {
       $solr_query = SOLR_URI . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort&fl=fedoraPid$facets";
       verbose::log(TRACE, "Query: " . $solr_query);
@@ -444,8 +491,8 @@ if ($_REQUEST["work"] == "debug") {
               verbose::log(FATAL, "Cannot load " . $tag->tagName . " object for " . $rec_id . " into DomXml");
             else {
               $rel_obj = &$relation->relationObject->_value->object->_value;
+              $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format);
               $rel_obj->identifier->_value = $tag->nodeValue;
-              $rel_obj->record = $this->extract_record($rels_dom, $tag->nodeValue, $format);
             }
           }
           $relations->relation[]->_value = $relation;
@@ -455,10 +502,24 @@ if ($_REQUEST["work"] == "debug") {
       //echo $rels;
     }
 
+    $ret = $rec;
     $ret->identifier->_value = $rec_id;
     $ret->relations->_value = $relations;
-    $ret->record = $rec;
+    $ret->formatsAvailable->_value = $this->scan_for_formats($dom);
     if (DEBUG_ON) var_dump($ret);
+    return $ret;
+  }
+
+  /** \brief Check rec for available formats
+   *
+   */
+  private function scan_for_formats(&$dom) {
+  static $form_table;
+    if (!isset($form_table))
+      $form_table = $this->config->get_value("scan_format_table", "setup");
+    foreach ($dom->getElementsByTagName("container")->item(0)->childNodes as $tag)
+      if (!$ret->format[]->_value = $form_table[$tag->tagName])
+        $ret->format[]->_value = $tag->tagName;
     return $ret;
   }
 
@@ -466,24 +527,45 @@ if ($_REQUEST["work"] == "debug") {
    *
    */
   private function extract_record(&$dom, $rec_id, $format) {
-    $record = &$dom->getElementsByTagName("record");
-    if ($record->item(0))
-      $ret->_namespace = $record->item(0)->lookupNamespaceURI("dkabm");
-    $rec = &$ret->_value;
-    foreach ($record->item(0)->childNodes as $tag) {
-      if ($format == "dkabm" || $tag->prefix == "dc")
-        if (trim($tag->nodeValue)) {
-          if ($tag->hasAttributes())
-            foreach ($tag->attributes as $attr) {
-              $o->_attributes->{$attr->localName}->_namespace = $record->item(0)->lookupNamespaceURI($attr->prefix);
-              $o->_attributes->{$attr->localName}->_value = $attr->nodeValue;
+    switch ($format) {
+      case "dkabm":
+        $rec = &$ret->record->_value;
+        $record = &$dom->getElementsByTagName("record");
+        if ($record->item(0))
+          $ret->record->_namespace = $record->item(0)->lookupNamespaceURI("dkabm");
+        foreach ($record->item(0)->childNodes as $tag) {
+          if ($format == "dkabm" || $tag->prefix == "dc")
+            if (trim($tag->nodeValue)) {
+              if ($tag->hasAttributes())
+                foreach ($tag->attributes as $attr) {
+                  $o->_attributes->{$attr->localName}->_namespace = $record->item(0)->lookupNamespaceURI($attr->prefix);
+                  $o->_attributes->{$attr->localName}->_value = $attr->nodeValue;
+                }
+              $o->_namespace = $record->item(0)->lookupNamespaceURI($tag->prefix);
+              $o->_value = $this->char_norm(trim($tag->nodeValue));
+              if (!($tag->localName == "subject" && $tag->nodeValue == "undefined"))
+                $rec->{$tag->localName}[] = $o;
+              unset($o);
             }
-          $o->_namespace = $record->item(0)->lookupNamespaceURI($tag->prefix);
-          $o->_value = $this->char_norm(trim($tag->nodeValue));
-          if (!($tag->localName == "subject" && $tag->nodeValue == "undefined"))
-            $rec->{$tag->localName}[] = $o;
-          unset($o);
         }
+        break;
+      case "marcxchange":
+        $record = &$dom->getElementsByTagName("collection");
+        if ($record->item(0)) {
+          $ret->collection->_value = $this->xmlconvert->xml2obj($record->item(0), $this->xmlns["marcx"]);
+          //$ret->collection->_namespace = $record->item(0)->lookupNamespaceURI("collection");
+          $ret->collection->_namespace = $this->xmlns["marcx"];
+        }
+        break;
+      case "docbook":
+        $record = &$dom->getElementsByTagNameNS($this->xmlns["docbook"], "article");
+        if ($record->item(0)) {
+          $ret->article->_value = $this->xmlconvert->xml2obj($record->item(0));
+          $ret->article->_namespace = $record->item(0)->lookupNamespaceURI("docbook");
+          //$ret->_namespace = $this->xmlns["docbook"];
+//print_r($ret); die();
+        }
+        break;
     }
     return $ret;
   }
