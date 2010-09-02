@@ -20,6 +20,8 @@ wsdl = opensearch.wsdl
 ; soapActions and their corresponding request structure
 ; Can be found in the wsdl but is stated here for convenience
 soapAction[search] = searchRequest
+soapAction[getObject] = getObjectRequest
+
 
 ; prefixes and namespaces
 xmlns[] = http://oss.dbc.dk/ns/opensearch
@@ -32,6 +34,10 @@ xmlns[dcmitype] = http://purl.org/dc/dcmitype/
 xmlns[dcterms] = http://purl.org/dc/terms/
 xmlns[ac] = http://biblstandard.dk/ac/namespace/
 xmlns[dkdcplus] = http://biblstandard.dk/abm/namespace/dkdcplus/
+;xmlns[marcx] = http://www.bs.dk/standards/MarcXchange
+xmlns[marcx] = info:lc/xmlns/marcxchange-v1
+xmlns[docbook] = http://docbook.org/ns/docdook
+
 
 ; path to xml-examples
 xmldir = ./xml
@@ -52,6 +58,11 @@ cache_expire = 600
 ; raw_index
 raw_index[] = facet.
 raw_index[] = phrase.
+
+; scan objexts for these formats
+scan_format_table["dkabm:record"] = dkabm
+scan_format_table["collection"] = marcxchange
+scan_format_table["docbook"] = docbook
 
 ; number of second to wait for a solr reply
 solr_timeout = 30
@@ -175,6 +186,11 @@ action[search][] = source
 action[search][] = start
 action[search][] = stepValue
 action[search][] = sort
+
+action[getObject][] = identifier
+action[getObject][] = objectFormat
+action[getObject][] = callback
+action[getObject][] = outputType
 
 
 [agency]
