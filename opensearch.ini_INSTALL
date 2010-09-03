@@ -59,10 +59,10 @@ cache_expire = 600
 raw_index[] = facet.
 raw_index[] = phrase.
 
-; scan objexts for these formats
+; scan objects for these formats
 scan_format_table["dkabm:record"] = dkabm
 scan_format_table["collection"] = marcxchange
-scan_format_table["docbook"] = docbook
+scan_format_table["docbook:article"] = docbook
 
 ; number of second to wait for a solr reply
 solr_timeout = 30
@@ -186,6 +186,18 @@ action[search][] = source
 action[search][] = start
 action[search][] = stepValue
 action[search][] = sort
+action[search][userDefinedRanking][] = userDefinedRanking.tieValue
+action[search][userDefinedRanking][] = tieValue
+action[search][userDefinedRanking][rankField][] = userDefinedRanking.rankField.fieldName
+action[search][userDefinedRanking][rankField][] = userDefinedRanking.rankField.fieldType
+action[search][userDefinedRanking][rankField][] = userDefinedRanking.rankField.weight
+action[search][userDefinedRanking][rankField][] = rankField.fieldName
+action[search][userDefinedRanking][rankField][] = rankField.fieldType
+action[search][userDefinedRanking][rankField][] = rankField.weight
+action[search][userDefinedRanking][rankField][] = fieldName
+action[search][userDefinedRanking][rankField][] = fieldType
+action[search][userDefinedRanking][rankField][] = weight
+
 
 action[getObject][] = identifier
 action[getObject][] = objectFormat
