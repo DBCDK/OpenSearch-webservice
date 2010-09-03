@@ -70,14 +70,17 @@ class openSearch extends webServiceServer {
         $unsupported = "Error: Unknown agancy: " . $agency;
     }
     $use_work_collection = ($param->collectionType->_value <> "manifestation");
-    if ($sort = $param->sort->_value) {
+    if ($rr = $param->userDefinedRanking) {
+      $rank["tie"] = $rr->_value->tieValue->_value;
+      foreach ($rr->_value->rankField as $rf) {
+        $boost_type = ($rf->_value->fieldType->_value == "word" ? "word_boost" : "phrase_boost");
+        $rank[$boost_type][$rf->_value->fieldName->_value] = $rf->_value->weight->_value;
+      }
+    } elseif ($sort = $param->sort->_value) {
       $rank_type = $this->config->get_value("rank", "setup");
       if ($rank = $rank_type[$sort])
         unset($sort);
-      elseif (substr($sort, 0, 12) == "rank_define:") {
-        $rank = $sort;
-        unset($sort);
-      } else {
+      else {
         $sort_type = $this->config->get_value("sort", "setup");
         if (!isset($sort_type[$sort]))
           $unsupported = "Error: Unknown sort: " . $sort;
