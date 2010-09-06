@@ -43,16 +43,17 @@ class openSearch extends webServiceServer {
 
   public function search($param) { 
 // set some defines
-    if (!$this->aaa->has_right("opensearch", 500)) {
+    /*if (!$this->aaa->has_right("opensearch", 500)) {
       $ret_error->searchResponse->_value->error->_value = "authentication_error";
       return $ret_error;
-    }
+      }*/
     define("WSDL", $this->config->get_value("wsdl", "setup"));
     define("SOLR_URI", $this->config->get_value("solr_uri", "setup"));
     define("FEDORA_GET_RAW", $this->config->get_value("fedora_get_raw", "setup"));
     define("FEDORA_GET_DC", $this->config->get_value("fedora_get_dc", "setup"));
     define("FEDORA_GET_RELS_EXT", $this->config->get_value("fedora_get_rels_ext", "setup"));
     define("MAX_COLLECTIONS", $this->config->get_value("max_collections", "setup"));
+
 
 // check for unsupported stuff
     $ret_error->searchResponse->_value->error->_value = &$unsupported;
@@ -89,6 +90,22 @@ class openSearch extends webServiceServer {
 
     if ($unsupported) return $ret_error;
 
+    /**
+       pjo 31-08-10
+       if source is set and equals 'bibliotekdk' use bib_zsearch_class to zsearch for records
+     */    
+    if( $param->source->_value == 'bibliotekdk' )
+      {
+	require_once("bib_zsearch_class.php");
+
+	$this->watch->start("bibdk_search");
+	$bib_search = new bib_zsearch($this->config,$this->watch);
+	$response = $bib_search->response($param);
+	$this->watch->stop("bibdk_search");
+
+	return $response;
+      }
+
 /**
  *  Approach
  *  a) Do the solr search and fetch enough fedoraPids in result
@@ -124,7 +141,7 @@ class openSearch extends webServiceServer {
       //var_dump($rank); 
       //$rank_q = $cql2solr->dismax(urldecode($param->query->_value), $rank);
       //var_dump($rank_q);
-    }
+    }    
 
     if ($filter_agency)
       $filter_q = rawurlencode($filter_agency);
@@ -352,6 +369,9 @@ if ($_REQUEST["work"] == "debug") {
     $result->facetResult->_value = $facets;
     $result->time->_value = $this->watch->splittime("Total");
 
+//print_r($collections[0]);
+//exit;
+
     return $ret;
   }
 
@@ -404,6 +424,10 @@ if ($_REQUEST["work"] == "debug") {
 
     private function get_solr_array($q, $start, $rows, $sort, $facets, $filter, &$solr_arr) {
       $solr_query = SOLR_URI . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort&fl=fedoraPid$facets";
+
+      //  echo $solr_query;
+      //exit;
+
       verbose::log(TRACE, "Query: " . $solr_query);
       verbose::log(DEBUG, "Query: " . SOLR_URI . "?q=$q&fq=$filter&start=$start&rows=1&fl=fedoraPid$facets&debugQuery=on");
       $solr_result = $this->curl->get($solr_query);
@@ -510,6 +534,10 @@ if ($_REQUEST["work"] == "debug") {
     $ret->relations->_value = $relations;
     $ret->formatsAvailable->_value = $this->scan_for_formats($dom);
     if (DEBUG_ON) var_dump($ret);
+
+    //print_r($ret);
+    //exit;
+
     return $ret;
   }
 
