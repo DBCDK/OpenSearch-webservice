@@ -1,0 +1,117 @@
+<?php
+
+define("MAX_STEP", 10);
+$CCL_PATH = "./";
+
+require('targets.phpi');
+require('cql_func.phpi');
+require('search_func.phpi');
+
+function backend_search($cql, $schema, $start, $step) {
+  global $TARGET;
+
+  $xml_head = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+//  $rec_head = '<dc:dc
+//xmlns:vip="http://webservice.bibliotek.dbc.dk/bibliotek/meta/" 
+//xmlns:xsi="http://www.w3.org/2001/XMLSchma-instance" 
+//xsi:schemaLocation="http://webservice.bibliotek.dbc.dk/bibliotek/meta/ http://webservice.bibliotek.dbc.dk/dc.xsd" 
+//xmlns:dc="http://purl.org/dc/elements/1.1/" 
+//xmlns:dcterms="http://purl.org/dc/terms" >';
+  //$rec_head = '<dc>';
+  $ccl = cql_to_ccl($cql);
+  if ($_REQUEST["debug"]) { echo "\nCQL: "; print_r($cql); }
+  if ($_REQUEST["debug"]) { echo "\nCCL: "; print_r($ccl); echo "\n"; }
+
+  if ( !is_array($ccl)) {
+    $ret['diags'][][1] = "No search found";
+  } else {
+    if (isset($ccl["error"])) {
+      $ret['diags'][][1] = $ccl["error"];
+    } else {
+      if (empty($start)) $start = 1;
+      if (!isset($step)) $step = 1;
+      $search = $TARGET["dfa"];
+      //$search["format"] = "ws_dc";
+      $search["format"] = $schema;
+      $search["ccl"] = utf8_decode($ccl["ccl"]);
+      $search["start"] = $start;
+      $search["step"] = min($step, MAX_STEP);
+      Zsearch($search);
+      //if ($_REQUEST["debug"]) { echo "\nSEARCH: "; print_r($search); }
+      if ($search["error"])
+        $ret['diags'][][1] = $search["error"];
+      else {
+        $ret['records']['set']['noRecords'] = 0;
+        $ret['records']['set']['noRecords'] = $search["hits"];
+        $ret['records']['set']['schema'] = $schema;
+        $ret['records']['record']= array();
+        //$step = min($step, $search["hits"] - $start + 1);
+        if ($search["step"])
+          if (isset($search["records"]) && is_array($search["records"]))
+            foreach ($search["records"] as $key => $rec) {
+              //$ret['records']['set']['noRecords']++;	// antal poster returneret erstattet af hits ovenfor
+              //$tmp_rec = $rec["record"];
+  //echo "\n" . $rec["record"]; flush();
+              //$tmp_rec = str_replace('</dc>', '</dc:dc>', $tmp_rec);
+              //$ret['records']['record'][$key] = array( "xml" => $xml_head . str_replace('<dc>', $rec_head, $tmp_rec), "position" => $key);
+              $ret['records']['record'][$key] = array( "xml" => $xml_head . my_utf8_encode($rec["record"]), "position" => $key);
+            }
+          else
+            $ret['diags'][][1] = "No records found";
+      }
+    }
+  }
+
+  if ($_REQUEST["debug"]) { echo "\nRET: "; print_r($ret); }
+  if ($_REQUEST["debug"]) flush();
+  return($ret);
+}
+
+function snabela2utf8($s) {
+  return preg_replace("/@([0-9a-fA-F]{4}|[uU][0-9a-fA-F]{2})/e", '_snabela2utf8(strtolower("\\1"))', $s);
+}
+function _snabela2utf8($s) {
+  if ($s[0] == "u")
+    switch ($ss = substr($s, 1, 2)) {
+      case "a7" : $s = "02b9"; break;
+      case "ae" : $s = "02be"; break;
+      case "b0" : $s = "02bf"; break;
+      case "b7" : $s = "02ba"; break;
+      case "e0" : $s = "0309"; break;
+      case "eb" : $s = "fe20"; break;
+      case "ec" : $s = "fe21"; break;
+      case "f7" : $s = "0326"; break;
+      case "f8" : $s = "031c"; break;
+      case "f9" : $s = "032e"; break;
+      case "fa" : $s = "fe22"; break;
+      case "fb" : $s = "fe23"; break;
+      default: return "Undefined($ss)";
+    }
+  return(dec2utf8(hexdec($s)));
+}
+function dec2utf8 ($data) {
+  if ($data > 127) {
+    $i = 5;
+    while (($i--) > 0) {
+      if ($data != ($a = $data % ($p = pow(64, $i)))) {
+        $ret = chr(base_convert(str_pad(str_repeat(1, $i + 1), 8, "0"), 2, 10) + (($data - $a) / $p));
+        for ($i; $i > 0; $i--)
+          $ret .= chr(128 + ((($data % pow(64, $i)) - ($data % ($p = pow(64, $i - 1)))) / $p));
+        break;
+      }
+    }
+  } else
+    $ret = chr($data);
+  return $ret;
+}
+
+function my_utf8_encode($txt) {
+  //$ret = preg_replace('~&#0*([0-9]+);~e', 'chr(\\1)', $txt);
+//echo "\nret: " . $ret;
+  $from = array("@å", "@Å"); 
+  $to = array("aa", "Aa");
+  return( snabela2utf8(utf8_encode(str_replace($from,$to,$txt))) );
+}
+function load_lang_tab($t) {
+}
+?>

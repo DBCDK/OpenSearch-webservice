@@ -1,0 +1,102 @@
+# 10/10-2005 indsat htitel i DBC1 u=2 til kombinatorisk søgning fra kasser med 'and'
+# 12/9-2005 Rettet DBC1 1=4 til BIB1 1=1011 (op) og DBC1 1=3 til BIB1 1=1012 (aj)
+# 11/7-2005 indsat DAN1 1=2 (ke, lke), 1=3 (db, ldb), 1=4 (df, ldf), 1=5 (ds, lds), 1=10 (dk), 1=11 (ok) aht emnehierarki
+# 16/12-2004 indsat søgekoderne bo (652w (m+v) - DBC1 1=141), mm og lmm (666mnpl - DBC1 1=142)
+# 9/12-2004 rettet n1c til n50
+# 27/10-2004 indsat n1c (DBC1 1=140) til sdi-overvågning
+# 24/11-2003 indsat lme, me og mo kopieret fra DanBib til musiksøgesiden
+# I alle "boks"søgninger undtagen forfatter, er struktur sat til 2, da flere ord altid skal AND'es 20/11-2002 BDM
+# Tilrettet til DfA 18/11-2002 BDM
+# Subset of bib-1 attributes map to CCL qualifiers 
+# $Id: danbib.ccl2rpn,v 1.2 2006-03-27 08:36:25 fvs Exp $
+#
+ti   BIB1,u=4     r=3   p=3   s=pw   t=l,r   c=1   #kun til kommandosøgning
+lti  BIB1,u=4     r=3   p=1   s=1    t=r     c=3
+se   BIB1,u=5     r=3   p=3   s=pw   t=l,r   c=1
+lse  BIB1,u=5     r=3   p=1   s=1    t=r     c=3
+lid  BIB1,u=12    r=3   p=3   s=103  t=l,r   c=1
+em   BIB1,u=21    r=3   p=3   s=pw   t=l,r   c=1
+emne   BIB1,u=21    r=3   p=3   s=2    t=l,r   c=1   #søgning fra tekstbokse med 'and'-søgning
+lem  BIB1,u=21    r=3   p=1   s=1    t=r     c=3
+aar   BIB1,u=31    r=o   p=3   s=4    t=l,r   c=1
+år   BIB1,u=31    r=o   p=3   s=4    t=l,r   c=1
+år_før   BIB1,u=31    r=1   p=3   s=4    t=l,r   c=1   #fra tekstbokse
+år_lig   BIB1,u=31    r=3   p=3   s=4    t=l,r   c=1   #fra tekstbokse
+år_efter BIB1,u=31    r=5   p=3   s=4    t=l,r   c=1   #fra tekstbokse
+spr  BIB1,u=54    r=3   p=3   s=2    t=l,r   c=1
+sp   BIB1,u=54    r=3   p=3   s=2    t=l,r   c=1
+owner_id   BIB1,u=56  r=3   p=3    s=2    t=l,r   c=1
+lok  BIB1,u=56    r=3   p=3   s=2    t=l,r   c=1
+pu   BIB1,u=59    r=3   p=3   s=pw   t=l,r   c=1
+no   BIB1,u=63    r=3   p=3   s=pw   t=l,r   c=1
+mp_id   BIB1,u=1001  r=3   p=3    s=2    t=l,r   c=1
+kat  BIB1,u=1001  r=3   p=3   s=2    t=l,r   c=1
+forfatter   BIB1,u=1003  r=3   p=3   s=102  t=l,r   c=1   #Til tekstboksene. I target er s=102 defineret som uordnet
+fo   BIB1,u=1003  r=3   p=3   s=101  t=r     c=1   #Afviger fra Praksisregler, da uden *c
+lfo  BIB1,u=1003  r=3   p=1   s=101  t=r     c=2   #Afviger fra Praksisregler, da uden *c
+is   BIB1,u=1007  r=3   p=3   s=1    t=l,r   c=1
+op   BIB1,u=1011  r=3   p=3   s=2    t=l,r   c=1
+aj   BIB1,u=1012  r=3   p=3   s=2    t=l,r   c=1
+default_id BIB1,u=1016   r=3   p=3   s=pw   t=l,r   c=1
+fritekst BIB1,u=1016   r=3   p=3   s=2    t=l,r   c=1   #søgning fra tekstbokse med 'and'-søgning
+fl   BIB1,u=1018  r=3   p=3   s=pw   t=l,r   c=1
+mk   BIB1,u=1031  r=3   p=3   s=2    t=l,r   c=1
+ma   BIB1,u=1031  r=3   p=3   s=2    t=l,r   c=1
+mat  BIB1,u=1031  r=3   p=3   s=2    t=l,r   c=1
+vp   BIB1,u=1033  r=3   p=3   s=pw   t=l,r   c=1
+vært   BIB1,u=1033  r=3   p=3   s=2    t=l,r   c=1   #søgning fra tekstbokse med 'and'-søgning
+cl   BIB1,u=1040  r=3   p=3   s=pw   t=l,r   c=1
+ou   BIB1,u=1095  r=3   p=3   s=pw   t=l,r   c=1
+ke   DAN1,u=2     r=3   p=3   s=pw   t=l,r   c=1
+lke  DAN1,u=2     r=3   p=1   s=1    t=r     c=3
+db   DAN1,u=3     r=3   p=3   s=pw   t=l,r   c=1
+ldb  DAN1,u=3     r=3   p=1   s=1    t=r     c=3
+df   DAN1,u=4     r=3   p=3   s=pw   t=l,r   c=1
+ldf  DAN1,u=4     r=3   p=1   s=1    t=r     c=3
+ds   DAN1,u=5     r=3   p=3   s=pw   t=l,r   c=1
+lds  DAN1,u=5     r=3   p=1   s=1    t=r     c=3
+me   DAN1,u=6     r=3   p=3   s=pw   t=l,r   c=1
+lme  DAN1,u=6     r=3   p=1   s=1    t=r     c=3
+person   DAN1,u=9  r=3   p=3   s=102  t=l,r   c=1   #Til tekstboksene. I target er s=102 defineret som uordnet
+po   DAN1,u=9     r=3   p=3   s=pw   t=l,r   c=1
+lpo  DAN1,u=9     r=3   p=1   s=1    t=r     c=2
+dk   DAN1,u=10    r=3   p=3   s=pw   t=l,r   c=1
+ok   DAN1,u=11    r=3   p=3   s=pw   t=l,r   c=1
+kk   DAN1,u=14    r=3   p=3   s=pw   t=l,r   c=1
+ix   DAN1,u=15    r=3   p=3   s=pw   t=l,r   c=1
+nm   DAN1,u=16    r=3   p=3   s=pw   t=l,r   c=1
+bs   DAN1,u=21    r=3   p=3   s=pw   t=l,r   c=1
+mo   DAN1,u=24    r=3   p=3   s=pw   t=l,r   c=1
+fb   DAN1,u=26    r=3   p=3   s=pw   t=l,r   c=1
+ts   DAN1,u=27    r=3   p=3   s=pw   t=l,r   c=1
+lts  DAN1,u=27    r=3   p=1   s=1    t=r     c=3
+aå   DBC1,u=1     r=o   p=3   s=4    t=l,r   c=1
+ht   DBC1,u=2     r=3   p=3   s=pw   t=l,r   c=1
+htitel DBC1,u=2   r=3   p=3   s=2    t=l,r   c=1  #søgning på htitel fra tekstbokse med 'and'-søgning
+lht  DBC1,u=2     r=3   p=1   s=1    t=r     c=3
+#aj   DBC1,u=3     r=3   p=3   s=2    t=l,r   c=1
+#op   DBC1,u=4     r=3   p=3   s=2    t=l,r   c=1
+ln   DBC1,u=6     r=3   p=3   s=2    t=l,r   c=1
+rc   DBC1,u=8     r=3   p=3   s=pw   t=l,r   c=1
+lrc  DBC1,u=8     r=3   p=1   s=1    t=r     c=2
+rf   DBC1,u=9     r=3   p=3   s=pw   t=l,r   c=1
+lrf  DBC1,u=9     r=3   p=1   s=1    t=r     c=2
+ri   DBC1,u=10    r=3   p=3   s=pw   t=l,r   c=1
+lri  DBC1,u=10    r=3   p=1   s=1    t=r     c=3
+ns   DBC1,u=14    r=3   p=3   s=2    t=l,r   c=1
+#u=16-41 kun brugt i dels ac- og acinfo-baserne:
+#u=42-44 kun brugt i integra:
+#u=45-51 kun brugt i lektorbasen:
+xd   DBC1,u=53    r=3   p=3   s=103  t=l,r   c=1
+#u=56-61 kun brugt i dk5-basen:
+ld   DBC1,u=62    r=3   p=3   s=103  t=l,r   c=1
+#u=63-64 kun brugt i dfa-basen:
+lfc  DBC1,u=63    r=3   p=1   s=101  t=r     c=2  #fo-register MED *c til videreklik i DfA
+tj   DBC1,u=64    r=3   p=3   s=pw   t=l,r   c=1  #titelregister uden felt 526
+titel DBC1,u=64    r=3   p=3   s=2    t=l,r   c=1  #søgning på titel fra tekstbokse med 'and'-søgning
+ltj  DBC1,u=64    r=3   p=1   s=1    t=r     c=3
+#u=140-142 kun brugt i dfa-basen:
+n50  DBC1,u=140   r=3   p=3   s=2    t=l,r   c=1
+bo   DBC1,u=141   r=3   p=3   s=2    t=l,r   c=1
+mm   DBC1,u=142   r=3   p=3   s=pw   t=l,r   c=1
+lmm  DBC1,u=142   r=3   p=1   s=1    t=r     c=3
