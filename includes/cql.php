@@ -20,10 +20,12 @@
 
    $Id: cql.php,v 1.1 2005-12-22 10:38:14 fvs Exp $
 */
+require_once("diagset.php");
 
 class CQL_parser 
 {
   // public
+  public $error;
     
     function CQL_parser(&$srw_response)	
     {
@@ -77,15 +79,22 @@ class CQL_parser
     var $diags = '';  // diagnostics array to be passed to SRW-response
     var $parse_ok = TRUE;  // cql parsing went ok
 
+    // pjo added var jump 
+    var $jump; 
+
     function move() 
     {
-	while ($this->qi < $this->ql && strchr(" \t\r\n", $this->qs[$this->qi]))
+      // first step is to skip blanks from begging of string
+       while ($this->qi < $this->ql && strchr(" \t\r\n", $this->qs[$this->qi]))
 	    $this->qi++;
-	if ($this->qi == $this->ql)
+       // pjo testing
+       //if ($this->qi == $this->ql)
+       if ($this->qi >= $this->ql )
 	{
 	    $this->look = FALSE;
 	    return;
 	}
+	 // now skip ()/><=
 	$c = $this->qs[$this->qi];
 	if (strchr("()/", $c)) {
 	    $this->look = $c;
@@ -99,34 +108,88 @@ class CQL_parser
 		$this->look .= $this->qs[$this->qi];
 		$this->qi++;
 	    }
-	} elseif (strchr("\"'", $c)) {
+	}
+	// if quoted string -> add to stringvalue untill next quote is met
+	elseif (strchr("\"' ", $c))
+	  {
 	    $this->look = 'q';
 	    $mark = $c;
 	    $this->qi++;
 	    $this->val = '';
 	    while ($this->qi < $this->ql && $this->qs[$this->qi] != $mark)
 	    {
-		if ($this->qs[$this->qi] == '\\' && $this->qi < $this->ql-1)
-		    $this->qi++;
+	      if ($this->qs[$this->qi] == '\\' && $this->qi < $this->ql-1)
+		  $this->qi++;
 		$this->val .= $this->qs[$this->qi];
 		$this->qi++;
 	    }
 	    $this->lval = strtolower($this->val);
 	    if ($this->qi < $this->ql)
 		$this->qi++;
-	} else {
+	}
+	// pjo 15-09-10. added elseif; remove this piece of code if you wish to use old code
+	elseif( $this->jump )
+	  {
 	    $this->look = 's';
-	    $start_q = $this->qi;
-	    while ($this->qi < $this->ql && !strchr("()/<>= \t\r\n", $this->qs[$this->qi]))
-		$this->qi++;
-	    $this->val = substr($this->qs, $start_q, $this->qi - $start_q);
+	    $this->val = $this->jump;
 	    $this->lval = strtolower($this->val);
+	    $this->qi += strlen($this->jump);
+	    unset($this->jump);
+	  }
+	// if none of above -> read string untill stop: ()/<>= \t\r\n is met.
+	else {
+	  $this->look = 's';
+	  $start_q = $this->qi;
+	  // pjo 15-09-10. removed ' ' (blank) from stoplist and added stop() function instead
+	  // use original stopchars if desired: ()/<>= \t\r\n and remove && !$this->stop() from end of while loop
+	  while ($this->qi < $this->ql && !strchr("()/<>=\t\r\n", $this->qs[$this->qi]) && !$this->stop() )
+	    $this->qi++;
+	  
+	  $this->val = substr($this->qs, $start_q, $this->qi - $start_q);
+	  $this->lval = strtolower($this->val);
+
+	  //echo "VAL: ".$this->val."\n";
 	}
     }
-    
-    function modifiers($context) {
+
+    // pjo 15-09-10. added stop function as replacement for stopping on blanks
+    function stop()
+    {
+      if( $this->look() != " " )
+	return false;      
+
+      $stoppers=array('and','or','not','prox');
+      
+      foreach( $stoppers as $key=>$val )
+	{
+	  $stop1 =  ' '.$val.' ';
+	  $stop2 =  ' '.$val.'('; 
+
+	  if( $this->look(strlen($val)+2) == $stop1 || $this->look(strlen($val)+2) == $stop2 )
+	    {
+	      $this->jump = $val;
+	      //echo "STOP: ".$val.": jump:".$this->jump."\n";
+	      return true;
+	    }
+	}
+
+      return false;
+
+    }
+
+    // pjo 15-09-10. return a substring of querystring from current index and given number of chars forward
+    function look($count=1)
+    {
+      $ret = substr($this->qs,$this->qi,$count);
+ 
+      return $ret;
+    }   
+
+    function modifiers($context) 
+    {
 	$ar = array();
-	while ($this->look == '/') {
+	while ($this->look == '/') 
+	  {
 	    $this->move();
 	    if ($this->look != 's' && $this->look != 'q')
 	    {
@@ -179,7 +242,7 @@ class CQL_parser
 
     function searchClause($field, $relation, $context, $modifiers) 
     {
-	if ($this->look == '(') {
+      if ($this->look == '(') {
 	    $this->move();
 	    $b = $this->cqlQuery($field, $relation, $context, $modifiers);
 	    if ($this->look == ')')
@@ -213,7 +276,6 @@ class CQL_parser
 					   $this->modifiers($context));
 	    } else {
 		// it's a search term
-		
 		$pos = strpos($field, '.');
 		if ($pos == FALSE)
 		    $pre = '';
@@ -269,9 +331,11 @@ class CQL_parser
 		return $this->cqlQuery($field, $relation, $context,
 				       $modifiers);
 	    }
-	} else {
-	    $this->add_diagnostic(10, "$this->qi");
-	}
+	} 
+	else 
+	    {
+	      $this->add_diagnostic(10, "$this->qi");
+	    }
     }
 
     function add_prefix($ar, $prefix, $title, $uri) 
@@ -412,7 +476,9 @@ class CQL_parser
     function add_diagnostic($id, $string) 
     {
 	$this->parse_ok = FALSE;
-	//	$this->r_srw_response->add_diagnostic($id, $string);
+	$this->error = srw_diag_message($id)."; errno: ".$string;
+	//echo $string;
+	//$this->r_srw_response->add_diagnostic($id, $string);
     }
 }
 
