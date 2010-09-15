@@ -105,40 +105,77 @@ class bib_zsearch
     // get namespaces from config
     $ns = $this->config->get_value("xmlns","setup");
 
-    // setup xpath
+    // use internal error for error-reporting
     libxml_use_internal_errors(true);
-   
+    // setup xpath
     $dom = new DOMDocument('1.0', 'utf-8');
     $dom->LoadXML(utf8_encode($xml));
     $xpath = new DOMXPath($dom);
     
-    if( $record = $this->get_record($ns,$xpath) )
+    if( $record = $this->get_record($ns,$xpath,$object_id) )
       {
-	$obj->_value->identifier->_value = "TESTHSET";
+
 	$obj->_value->record->_namespace = $ns['dkabm'];
 	$obj->_value->record = $record;
+	
+	// identifier
+	$identifier->_value = $object_id;
+	$obj->_value->identifier[] = $identifier;
+
+	// formats available; hack zsearch only goes for dkabm-records
+	$format->_value="dkabm:record";
+	$obj->_value->formatsAvailable[] = $format;	
       }
 
     return $obj;
+  }
+
+  private function object_identifier($ac_identifier)
+  {
+    $id_arr=explode("|",$ac_identifier);
+    return $id_arr[1].":".$id_arr[0];
   }
 
   /**
      $xpath object holds an abm-record from zsearch. 
      parse the record and return xml-response record     
    */
-  private function get_record($ns,$xpath)
+  private function get_record($ns,$xpath,&$object_id)
   {
     $record->_namespace=$ns['dkabm'];
 
-    // identifier ( lid, lok )
+    // ac:identifier ( lid, lok )
     $query = "/dkabm:record/ac:identifier";
     $nodelist = $xpath->query($query);
     if( $nodelist )
       foreach($nodelist as $node)
 	{
-	  $record->_value->identifier->_value = $node->nodeValue;
-	  $record->_value->identifier->_namespace = $ns['ac'];
+	  $identifier->_value = $node->nodeValue;
+
+	  //hack; set object_id
+	  $object_id=$this->object_identifier($node->nodeValue);
+
+	  $identifier->_namespace = $ns['ac'];
+	  $record->_value->identifier[] = $identifier;
+	  unset($identifier);
 	}
+
+    // dc:identifier TODO implement
+    $query = "/dkabm:record/dc:identifier";
+    $nodelist = $xpath->query($query);
+    if( $nodelist )
+      foreach( $nodelist as $node )
+	{
+	  //echo $node->nodeValue."<br />\n";
+	  $identifier->_value=$node->nodeValue;
+	  $identifier->_namespace=$ns['dc'];
+	  
+	  $this->set_attributes($ns,$identifier,$node);
+	  
+	  $record->_value->identifier[] = $identifier;
+	  unset($identifier);
+	}
+
 
     // source
     $query = "/dkabm:record/ac:source";
@@ -149,6 +186,9 @@ class bib_zsearch
 	  //echo $node->nodeValue."<br />\n";
 	  $source->_value=$node->nodeValue;
 	  $source->_namespace=$ns['ac'];
+	  
+	  $this->set_attributes($ns,$source,$node);
+	  
 	  $record->_value->source[] = $source;
 	  unset($source);
 	}
@@ -161,6 +201,7 @@ class bib_zsearch
 	{
 	  $title->_value = $node->nodeValue;
 	  $title->_namespace = $ns['dc'];
+	  $this->set_attributes($ns,$title,$node);
 	  $record->_value->title[] = $title;
 	  unset($title);
 	}
@@ -173,6 +214,7 @@ class bib_zsearch
 	{
 	  $creator->_value=$node->nodeValue;
 	  $creator->_namespace=$ns['dc'];
+	  $this->set_attributes($ns,$creator,$node);
 	  $record->_value->creator[] = $creator;
 	  unset($creator);
 	}
@@ -185,6 +227,9 @@ class bib_zsearch
 	{
 	  $subject->_value=$node->nodeValue;
 	  $subject->_namespace=$ns['dc'];
+	  
+	  $this->set_attributes($ns,$subject,$node);
+
 	  $record->_value->subject[] = $subject;
 	  unset($subject);
 	}
@@ -197,9 +242,12 @@ class bib_zsearch
 	{
 	  $abstract->_value = $node->nodeValue;
 	  $abstract->_namespace = $ns['dcterms'];
+	  
+	  $this->set_attributes($ns,$abstract,$node);
+	  
 	  $record->_value->abstract[] = $abstract;
 	  unset($abstract);
-	}
+	}//_attributes->{$attr->localName}->_value
 
     // audience ??
 
@@ -213,6 +261,7 @@ class bib_zsearch
 	{
 	  $publisher->_value = $node->nodeValue;
 	  $publisher->_namespace = $ns['dcterms'];
+	  $this->set_attributes($ns,$publisher,$node);
 	  $record->_value->publisher[] = $publisher;
 	  unset($publisher);
 	}
@@ -237,6 +286,7 @@ class bib_zsearch
 	{
 	  $type->_value = $node->nodeValue;
 	  $type->_namespace = $ns['dc'];
+	  $this->set_attributes($ns,$type,$node);
 	  $record->_value->type[] = $type;
 	  unset($type);
 	}
@@ -249,6 +299,7 @@ class bib_zsearch
 	{
 	  $extent->_value = $node->nodeValue;
 	  $extent->_namespace = $ns['dcterms'];
+	  $this->set_attributes($ns,$extent,$node);
 	  $record->_value->extent[] = $extent;
 	  unset($extent);
 	}
@@ -261,9 +312,11 @@ class bib_zsearch
 	{
 	  $language->_value = $node->nodeValue;
 	  $language->_namespace = $ns['dc'];
+	  $this->set_attributes($ns,$language,$node);
 	  $record->_value->language[] = $language;
 	  unset($language);
-	}
+	}   
+    
     
     $errors = libxml_get_errors();
     if( $errors )
@@ -306,6 +359,16 @@ class bib_zsearch
       }
   }
 
+  private function set_attributes($ns,$obj,$node)
+  {
+    if ($node->hasAttributes())
+      foreach ($node->attributes as $attr) 
+	{
+	  $obj->_attributes->{$attr->localName}->_namespace = $ns[$attr->prefix];
+	  $obj->_attributes->{$attr->localName}->_value = $attr->nodeValue;
+	}
+  }
+
   private function get_ccl($params)
   {
      if( ! $cql = $params->query->_value )
@@ -333,6 +396,7 @@ class bib_zsearch
 
 class cql2dfa
 {
+  
   private $cql;
   private $ccl;
   private $error;
@@ -408,8 +472,8 @@ class cql2dfa
 
     if( !$ok )
       {
-	verbose::log(ERROR,"bib_dk :: parse_cql failed for: ".$this->cql);
-	$this->error = " Cannot decode query : ".$this->cql;
+	verbose::log(ERROR,"bib_dk :: parse_cql failed for: ".$this->cql." parser error-message: ".$cql->error);
+	$this->error = " Cannot decode query : '".$this->cql."' . Parser exit with error: ".$cql->error;
 	return;
       }
 
