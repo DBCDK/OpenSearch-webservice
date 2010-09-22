@@ -128,7 +128,7 @@ class openSearch extends webServiceServer {
     if (empty($start) && $step_value) $start = 1;
     $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
     $use_work_collection |= $sort_type[$sort] == "random";
-    $key_relation_cache = md5($param->query->_value . "_" . $agency . "_" . $use_work_collection . "_" . $param->sort->_value);
+    $key_relation_cache = md5($param->query->_value . "_" . $agency . "_" . $use_work_collection . "_" . $param->sort->_value . "_" . $this->version);
 
     $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
     // urldecode ???? $query = $cql2solr->convert(urldecode($param->query->_value));
@@ -549,7 +549,7 @@ if ($_REQUEST["work"] == "debug") {
     if (!isset($form_table))
       $form_table = $this->config->get_value("scan_format_table", "setup");
     foreach ($dom->getElementsByTagName("container")->item(0)->childNodes as $tag)
-      if (!$ret->format[]->_value = $form_table[$tag->tagName])
+      if ($form_table[$tag->tagName])
         $ret->format[]->_value = $tag->tagName;
     return $ret;
   }
