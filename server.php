@@ -549,8 +549,8 @@ if ($_REQUEST["work"] == "debug") {
     if (!isset($form_table))
       $form_table = $this->config->get_value("scan_format_table", "setup");
     foreach ($dom->getElementsByTagName("container")->item(0)->childNodes as $tag)
-      if ($form_table[$tag->tagName])
-        $ret->format[]->_value = $tag->tagName;
+      if ($x = &$form_table[$tag->tagName])
+        $ret->format[]->_value = $x;
     return $ret;
   }
 
