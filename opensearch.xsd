@@ -49,6 +49,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:choice minOccurs="0">
 					<xs:element ref="os:userDefinedRanking"/>
 					<xs:element ref="os:sort"/>
+					<xs:element ref="os:sortWithBoost"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
@@ -88,6 +89,19 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:groupIdAut"/>
 				<xs:element ref="os:passwordAut"/>
 				<xs:element ref="os:userIdAut"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="boostField">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specification of a specific field used in user defined boost.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="os:fieldName"/>
+				<xs:element ref="os:fieldType"/>
+				<xs:element ref="os:fieldValue"/>
+				<xs:element ref="os:weight"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -179,6 +193,11 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="fieldType" type="os:fieldTypeType">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Type of field used in user defined ranking.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fieldValue" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Specific field value for ranking, e.g. 'bog' (used in ranking of dc.type='bog')</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="format" type="os:objectFormatType">
@@ -367,6 +386,17 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Here you can specify the sort order of the search result. Choose from the list in sortType.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="sortWithBoost">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Here you can specify the sort order of the search result + boost on specific fields and field values. Choose from the list in sortType.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="os:sort"/>
+				<xs:element ref="os:userDefinedBoost"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="source" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The source of objects. Use this if you want to restrict your search to a specific source in the repository.</xs:documentation>
@@ -396,6 +426,16 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Number of seconds used in the service</xs:documentation>
 		</xs:annotation>
+	</xs:element>
+	<xs:element name="userDefinedBoost">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Used to define a custom ranking algorithm.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="os:boostField"/>
+			</xs:sequence>
+		</xs:complexType>
 	</xs:element>
 	<xs:element name="userDefinedRanking">
 		<xs:annotation>
