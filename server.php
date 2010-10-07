@@ -233,11 +233,13 @@ class openSearch extends webServiceServer {
             $record_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
             $record_result = $this->curl->get($record_uri);
             $curl_err = $this->curl->get_status();
-            if ($curl_err["http_code"] < 200 || $curl_err["http_code"] > 299) {
-              $error = "Error: Cannot fetch record: " . $fid . " - http-error: " . $curl_err["http_code"];
-              verbose::log(FATAL, "Fedora http-error: " . $curl_err["http_code"] . " " . $curl_err["error"] . " from: " . $record_uri);
-              return $ret_error;
-            }
+/* ignore the fact that there is no RELS_EXT datastream
+ *          if ($curl_err["http_code"] < 200 || $curl_err["http_code"] > 299) {
+ *            $error = "Error: Cannot fetch record: " . $fid . " - http-error: " . $curl_err["http_code"];
+ *            verbose::log(FATAL, "Fedora http-error: " . $curl_err["http_code"] . " " . $curl_err["error"] . " from: " . $record_uri);
+ *            return $ret_error;
+ *          }
+ */
             $this->watch->stop("get_w_id");
   
             if ($work_id = $this->parse_rels_for_work_id($record_result)) {
