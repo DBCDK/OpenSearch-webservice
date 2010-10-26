@@ -238,6 +238,13 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
+			<title lang="da">Formfacet</title>
+			<title lang="en">Form facet</title>
+			<map>
+				<name set="facet">form</name>
+			</map>
+		</index>
+		<index>
 			<title lang="da">Skønlitterære emneordsfacet</title>
 			<title lang="en">Fiction subject facet</title>
 			<map>
@@ -263,6 +270,20 @@ You should have received a copy of the GNU Affero General Public License along w
 			<title lang="en">DK5 facet</title>
 			<map>
 				<name set="facet">dk5</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">acSource-facet</title>
+			<title lang="en">acSource facet</title>
+			<map>
+				<name set="facet">acsource</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">category-facet</title>
+			<title lang="en">category facet</title>
+			<map>
+				<name set="facet">category</name>
 			</map>
 		</index>
 	</indexInfo>
