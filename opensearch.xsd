@@ -24,6 +24,8 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:sequence>
 				<xs:element ref="os:identifier"/>
 				<xs:element ref="os:objectFormat"/>
+				<xs:element ref="os:allRelations" minOccurs="0"/>
+				<xs:element ref="os:relationData" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -566,13 +568,10 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="dbcaddi:hasRingtone"/>
 			<xs:enumeration value="dbcaddi:isPartOfTheme"/>
 			<xs:enumeration value="dbcaddi:hasThemeMember"/>
-			<xs:enumeration value="dbcaddi:isAuthorDescriptionOf"/>
 			<xs:enumeration value="dbcaddi:hasAuthorDescription"/>
-			<xs:enumeration value="dbcaddi:isSubjectDescriptionOf"/>
 			<xs:enumeration value="dbcaddi:hasSubjectDescription"/>
 			<xs:enumeration value="dbcbib:hasTrack"/>
 			<xs:enumeration value="dbcbib:isPartOfAlbum"/>
-			<xs:enumeration value="dbcbib:hasArticle"/>
 			<xs:enumeration value="dbcbib:isPartOfManifestation"/>
 		</xs:restriction>
 	</xs:simpleType>
