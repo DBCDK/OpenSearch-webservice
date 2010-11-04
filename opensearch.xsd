@@ -558,6 +558,8 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="dbcaddi:hasReview"/>
 			<xs:enumeration value="dbcaddi:isReviewOf"/>
+			<xs:enumeration value="dbcaddi:hasAnalysis"/>
+			<xs:enumeration value="dbcaddi:isAnalysisOf"/>
 			<xs:enumeration value="dbcaddi:hasCover"/>
 			<xs:enumeration value="dbcaddi:isCoverOf"/>
 			<xs:enumeration value="dbcaddi:hasUserCreatedContent"/>
@@ -570,9 +572,15 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="dbcaddi:hasThemeMember"/>
 			<xs:enumeration value="dbcaddi:hasAuthorDescription"/>
 			<xs:enumeration value="dbcaddi:hasSubjectDescription"/>
+			<xs:enumeration value="dbcaddi:hasCreatorHomePage"/>
+			<xs:enumeration value="dbcaddi:hasFulltext"/>
 			<xs:enumeration value="dbcbib:hasTrack"/>
 			<xs:enumeration value="dbcbib:isPartOfAlbum"/>
 			<xs:enumeration value="dbcbib:isPartOfManifestation"/>
+			<xs:enumeration value="dbcaddi:hasOnlineAccess"/>
+			<xs:enumeration value="dbcaddi:hasRemoteAccess"/>
+			<xs:enumeration value="dbcaddi:hasOnSiteAccess"/>
+			<xs:enumeration value="dbcaddi:hasPayPerView"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="sortType">
