@@ -34,7 +34,6 @@ test:
 	$(UNITCC) $(UNIT_FILE)
 	$(MAKE) -C OLS_class_lib test
 
-doc:
-	cd $(DOXY_PATH)  \
-	$(DOXY_TOOL) $(DOXY_FILE)
+api:
+	cd $(DOXY_PATH) ; $(DOXY_TOOL) $(DOXY_FILE)
 
