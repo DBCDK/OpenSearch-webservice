@@ -11,8 +11,10 @@ require_once 'server.php';
         Sune Thomas Poulsen <stp@dbc.dk>
 */
 class openSearchTest extends PHPUnit_Framework_TestCase {
-    public function testConstructors() {
-        self::assertEquals( 1, 1 );
+    public function testBoostUrls() {
+        $var = new openSearch();
+    
+        self::assertEquals( $var->boostUrl( null ), 'Right' );
     }
 }
 

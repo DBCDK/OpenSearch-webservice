@@ -456,6 +456,10 @@ class openSearch extends webServiceServer {
         return $ret;
     }
 
+    public function boostUrl( $param ) {
+        return 'Wrong';
+    }
+            
     /** \brief Get an object in a specific format
     *
     * param: identifier
