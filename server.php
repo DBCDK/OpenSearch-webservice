@@ -305,7 +305,10 @@ class openSearch extends webServiceServer {
                                 echo $work_result;
                             }
                             $this->watch->stop("get_fids");
-                            $fid_array = $this->parse_work_for_fedora_id($work_result);
+                            if (!$fid_array = $this->parse_work_for_fedora_id($work_result)) {
+                              verbose::log(FATAL, "Fedora fetch/parse record: " . $work_uri . ' refered from: ' . $record_uri);
+                              $fid_array = array($fid);
+                            }
                             if ($_REQUEST["work"] == "debug") {  
                                 echo "fid: " . $fid . " -> " . $work_id . " " . 
                                      $work_uri . " with manifestations:\n"; print_r($fid_array);
@@ -609,7 +612,7 @@ class openSearch extends webServiceServer {
             $dom = new DomDocument();
         }
         $dom->preserveWhiteSpace = false;
-        if ($dom->loadXML($w_rel)) {
+        if (@ $dom->loadXML($w_rel)) {
             $r_list = $dom->getElementsByTagName("hasManifestation");
             foreach ($r_list as $r) {
                 $res[] = $r->nodeValue;
