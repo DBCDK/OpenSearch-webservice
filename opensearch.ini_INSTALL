@@ -1,7 +1,7 @@
 ; Inifile for opensearch
 
 [setup]
-version = 1.0
+version = 1.1
 
 ; wsdl for service
 wsdl = opensearch.wsdl
@@ -72,16 +72,46 @@ relation["dbcaddi:hasTutorial"] = 1
 relation["dbcaddi:hasRingtone"] = 1
 relation["dbcaddi:isPartOfTheme"] = 1
 relation["dbcaddi:hasThemeMember"] = 1
-relation["dbcaddi:isAuthorDescriptionOf"] = 1
 relation["dbcaddi:hasAuthorDescription"] = 1
-relation["dbcaddi:isSubjectDescriptionOf"] = 1
 relation["dbcaddi:hasSubjectDescription"] = 1
 relation["dbcbib:hasTrack"] = 1
 relation["dbcbib:isPartOfAlbum"] = 1
-relation["dbcbib:hasArticle"] = 1
 relation["dbcbib:isPartOfManifestation"] = 1
+relation["dbcbib:hasAnalysis"] = 1
+relation["dbcbib:isAnalysisOf"] = 1
+relation["dbcbib:hasCreatorHomePage"] = 1
+relation["dbcbib:hasFulltext"] = 1
+relation["dbcbib:hasOnlineAccess"] = 1
+relation["dbcbib:hasRemoteAccess"] = 1
+relation["dbcbib:hasOnSiteAccess"] = 1
+relation["dbcbib:hasPayPerView"] = 1
 
 relation["hasReview"] = 1
+relation["isReviewOf"] = 1
+relation["hasCover"] = 1
+relation["isCoverOf"] = 1
+relation["hasUserCreatedContent"] = 1
+relation["hasSoundClip"] = 1
+relation["hasDemo"] = 1
+relation["hasTrailer"] = 1
+relation["hasTutorial"] = 1
+relation["hasRingtone"] = 1
+relation["isPartOfTheme"] = 1
+relation["hasThemeMember"] = 1
+relation["hasAuthorDescription"] = 1
+relation["hasSubjectDescription"] = 1
+relation["hasTrack"] = 1
+relation["isPartOfAlbum"] = 1
+relation["isPartOfManifestation"] = 1
+relation["hasAnalysis"] = 1
+relation["isAnalysisOf"] = 1
+relation["hasCreatorHomePage"] = 1
+relation["hasFulltext"] = 1
+relation["hasOnlineAccess"] = 1
+relation["hasRemoteAccess"] = 1
+relation["hasOnSiteAccess"] = 1
+relation["hasPayPerView"] = 1
+
 ; test relation["isMemberOfWork"] = 1
 
 ; scan objects for these formats
