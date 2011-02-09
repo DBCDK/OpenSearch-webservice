@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:ISO639-2="http://lcweb.loc.gov/standards/iso639-2/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:marcx="info:lc/xmlns/marcxchange-v1" xmlns:docbook="http://docbook.org/ns/docbook" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:ISO639-2="http://lcweb.loc.gov/standards/iso639-2/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:marcx="info:lc/xmlns/marcxchange-v1" xmlns:docbook="http://docbook.org/ns/docbook" xmlns:oso="http://oss.dbc.dk/ns/opensearchobjects" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="en">Opensearch Service</xs:documentation>
 		<xs:documentation xml:lang="en">This XML Schema describes the data and structure of data of the Opensearch search service.</xs:documentation>
@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:import namespace="http://biblstandard.dk/abm/namespace/dkabm/" schemaLocation="dkabm.xsd"/>
 	<xs:import namespace="info:lc/xmlns/marcxchange-v1" schemaLocation="marcxchange-1-1.xsd"/>
 	<xs:import namespace="http://docbook.org/ns/docbook" schemaLocation="docbook.xsd"/>
+	<xs:import namespace="http://oss.dbc.dk/ns/opensearchobjects" schemaLocation="opensearchobjects.xsd"/>
 	<xs:element name="getObjectRequest">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Request for a specific object.</xs:documentation>
@@ -265,6 +266,7 @@ You should have received a copy of the GNU Affero General Public License along w
 					<xs:element ref="dkabm:record"/>
 					<xs:element ref="marcx:collection"/>
 					<xs:element ref="docbook:article"/>
+					<xs:element ref="oso:object"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
@@ -529,6 +531,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="dkabm"/>
 			<xs:enumeration value="docbook"/>
 			<xs:enumeration value="marcxchange"/>
+			<xs:enumeration value="opensearchobject"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="outputTypeType">
