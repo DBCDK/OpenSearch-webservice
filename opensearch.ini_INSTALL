@@ -43,13 +43,18 @@ xmlns[oso] = http://oss.dbc.dk/ns/opensearchobjects
 ; path to xml-examples
 xmldir = ./xml
 
-; url to solr interface
-solr_uri = http://someserver:8080/apache-solr-1.4-dev/select
+; default repository
+default_repository = repos1
 
-; fedora urls
-fedora_get_raw = http://someserver.dbc.dk:8080/fedora/get/%s/originalData.0
-fedora_get_dc = http://someserver.dbc.dk:8080/fedora/get/%s/DC
-fedora_get_rels_ext = http://someserver.dbc.dk:8080/fedora/get/%s/RELS-EXT
+; url to solr and fedorainterface
+repository[repos1][solr] = http://someserver:8080/apache-solr-1.4-dev/select
+repository[repos1][fedora_get_raw] = http://someserver.dbc.dk:8080/fedora/get/%s/originalData.0
+repository[repos1][fedora_get_rels_ext] = http://someserver.dbc.dk:8080/fedora/get/%s/RELS-EXT
+
+repository[repos2][solr] = http://anotherserver:8080/apache-solr-1.4-dev/select
+repository[repos2][fedora_get_raw] = http://anotherserver.dbc.dk:8080/fedora/get/%s/originalData.0
+repository[repos2][fedora_get_rels_ext] = http://anotherserver.dbc.dk:8080/fedora/get/%s/RELS-EXT
+
 
 ; memcache
 cache_host = localhost
@@ -239,6 +244,7 @@ action[search][] = format
 action[search][] = outputType
 action[search][] = allRelations
 action[search][] = relationData
+action[search][] = repository
 action[search][] = source
 action[search][] = start
 action[search][] = stepValue

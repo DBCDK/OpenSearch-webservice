@@ -31,6 +31,7 @@ define(DEBUG_ON, FALSE);
 //-----------------------------------------------------------------------------
 class openSearch extends webServiceServer {
     protected $curl;
+    protected $repository; // array containing solr and fedora uri's
 
     public function __construct(){
         webServiceServer::__construct('opensearch.ini');
@@ -55,10 +56,6 @@ class openSearch extends webServiceServer {
             }
         */
         define('WSDL', $this->config->get_value('wsdl', 'setup'));
-        define('SOLR_URI', $this->config->get_value('solr_uri', 'setup'));
-        define('FEDORA_GET_RAW', $this->config->get_value('fedora_get_raw', 'setup'));
-        define('FEDORA_GET_DC', $this->config->get_value('fedora_get_dc', 'setup'));
-        define('FEDORA_GET_RELS_EXT', $this->config->get_value('fedora_get_rels_ext', 'setup'));
         define('MAX_COLLECTIONS', $this->config->get_value('max_collections', 'setup'));
 
 
@@ -79,9 +76,15 @@ class openSearch extends webServiceServer {
                 $filter_agency = $agencies[$agency];
             }
             else {
-                $unsupported = 'Error: Unknown agancy: ' . $agency;
+                $unsupported = 'Error: Unknown agency: ' . $agency;
             }
         }
+        $repositories = $this->config->get_value('repository', 'setup');
+        if (empty($param->repository->_value))
+            $this->repository = $repositories[$this->config->get_value('default_repository', 'setup')];
+        elseif (!$this->repository = $repositories[$param->repository->_value])
+            $unsupported = 'Error: Unknown repository: ' . $param->repository->_value;
+
         $use_work_collection = ($param->collectionType->_value <> 'manifestation');
         if( $rr = $param->userDefinedRanking ) {
             $rank['tie'] = $rr->_value->tieValue->_value;
@@ -284,7 +287,7 @@ class openSearch extends webServiceServer {
                 else {
                     if( $use_work_collection ) {
                         $this->watch->start('get_w_id');
-                        $record_uri =  sprintf(FEDORA_GET_RELS_EXT, $fid);
+                        $record_uri =  sprintf($this->repository['fedora_get_rels_ext'], $fid);
                         $record_result = $this->curl->get($record_uri);
                         $curl_err = $this->curl->get_status();
                         /* ignore the fact that there is no RELS_EXT datastream
@@ -299,7 +302,7 @@ class openSearch extends webServiceServer {
                         if ($work_id = $this->parse_rels_for_work_id($record_result)) {
                             // find other recs sharing the work-relation
                             $this->watch->start('get_fids');
-                            $work_uri = sprintf(FEDORA_GET_RELS_EXT, $work_id);
+                            $work_uri = sprintf($this->repository['fedora_get_rels_ext'], $work_id);
                             $work_result = $this->curl->get($work_uri);
                             if (DEBUG_ON) {
                                 echo $work_result;
@@ -373,7 +376,7 @@ class openSearch extends webServiceServer {
                                                 'rows' => '50000',
                                                 'fl' => 'fedoraPid'));
                     $this->watch->start('Solr 2');
-                    $solr_result = $this->curl->get(SOLR_URI);
+                    $solr_result = $this->curl->get($this->repository['solr']);
                     $this->watch->stop('Solr 2');
                     if (!$solr_arr = unserialize($solr_result)) {
                         verbose::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
@@ -424,8 +427,8 @@ class openSearch extends webServiceServer {
         foreach( $work_ids as $work ) {
             $objects = array();
             foreach ($work as $fid) {
-                $work_uri = sprintf(FEDORA_GET_RELS_EXT, $work_id);
-                $fedora_get =  sprintf(FEDORA_GET_RAW, $fid);
+                $work_uri = sprintf($this->repository['fedora_get_rels_ext'], $work_id);
+                $fedora_get =  sprintf($this->repository['fedora_get_raw'], $fid);
                 $fedora_result = $this->curl->get($fedora_get);
                 $curl_err = $this->curl->get_status();
                 //verbose::log(TRACE, 'Fedora get: ' . $fedora_get);
@@ -436,7 +439,7 @@ class openSearch extends webServiceServer {
                 }
                 if (strtoupper($param->allRelations->_value) == 'TRUE' || 
                     $param->allRelations->_value == '1') {
-                    $fedora_relation = $this->curl->get(sprintf(FEDORA_GET_RELS_EXT, $fid));
+                    $fedora_relation = $this->curl->get(sprintf($this->repository['fedora_get_rels_ext'], $fid));
                 }
                 $objects[]->_value = $this->parse_fedora_object(&$fedora_result, &$fedora_relation, $param->relationData->_value,
                                                                 $fid, $param->format->_value);
@@ -519,10 +522,16 @@ class openSearch extends webServiceServer {
             $error = 'authentication_error';
             return $ret_error;
         }
-        define('FEDORA_GET_RAW', $this->config->get_value('fedora_get_raw', 'setup'));
-        define('FEDORA_GET_RELS_EXT', $this->config->get_value('fedora_get_rels_ext', 'setup'));
+        $repositories = $this->config->get_value('repository', 'setup');
+        if (empty($param->repository->_value))
+            $this->repository = $repositories[$this->config->get_value('default_repository', 'setup')];
+        elseif (!$this->repository = $repositories[$param->repository->_value]) {
+            $error = 'Error: Unknown repository: ' . $param->repository->_value;
+            verbose::log(FATAL, 'Error: Unknown repository: ' . $param->repository->_value);
+            return $ret_error;
+        }
         $fid = $param->identifier->_value;
-        $record_uri =  sprintf(FEDORA_GET_RAW, $fid);
+        $record_uri =  sprintf($this->repository['fedora_get_raw'], $fid);
         $fedora_result = $this->curl->get($record_uri);
         $curl_err = $this->curl->get_status();
         if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
@@ -531,7 +540,7 @@ class openSearch extends webServiceServer {
             return $ret_error;
         }
         if (strtoupper($param->allRelations->_value) == 'TRUE' || $param->allRelations->_value == '1') {
-            $fedora_relation = $this->curl->get(sprintf(FEDORA_GET_RELS_EXT, $fid));
+            $fedora_relation = $this->curl->get(sprintf($this->repository['fedora_get_rels_ext'], $fid));
         }
         $format = &$param->objectFormat->_value;
         $o->collection->_value->resultPosition->_value = 1;
@@ -559,13 +568,13 @@ class openSearch extends webServiceServer {
 /*******************************************************************************/
 
     private function get_solr_array($q, $start, $rows, $sort, $facets, $filter, &$solr_arr) {
-        $solr_query = SOLR_URI . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort&fl=fedoraPid$facets";
+        $solr_query = $this->repository['solr'] . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort&fl=fedoraPid$facets";
     
         //  echo $solr_query;
         //exit;
     
         verbose::log(TRACE, 'Query: ' . $solr_query);
-        verbose::log(DEBUG, 'Query: ' . SOLR_URI . "?q=$q&fq=$filter&start=$start&rows=1&fl=fedoraPid$facets&debugQuery=on");
+        verbose::log(DEBUG, 'Query: ' . $this->repository['solr'] . "?q=$q&fq=$filter&start=$start&rows=1&fl=fedoraPid$facets&debugQuery=on");
         $solr_result = $this->curl->get($solr_query);
         if (empty($solr_result))
             return 'Internal problem: No answer from Solr';
@@ -598,10 +607,8 @@ class openSearch extends webServiceServer {
     public function show_info() {
         echo '<pre>';
         echo 'version             ' . $this->config->get_value('version', 'setup') . '<br/>';
-        echo 'SOLR_URI            ' . $this->config->get_value('solr_uri', 'setup') . '<br/>';
-        echo 'FEDORA_GET_RAW      ' . $this->config->get_value('fedora_get_raw', 'setup') . '<br/>';
-        echo 'FEDORA_GET_DC       ' . $this->config->get_value('fedora_get_dc', 'setup') . '<br/>';
-        echo 'FEDORA_GET_RELS_EXT ' . $this->config->get_value('fedora_get_rels_ext', 'setup') . '<br/>';
+        echo 'default_repository  ' . $this->config->get_value('default_repository', 'setup') . '<br/>';
+        echo 'repository          ';  print_r($this->config->get_value('repository', 'setup'));
         echo '</pre>';
         die();
     }
@@ -630,7 +637,6 @@ class openSearch extends webServiceServer {
      */
     private function parse_fedora_object(&$fedora_obj, $fedora_rels_obj, $rels_type, $rec_id, $format) {
         static $dom, $rels_dom, $allowed_relation;
-        //$valids = explode(' ', trim(VALID_DC_TAGS));
         if (empty($format)) {
             $format = 'dkabm';
         }
@@ -663,7 +669,7 @@ class openSearch extends webServiceServer {
                             $relation->relationUri->_value = $tag->nodeValue;
                         }
                         if ($rels_type == 'full') {
-                            $related_obj = $this->curl->get(sprintf(FEDORA_GET_RAW, $tag->nodeValue));
+                            $related_obj = $this->curl->get(sprintf($this->repository['fedora_get_raw'], $tag->nodeValue));
                             if (@ !$rels_dom->loadXML($related_obj)) {
                                 verbose::log(FATAL, 'Cannot load ' . $tag->tagName . ' object for ' . $rec_id . ' into DomXml');
                             }
