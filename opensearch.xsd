@@ -46,6 +46,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:outputType" minOccurs="0"/>
 				<xs:element ref="os:allRelations" minOccurs="0"/>
 				<xs:element ref="os:relationData" minOccurs="0"/>
+				<xs:element ref="os:repository" minOccurs="0"/>
 				<xs:element ref="os:source" minOccurs="0"/>
 				<xs:element ref="os:start" minOccurs="0"/>
 				<xs:element ref="os:stepValue" minOccurs="0"/>
@@ -353,6 +354,11 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="relationUri" type="xs:anyURI">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">URI of the relation.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="repository" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Repository to search. Only need to be specified if different from default</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="result">
