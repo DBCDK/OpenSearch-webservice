@@ -511,7 +511,7 @@ class openSearch extends webServiceServer {
     /** \brief Get an object in a specific format
     *
     * param: identifier
-    *        objectFormat - one of dkabm, docbook, marcxchange
+    *        objectFormat - one of dkabm, docbook, marcxchange, opensearchobject
     */
     public function getObject($param) { 
         $ret_error->searchResponse->_value->error->_value = &$error;
@@ -654,36 +654,38 @@ class openSearch extends webServiceServer {
             }
             if (@ !$rels_dom->loadXML($fedora_rels_obj)) {
                 verbose::log(FATAL, 'Cannot load RELS_EXT for ' . $rec_id . ' into DomXml');
-            }
-            foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
-                if ($tag->nodeType == XML_ELEMENT_NODE && $allowed_relation[$tag->tagName]) {
-                    //echo $tag->localName . ' ' . $tag->nodeValue . $tag->nodeType . '<br/>';
-                    $relation->relationType->_value = $tag->localName;
-                    if ($rels_type == 'uri' || $rels_type == 'full') {
-                        $relation->relationUri->_value = $tag->nodeValue;
-                    }
-                    if ($rels_type == 'full') {
-                        $related_obj = $this->curl->get(sprintf(FEDORA_GET_RAW, $tag->nodeValue));
-                        if (@ !$rels_dom->loadXML($related_obj)) {
-                            verbose::log(FATAL, 'Cannot load ' . $tag->tagName . ' object for ' . $rec_id . ' into DomXml');
+            } elseif ($rels_dom->getElementsByTagName('Description')->item(0)) {
+                foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
+                    if ($tag->nodeType == XML_ELEMENT_NODE && $allowed_relation[$tag->tagName]) {
+                        //echo $tag->localName . ' ' . $tag->nodeValue . $tag->nodeType . '<br/>';
+                        $relation->relationType->_value = $tag->localName;
+                        if ($rels_type == 'uri' || $rels_type == 'full') {
+                            $relation->relationUri->_value = $tag->nodeValue;
                         }
-                        else {
-                            $rel_obj = &$relation->relationObject->_value->object->_value;
-                            $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format);
-                            $rel_obj->identifier->_value = $tag->nodeValue;
+                        if ($rels_type == 'full') {
+                            $related_obj = $this->curl->get(sprintf(FEDORA_GET_RAW, $tag->nodeValue));
+                            if (@ !$rels_dom->loadXML($related_obj)) {
+                                verbose::log(FATAL, 'Cannot load ' . $tag->tagName . ' object for ' . $rec_id . ' into DomXml');
+                            }
+                            else {
+                                $rel_obj = &$relation->relationObject->_value->object->_value;
+                                $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format);
+                                $rel_obj->identifier->_value = $tag->nodeValue;
+                                $rel_obj->formatsAvailable->_value = $this->scan_for_formats($rels_dom);
+                            }
                         }
+                        $relations->relation[]->_value = $relation;
+                        unset($relation);
                     }
-                    $relations->relation[]->_value = $relation;
-                    unset($relation);
+                    //print_r($relations);
+                    //echo $rels;
                 }
-                //print_r($relations);
-                //echo $rels;
             }
         }
 
         $ret = $rec;
         $ret->identifier->_value = $rec_id;
-        $ret->relations->_value = $relations;
+        if ($relations) $ret->relations->_value = $relations;
         $ret->formatsAvailable->_value = $this->scan_for_formats($dom);
         if (DEBUG_ON) {
             var_dump($ret);
@@ -704,11 +706,11 @@ class openSearch extends webServiceServer {
             $form_table = $this->config->get_value('scan_format_table', 'setup');
         }
         
-        foreach ($dom->getElementsByTagName('container')->item(0)->childNodes as $tag) {
-            if ($x = &$form_table[$tag->tagName]) {
-                $ret->format[]->_value = $x;
-            }
-        }
+        if ($p = &$dom->getElementsByTagName('container')->item(0))
+          foreach ($p->childNodes as $tag)
+              if ($x = &$form_table[$tag->tagName])
+                  $ret->format[]->_value = $x;
+
         return $ret;
     }
 
@@ -758,7 +760,14 @@ class openSearch extends webServiceServer {
             if ($record->item(0)) {
                 $ret->article->_value = $this->xmlconvert->xml2obj($record->item(0));
                 $ret->article->_namespace = $record->item(0)->lookupNamespaceURI('docbook');
-                //$ret->_namespace = $this->xmlns['docbook'];
+                //print_r($ret); die();
+            }
+            break;
+        case 'opensearchobject':
+            $record = &$dom->getElementsByTagNameNS($this->xmlns['oso'], 'object');
+            if ($record->item(0)) {
+                $ret->object->_value = $this->xmlconvert->xml2obj($record->item(0));
+                $ret->object->_namespace = $record->item(0)->lookupNamespaceURI('oso');
                 //print_r($ret); die();
             }
             break;

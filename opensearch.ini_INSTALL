@@ -37,6 +37,7 @@ xmlns[dkdcplus] = http://biblstandard.dk/abm/namespace/dkdcplus/
 ;xmlns[marcx] = http://www.bs.dk/standards/MarcXchange
 xmlns[marcx] = info:lc/xmlns/marcxchange-v1
 xmlns[docbook] = http://docbook.org/ns/docbook
+xmlns[oso] = http://oss.dbc.dk/ns/opensearchobjects
 
 
 ; path to xml-examples
@@ -76,7 +77,7 @@ relation["dbcaddi:hasAuthorDescription"] = 1
 relation["dbcaddi:hasSubjectDescription"] = 1
 relation["dbcbib:hasTrack"] = 1
 relation["dbcbib:isPartOfAlbum"] = 1
-relation["dbcbib:isPartOfManifestation"] = 1
+;relation["dbcbib:isPartOfManifestation"] = 1
 relation["dbcbib:hasAnalysis"] = 1
 relation["dbcbib:isAnalysisOf"] = 1
 relation["dbcbib:hasCreatorHomePage"] = 1
@@ -102,7 +103,7 @@ relation["hasAuthorDescription"] = 1
 relation["hasSubjectDescription"] = 1
 relation["hasTrack"] = 1
 relation["isPartOfAlbum"] = 1
-relation["isPartOfManifestation"] = 1
+;relation["isPartOfManifestation"] = 1
 relation["hasAnalysis"] = 1
 relation["isAnalysisOf"] = 1
 relation["hasCreatorHomePage"] = 1
@@ -118,6 +119,7 @@ relation["hasPayPerView"] = 1
 scan_format_table["dkabm:record"] = dkabm
 scan_format_table["collection"] = marcxchange
 scan_format_table["docbook:article"] = docbook
+scan_format_table["oso:object"] = opensearchobject
 
 ; number of second to wait for a solr reply
 solr_timeout = 30
