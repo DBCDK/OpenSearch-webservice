@@ -86,10 +86,10 @@ class openSearch extends webServiceServer {
             $unsupported = 'Error: Unknown repository: ' . $param->repository->_value;
 
         $use_work_collection = ($param->collectionType->_value <> 'manifestation');
-        if( $rr = $param->userDefinedRanking ) {
+        if ($rr = $param->userDefinedRanking) {
             $rank['tie'] = $rr->_value->tieValue->_value;
             
-            if( is_array( $rr->_value->rankField ) )
+            if (is_array($rr->_value->rankField))
                 foreach ($rr->_value->rankField as $rf) {
                     $boost_type = ($rf->_value->fieldType->_value == 'word' ? 'word_boost' : 'phrase_boost');
                     $rank[$boost_type][$rf->_value->fieldName->_value] = $rf->_value->weight->_value;
@@ -99,18 +99,24 @@ class openSearch extends webServiceServer {
                 $rank[$boost_type][$rr->_value->rankField->_value->fieldName->_value] = $rr->_value->rankField->_value->weight->_value;                
             }
                 
-        } elseif( $sort = $param->sort->_value ) {
+        } elseif (($sort = $param->sort->_value) || ($sort = $param->sortWithBoost->_value->sort->_value)) {
             $rank_type = $this->config->get_value('rank', 'setup');
-            if( $rank = $rank_type[$sort] ) {
+            if ($rank = $rank_type[$sort]) {
                 unset($sort);
             }
             else {
                 $sort_type = $this->config->get_value('sort', 'setup');
-                if( !isset($sort_type[$sort]) ) {
+                if (!isset($sort_type[$sort])) {
                     $unsupported = 'Error: Unknown sort: ' . $sort;
                 }
             }
         }
+
+        // STP: Tilføj self::boostUrl( ... ) til $query['dismax']
+        $boost_str = openSearch::boostUrl($param->sortWithBoost->_value->userDefinedBoost->_value->boostField);
+        //if (($booststr = openSearch::boostUrl($param)) && empty($rank))
+          //$rank['word_boost']['cql.anyIndexes'] = 1;
+       
 
         if ($unsupported) return $ret_error;
 
@@ -165,16 +171,6 @@ class openSearch extends webServiceServer {
             $sort_q = '&sort=' . urlencode($sort_type[$sort]);
         }
         
-        // STP: Tilføj self::boostUrl( ... ) til $query['dismax']
-        
-        if( isset( $query['dismax'] ) ) {
-            $query['dismax'] .= urlencode( openSearch::boostUrl( $param ) );
-        }
-        else {
-            $booststr = openSearch::boostUrl( $param );
-            //if( $booststr != '' )
-            //    $query['dismax'] = urlencode( $booststr );
-        }
 
         if ($filter_agency) {
             $filter_q = rawurlencode($filter_agency);
@@ -200,12 +196,12 @@ class openSearch extends webServiceServer {
         // do the query
         $search_ids = array();
         if ($sort == 'random') {
-            if ($err = $this->get_solr_array($query['solr'], 0, 0, '', $facet_q, $filter_q, $solr_arr)) {
+            if ($err = $this->get_solr_array($query['solr'], 0, 0, '', $facet_q, $filter_q, '', $solr_arr)) {
                 $error = $err;
             }
         } 
         else {
-            if ($err = $this->get_solr_array($query['dismax'], 0, $rows, $sort_q, $facet_q, $filter_q, $solr_arr)) {
+            if ($err = $this->get_solr_array($query['dismax'], 0, $rows, $sort_q, $facet_q, $filter_q, $boost_str, $solr_arr)) {
                 $error = $err;
             }
             else {
@@ -231,7 +227,7 @@ class openSearch extends webServiceServer {
             for ($w_idx = 0; $w_idx < $rows; $w_idx++) {
                 do { $no = rand(0, $numFound-1); } while (isset($used_search_fid[$no]));
                 $used_search_fid[$no] = TRUE;
-                $this->get_solr_array($query['solr'], $no, 1, '', '', $filter_q, $solr_arr);
+                $this->get_solr_array($query['solr'], $no, 1, '', '', $filter_q, '', $solr_arr);
                 $work_ids[] = array($solr_arr['response']['docs'][0]['fedoraPid']);
             }
         } 
@@ -258,7 +254,7 @@ class openSearch extends webServiceServer {
                     $this->watch->start('Solr_add');
                     verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . urldecode($query['solr']));
                     $rows *= 2;
-                    if ($err = $this->get_solr_array($query['dismax'], 0, $rows, $sort_q, '', $filter_q, $solr_arr)) {
+                    if ($err = $this->get_solr_array($query['dismax'], 0, $rows, $sort_q, '', $filter_q, $boost_str, $solr_arr)) {
                         $error = $err;
                         return $ret_error;
                     } 
@@ -474,42 +470,6 @@ class openSearch extends webServiceServer {
         return $ret;
     }
 
-    public static function boostUrl( $param ) {
-        if( $boost = $param->sortWithBoost ) {
-            $boostFmt = '_query_:"{!boost bq=\'%s:%s^%s\'}%s"';
-            $query = $param->query->_value;
-            
-            $boostFields = array();
-            if( is_array( $boost->_value->userDefinedBoost->_value->boostField ) )
-                foreach( $boost->_value->userDefinedBoost->_value->boostField as $bf ) {
-                    $boostFields[] = sprintf( $boostFmt, $bf->_value->fieldName->_value,
-                                                        $bf->_value->fieldValue->_value,
-                                                        $bf->_value->weight->_value,
-                                                        $bf->_value->fieldValue->_value );
-                }
-            else {
-                $bf = $boost->_value->userDefinedBoost->_value->boostField;
-                $boostFields[] = sprintf( $boostFmt, $bf->_value->fieldName->_value,
-                                                    $bf->_value->fieldValue->_value,
-                                                    $bf->_value->weight->_value,
-                                                    $bf->_value->fieldValue->_value );
-            }
-                
-            return sprintf( ' AND ( %s )', implode( ' ', $boostFields ) );
-        
-            if( is_array( $rr->_value->rankField ) )
-                foreach ($rr->_value->rankField as $rf) {
-                    $boost_type = ($rf->_value->fieldType->_value == 'word' ? 'word_boost' : 'phrase_boost');
-                    $rank[$boost_type][$rf->_value->fieldName->_value] = $rf->_value->weight->_value;
-                }                
-            else {
-                $boost_type = ($rr->_value->rankField->_value->fieldType->_value == 'word' ? 'word_boost' : 'phrase_boost');
-                $rank[$boost_type][$rr->_value->rankField->_value->fieldName->_value] = $rr->_value->rankField->_value->weight->_value;                
-            }
-        }
-        
-        return '';
-    }
             
     /** \brief Get an object in a specific format
     *
@@ -567,14 +527,30 @@ class openSearch extends webServiceServer {
 
 /*******************************************************************************/
 
-    private function get_solr_array($q, $start, $rows, $sort, $facets, $filter, &$solr_arr) {
-        $solr_query = $this->repository['solr'] . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort&fl=fedoraPid$facets";
+    /** \brief Build bq (BoostQuery) as field:content^weight
+     *
+     */
+    public static function boostUrl($boost) {
+        $ret = '';
+        if ($boost) {
+            $boosts = (is_array($boost) ? $boost : array($boost));
+            foreach ($boosts as $bf)
+                $ret .= '&bq=' . 
+                        urlencode($bf->_value->fieldName->_value . ':' . 
+                                  $bf->_value->fieldValue->_value . '^' . 
+                                  $bf->_value->weight->_value);
+        }
+        return $ret;
+    }
+
+    private function get_solr_array($q, $start, $rows, $sort, $facets, $filter, $boost, &$solr_arr) {
+        $solr_query = $this->repository['solr'] . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort$boost&fl=fedoraPid$facets";
     
         //  echo $solr_query;
         //exit;
     
         verbose::log(TRACE, 'Query: ' . $solr_query);
-        verbose::log(DEBUG, 'Query: ' . $this->repository['solr'] . "?q=$q&fq=$filter&start=$start&rows=1&fl=fedoraPid$facets&debugQuery=on");
+        verbose::log(DEBUG, 'Query: ' . $this->repository['solr'] . "?q=$q&fq=$filter&start=$start&rows=1$sort$boost&fl=fedoraPid$facets&debugQuery=on");
         $solr_result = $this->curl->get($solr_query);
         if (empty($solr_result))
             return 'Internal problem: No answer from Solr';
