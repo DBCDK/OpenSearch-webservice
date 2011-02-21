@@ -36,9 +36,8 @@ class openSearch extends webServiceServer {
     public function __construct(){
         webServiceServer::__construct('opensearch.ini');
 
-        if( !$timeout = $this->config->get_value('curl_timeout', 'setup') ) {
+        if (!$timeout = $this->config->get_value('curl_timeout', 'setup'))
             $timeout = 20;
-        }
         $this->curl = new curl();
         $this->curl->set_option(CURLOPT_TIMEOUT, $timeout);
     }
@@ -47,7 +46,7 @@ class openSearch extends webServiceServer {
         \brief Handles the request and set up the response
     */
 
-    public function search( $param ) { 
+    public function search($param) { 
         // set some defines
         /*
             if (!$this->aaa->has_right('opensearch', 500)) {
@@ -61,18 +60,18 @@ class openSearch extends webServiceServer {
 
         // check for unsupported stuff
         $ret_error->searchResponse->_value->error->_value = &$unsupported;
-        if( $param->format->_value == 'short' ) {
+        if ($param->format->_value == 'short') {
             $unsupported = 'Error: format short is not supported';
         }
-        if( $param->format->_value == 'full' ) {
+        if ($param->format->_value == 'full') {
             $unsupported = 'Error: format full is not supported';
         }
-        if( empty($param->query->_value) ) {
+        if (empty($param->query->_value)) {
             $unsupported = 'Error: No query found in request';
         }
-        if( $agency = $param->agency->_value ) {
+        if ($agency = $param->agency->_value) {
             $agencies = $this->config->get_value('agency', 'agency');
-            if( isset($agencies[$agency]) ) {
+            if (isset($agencies[$agency])) {
                 $filter_agency = $agencies[$agency];
             }
             else {
@@ -124,7 +123,7 @@ class openSearch extends webServiceServer {
             pjo 31-08-10
             If source is set and equals 'bibliotekdk' use bib_zsearch_class to zsearch for records
         */    
-        if( $param->source->_value == 'bibliotekdk' ) {
+        if ($param->source->_value == 'bibliotekdk') {
             require_once('bib_zsearch_class.php');
 
             $this->watch->start('bibdk_search');
@@ -159,15 +158,19 @@ class openSearch extends webServiceServer {
         }
         $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
         $use_work_collection |= $sort_type[$sort] == 'random';
-        $key_relation_cache = md5( $param->query->_value . '_' . $agency . '_' . $use_work_collection . '_' . 
-                                   $param->sort->_value . '_' . $this->version );
+        $key_relation_cache = md5($param->query->_value . '_' . $agency . '_' . $use_work_collection . '_' . 
+                                  $param->sort->_value . '_' . $this->version);
 
         $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
         // urldecode ???? $query = $cql2solr->convert(urldecode($param->query->_value));
         // ' is handled differently in indexing and searching, so remove it until this is solved
         $query = $cql2solr->convert(str_replace("'", '', $param->query->_value), $rank);
         //$query = $cql2solr->convert($param->query->_value, $rank);
-        if( $sort ) {
+        if (!$query['operands']) {
+            $error = 'Error: No query found in request';
+            return $ret_error;
+        }
+        if ($sort) {
             $sort_q = '&sort=' . urlencode($sort_type[$sort]);
         }
         
@@ -189,7 +192,7 @@ class openSearch extends webServiceServer {
         }
 
         verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . urldecode($query['solr']));
-        if( $query['dismax'] ) {
+        if ($query['dismax']) {
             verbose::log(TRACE, 'CQL to DISMAX: ' . $param->query->_value . ' -> ' . urldecode($query['dismax']));
         }
 
@@ -212,7 +215,7 @@ class openSearch extends webServiceServer {
         }
         $this->watch->stop('Solr');
 
-        if( $error ) {
+        if ($error) {
             return $ret_error;
         }
 
@@ -245,10 +248,10 @@ class openSearch extends webServiceServer {
             }
     
             $w_no = 0;
-            if( DEBUG_ON ) { 
+            if (DEBUG_ON) { 
                 print_r($search_ids);
             }
-            for( $s_idx = 0; isset($search_ids[$s_idx]); $s_idx++ ) {
+            for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
                 $fid = &$search_ids[$s_idx];
                 if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
                     $this->watch->start('Solr_add');
@@ -267,21 +270,21 @@ class openSearch extends webServiceServer {
                     }
                     $this->watch->stop('Solr_add');
                 }
-                if( $used_search_fids[$fid] ) {
+                if ($used_search_fids[$fid]) {
                     continue;
                 }
-                if( count($work_ids) >= $step_value ) {
+                if (count($work_ids) >= $step_value) {
                     $more = TRUE;
                     break;
                 }
   
                 $w_no++;
                 // find relations for the record in fedora
-                if( $relation_cache[$w_no] ) {
+                if ($relation_cache[$w_no]) {
                     $fid_array = $relation_cache[$w_no];
                 }
                 else {
-                    if( $use_work_collection ) {
+                    if ($use_work_collection) {
                         $this->watch->start('get_w_id');
                         $record_uri =  sprintf($this->repository['fedora_get_rels_ext'], $fid);
                         $record_result = $this->curl->get($record_uri);
@@ -325,7 +328,7 @@ class openSearch extends webServiceServer {
                 if (DEBUG_ON) { 
                     print_r($fid_array);
                 }
-                foreach( $fid_array as $id ) {
+                foreach ($fid_array as $id) {
                     $used_search_fids[$id] = TRUE;
                     if ($w_no >= $start) {
                         $work_ids[$w_no][] = $id;
@@ -337,7 +340,7 @@ class openSearch extends webServiceServer {
             }
         }
 
-        if( count($work_ids) < $step_value && count($search_ids) < $numFound ) {
+        if (count($work_ids) < $step_value && count($search_ids) < $numFound) {
             verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . urldecode($query['solr']));
         }
 
@@ -354,10 +357,10 @@ class openSearch extends webServiceServer {
                 }
             }
             if (!empty($add_query)) {     // use post here because query can be very long
-                if( empty($param->allObjects->_value) ) {
+                if (empty($param->allObjects->_value)) {
                     $q = urldecode($query['solr']) . ' AND fedoraNormPid:(' . $add_query . ')';
                 }
-                elseif ( $filter_agency ) {
+                elseif ($filter_agency) {
                     $q = urldecode('fedoraNormPid:(' . $add_query . ') ');
                 }
                 else {
@@ -419,8 +422,8 @@ class openSearch extends webServiceServer {
         // now fetch the records for each work/collection
         $this->watch->start('get_recs');
         $collections = array();
-        $rec_no = max( 1, $start );
-        foreach( $work_ids as $work ) {
+        $rec_no = max(1, $start);
+        foreach ($work_ids as $work) {
             $objects = array();
             foreach ($work as $fid) {
                 $work_uri = sprintf($this->repository['fedora_get_rels_ext'], $work_id);
@@ -798,7 +801,7 @@ class openSearch extends webServiceServer {
  * MAIN
  */
 
-if( !defined( 'PHPUNIT_RUNNING' ) ) {
+if (!defined('PHPUNIT_RUNNING')) {
     $ws=new openSearch();
 
     $ws->handle_request();
