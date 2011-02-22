@@ -591,6 +591,10 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="dbcaddi:hasRemoteAccess"/>
 			<xs:enumeration value="dbcaddi:hasOnSiteAccess"/>
 			<xs:enumeration value="dbcaddi:hasPayPerView"/>
+			<xs:enumeration value="dbcaddi:hasCreatorDescription
+			<xs:enumeration value="dcterms:creator"/>
+			<xs:enumeration value="dcterms:references"/>
+			<xs:enumeration value="dcterms:isReferencedBy"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="sortType">
