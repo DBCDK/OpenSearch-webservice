@@ -18,7 +18,7 @@
 	</xs:complexType>
 	<xs:complexType name="act">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Skuespiller</xs:documentation>
+			<xs:documentation xml:lang="dk">Skuespiller</xs:documentation>
 			<xs:documentation xml:lang="en">Actor</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -31,7 +31,7 @@
 	</xs:complexType>
 	<xs:complexType name="aft">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Forfatter til efterord, efterskrift etc.</xs:documentation>
+			<xs:documentation xml:lang="dk">Forfatter til efterord, efterskrift etc.</xs:documentation>
 			<xs:documentation xml:lang="en">Author of afterword, colophon etc.</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -44,7 +44,7 @@
 	</xs:complexType>
 	<xs:complexType name="anm">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Animator</xs:documentation>
+			<xs:documentation xml:lang="dk">Animator</xs:documentation>
 			<xs:documentation xml:lang="en">Animator</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -57,7 +57,7 @@
 	</xs:complexType>
 	<xs:complexType name="ant">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Forfatter til forlæg</xs:documentation>
+			<xs:documentation xml:lang="dk">Forfatter til forlæg</xs:documentation>
 			<xs:documentation xml:lang="en">Bibliographic antecedent</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -70,7 +70,7 @@
 	</xs:complexType>
 	<xs:complexType name="arr">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Arrangør</xs:documentation>
+			<xs:documentation xml:lang="dk">Arrangør</xs:documentation>
 			<xs:documentation xml:lang="en">Arranger</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -83,7 +83,7 @@
 	</xs:complexType>
 	<xs:complexType name="art">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Kunstner</xs:documentation>
+			<xs:documentation xml:lang="dk">Kunstner</xs:documentation>
 			<xs:documentation xml:lang="en">Artist</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -96,7 +96,7 @@
 	</xs:complexType>
 	<xs:complexType name="aud">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Dialogforfatter</xs:documentation>
+			<xs:documentation xml:lang="dk">Dialogforfatter</xs:documentation>
 			<xs:documentation xml:lang="en">Author of dialog</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -109,7 +109,7 @@
 	</xs:complexType>
 	<xs:complexType name="aui">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Forfatter til forord, introduktion etc.</xs:documentation>
+			<xs:documentation xml:lang="dk">Forfatter til forord, introduktion etc.</xs:documentation>
 			<xs:documentation xml:lang="en">Author of introduction, etc.</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -122,7 +122,7 @@
 	</xs:complexType>
 	<xs:complexType name="aus">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Manuskriptforfatter</xs:documentation>
+			<xs:documentation xml:lang="dk">Manuskriptforfatter</xs:documentation>
 			<xs:documentation xml:lang="en">Author of screenplay</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -135,7 +135,7 @@
 	</xs:complexType>
 	<xs:complexType name="aut">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Forfatter</xs:documentation>
+			<xs:documentation xml:lang="dk">Forfatter</xs:documentation>
 			<xs:documentation xml:lang="en">Author</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -148,7 +148,7 @@
 	</xs:complexType>
 	<xs:complexType name="ccp">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Idemager</xs:documentation>
+			<xs:documentation xml:lang="dk">Idemager</xs:documentation>
 			<xs:documentation xml:lang="en">Conceptor</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -161,7 +161,7 @@
 	</xs:complexType>
 	<xs:complexType name="chr">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Koreograf</xs:documentation>
+			<xs:documentation xml:lang="dk">Koreograf</xs:documentation>
 			<xs:documentation xml:lang="en">Choreographer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -174,7 +174,7 @@
 	</xs:complexType>
 	<xs:complexType name="cli">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">På vegne af</xs:documentation>
+			<xs:documentation xml:lang="dk">På vegne af</xs:documentation>
 			<xs:documentation xml:lang="en">Client</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -187,7 +187,7 @@
 	</xs:complexType>
 	<xs:complexType name="cll">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Kalligraf</xs:documentation>
+			<xs:documentation xml:lang="dk">Kalligraf</xs:documentation>
 			<xs:documentation xml:lang="en">Calligrapher</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -200,7 +200,7 @@
 	</xs:complexType>
 	<xs:complexType name="cmm">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Kommentator</xs:documentation>
+			<xs:documentation xml:lang="dk">Kommentator</xs:documentation>
 			<xs:documentation xml:lang="en">Commentator</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -213,7 +213,7 @@
 	</xs:complexType>
 	<xs:complexType name="cmp">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Komponist</xs:documentation>
+			<xs:documentation xml:lang="dk">Komponist</xs:documentation>
 			<xs:documentation xml:lang="en">Composer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -226,7 +226,7 @@
 	</xs:complexType>
 	<xs:complexType name="cnd">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Dirigent</xs:documentation>
+			<xs:documentation xml:lang="dk">Dirigent</xs:documentation>
 			<xs:documentation xml:lang="en">Conductor</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -239,7 +239,7 @@
 	</xs:complexType>
 	<xs:complexType name="cng">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Filmfotograf</xs:documentation>
+			<xs:documentation xml:lang="dk">Filmfotograf</xs:documentation>
 			<xs:documentation xml:lang="en">Cinematographer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -252,7 +252,7 @@
 	</xs:complexType>
 	<xs:complexType name="com">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Udgiver</xs:documentation>
+			<xs:documentation xml:lang="dk">Udgiver</xs:documentation>
 			<xs:documentation xml:lang="en">Compiler</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -265,7 +265,7 @@
 	</xs:complexType>
 	<xs:complexType name="cre">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Skaber</xs:documentation>
+			<xs:documentation xml:lang="dk">Skaber</xs:documentation>
 			<xs:documentation xml:lang="en">Creator</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -278,7 +278,7 @@
 	</xs:complexType>
 	<xs:complexType name="ctb">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Bidragyder</xs:documentation>
+			<xs:documentation xml:lang="dk">Bidragyder</xs:documentation>
 			<xs:documentation xml:lang="en">Contributor</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -291,7 +291,7 @@
 	</xs:complexType>
 	<xs:complexType name="ctg">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Korttegner</xs:documentation>
+			<xs:documentation xml:lang="dk">Korttegner</xs:documentation>
 			<xs:documentation xml:lang="en">Cartographer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -304,7 +304,7 @@
 	</xs:complexType>
 	<xs:complexType name="dkani">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Ansvarlig institution</xs:documentation>
+			<xs:documentation xml:lang="dk">Ansvarlig institution</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -316,7 +316,7 @@
 	</xs:complexType>
 	<xs:complexType name="dkbea">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Bearbejder</xs:documentation>
+			<xs:documentation xml:lang="dk">Bearbejder</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -328,7 +328,7 @@
 	</xs:complexType>
 	<xs:complexType name="dkdes">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Designer</xs:documentation>
+			<xs:documentation xml:lang="dk">Designer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -340,7 +340,7 @@
 	</xs:complexType>
 	<xs:complexType name="dkfig">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Ophav til figurer</xs:documentation>
+			<xs:documentation xml:lang="dk">Ophav til figurer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -352,7 +352,7 @@
 	</xs:complexType>
 	<xs:complexType name="dkfvl">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Farvelægger</xs:documentation>
+			<xs:documentation xml:lang="dk">Farvelægger</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -364,7 +364,7 @@
 	</xs:complexType>
 	<xs:complexType name="dkind">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Indlæser</xs:documentation>
+			<xs:documentation xml:lang="dk">Indlæser</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -376,7 +376,7 @@
 	</xs:complexType>
 	<xs:complexType name="dkmdt">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Medredaktør</xs:documentation>
+			<xs:documentation xml:lang="dk">Medredaktør</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -388,7 +388,7 @@
 	</xs:complexType>
 	<xs:complexType name="dkmed">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Medforfatter</xs:documentation>
+			<xs:documentation xml:lang="dk">Medforfatter</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -400,7 +400,7 @@
 	</xs:complexType>
 	<xs:complexType name="dkmon">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Ophav til mønstre</xs:documentation>
+			<xs:documentation xml:lang="dk">Ophav til mønstre</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -412,7 +412,7 @@
 	</xs:complexType>
 	<xs:complexType name="dkops">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Ophav til opskrifter</xs:documentation>
+			<xs:documentation xml:lang="dk">Ophav til opskrifter</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -424,7 +424,7 @@
 	</xs:complexType>
 	<xs:complexType name="dkref">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Referent</xs:documentation>
+			<xs:documentation xml:lang="dk">Referent</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -436,7 +436,7 @@
 	</xs:complexType>
 	<xs:complexType name="dktek">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Forfatter til mindre tekstdele</xs:documentation>
+			<xs:documentation xml:lang="dk">Forfatter til mindre tekstdele</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -448,7 +448,7 @@
 	</xs:complexType>
 	<xs:complexType name="dnc">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Danser</xs:documentation>
+			<xs:documentation xml:lang="dk">Danser</xs:documentation>
 			<xs:documentation xml:lang="en">Dancer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -461,7 +461,7 @@
 	</xs:complexType>
 	<xs:complexType name="drm">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Tegner</xs:documentation>
+			<xs:documentation xml:lang="dk">Tegner</xs:documentation>
 			<xs:documentation xml:lang="en">Draftsman</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -474,7 +474,7 @@
 	</xs:complexType>
 	<xs:complexType name="drt">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Instruktør</xs:documentation>
+			<xs:documentation xml:lang="dk">Instruktør</xs:documentation>
 			<xs:documentation xml:lang="en">Director</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -487,7 +487,7 @@
 	</xs:complexType>
 	<xs:complexType name="dte">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Festskriftsmodtager</xs:documentation>
+			<xs:documentation xml:lang="dk">Festskriftsmodtager</xs:documentation>
 			<xs:documentation xml:lang="en">Dedicatee</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -509,7 +509,7 @@
 	</xs:complexType>
 	<xs:complexType name="edt">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Redaktør</xs:documentation>
+			<xs:documentation xml:lang="dk">Redaktør</xs:documentation>
 			<xs:documentation xml:lang="en">Editor</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -652,7 +652,7 @@
 	</xs:complexType>
 	<xs:complexType name="ill">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Illustrator</xs:documentation>
+			<xs:documentation xml:lang="dk">Illustrator</xs:documentation>
 			<xs:documentation xml:lang="en">Illustrator</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -665,7 +665,7 @@
 	</xs:complexType>
 	<xs:complexType name="inv">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Udvikler</xs:documentation>
+			<xs:documentation xml:lang="dk">Udvikler</xs:documentation>
 			<xs:documentation xml:lang="en">Inventor</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -687,7 +687,7 @@
 	</xs:complexType>
 	<xs:complexType name="itr">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Instrumentalist</xs:documentation>
+			<xs:documentation xml:lang="dk">Instrumentalist</xs:documentation>
 			<xs:documentation xml:lang="en">Instrumentalist</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -700,7 +700,7 @@
 	</xs:complexType>
 	<xs:complexType name="ive">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Interviewede</xs:documentation>
+			<xs:documentation xml:lang="dk">Interviewede</xs:documentation>
 			<xs:documentation xml:lang="en">Interviwee</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -713,7 +713,7 @@
 	</xs:complexType>
 	<xs:complexType name="ivr">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Interviewer</xs:documentation>
+			<xs:documentation xml:lang="dk">Interviewer</xs:documentation>
 			<xs:documentation xml:lang="en">Interviewer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -726,7 +726,7 @@
 	</xs:complexType>
 	<xs:complexType name="lbt">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Librettist</xs:documentation>
+			<xs:documentation xml:lang="dk">Librettist</xs:documentation>
 			<xs:documentation xml:lang="en">Librettist</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -739,7 +739,7 @@
 	</xs:complexType>
 	<xs:complexType name="ltg">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Litograf</xs:documentation>
+			<xs:documentation xml:lang="dk">Litograf</xs:documentation>
 			<xs:documentation xml:lang="en">Lithographer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -752,7 +752,7 @@
 	</xs:complexType>
 	<xs:complexType name="lyr">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Forfatter til sangtekst</xs:documentation>
+			<xs:documentation xml:lang="dk">Forfatter til sangtekst</xs:documentation>
 			<xs:documentation xml:lang="en">Lyricist</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -774,7 +774,7 @@
 	</xs:complexType>
 	<xs:complexType name="mus">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Musiker</xs:documentation>
+			<xs:documentation xml:lang="dk">Musiker</xs:documentation>
 			<xs:documentation xml:lang="en">Musician</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -787,7 +787,7 @@
 	</xs:complexType>
 	<xs:complexType name="nrt">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Fortæller</xs:documentation>
+			<xs:documentation xml:lang="dk">Fortæller</xs:documentation>
 			<xs:documentation xml:lang="en">Narrator</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -800,7 +800,7 @@
 	</xs:complexType>
 	<xs:complexType name="orm">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Mødearrangør</xs:documentation>
+			<xs:documentation xml:lang="dk">Mødearrangør</xs:documentation>
 			<xs:documentation xml:lang="en">Organizer of meeting</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -813,7 +813,7 @@
 	</xs:complexType>
 	<xs:complexType name="oth">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Udefineret funktion</xs:documentation>
+			<xs:documentation xml:lang="dk">Udefineret funktion</xs:documentation>
 			<xs:documentation xml:lang="en">Other</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -851,7 +851,7 @@
 	</xs:complexType>
 	<xs:complexType name="pht">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Fotograf</xs:documentation>
+			<xs:documentation xml:lang="dk">Fotograf</xs:documentation>
 			<xs:documentation xml:lang="en">Photographer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -864,7 +864,7 @@
 	</xs:complexType>
 	<xs:complexType name="prf">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Performer</xs:documentation>
+			<xs:documentation xml:lang="dk">Performer</xs:documentation>
 			<xs:documentation xml:lang="en">Performer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -877,7 +877,7 @@
 	</xs:complexType>
 	<xs:complexType name="prg">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Programmør</xs:documentation>
+			<xs:documentation xml:lang="dk">Programmør</xs:documentation>
 			<xs:documentation xml:lang="en">Programmer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -890,7 +890,7 @@
 	</xs:complexType>
 	<xs:complexType name="pro">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Producer</xs:documentation>
+			<xs:documentation xml:lang="dk">Producer</xs:documentation>
 			<xs:documentation xml:lang="en">Producer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -903,7 +903,7 @@
 	</xs:complexType>
 	<xs:complexType name="rce">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Tekniker</xs:documentation>
+			<xs:documentation xml:lang="dk">Tekniker</xs:documentation>
 			<xs:documentation xml:lang="en">Recording engineer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -916,7 +916,7 @@
 	</xs:complexType>
 	<xs:complexType name="res">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Researcher</xs:documentation>
+			<xs:documentation xml:lang="dk">Researcher</xs:documentation>
 			<xs:documentation xml:lang="en">Researcher</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -929,7 +929,7 @@
 	</xs:complexType>
 	<xs:complexType name="rev">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Anmelder</xs:documentation>
+			<xs:documentation xml:lang="dk">Anmelder</xs:documentation>
 			<xs:documentation xml:lang="en">Reviewer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -942,7 +942,7 @@
 	</xs:complexType>
 	<xs:complexType name="scl">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Skulptør</xs:documentation>
+			<xs:documentation xml:lang="dk">Skulptør</xs:documentation>
 			<xs:documentation xml:lang="en">Sculptor</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -964,7 +964,7 @@
 	</xs:complexType>
 	<xs:complexType name="sng">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Sanger</xs:documentation>
+			<xs:documentation xml:lang="dk">Sanger</xs:documentation>
 			<xs:documentation xml:lang="en">Singer</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -995,7 +995,7 @@
 	</xs:complexType>
 	<xs:complexType name="stl">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Kunstnerisk fortæller</xs:documentation>
+			<xs:documentation xml:lang="dk">Kunstnerisk fortæller</xs:documentation>
 			<xs:documentation xml:lang="en">Storyteller</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -1035,7 +1035,7 @@
 	</xs:complexType>
 	<xs:complexType name="trl">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Oversætter</xs:documentation>
+			<xs:documentation xml:lang="dk">Oversætter</xs:documentation>
 			<xs:documentation xml:lang="en">Translator</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -1066,7 +1066,7 @@
 	</xs:complexType>
 	<xs:complexType name="wdc">
 		<xs:annotation>
-			<xs:documentation xml:lang="dan">Træskærer</xs:documentation>
+			<xs:documentation xml:lang="dk">Træskærer</xs:documentation>
 			<xs:documentation xml:lang="en">Woodcutter</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
