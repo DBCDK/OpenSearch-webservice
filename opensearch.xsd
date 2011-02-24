@@ -194,6 +194,11 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Name of field used in user defined ranking.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="fieldType" type="os:fieldTypeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Type of field used in user defined ranking.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="fieldValue" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Specific field value for ranking, e.g. 'bog' (used in ranking of dc.type='bog')</xs:documentation>
@@ -294,6 +299,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="os:fieldName"/>
+				<xs:element ref="os:fieldType"/>
 				<xs:element ref="os:weight"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -513,6 +519,15 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="dc.relation"/>
 			<xs:enumeration value="dc.coverage"/>
 			<xs:enumeration value="dc.rights"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="fieldTypeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Ranking field as phrase or word.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="phrase"/>
+			<xs:enumeration value="word"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="objectFormatType">
