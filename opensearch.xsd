@@ -52,9 +52,10 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:start" minOccurs="0"/>
 				<xs:element ref="os:stepValue" minOccurs="0"/>
 				<xs:choice minOccurs="0">
-					<xs:element ref="os:userDefinedRanking"/>
+					<xs:element ref="os:rank"/>
 					<xs:element ref="os:sort"/>
-					<xs:element ref="os:sortWithBoost"/>
+					<xs:element ref="os:userDefinedBoost"/>
+					<xs:element ref="os:userDefinedRanking"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
@@ -292,6 +293,11 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">The query language of this service is CQL, and the specific implementation of CQL in this service is described in the opensearch_cql.xml file.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="rank" type="os:rankType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Here you can specify a predefined ranking of the search result. Choose from the list in rankType.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="rankField">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Specification of a specific field used in user defined ranking.</xs:documentation>
@@ -303,11 +309,6 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:weight"/>
 			</xs:sequence>
 		</xs:complexType>
-	</xs:element>
-	<xs:element name="rawData" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">If you want to retrieve an object in the original data format, it will be ruturned as rawData. This can e.g. be danmarcxchange or docbook xml.</xs:documentation>
-		</xs:annotation>
 	</xs:element>
 	<xs:element name="relation">
 		<xs:annotation>
@@ -396,17 +397,6 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Here you can specify the sort order of the search result. Choose from the list in sortType.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="sortWithBoost">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Here you can specify the sort order of the search result + boost on specific fields and field values. Choose from the list in sortType.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:sort"/>
-				<xs:element ref="os:userDefinedBoost"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="source" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The source of objects. Use this if you want to restrict your search to a specific source in the repository.</xs:documentation>
@@ -437,13 +427,17 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Number of seconds used in the service</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="userDefinedBoost">
+		<xs:element name="userDefinedBoost">
 		<xs:annotation>
-			<xs:documentation xml:lang="en">Used to define a custom ranking algorithm.</xs:documentation>
+			<xs:documentation xml:lang="en">Here you can specify the sort order of the search result + boost on specific fields and field values. Choose from the list in sortType.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="os:boostField"/>
+			  <xs:choice minOccurs="0">
+				  <xs:element ref="os:rank"/>
+				  <xs:element ref="os:userDefinedRanking"/>
+				</xs:choice>
+				<xs:element ref="os:boostField" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -551,6 +545,16 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="php"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="rankType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The predefined rankings you can choose from.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="rank_general"/>
+			<xs:enumeration value="rank_title"/>
+			<xs:enumeration value="rank_creator"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="relationDataType">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The types of relations that the service can return.</xs:documentation>
@@ -609,9 +613,6 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="date_ascending"/>
 			<xs:enumeration value="date_descending"/>
 			<xs:enumeration value="random"/>
-			<xs:enumeration value="rank_general"/>
-			<xs:enumeration value="rank_title"/>
-			<xs:enumeration value="rank_creator"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
