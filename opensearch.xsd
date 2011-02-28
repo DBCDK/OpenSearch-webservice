@@ -57,6 +57,7 @@ You should have received a copy of the GNU Affero General Public License along w
 					<xs:element ref="os:userDefinedBoost"/>
 					<xs:element ref="os:userDefinedRanking"/>
 				</xs:choice>
+				<xs:element ref="os:queryDebug" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -283,6 +284,16 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">E.g. xml, json or php.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="parsedQuery" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The parsed version of the query sent to the search engine. Used for query debugging.</xs:documentation>
+		</xs:annotation>
+		</xs:element>
+	<xs:element name="parsedQueryString" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The parsed version of the query string sent to the search engine. Used for query debugging.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="passwordAut">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Password (for authentication purposes)</xs:documentation>
@@ -291,6 +302,35 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="query" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The query language of this service is CQL, and the specific implementation of CQL in this service is described in the opensearch_cql.xml file.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="queryDebug" type="xs:boolean">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Use this paramter if you want to see how the service backend is handling your query. This is especially useful for debugging user defined ranking and boost.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="queryDebugResult">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Use this paramter if you want to see how the service backend is handling your query. This is especially useful for debugging user defined ranking and boost.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="os:rawQueryString"/>
+				<xs:element ref="os:queryString"/>
+				<xs:element ref="os:parsedQuery"/>
+				<xs:element ref="os:parsedQueryString"/>
+				<xs:element ref="os:queryResultExplanation"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="queryResultExplanation" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Description of the result from the search engine. Used for query debugging.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="queryString" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The query sent to the search engine. Used for query debugging.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="rank" type="os:rankType">
@@ -309,6 +349,11 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:weight"/>
 			</xs:sequence>
 		</xs:complexType>
+	</xs:element>
+	<xs:element name="rawQueryString" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The raw query sent to the search engine. Used for query debugging.</xs:documentation>
+		</xs:annotation>
 	</xs:element>
 	<xs:element name="relation">
 		<xs:annotation>
@@ -373,6 +418,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:more"/>
 				<xs:element ref="os:searchResult" minOccurs="0"/>
 				<xs:element ref="os:facetResult" minOccurs="0"/>
+				<xs:element ref="os:queryDebugResult" minOccurs="0"/>
 				<xs:element ref="os:time"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -427,15 +473,15 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Number of seconds used in the service</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-		<xs:element name="userDefinedBoost">
+	<xs:element name="userDefinedBoost">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Here you can specify the sort order of the search result + boost on specific fields and field values. Choose from the list in sortType.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-			  <xs:choice minOccurs="0">
-				  <xs:element ref="os:rank"/>
-				  <xs:element ref="os:userDefinedRanking"/>
+				<xs:choice minOccurs="0">
+					<xs:element ref="os:rank"/>
+					<xs:element ref="os:userDefinedRanking"/>
 				</xs:choice>
 				<xs:element ref="os:boostField" maxOccurs="unbounded"/>
 			</xs:sequence>
