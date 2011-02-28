@@ -113,6 +113,10 @@ class openSearch extends webServiceServer {
 
         // STP: Tilføj self::boostUrl( ... ) til $query['dismax']
         $boost_str = openSearch::boostUrl($param->sortWithBoost->_value->userDefinedBoost->_value->boostField);
+        if ($boost_str && empty($rank)) {
+            $rank_type = $this->config->get_value('rank', 'setup');
+            $rank = $rank_type['rank_none'];
+        }
         //if (($booststr = openSearch::boostUrl($param)) && empty($rank))
           //$rank['word_boost']['cql.anyIndexes'] = 1;
        
@@ -539,8 +543,8 @@ class openSearch extends webServiceServer {
             $boosts = (is_array($boost) ? $boost : array($boost));
             foreach ($boosts as $bf)
                 $ret .= '&bq=' . 
-                        urlencode($bf->_value->fieldName->_value . ':' . 
-                                  $bf->_value->fieldValue->_value . '^' . 
+                        urlencode($bf->_value->fieldName->_value . ':"' . 
+                                  str_replace('"', '', $bf->_value->fieldValue->_value) . '"^' . 
                                   $bf->_value->weight->_value);
         }
         return $ret;
