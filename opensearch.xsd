@@ -271,6 +271,7 @@ You should have received a copy of the GNU Affero General Public License along w
 					<xs:element ref="docbook:article"/>
 					<xs:element ref="oso:object"/>
 				</xs:choice>
+				<xs:element ref="os:queryResultExplanation" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -319,7 +320,6 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:queryString"/>
 				<xs:element ref="os:parsedQuery"/>
 				<xs:element ref="os:parsedQueryString"/>
-				<xs:element ref="os:queryResultExplanation"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

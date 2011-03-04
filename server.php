@@ -85,7 +85,7 @@ class openSearch extends webServiceServer {
             $unsupported = 'Error: Unknown repository: ' . $param->repository->_value;
 
         $use_work_collection = ($param->collectionType->_value <> 'manifestation');
-        if ($rr = $param->userDefinedRanking) {
+        if (($rr = $param->userDefinedRanking) || ($rr = $param->userDefinedBoost->_value->userDefinedRanking)) {
             $rank['tie'] = $rr->_value->tieValue->_value;
             
             if (is_array($rr->_value->rankField))
@@ -97,29 +97,18 @@ class openSearch extends webServiceServer {
                 $boost_type = ($rr->_value->rankField->_value->fieldType->_value == 'word' ? 'word_boost' : 'phrase_boost');
                 $rank[$boost_type][$rr->_value->rankField->_value->fieldName->_value] = $rr->_value->rankField->_value->weight->_value;                
             }
-                
-        } elseif (($sort = $param->sort->_value) || ($sort = $param->sortWithBoost->_value->sort->_value)) {
+        } elseif ($sort = $param->sort->_value) {
+            $sort_type = $this->config->get_value('sort', 'setup');
+            if (!isset($sort_type[$sort])) $unsupported = 'Error: Unknown sort: ' . $sort;
+        } elseif (($rank = $param->rank->_value) || ($rank = $param->userDefinedBoost->_value->rank->_value)) {
             $rank_type = $this->config->get_value('rank', 'setup');
-            if ($rank = $rank_type[$sort]) {
-                unset($sort);
-            }
-            else {
-                $sort_type = $this->config->get_value('sort', 'setup');
-                if (!isset($sort_type[$sort])) {
-                    $unsupported = 'Error: Unknown sort: ' . $sort;
-                }
-            }
+            if (!isset($rank_type[$rank])) $unsupported = 'Error: Unknown rank: ' . $rank;
         }
 
-        // STP: Tilføj self::boostUrl( ... ) til $query['dismax']
-        $boost_str = openSearch::boostUrl($param->sortWithBoost->_value->userDefinedBoost->_value->boostField);
-        if ($boost_str && empty($rank)) {
+        if (($boost_str = $this->boostUrl($param->userDefinedBoost->_value->boostField)) && empty($rank)) {
             $rank_type = $this->config->get_value('rank', 'setup');
-            $rank = $rank_type['rank_none'];
+            $rank = 'rank_none';
         }
-        //if (($booststr = openSearch::boostUrl($param)) && empty($rank))
-          //$rank['word_boost']['cql.anyIndexes'] = 1;
-       
 
         if ($unsupported) return $ret_error;
 
@@ -168,8 +157,8 @@ class openSearch extends webServiceServer {
         $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
         // urldecode ???? $query = $cql2solr->convert(urldecode($param->query->_value));
         // ' is handled differently in indexing and searching, so remove it until this is solved
-        $query = $cql2solr->convert(str_replace("'", '', $param->query->_value), $rank);
-        //$query = $cql2solr->convert($param->query->_value, $rank);
+        $query = $cql2solr->convert(str_replace("'", '', $param->query->_value), $rank_type[$rank]);
+        //$query = $cql2solr->convert($param->query->_value, $rank_type[$rank]);
         if (!$query['operands']) {
             $error = 'Error: No query found in request';
             return $ret_error;
@@ -185,44 +174,41 @@ class openSearch extends webServiceServer {
         $rows = ($start + $step_value + 100) * 2;
         if ($param->facets->_value->facetName) {
             $facet_q .= '&facet=true&facet.limit=' . $param->facets->_value->numberOfTerms->_value;
-            if (is_array($param->facets->_value->facetName)) {
-                foreach ($param->facets->_value->facetName as $facet_name) {
+            if (is_array($param->facets->_value->facetName))
+                foreach ($param->facets->_value->facetName as $facet_name)
                     $facet_q .= '&facet.field=' . $facet_name->_value;
-                }
-            }
-            else {
+            else
                 $facet_q .= '&facet.field=' . $param->facets->_value->facetName->_value;
-            }
         }
 
         verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . urldecode($query['solr']));
-        if ($query['dismax']) {
+        if ($query['dismax'])
             verbose::log(TRACE, 'CQL to DISMAX: ' . $param->query->_value . ' -> ' . urldecode($query['dismax']));
-        }
+
+        $debug_query = $this->xs_boolean_is_true($param->queryDebug->_value);
 
         // do the query
         $search_ids = array();
         if ($sort == 'random') {
-            if ($err = $this->get_solr_array($query['solr'], 0, 0, '', $facet_q, $filter_q, '', $solr_arr)) {
+            if ($err = $this->get_solr_array($query['solr'], 0, 0, '', $facet_q, $filter_q, '', $debug_query, $solr_arr))
                 $error = $err;
-            }
-        } 
-        else {
-            if ($err = $this->get_solr_array($query['dismax'], 0, $rows, $sort_q, $facet_q, $filter_q, $boost_str, $solr_arr)) {
+        } else {
+            if ($err = $this->get_solr_array($query['dismax'], 0, $rows, $sort_q, $facet_q, $filter_q, $boost_str, $debug_query, $solr_arr))
                 $error = $err;
-            }
-            else {
-                foreach ($solr_arr['response']['docs'] as $fpid) {
+            else
+                foreach ($solr_arr['response']['docs'] as $fpid)
                     $search_ids[] = $fpid['fedoraPid'];
-                }
-            }
         }
         $this->watch->stop('Solr');
 
-        if ($error) {
-            return $ret_error;
-        }
+        if ($error) return $ret_error;
 
+        if ($debug_query) {
+          $debug_result->rawQueryString->_value = $solr_arr['debug']['rawquerystring'];
+          $debug_result->queryString->_value = $solr_arr['debug']['querystring'];
+          $debug_result->parsedQuery->_value = $solr_arr['debug']['parsedquery'];
+          $debug_result->parsedQueryString->_value = $solr_arr['debug']['parsedquery_toString'];
+        }
         $numFound = $solr_arr['response']['numFound'];
         $facets = $this->parse_for_facets(&$solr_arr['facet_counts']);
 
@@ -234,7 +220,7 @@ class openSearch extends webServiceServer {
             for ($w_idx = 0; $w_idx < $rows; $w_idx++) {
                 do { $no = rand(0, $numFound-1); } while (isset($used_search_fid[$no]));
                 $used_search_fid[$no] = TRUE;
-                $this->get_solr_array($query['solr'], $no, 1, '', '', $filter_q, '', $solr_arr);
+                $this->get_solr_array($query['solr'], $no, 1, '', '', $filter_q, '', $debug_query, $solr_arr);
                 $work_ids[] = array($solr_arr['response']['docs'][0]['fedoraPid']);
             }
         } 
@@ -252,31 +238,28 @@ class openSearch extends webServiceServer {
             }
     
             $w_no = 0;
-            if (DEBUG_ON) { 
-                print_r($search_ids);
-            }
+
+            if (DEBUG_ON) print_r($search_ids);
+
             for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
                 $fid = &$search_ids[$s_idx];
                 if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
                     $this->watch->start('Solr_add');
                     verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . urldecode($query['solr']));
                     $rows *= 2;
-                    if ($err = $this->get_solr_array($query['dismax'], 0, $rows, $sort_q, '', $filter_q, $boost_str, $solr_arr)) {
+                    if ($err = $this->get_solr_array($query['dismax'], 0, $rows, $sort_q, '', $filter_q, $boost_str, $debug_query, $solr_arr)) {
                         $error = $err;
                         return $ret_error;
                     } 
                     else {
                         $search_ids = array();
-                        foreach ($solr_arr['response']['docs'] as $fpid) { 
+                        foreach ($solr_arr['response']['docs'] as $fpid)
                             $search_ids[] = $fpid['fedoraPid'];
-                        }
                         $numFound = $solr_arr['response']['numFound'];
                     }
                     $this->watch->stop('Solr_add');
                 }
-                if ($used_search_fids[$fid]) {
-                    continue;
-                }
+                if ($used_search_fids[$fid]) continue;
                 if (count($work_ids) >= $step_value) {
                     $more = TRUE;
                     break;
@@ -286,8 +269,7 @@ class openSearch extends webServiceServer {
                 // find relations for the record in fedora
                 if ($relation_cache[$w_no]) {
                     $fid_array = $relation_cache[$w_no];
-                }
-                else {
+                } else {
                     if ($use_work_collection) {
                         $this->watch->start('get_w_id');
                         $record_uri =  sprintf($this->repository['fedora_get_rels_ext'], $fid);
@@ -319,28 +301,21 @@ class openSearch extends webServiceServer {
                                 echo 'fid: ' . $fid . ' -> ' . $work_id . ' ' . 
                                      $work_uri . " with manifestations:\n"; print_r($fid_array);
                             }
-                        } 
-                        else {
+                        } else 
                             $fid_array = array($fid);
-                        }
-                    } 
-                    else {
+                    } else
                         $fid_array = array($fid);
-                    }
                     $relation_cache[$w_no] = $fid_array;
                 }
-                if (DEBUG_ON) { 
-                    print_r($fid_array);
-                }
+                if (DEBUG_ON) print_r($fid_array);
+
                 foreach ($fid_array as $id) {
                     $used_search_fids[$id] = TRUE;
-                    if ($w_no >= $start) {
+                    if ($w_no >= $start) 
                         $work_ids[$w_no][] = $id;
-                    }
                 }
-                if ($w_no >= $start) {
+                if ($w_no >= $start) 
                     $work_ids[$w_no] = $fid_array;
-                }
             }
         }
 
@@ -361,15 +336,12 @@ class openSearch extends webServiceServer {
                 }
             }
             if (!empty($add_query)) {     // use post here because query can be very long
-                if (empty($param->allObjects->_value)) {
+                if ($this->xs_boolean_is_true($param->allObjects->_value))
                     $q = urldecode($query['solr']) . ' AND fedoraNormPid:(' . $add_query . ')';
-                }
-                elseif ($filter_agency) {
+                elseif ($filter_agency)
                     $q = urldecode('fedoraNormPid:(' . $add_query . ') ');
-                }
-                else {
+                else
                     $q = '';
-                }
                 if ($q) {			
                     // need to remove unwanted object from work_ids
                     $this->curl->set_post(array('wt' => 'phps',
@@ -400,27 +372,17 @@ class openSearch extends webServiceServer {
         }
 
 
-        if (DEBUG_ON) {
-            echo 'txt: ' . $txt . "\n";
-        }
-        if (DEBUG_ON) {
-            print_r($solr_arr);
-        }
-        if (DEBUG_ON) {
-            print_r($add_query);
-        }
-        if (DEBUG_ON) {
-            print_r($used_search_fids);
-        }
+        if (DEBUG_ON) echo 'txt: ' . $txt . "\n";
+        if (DEBUG_ON) print_r($solr_arr);
+        if (DEBUG_ON) print_r($add_query);
+        if (DEBUG_ON) print_r($used_search_fids);
+
         $this->watch->stop('Build_id');
 
-        if ($cache) {
+        if ($cache)
             $cache->set($key_relation_cache, $relation_cache);
-        }
 
-        if (DEBUG_ON) {
-            print_r($work_ids);
-        }
+        if (DEBUG_ON) print_r($work_ids);
         
         // work_ids now contains the work-records and the fedoraPids they consist of
         // now fetch the records for each work/collection
@@ -440,12 +402,21 @@ class openSearch extends webServiceServer {
                     verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $fedora_get);
                     return $ret_error;
                 }
-                if (strtoupper($param->allRelations->_value) == 'TRUE' || 
-                    $param->allRelations->_value == '1') {
+                if ($this->xs_boolean_is_true($param->allRelations->_value))
                     $fedora_relation = $this->curl->get(sprintf($this->repository['fedora_get_rels_ext'], $fid));
+                if ($debug_query) {
+                    unset($explain);
+                    foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
+                        if ($fid == $solr_rec['fedoraPid']) {
+                            $strange_idx = $solr_idx ? ' '.$solr_idx : '';
+                            $explain = $solr_arr['debug']['explain'][$strange_idx];
+                            break;
+                        }
+                    }
+                  
                 }
                 $objects[]->_value = $this->parse_fedora_object(&$fedora_result, &$fedora_relation, $param->relationData->_value,
-                                                                $fid, $param->format->_value);
+                                                                $fid, $param->format->_value, $explain);
             }
             $o->collection->_value->resultPosition->_value = $rec_no++;
             $o->collection->_value->numberOfObjects->_value = count($objects);
@@ -469,6 +440,7 @@ class openSearch extends webServiceServer {
         $result->more->_value = ($more ? 'TRUE' : 'FALSE');
         $result->searchResult = $collections;
         $result->facetResult->_value = $facets;
+        $result->debugResult->_value = $debug_result;
         $result->time->_value = $this->watch->splittime('Total');
     
         //print_r($collections[0]);
@@ -506,9 +478,8 @@ class openSearch extends webServiceServer {
             verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $fedora_get);
             return $ret_error;
         }
-        if (strtoupper($param->allRelations->_value) == 'TRUE' || $param->allRelations->_value == '1') {
+        if ($this->xs_boolean_is_true($param->allRelations->_value))
             $fedora_relation = $this->curl->get(sprintf($this->repository['fedora_get_rels_ext'], $fid));
-        }
         $format = &$param->objectFormat->_value;
         $o->collection->_value->resultPosition->_value = 1;
         $o->collection->_value->numberOfObjects->_value = 1;
@@ -550,8 +521,8 @@ class openSearch extends webServiceServer {
         return $ret;
     }
 
-    private function get_solr_array($q, $start, $rows, $sort, $facets, $filter, $boost, &$solr_arr) {
-        $solr_query = $this->repository['solr'] . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort$boost&fl=fedoraPid$facets";
+    private function get_solr_array($q, $start, $rows, $sort, $facets, $filter, $boost, $debug, &$solr_arr) {
+        $solr_query = $this->repository['solr'] . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort$boost&fl=fedoraPid$facets" . ($debug ? '&debugQuery=on' : '');
     
         //  echo $solr_query;
         //exit;
@@ -618,7 +589,7 @@ class openSearch extends webServiceServer {
     /** \brief Parse a fedora object and extract record and relations
      *
      */
-    private function parse_fedora_object(&$fedora_obj, $fedora_rels_obj, $rels_type, $rec_id, $format) {
+    private function parse_fedora_object(&$fedora_obj, $fedora_rels_obj, $rels_type, $rec_id, $format, $debug_info='') {
         static $dom, $rels_dom, $allowed_relation;
         if (empty($format)) {
             $format = 'dkabm';
@@ -676,6 +647,7 @@ class openSearch extends webServiceServer {
         $ret->identifier->_value = $rec_id;
         if ($relations) $ret->relations->_value = $relations;
         $ret->formatsAvailable->_value = $this->scan_for_formats($dom);
+        $ret->queryResultExplanation->_value = $debug_info;
         if (DEBUG_ON) {
             var_dump($ret);
         }
@@ -797,6 +769,13 @@ class openSearch extends webServiceServer {
             unset($facet);
         }
         return $ret;
+    }
+
+   /** \brief
+    *  return true if xs:boolean is so
+    */
+    private function xs_boolean_is_true($str) {
+        return (strtolower($str) == "true" || $str == 1);
     }
 
 }
