@@ -289,11 +289,9 @@ class openSearch extends webServiceServer {
                             $this->watch->start('get_fids');
                             $work_uri = sprintf($this->repository['fedora_get_rels_ext'], $work_id);
                             $work_result = $this->curl->get($work_uri);
-                            if (DEBUG_ON) {
-                                echo $work_result;
-                            }
+                            if (DEBUG_ON) echo $work_result;
                             $this->watch->stop('get_fids');
-                            if (!$fid_array = $this->parse_work_for_fedora_id($work_result)) {
+                            if (!$fid_array = $this->parse_work_for_fedora_id($work_result, $fid)) {
                               verbose::log(FATAL, 'Fedora fetch/parse record: ' . $work_uri . ' refered from: ' . $record_uri);
                               $fid_array = array($fid);
                             }
@@ -307,6 +305,7 @@ class openSearch extends webServiceServer {
                         $fid_array = array($fid);
                     $relation_cache[$w_no] = $fid_array;
                 }
+                print_r($fid_array);
                 if (DEBUG_ON) print_r($fid_array);
 
                 foreach ($fid_array as $id) {
@@ -318,6 +317,9 @@ class openSearch extends webServiceServer {
                     $work_ids[$w_no] = $fid_array;
             }
         }
+print_r($work_ids); 
+print_r($solr_arr);
+die('aa'.$q);
 
         if (count($work_ids) < $step_value && count($search_ids) < $numFound) {
             verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . urldecode($query['solr']));
@@ -336,7 +338,7 @@ class openSearch extends webServiceServer {
                 }
             }
             if (!empty($add_query)) {     // use post here because query can be very long
-                if ($this->xs_boolean_is_true($param->allObjects->_value))
+                if (!$this->xs_boolean_is_true($param->allObjects->_value))
                     $q = urldecode($query['solr']) . ' AND fedoraNormPid:(' . $add_query . ')';
                 elseif ($filter_agency)
                     $q = urldecode('fedoraNormPid:(' . $add_query . ') ');
@@ -353,7 +355,7 @@ class openSearch extends webServiceServer {
                     $this->watch->start('Solr 2');
                     $solr_result = $this->curl->get($this->repository['solr']);
                     $this->watch->stop('Solr 2');
-                    if (!$solr_arr = unserialize($solr_result)) {
+                    if (!$solr_2_arr = unserialize($solr_result)) {
                         verbose::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
                         $error = 'Internal problem: Cannot decode Solr re-search';
                         return $ret_error;
@@ -361,7 +363,7 @@ class openSearch extends webServiceServer {
                     foreach ($work_ids as $w_no => $w) {
                         if (count($w) > 1) {
                             $hit_fid_array = array();
-                            foreach ($solr_arr['response']['docs'] as $fpid)
+                            foreach ($solr_2_arr['response']['docs'] as $fpid)
                                 if (in_array($fpid['fedoraPid'], $w))
                                     $hit_fid_array[] = $fpid['fedoraPid'];
                             $work_ids[$w_no] = $hit_fid_array;
@@ -570,7 +572,7 @@ class openSearch extends webServiceServer {
     /** \brief Parse a work relation and return array of ids
      *
      */
-    private function parse_work_for_fedora_id($w_rel) {
+    private function parse_work_for_fedora_id($w_rel, $fid) {
         static $dom;
         $res = array();
         if (empty($dom)) {
@@ -579,8 +581,9 @@ class openSearch extends webServiceServer {
         $dom->preserveWhiteSpace = false;
         if (@ $dom->loadXML($w_rel)) {
             $r_list = $dom->getElementsByTagName('hasManifestation');
+            $res[] = $fid;
             foreach ($r_list as $r) {
-                $res[] = $r->nodeValue;
+                if ($r->nodeValue <> $fid) $res[] = $r->nodeValue;
             }
             return $res;
         }
@@ -647,10 +650,8 @@ class openSearch extends webServiceServer {
         $ret->identifier->_value = $rec_id;
         if ($relations) $ret->relations->_value = $relations;
         $ret->formatsAvailable->_value = $this->scan_for_formats($dom);
-        $ret->queryResultExplanation->_value = $debug_info;
-        if (DEBUG_ON) {
-            var_dump($ret);
-        }
+        if ($debug_info) $ret->queryResultExplanation->_value = $debug_info;
+        if (DEBUG_ON) var_dump($ret);
     
         //print_r($ret);
         //exit;
