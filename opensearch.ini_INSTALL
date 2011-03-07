@@ -73,6 +73,7 @@ raw_index[] = phrase.
 
 ; relations which can be returned
 relation["dbcaddi:hasReview"] = 1
+relation["dbcaddi:hasImage"] = 1
 relation["dbcaddi:isReviewOf"] = 1
 relation["dbcaddi:hasCover"] = 1
 relation["dbcaddi:isCoverOf"] = 1
@@ -99,6 +100,7 @@ relation["dbcbib:hasOnSiteAccess"] = 1
 relation["dbcbib:hasPayPerView"] = 1
 
 relation["hasReview"] = 1
+relation["hasImage"] = 1
 relation["isReviewOf"] = 1
 relation["hasCover"] = 1
 relation["isCoverOf"] = 1
@@ -274,6 +276,9 @@ action[search][] = sort
 
 action[getObject][] = identifier
 action[getObject][] = objectFormat
+action[getObject][] = allRelations
+action[getObject][] = relationData
+action[getObject][] = repository
 action[getObject][] = callback
 action[getObject][] = outputType
 
