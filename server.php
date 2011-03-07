@@ -305,7 +305,6 @@ class openSearch extends webServiceServer {
                         $fid_array = array($fid);
                     $relation_cache[$w_no] = $fid_array;
                 }
-                print_r($fid_array);
                 if (DEBUG_ON) print_r($fid_array);
 
                 foreach ($fid_array as $id) {
@@ -317,9 +316,6 @@ class openSearch extends webServiceServer {
                     $work_ids[$w_no] = $fid_array;
             }
         }
-print_r($work_ids); 
-print_r($solr_arr);
-die('aa'.$q);
 
         if (count($work_ids) < $step_value && count($search_ids) < $numFound) {
             verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . urldecode($query['solr']));
@@ -360,12 +356,15 @@ die('aa'.$q);
                         $error = 'Internal problem: Cannot decode Solr re-search';
                         return $ret_error;
                     }
-                    foreach ($work_ids as $w_no => $w) {
-                        if (count($w) > 1) {
+                    foreach ($work_ids as $w_no => $w_list) {
+                        if (count($w_list) > 1) {
                             $hit_fid_array = array();
-                            foreach ($solr_2_arr['response']['docs'] as $fpid)
-                                if (in_array($fpid['fedoraPid'], $w))
-                                    $hit_fid_array[] = $fpid['fedoraPid'];
+                            foreach ($w_list as $w)
+                              foreach ($solr_2_arr['response']['docs'] as $fpid)
+                                if ($fpid['fedoraPid'] == $w) {
+                                    $hit_fid_array[] = $w;
+                                    break;
+                                }
                             $work_ids[$w_no] = $hit_fid_array;
                         }
                     }
