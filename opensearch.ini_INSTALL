@@ -173,6 +173,10 @@ rank[rank_general][word_boost]["cql.anyIndexes"] = 1
 rank[rank_general][phrase_boost]["cql.anyIndexes"] = 1
 rank[rank_general][tie] = 0.1
 
+rank[rank_none][word_boost]["cql.anyIndexes"] = 0.1
+rank[rank_none][phrase_boost]["cql.anyIndexes"] = 0.1
+rank[rank_none][tie] = 1
+
 sort[title_ascending] = sort.title asc
 sort[title_descending] = sort.title desc
 sort[creator_ascending] = sort.creator asc
