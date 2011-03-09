@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch">
+  <SOAP-ENV:Body>
+    <ns1:getObjectRequest>
+      <ns1:identifier>710100:20760737</ns1:identifier>
+      <ns1:objectFormat>marcxchange</ns1:objectFormat>
+    </ns1:getObjectRequest>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
