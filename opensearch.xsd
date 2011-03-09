@@ -236,7 +236,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Number of objects in the search result.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="identifier" type="xs:anyURI">
+	<xs:element name="identifier" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Unik identifier of an object.</xs:documentation>
 		</xs:annotation>
