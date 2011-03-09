@@ -86,17 +86,21 @@ class openSearch extends webServiceServer {
 
         $use_work_collection = ($param->collectionType->_value <> 'manifestation');
         if (($rr = $param->userDefinedRanking) || ($rr = $param->userDefinedBoost->_value->userDefinedRanking)) {
-            $rank['tie'] = $rr->_value->tieValue->_value;
+            $rank = 'rank';
+            $rank_user['tie'] = $rr->_value->tieValue->_value;
             
             if (is_array($rr->_value->rankField))
                 foreach ($rr->_value->rankField as $rf) {
                     $boost_type = ($rf->_value->fieldType->_value == 'word' ? 'word_boost' : 'phrase_boost');
-                    $rank[$boost_type][$rf->_value->fieldName->_value] = $rf->_value->weight->_value;
+                    $rank_user[$boost_type][$rf->_value->fieldName->_value] = $rf->_value->weight->_value;
+                    $rank .= '_' . $boost_type . '-' . $rf->_value->fieldName->_value . '-' . $rf->_value->weight->_value;
                 }                
             else {
                 $boost_type = ($rr->_value->rankField->_value->fieldType->_value == 'word' ? 'word_boost' : 'phrase_boost');
-                $rank[$boost_type][$rr->_value->rankField->_value->fieldName->_value] = $rr->_value->rankField->_value->weight->_value;                
+                $rank_user[$boost_type][$rr->_value->rankField->_value->fieldName->_value] = $rr->_value->rankField->_value->weight->_value;
+                $rank .= '_' . $boost_type . '-' . $rr->_value->rankField->_value->fieldName->_value . '-' . $rr->_value->rankField->_value->weight->_value;
             }
+            $rank_type[$rank] = $rank_user;
         } elseif ($sort = $param->sort->_value) {
             $sort_type = $this->config->get_value('sort', 'setup');
             if (!isset($sort_type[$sort])) $unsupported = 'Error: Unknown sort: ' . $sort;
@@ -152,7 +156,7 @@ class openSearch extends webServiceServer {
         $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
         $use_work_collection |= $sort_type[$sort] == 'random';
         $key_relation_cache = md5($param->query->_value . '_' . $agency . '_' . $use_work_collection . '_' . 
-                                  $param->sort->_value . '_' . $this->version);
+                                  $sort . '_' . $rank . '_' . $this->version);
 
         $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
         // urldecode ???? $query = $cql2solr->convert(urldecode($param->query->_value));
