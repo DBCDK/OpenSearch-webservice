@@ -544,6 +544,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ac.source"/>
+			<xs:enumeration value="cql.anyIndexes"/>
 			<xs:enumeration value="dc.title"/>
 			<xs:enumeration value="dc.creator"/>
 			<xs:enumeration value="dc.subject"/>
