@@ -333,15 +333,15 @@ class openSearch extends webServiceServer {
             foreach ($work_ids as $w_no => $w) {
                 if (count($w) > 1) {
                     foreach ($w as $id) {
-                        $add_query .= (empty($add_query) ? '' : ' OR ') . str_replace(':', '_', $id);
+                        $add_query .= (empty($add_query) ? '' : ' OR ') . str_replace(':', '\:', $id);
                     }
                 }
             }
             if (!empty($add_query)) {     // use post here because query can be very long
                 if (!$this->xs_boolean_is_true($param->allObjects->_value))
-                    $q = urldecode($query['solr']) . ' AND fedoraNormPid:(' . $add_query . ')';
+                    $q = urldecode($query['solr']) . ' AND rec.id:(' . $add_query . ')';
                 elseif ($filter_agency)
-                    $q = urldecode('fedoraNormPid:(' . $add_query . ') ');
+                    $q = urldecode('rec.id:(' . $add_query . ') ');
                 else
                     $q = '';
                 if ($q) {			
