@@ -4,7 +4,7 @@
     <ns1:searchRequest>
       <ns1:query>menneskehavn</ns1:query>
       <ns1:allRelations>true</ns1:allRelations>
-      <ns1:relationData>full</ns1:relationData>
+      <ns1:relationData>type</ns1:relationData>
       <ns1:start>1</ns1:start>
       <ns1:stepValue>10</ns1:stepValue>
     </ns1:searchRequest>
