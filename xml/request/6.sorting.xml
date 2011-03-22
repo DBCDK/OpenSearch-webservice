@@ -2,9 +2,10 @@
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch">
   <SOAP-ENV:Body>
     <ns1:searchRequest>
-      <ns1:query>danmark</ns1:query>
+      <ns1:query>John Ajvide Lindqvist</ns1:query>
+      <ns1:collectionType>manifestation</ns1:collectionType>
       <ns1:start>1</ns1:start>
-      <ns1:stepValue>10</ns1:stepValue>
+      <ns1:stepValue>50</ns1:stepValue>
       <ns1:sort>date_descending</ns1:sort>
     </ns1:searchRequest>
   </SOAP-ENV:Body>

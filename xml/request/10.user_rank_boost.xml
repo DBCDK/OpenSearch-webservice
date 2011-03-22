@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch"><SOAP-ENV:Body>
 <ns1:searchRequest>
-    <ns1:query>danmark</ns1:query>
+    <ns1:query>angora</ns1:query>
+    <ns1:collectionType>manifestation</ns1:collectionType>
     <ns1:start>1</ns1:start>
-    <ns1:stepValue>2</ns1:stepValue>    
+    <ns1:stepValue>10</ns1:stepValue>    
     <ns1:userDefinedBoost>
         <ns1:userDefinedRanking>
             <ns1:tieValue>0.1</ns1:tieValue>
@@ -17,21 +18,11 @@
               <ns1:fieldType>phrase</ns1:fieldType>
               <ns1:weight>8</ns1:weight>
             </ns1:rankField>
-            <ns1:rankField>
-              <ns1:fieldName>cql.anyIndexes</ns1:fieldName>
-              <ns1:fieldType>word</ns1:fieldType>
-              <ns1:weight>1</ns1:weight>
-            </ns1:rankField>
-            <ns1:rankField>
-              <ns1:fieldName>cql.anyIndexes</ns1:fieldName>
-              <ns1:fieldType>phrase</ns1:fieldType>
-              <ns1:weight>1</ns1:weight>
-            </ns1:rankField>
         </ns1:userDefinedRanking>
         <ns1:boostField>
-            <ns1:fieldName>dc.title</ns1:fieldName>
-            <ns1:fieldValue>bog</ns1:fieldValue>
-            <ns1:weight>4</ns1:weight>
+            <ns1:fieldName>dc.type</ns1:fieldName>
+            <ns1:fieldValue>cd</ns1:fieldValue>
+            <ns1:weight>20</ns1:weight>
         </ns1:boostField>
     </ns1:userDefinedBoost>    
 </ns1:searchRequest>
