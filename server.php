@@ -48,12 +48,10 @@ class openSearch extends webServiceServer {
 
     public function search($param) { 
         // set some defines
-        /*
             if (!$this->aaa->has_right('opensearch', 500)) {
                 $ret_error->searchResponse->_value->error->_value = 'authentication_error';
                 return $ret_error;
             }
-        */
         define('WSDL', $this->config->get_value('wsdl', 'setup'));
         define('MAX_COLLECTIONS', $this->config->get_value('max_collections', 'setup'));
 
