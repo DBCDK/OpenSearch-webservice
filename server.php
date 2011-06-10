@@ -337,7 +337,7 @@ class openSearch extends webServiceServer {
             }
             if (!empty($add_query)) {     // use post here because query can be very long
                 if (!$this->xs_boolean_is_true($param->allObjects->_value))
-                    $q = urldecode($query['solr']) . ' AND rec.id:(' . $add_query . ')';
+                    $q = '(' . urldecode($query['solr']) . ') AND rec.id:(' . $add_query . ')';
                 elseif ($filter_agency)
                     $q = urldecode('rec.id:(' . $add_query . ') ');
                 else
@@ -376,7 +376,7 @@ class openSearch extends webServiceServer {
 
 
         if (DEBUG_ON) echo 'txt: ' . $txt . "\n";
-        if (DEBUG_ON) print_r($solr_arr);
+        if (DEBUG_ON) print_r($solr_2_arr);
         if (DEBUG_ON) print_r($add_query);
         if (DEBUG_ON) print_r($used_search_fids);
 
@@ -385,6 +385,7 @@ class openSearch extends webServiceServer {
         if ($cache)
             $cache->set($key_relation_cache, $relation_cache);
 
+        if (DEBUG_ON) echo 'work_ids: '. "\n";
         if (DEBUG_ON) print_r($work_ids);
         
         // work_ids now contains the work-records and the fedoraPids they consist of
