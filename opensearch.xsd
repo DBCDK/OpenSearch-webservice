@@ -44,6 +44,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:callback" minOccurs="0"/>
 				<xs:element ref="os:collectionType" minOccurs="0"/>
 				<xs:element ref="os:facets" minOccurs="0"/>
+				<xs:element ref="os:includeMarcXchange" minOccurs="0"/>
 				<xs:element ref="os:outputType" minOccurs="0"/>
 				<xs:element ref="os:allRelations" minOccurs="0"/>
 				<xs:element ref="os:relationData" minOccurs="0"/>
@@ -241,6 +242,11 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Unik identifier of an object.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="includeMarcXchange" type="xs:boolean">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Whether to include marcXchange record if available. Default is false.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="more" type="xs:boolean">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Indicates whether the search result has more hits or the client has reached the end of the result.</xs:documentation>
@@ -266,7 +272,10 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:relations" minOccurs="0"/>
 				<xs:element ref="os:formatsAvailable"/>
 				<xs:choice>
-					<xs:element ref="dkabm:record"/>
+					<xs:sequence>
+						<xs:element ref="dkabm:record"/>
+						<xs:element ref="marcx:collection" minOccurs="0"/>
+					</xs:sequence>
 					<xs:element ref="marcx:collection"/>
 					<xs:element ref="docbook:article"/>
 					<xs:element ref="oso:object"/>
@@ -289,7 +298,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The parsed version of the query sent to the search engine. Used for query debugging.</xs:documentation>
 		</xs:annotation>
-		</xs:element>
+	</xs:element>
 	<xs:element name="parsedQueryString" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The parsed version of the query string sent to the search engine. Used for query debugging.</xs:documentation>
