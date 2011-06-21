@@ -419,8 +419,14 @@ class openSearch extends webServiceServer {
                     }
                   
                 }
-                $objects[]->_value = $this->parse_fedora_object(&$fedora_result, &$fedora_relation, $param->relationData->_value,
-                                                                $fid, $param->format->_value, $explain);
+                $objects[]->_value = 
+                    $this->parse_fedora_object(&$fedora_result, 
+                                               &$fedora_relation, 
+                                               $param->relationData->_value,
+                                               $fid, 
+                                               $param->format->_value, 
+                                               $this->xs_boolean_is_true($param->includeMarcXchange->_value), 
+                                               $explain);
             }
             $o->collection->_value->resultPosition->_value = $rec_no++;
             $o->collection->_value->numberOfObjects->_value = count($objects);
@@ -487,9 +493,13 @@ class openSearch extends webServiceServer {
         $format = &$param->objectFormat->_value;
         $o->collection->_value->resultPosition->_value = 1;
         $o->collection->_value->numberOfObjects->_value = 1;
-        //$o->collection->_value->object[]->_value = $this->parse_fedora_object(&$fedora_result, '', '', $fid, $format);
-        $o->collection->_value->object[]->_value = $this->parse_fedora_object(&$fedora_result, &$fedora_relation, 
-                                                                              $param->relationData->_value, $fid, $format);
+        $o->collection->_value->object[]->_value = 
+            $this->parse_fedora_object(&$fedora_result, 
+                                       &$fedora_relation, 
+                                       $param->relationData->_value, 
+                                       $fid, 
+                                       $format, 
+                                       $this->xs_boolean_is_true($param->includeMarcXchange->_value));
         $collections[]->_value = $o;
     
         $result = &$ret->searchResponse->_value->result->_value;
@@ -594,7 +604,7 @@ class openSearch extends webServiceServer {
     /** \brief Parse a fedora object and extract record and relations
      *
      */
-    private function parse_fedora_object(&$fedora_obj, $fedora_rels_obj, $rels_type, $rec_id, $format, $debug_info='') {
+    private function parse_fedora_object(&$fedora_obj, $fedora_rels_obj, $rels_type, $rec_id, $format, $include_marcx=FALSE, $debug_info='') {
         static $dom, $rels_dom, $allowed_relation;
         if (empty($format)) {
             $format = 'dkabm';
@@ -608,7 +618,7 @@ class openSearch extends webServiceServer {
             return;
         }
   
-        $rec = $this->extract_record($dom, $rec_id, $format);
+        $rec = $this->extract_record($dom, $rec_id, $format, $include_marcx);
 
         if ($fedora_rels_obj) {
             if (!isset($allowed_relation)) {
@@ -634,7 +644,7 @@ class openSearch extends webServiceServer {
                             }
                             else {
                                 $rel_obj = &$relation->relationObject->_value->object->_value;
-                                $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format);
+                                $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format, $include_marcx);
                                 $rel_obj->identifier->_value = $tag->nodeValue;
                                 $rel_obj->formatsAvailable->_value = $this->scan_for_formats($rels_dom);
                             }
@@ -681,7 +691,7 @@ class openSearch extends webServiceServer {
     /** \brief Extract record and namespace for it
      *
      */
-    private function extract_record(&$dom, $rec_id, $format) {
+    private function extract_record(&$dom, $rec_id, $format, $include_marcx=FALSE) {
         switch ($format) {
         case 'dkabm':
             $rec = &$ret->record->_value;
@@ -708,7 +718,9 @@ class openSearch extends webServiceServer {
                 }
             else
                 verbose::log(FATAL, 'No dkabm record found in ' . $rec_id);
-            break;
+
+            if (! $include_marcx)   // include marcx-record below?
+                break;
       
         case 'marcxchange':
             $record = &$dom->getElementsByTagName('collection');
