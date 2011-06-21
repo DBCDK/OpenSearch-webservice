@@ -7,7 +7,7 @@
 ;service_http_error = HTTP/1.1 410 Gone
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
-version = 1.1
+version = 1.2
 
 ; wsdl for service
 wsdl = opensearch.wsdl
@@ -260,19 +260,21 @@ action[search][] = repository
 action[search][] = source
 action[search][] = start
 action[search][] = stepValue
+action[search][] = rank
 action[search][] = sort
+;action[search][userDefinedBoost][] = userDefinedBoost.rank
+;action[search][userDefinedBoost][userDefinedRanking][] = userDefinedBoost.userDefinedRanking.tieValue
+;action[search][userDefinedBoost][userDefinedRanking][rankField][] = userDefinedBoost.userDefinedRanking.rankField.fieldName
+;action[search][userDefinedBoost][userDefinedRanking][rankField][] = userDefinedBoost.userDefinedRanking.rankField.fieldType
+;action[search][userDefinedBoost][userDefinedRanking][rankField][] = userDefinedBoost.userDefinedRanking.rankField.weight
+;action[search][userDefinedBoost][boostField][] = userDefinedBoost.boostField.fieldName
+;action[search][userDefinedBoost][boostField][] = userDefinedBoost.boostField.fieldType
+;action[search][userDefinedBoost][boostField][] = userDefinedBoost.boostField.weight
 ;action[search][userDefinedRanking][] = userDefinedRanking.tieValue
-;action[search][userDefinedRanking][] = tieValue
 ;action[search][userDefinedRanking][rankField][] = userDefinedRanking.rankField.fieldName
 ;action[search][userDefinedRanking][rankField][] = userDefinedRanking.rankField.fieldType
 ;action[search][userDefinedRanking][rankField][] = userDefinedRanking.rankField.weight
-;action[search][userDefinedRanking][rankField][] = rankField.fieldName
-;action[search][userDefinedRanking][rankField][] = rankField.fieldType
-;action[search][userDefinedRanking][rankField][] = rankField.weight
-;action[search][userDefinedRanking][rankField][] = fieldName
-;action[search][userDefinedRanking][rankField][] = fieldType
-;action[search][userDefinedRanking][rankField][] = weight
-
+action[search][] = queryDebug
 
 action[getObject][] = identifier
 action[getObject][] = objectFormat
@@ -281,6 +283,7 @@ action[getObject][] = relationData
 action[getObject][] = repository
 action[getObject][] = callback
 action[getObject][] = outputType
+
 
 
 [agency]
