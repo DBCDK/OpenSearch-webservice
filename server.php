@@ -98,6 +98,9 @@ class openSearch extends webServiceServer {
                 $rank_user[$boost_type][$rr->_value->rankField->_value->fieldName->_value] = $rr->_value->rankField->_value->weight->_value;
                 $rank .= '_' . $boost_type . '-' . $rr->_value->rankField->_value->fieldName->_value . '-' . $rr->_value->rankField->_value->weight->_value;
             }
+            // make sure anyIndexes will be part of the dismax-search
+            if (empty($rank_user['word_boost']['cql.anyIndexes'])) $rank_user['word_boost']['cql.anyIndexes'] = 1;
+            if (empty($rank_user['phrase_boost']['cql.anyIndexes'])) $rank_user['phrase_boost']['cql.anyIndexes'] = 1;
             $rank_type[$rank] = $rank_user;
         } elseif ($sort = $param->sort->_value) {
             $sort_type = $this->config->get_value('sort', 'setup');
