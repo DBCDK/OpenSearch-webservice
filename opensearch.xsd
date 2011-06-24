@@ -40,6 +40,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:sequence>
 				<xs:element ref="os:query"/>
 				<xs:element ref="os:agency" minOccurs="0"/>
+				<xs:element ref="os:profile" minOccurs="0"/>
 				<xs:element ref="os:allObjects" minOccurs="0"/>
 				<xs:element ref="os:authentication" minOccurs="0"/>
 				<xs:element ref="os:callback" minOccurs="0"/>
@@ -228,7 +229,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Frequency of a specific facet term in the search result.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="groupIdAut">
+	<xs:element name="groupIdAut" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Identifier of the group (most often a library number) the user belongs to (for authentication purposes)</xs:documentation>
 		</xs:annotation>
@@ -305,9 +306,14 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">The parsed version of the query string sent to the search engine. Used for query debugging.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:element name="passwordAut">
+	<xs:element name="passwordAut" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Password (for authentication purposes)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="profile" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The profile of sources to be searched.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="query" type="xs:string">
@@ -508,7 +514,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="userIdAut">
+	<xs:element name="userIdAut" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">User identifier (for authentication purposes)</xs:documentation>
 		</xs:annotation>
