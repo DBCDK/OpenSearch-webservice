@@ -147,6 +147,15 @@ class openSearch extends webServiceServer {
         *  if $use_work_collection is FALSE skip b) to e)
         */
 
+        if ($agency && $param->profile->_value) {
+            require_once 'OLS_class_lib/search_profile_class.php';
+            $profiles = new search_profiles($this->config->get_value('open_agency', 'setup'),
+                                            $this->config->get_value('cache_host', 'setup'),
+                                            $this->config->get_value('cache_port', 'setup'),
+                                            $this->config->get_value('cache_expire', 'setup'));
+            $profile = $profiles->get_profile($agency, $param->profile->_value);
+        }
+
         $ret_error->searchResponse->_value->error->_value = &$error;
 
         $this->watch->start('Solr');
