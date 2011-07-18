@@ -13,6 +13,7 @@
 				<xs:choice>
 					<xs:element ref="oso:cover" maxOccurs="unbounded"/>
 					<xs:element ref="oso:image" maxOccurs="unbounded"/>
+					<xs:element ref="oso:link" maxOccurs="unbounded"/>
 					<xs:element ref="oso:themeName"/>
 				</xs:choice>
 			</xs:sequence>
@@ -23,6 +24,7 @@
 	<xs:element name="title" type="xs:string"/>
 	<xs:element name="cover" type="xs:anyURI"/>
 	<xs:element name="image" type="xs:anyURI"/>
+	<xs:element name="link" type="xs:anyURI"/>
 	<xs:element name="themeName" type="xs:string"/>
 	<xs:element name="type" type="oso:objectType"/>
 	<xs:simpleType name="objectType">
