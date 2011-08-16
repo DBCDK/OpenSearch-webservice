@@ -68,13 +68,14 @@ class openSearch extends webServiceServer {
             $unsupported = 'Error: No query found in request';
         }
         if ($agency = $param->agency->_value) {
-            $agencies = $this->config->get_value('agency', 'agency');
-            if (isset($agencies[$agency])) {
+            if ($param->profile->_value)
+                $agencies[$agency] = $this->get_agencies_from_profile($agency, $param->profile->_value);
+            else
+                $agencies = $this->config->get_value('agency', 'agency');
+            if (isset($agencies[$agency]))
                 $filter_agency = $agencies[$agency];
-            }
-            else {
+            else
                 $unsupported = 'Error: Unknown agency: ' . $agency;
-            }
         }
         $repositories = $this->config->get_value('repository', 'setup');
         if (empty($param->repository->_value))
@@ -146,15 +147,6 @@ class openSearch extends webServiceServer {
         *
         *  if $use_work_collection is FALSE skip b) to e)
         */
-
-        if ($agency && $param->profile->_value) {
-            require_once 'OLS_class_lib/search_profile_class.php';
-            $profiles = new search_profiles($this->config->get_value('open_agency', 'setup'),
-                                            $this->config->get_value('cache_host', 'setup'),
-                                            $this->config->get_value('cache_port', 'setup'),
-                                            $this->config->get_value('cache_expire', 'setup'));
-            $profile = $profiles->get_profile($agency, $param->profile->_value);
-        }
 
         $ret_error->searchResponse->_value->error->_value = &$error;
 
@@ -530,6 +522,23 @@ class openSearch extends webServiceServer {
     }
 
 /*******************************************************************************/
+
+    /** \brief Fetch a profile $profile_name for agency $agency and build Solr filter_query parm
+     *
+     */
+    private function get_agencies_from_profile($agency, $profile_name) {
+        require_once 'OLS_class_lib/search_profile_class.php';
+        $profiles = new search_profiles($this->config->get_value('open_agency', 'setup'),
+                                        $this->config->get_value('cache_host', 'setup'),
+                                        $this->config->get_value('cache_port', 'setup'),
+                                        $this->config->get_value('cache_expire', 'setup'));
+        $profile = $profiles->get_profile($agency, $profile_name);
+        $ret = '';
+        foreach ($profile as $p)
+          $ret .= ($ret ? ' OR ' : '') . 
+                  '(submitter:' . $p['sourceOwner'] .  ' AND original_format:' . $p['sourceFormat'] . ')';
+        return $ret;
+    }
 
     /** \brief Build bq (BoostQuery) as field:content^weight
      *
