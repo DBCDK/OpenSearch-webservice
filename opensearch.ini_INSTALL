@@ -67,6 +67,8 @@ cache_host = localhost
 cache_port = 11211
 cache_expire = 600
 
+open_agency = http://openagency.addi.dk/1.2/?action=openSearchProfile&agencyId=%s
+
 ; raw_index
 raw_index[] = facet.
 raw_index[] = phrase.
