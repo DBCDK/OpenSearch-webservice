@@ -187,6 +187,8 @@ sort[creator_ascending] = sort.creator asc
 sort[creator_descending] = sort.creator desc
 sort[date_ascending] = sort.date asc
 sort[date_descending] = sort.date desc
+sort[acquisitionDate_ascending] = sort.acquisitionDate asc
+sort[acquisitionDate_descending] = sort.acquisitionDate desc
 sort[random] = random
 
 
