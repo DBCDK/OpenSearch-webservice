@@ -68,9 +68,10 @@ class openSearch extends webServiceServer {
             $unsupported = 'Error: No query found in request';
         }
         if ($agency = $param->agency->_value) {
-            if ($param->profile->_value)
-                $agencies[$agency] = $this->get_agencies_from_profile($agency, $param->profile->_value);
-            else
+            if ($param->profile->_value) {
+                if (!($agencies[$agency] = $this->get_agencies_from_profile($agency, $param->profile->_value)))
+                    $unsupported = 'Error: Cannot fetch profile: ' . $param->profile->_value . ' for ' . $agency;
+            } else
                 $agencies = $this->config->get_value('agency', 'agency');
             if (isset($agencies[$agency]))
                 $filter_agency = $agencies[$agency];
@@ -535,6 +536,8 @@ class openSearch extends webServiceServer {
                                         $this->config->get_value('cache_port', 'setup'),
                                         $this->config->get_value('cache_expire', 'setup'));
         $profile = $profiles->get_profile($agency, $profile_name);
+        if (! is_array($profile))
+            return FALSE;
         $ret = '';
         foreach ($profile as $p)
           $ret .= ($ret ? ' OR ' : '') . 
