@@ -1,20 +1,40 @@
 Parameters:
 <ul>
-  <li>query:</li> <a href="opensearch_cql.xml">cql</a>-query, <a href="http://zing.z3950.org/cql/intro.html">A Gentle Introduction to cql</a>
-  <li>source:</li> source of data (currently not supported)
-  <li>facets:</li> number and list of facets
-  <li>format:</li> dkabm, marcxchange, docbook or opensearchobject
-  <li>start:</li> First record counting from 1
-  <li>stepValue:</li> number of records
-  <li>sort:</li> date_ascending, date_descending, creator_ascending, creator_descending, random, rank_general, rank_title, rank_creator
-  <li>agency:</li> (currently partially supported)
-  <li>collectionType:</li> manifestation or work (defaults to work)
-  <li>allObjects:</li> returns all objects in a collection
-  <li>allRelations:</li> return relations for each objects
-  <li>relationData:</li> return relation as "type", "uri" or "full"
-  <li>repository:</li> for multiple repositories - normally not used
-  <li>outputType:</li> <a href="show_enc.php?encoding=json">json</a>, php, xml
-  <li>callback:</li> for json-callback
+  <li>search
+    <ul>
+      <li>query:</li> <a href="opensearch_cql.xml">cql</a>-query, <a href="http://zing.z3950.org/cql/intro.html">A Gentle Introduction to cql</a>
+      <li>agency:</li> (currently partially supported)
+      <li>profile:</li> (currently partially supported)
+      <li>allObjects:</li> returns all objects in a collection
+      <li>authentication:</li> (currently partially supported)
+      <li>callback:</li> for json-callback
+      <li>collectionType:</li> manifestation or work (defaults to work)
+      <li>facets:</li> number and list of facets
+      <li>includeMarcXchange:</li> boolean
+      <li>outputType:</li> <a href="show_enc.php?encoding=json">json</a>, php, xml
+      <li>allRelations:</li> return relations for each objects
+      <li>relationData:</li> return relation as "type", "uri" or "full"
+      <li>repository:</li> for multiple repositories - normally not used
+      <li>source:</li> source of data (currently not supported)
+      <li>start:</li> First record counting from 1
+      <li>stepValue:</li> number of records
+      <li>rank:</li> rank_general, rank_title, rank_creator
+      <li>sort:</li> date_ascending, date_descending, creator_ascending, creator_descending, random
+      <li>userDefinedBoost:</li> 
+      <li>userDefinedRanking:</li> 
+      <li>queryDebug:</li> boolean for including debug-info in reply
+    </ul>
+  </li>
+  <li>getObject
+    <ul>
+      <li>identifier:</li> Record ID of record
+      <li>objectFormat:</li> dkabm, docbook, marcxchange, opensearchobject
+      <li>allRelations:</li> return relations for each objects
+      <li>includeMarcXchange:</li> boolean
+      <li>relationData:</li> return relation as "type", "uri" or "full"
+      <li>repository:</li> for multiple repositories - normally not used
+    </ul>
+  </li>
 </ul>
 
 <a href="opensearch.wsdl">The WSDL is here</a>
