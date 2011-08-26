@@ -44,6 +44,9 @@ xmlns[dkdcplus] = http://biblstandard.dk/abm/namespace/dkdcplus/
 xmlns[marcx] = info:lc/xmlns/marcxchange-v1
 xmlns[docbook] = http://docbook.org/ns/docbook
 xmlns[oso] = http://oss.dbc.dk/ns/opensearchobjects
+;xmlns[dbcbibaddi] = http://oss.dbc.dk/rdf/dbcbibaddi#
+;xmlns[dbcaddi] = http://oss.dbc.dk/rdf/dbcaddi#
+
 
 
 ; path to xml-examples

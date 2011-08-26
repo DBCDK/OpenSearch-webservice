@@ -412,8 +412,10 @@ class openSearch extends webServiceServer {
                     verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $fedora_get);
                     return $ret_error;
                 }
-                if ($this->xs_boolean_is_true($param->allRelations->_value))
+                if ($this->xs_boolean_is_true($param->allRelations->_value)) {
+                    //verbose::log(TRACE, 'rels_ext: ' . sprintf($this->repository['fedora_get_rels_ext'], $fid));
                     $fedora_relation = $this->curl->get(sprintf($this->repository['fedora_get_rels_ext'], $fid));
+                }
                 if ($debug_query) {
                     unset($explain);
                     foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
@@ -658,8 +660,10 @@ class openSearch extends webServiceServer {
             } elseif ($rels_dom->getElementsByTagName('Description')->item(0)) {
                 foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
                     if ($tag->nodeType == XML_ELEMENT_NODE && $allowed_relation[$tag->tagName]) {
-                        //echo $tag->localName . ' ' . $tag->nodeValue . $tag->nodeType . '<br/>';
-                        $relation->relationType->_value = $tag->localName;
+                        //verbose::log(TRACE, $tag->localName . ' ' . $tag->getAttribute('xmlns'). ' -> ' .  array_search($tag->getAttribute('xmlns'), $this->xmlns));
+                        if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
+                            $rel_prefix .= ':';
+                        $relation->relationType->_value = $rel_prefix . $tag->localName;
                         if ($rels_type == 'uri' || $rels_type == 'full') {
                             $relation->relationUri->_value = $tag->nodeValue;
                         }
