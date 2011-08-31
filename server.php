@@ -432,6 +432,7 @@ class openSearch extends webServiceServer {
                                                &$fedora_relation, 
                                                $param->relationData->_value,
                                                $fid, 
+                                               $filter_agency, 
                                                $param->format->_value, 
                                                $this->xs_boolean_is_true($param->includeMarcXchange->_value), 
                                                $explain);
@@ -479,12 +480,27 @@ class openSearch extends webServiceServer {
             $error = 'authentication_error';
             return $ret_error;
         }
+        if ($agency = $param->agency->_value) {
+            if ($param->profile->_value) {
+                if (!($agencies[$agency] = $this->get_agencies_from_profile($agency, $param->profile->_value))) {
+                    $error = 'Error: Cannot fetch profile: ' . $param->profile->_value . ' for ' . $agency;
+                    return $ret_error;
+                }
+            } else
+                $agencies = $this->config->get_value('agency', 'agency');
+            if (isset($agencies[$agency]))
+                $filter_agency = $agencies[$agency];
+            else {
+                $error = 'Error: Unknown agency: ' . $agency;
+                return $ret_error;
+            }
+        }
         $repositories = $this->config->get_value('repository', 'setup');
         if (empty($param->repository->_value))
             $this->repository = $repositories[$this->config->get_value('default_repository', 'setup')];
         elseif (!$this->repository = $repositories[$param->repository->_value]) {
             $error = 'Error: Unknown repository: ' . $param->repository->_value;
-            verbose::log(FATAL, 'Error: Unknown repository: ' . $param->repository->_value);
+            verbose::log(FATAL, $error);
             return $ret_error;
         }
         $fid = $param->identifier->_value;
@@ -507,6 +523,7 @@ class openSearch extends webServiceServer {
                                        &$fedora_relation, 
                                        $param->relationData->_value, 
                                        $fid, 
+                                       $filter_agency, 
                                        $format, 
                                        $this->xs_boolean_is_true($param->includeMarcXchange->_value));
         $collections[]->_value = $o;
@@ -563,10 +580,23 @@ class openSearch extends webServiceServer {
         return $ret;
     }
 
+    /** \brief 
+     *
+     * @param $q
+     * @param $start
+     * @param $rows
+     * @param $sort
+     * @param $facets
+     * @param $filter
+     * @param $boost
+     * @param $debug
+     * @param $solr_arr
+     *
+     */
     private function get_solr_array($q, $start, $rows, $sort, $facets, $filter, $boost, $debug, &$solr_arr) {
         $solr_query = $this->repository['solr'] . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort$boost&fl=fedoraPid$facets" . ($debug ? '&debugQuery=on' : '');
     
-        //  echo $solr_query;
+          //echo $solr_query;
         //exit;
     
         verbose::log(TRACE, 'Query: ' . $solr_query);
@@ -631,8 +661,16 @@ class openSearch extends webServiceServer {
 
     /** \brief Parse a fedora object and extract record and relations
      *
+     * @param $fedora_obj      - the bibliographic record from fedora
+     * @param $fedora_rels_obj - corresponding relation object
+     * @param $rels_type       - level for returning relations
+     * @param $rec_id          - record id of the record
+     * @param $filter          - agency filter
+     * @param $format          - 
+     * @param $include_marcx   -
+     * @param $debug_info      -
      */
-    private function parse_fedora_object(&$fedora_obj, $fedora_rels_obj, $rels_type, $rec_id, $format, $include_marcx=FALSE, $debug_info='') {
+    private function parse_fedora_object(&$fedora_obj, $fedora_rels_obj, $rels_type, $rec_id, $filter, $format, $include_marcx=FALSE, $debug_info='') {
         static $dom, $rels_dom, $allowed_relation;
         if (empty($format)) {
             $format = 'dkabm';
@@ -659,7 +697,7 @@ class openSearch extends webServiceServer {
                 verbose::log(FATAL, 'Cannot load RELS_EXT for ' . $rec_id . ' into DomXml');
             } elseif ($rels_dom->getElementsByTagName('Description')->item(0)) {
                 foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
-                    if ($tag->nodeType == XML_ELEMENT_NODE && $allowed_relation[$tag->tagName]) {
+                    if ($tag->nodeType == XML_ELEMENT_NODE && $allowed_relation[$tag->tagName] && $this->is_searchable($tag->nodeValue, $filter)) {
                         //verbose::log(TRACE, $tag->localName . ' ' . $tag->getAttribute('xmlns'). ' -> ' .  array_search($tag->getAttribute('xmlns'), $this->xmlns));
                         if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
                             $rel_prefix .= ':';
@@ -700,6 +738,16 @@ class openSearch extends webServiceServer {
         //exit;
     
         return $ret;
+    }
+
+    /** \brief Check if a record is searchable
+     *
+     */
+    private function is_searchable($rec_id, $filter_q) {
+        if (empty($filter_q)) return TRUE;
+
+        $this->get_solr_array('rec.id:'.str_replace(':', '\:', $rec_id), 1, 0, '', '', rawurlencode($filter_q), '', '', $solr_arr);
+        return $solr_arr['response']['numFound'];
     }
 
     /** \brief Check rec for available formats
