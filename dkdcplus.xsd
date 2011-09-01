@@ -13,7 +13,7 @@
 	</xs:annotation>
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
 	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
-	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
+	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_os.xsd"/>
 	<xs:element name="preferredName" substitutionGroup="dc:creator"/>
 	<xs:element name="alternativeName" substitutionGroup="dc:creator"/>
 	<xs:element name="actPeriod" substitutionGroup="dc:creator"/>

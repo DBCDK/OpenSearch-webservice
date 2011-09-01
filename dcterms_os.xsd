@@ -266,6 +266,7 @@
 		<xs:sequence>
 			<xs:choice minOccurs="0" maxOccurs="unbounded">
 				<xs:element ref="dc:any"/>
+				<xs:element ref="anyElements"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:group>
@@ -280,4 +281,5 @@
 			<xs:group ref="elementsAndRefinementsGroup"/>
 		</xs:choice>
 	</xs:complexType>
+	<xs:element name="anyElements"/>
 </xs:schema>
