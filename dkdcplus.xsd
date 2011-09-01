@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://biblstandard.dk/abm/namespace/dkdcplus/" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="en">
       XML Schema for the dkdcplus namespace.
+      
+	  Updated 2011-09-01 by DBC A/S.
+      
       Updated 2008-11-19 by Leif Andresen.
 
       Created 2005-11-13 by Per M. Hansen, Index Data.
@@ -17,6 +19,31 @@
 	<xs:element name="actPeriod" substitutionGroup="dc:creator"/>
 	<xs:element name="version" substitutionGroup="dc:description"/>
 	<xs:element name="rankvalue" substitutionGroup="dc:any"/>
+	<xs:element name="dcCreatorClone" type="dkdcplus:creatorInfo" substitutionGroup="dcterms:anyElements"/>
+	<xs:element name="dcContributorClone" type="dkdcplus:creatorInfo" substitutionGroup="dcterms:anyElements"/>
+	<xs:element name="creatorContainer" substitutionGroup="dcterms:anyElements">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dkdcplus:dcCreatorClone" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="contributorContainer" substitutionGroup="dcterms:anyElements">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dkdcplus:dcContributorClone" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="shelf" substitutionGroup="dcterms:anyElements">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute ref="dkdcplus:function"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
 	<xs:complexType name="DK5">
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -37,17 +64,7 @@
 			</xs:restriction>
 		</xs:simpleContent>
 	</xs:complexType>
-	<xs:complexType name="DBCS">
-		<xs:simpleContent>
-			<xs:restriction base="dc:SimpleLiteral">
-				<xs:simpleType>
-					<xs:restriction base="xs:string"/>
-				</xs:simpleType>
-				<xs:attribute ref="xml:lang" use="prohibited"/>
-			</xs:restriction>
-		</xs:simpleContent>
-	</xs:complexType>
-	<xs:complexType name="DBCP">
+	<xs:complexType name="DBCF">
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
 				<xs:simpleType>
@@ -67,7 +84,7 @@
 			</xs:restriction>
 		</xs:simpleContent>
 	</xs:complexType>
-	<xs:complexType name="DBCO">
+	<xs:complexType name="DBCM">
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
 				<xs:simpleType>
@@ -87,7 +104,27 @@
 			</xs:restriction>
 		</xs:simpleContent>
 	</xs:complexType>
-	<xs:complexType name="URI">
+	<xs:complexType name="DBCO">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="DBCP">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="DBCS">
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
 				<xs:simpleType>
@@ -107,37 +144,7 @@
 			</xs:restriction>
 		</xs:simpleContent>
 	</xs:complexType>
-	<xs:complexType name="FAUST">
-		<xs:simpleContent>
-			<xs:restriction base="dc:SimpleLiteral">
-				<xs:simpleType>
-					<xs:restriction base="xs:string"/>
-				</xs:simpleType>
-				<xs:attribute ref="xml:lang" use="prohibited"/>
-			</xs:restriction>
-		</xs:simpleContent>
-	</xs:complexType>
-	<xs:complexType name="DBCF">
-		<xs:simpleContent>
-			<xs:restriction base="dc:SimpleLiteral">
-				<xs:simpleType>
-					<xs:restriction base="xs:string"/>
-				</xs:simpleType>
-				<xs:attribute ref="xml:lang" use="prohibited"/>
-			</xs:restriction>
-		</xs:simpleContent>
-	</xs:complexType>
-	<xs:complexType name="DBCM">
-		<xs:simpleContent>
-			<xs:restriction base="dc:SimpleLiteral">
-				<xs:simpleType>
-					<xs:restriction base="xs:string"/>
-				</xs:simpleType>
-				<xs:attribute ref="xml:lang" use="prohibited"/>
-			</xs:restriction>
-		</xs:simpleContent>
-	</xs:complexType>
-	<xs:complexType name="SKRM">
+	<xs:complexType name="LCSH">
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
 				<xs:simpleType>
@@ -159,6 +166,25 @@
 			</xs:restriction>
 		</xs:simpleContent>
 	</xs:complexType>
+	<xs:complexType name="EAN">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="FAUST">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
 	<xs:complexType name="ISBN">
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -168,6 +194,24 @@
 					</xs:restriction>
 				</xs:simpleType>
 				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ISMN">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ISRC">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
 			</xs:restriction>
 		</xs:simpleContent>
 	</xs:complexType>
@@ -183,6 +227,35 @@
 			</xs:restriction>
 		</xs:simpleContent>
 	</xs:complexType>
+	<xs:complexType name="SKRM">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="UPC">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="URI">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+				<xs:attribute ref="xml:lang" use="prohibited"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
 	<xs:complexType name="BibDK-Type">
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">
@@ -193,4 +266,1129 @@
 			</xs:restriction>
 		</xs:simpleContent>
 	</xs:complexType>
+	<xs:complexType name="age">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="medieraad">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="pegi">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="full">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="series">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="spoken">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="subtitles">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="albumId">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="albumTitle">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="track">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="act">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Skuespiller</xs:documentation>
+			<xs:documentation xml:lang="en">Actor</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="aft">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Forfatter til efterord, efterskrift etc.</xs:documentation>
+			<xs:documentation xml:lang="en">Author of afterword, colophon etc.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="anm">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Animator</xs:documentation>
+			<xs:documentation xml:lang="en">Animator</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ant">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Forfatter til forlæg</xs:documentation>
+			<xs:documentation xml:lang="en">Bibliographic antecedent</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="arr">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Arrangør</xs:documentation>
+			<xs:documentation xml:lang="en">Arranger</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="art">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Kunstner</xs:documentation>
+			<xs:documentation xml:lang="en">Artist</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="aud">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Dialogforfatter</xs:documentation>
+			<xs:documentation xml:lang="en">Author of dialog</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="aui">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Forfatter til forord, introduktion etc.</xs:documentation>
+			<xs:documentation xml:lang="en">Author of introduction, etc.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="aus">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Manuskriptforfatter</xs:documentation>
+			<xs:documentation xml:lang="en">Author of screenplay</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="aut">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Forfatter</xs:documentation>
+			<xs:documentation xml:lang="en">Author</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ccp">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Idemager</xs:documentation>
+			<xs:documentation xml:lang="en">Conceptor</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="chr">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Koreograf</xs:documentation>
+			<xs:documentation xml:lang="en">Choreographer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="cli">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">På vegne af</xs:documentation>
+			<xs:documentation xml:lang="en">Client</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="cll">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Kalligraf</xs:documentation>
+			<xs:documentation xml:lang="en">Calligrapher</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="cmm">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Kommentator</xs:documentation>
+			<xs:documentation xml:lang="en">Commentator</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="cmp">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Komponist</xs:documentation>
+			<xs:documentation xml:lang="en">Composer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="cnd">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Dirigent</xs:documentation>
+			<xs:documentation xml:lang="en">Conductor</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="cng">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Filmfotograf</xs:documentation>
+			<xs:documentation xml:lang="en">Cinematographer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="com">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Udgiver</xs:documentation>
+			<xs:documentation xml:lang="en">Compiler</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="cre">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Skaber</xs:documentation>
+			<xs:documentation xml:lang="en">Creator</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ctb">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Bidragyder</xs:documentation>
+			<xs:documentation xml:lang="en">Contributor</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ctg">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Korttegner</xs:documentation>
+			<xs:documentation xml:lang="en">Cartographer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dkani">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Ansvarlig institution</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dkbea">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Bearbejder</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dkdes">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Designer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dkfig">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Ophav til figurer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dkfvl">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Farvelægger</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dkind">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Indlæser</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dkmdt">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Medredaktør</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dkmed">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Medforfatter</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dkmon">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Ophav til mønstre</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dkops">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Ophav til opskrifter</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dkref">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Referent</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dktek">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Forfatter til mindre tekstdele</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dnc">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Danser</xs:documentation>
+			<xs:documentation xml:lang="en">Dancer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="drm">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Tegner</xs:documentation>
+			<xs:documentation xml:lang="en">Draftsman</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="drt">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Instruktør</xs:documentation>
+			<xs:documentation xml:lang="en">Director</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="dte">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Festskriftsmodtager</xs:documentation>
+			<xs:documentation xml:lang="en">Dedicatee</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="edt">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Redaktør</xs:documentation>
+			<xs:documentation xml:lang="en">Editor</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ill">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Illustrator</xs:documentation>
+			<xs:documentation xml:lang="en">Illustrator</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="inv">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Udvikler</xs:documentation>
+			<xs:documentation xml:lang="en">Inventor</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="itr">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Instrumentalist</xs:documentation>
+			<xs:documentation xml:lang="en">Instrumentalist</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ive">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Interviewede</xs:documentation>
+			<xs:documentation xml:lang="en">Interviwee</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ivr">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Interviewer</xs:documentation>
+			<xs:documentation xml:lang="en">Interviewer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="lbt">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Librettist</xs:documentation>
+			<xs:documentation xml:lang="en">Librettist</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ltg">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Litograf</xs:documentation>
+			<xs:documentation xml:lang="en">Lithographer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="lyr">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Forfatter til sangtekst</xs:documentation>
+			<xs:documentation xml:lang="en">Lyricist</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="mus">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Musiker</xs:documentation>
+			<xs:documentation xml:lang="en">Musician</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="nrt">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Fortæller</xs:documentation>
+			<xs:documentation xml:lang="en">Narrator</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="orm">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Mødearrangør</xs:documentation>
+			<xs:documentation xml:lang="en">Organizer of meeting</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="oth">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Udefineret funktion</xs:documentation>
+			<xs:documentation xml:lang="en">Other</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="pht">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Fotograf</xs:documentation>
+			<xs:documentation xml:lang="en">Photographer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="prf">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Performer</xs:documentation>
+			<xs:documentation xml:lang="en">Performer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="prg">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Programmør</xs:documentation>
+			<xs:documentation xml:lang="en">Programmer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="pro">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Producer</xs:documentation>
+			<xs:documentation xml:lang="en">Producer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="rce">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Tekniker</xs:documentation>
+			<xs:documentation xml:lang="en">Recording engineer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="res">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Researcher</xs:documentation>
+			<xs:documentation xml:lang="en">Researcher</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="rev">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Anmelder</xs:documentation>
+			<xs:documentation xml:lang="en">Reviewer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="scl">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Skulptør</xs:documentation>
+			<xs:documentation xml:lang="en">Sculptor</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="sng">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Sanger</xs:documentation>
+			<xs:documentation xml:lang="en">Singer</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="stl">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Kunstnerisk fortæller</xs:documentation>
+			<xs:documentation xml:lang="en">Storyteller</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="trl">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Oversætter</xs:documentation>
+			<xs:documentation xml:lang="en">Translator</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="wdc">
+		<xs:annotation>
+			<xs:documentation xml:lang="dk">Træskærer</xs:documentation>
+			<xs:documentation xml:lang="en">Woodcutter</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="genre">
+		<xs:simpleContent>
+			<xs:restriction base="dc:SimpleLiteral">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="actionfilm"/>
+						<xs:enumeration value="adventurefilm"/>
+						<xs:enumeration value="allegorier"/>
+						<xs:enumeration value="americana"/>
+						<xs:enumeration value="anime"/>
+						<xs:enumeration value="arbejderromaner"/>
+						<xs:enumeration value="barndomserindringer"/>
+						<xs:enumeration value="bibelhistorier"/>
+						<xs:enumeration value="biografiske film"/>
+						<xs:enumeration value="biografiske romaner"/>
+						<xs:enumeration value="biografiske skuespil"/>
+						<xs:enumeration value="blues"/>
+						<xs:enumeration value="brevromaner"/>
+						<xs:enumeration value="børnefilm"/>
+						<xs:enumeration value="chick lit"/>
+						<xs:enumeration value="computeranimerede film"/>
+						<xs:enumeration value="cyberpunk"/>
+						<xs:enumeration value="dagbøger"/>
+						<xs:enumeration value="dansk filmkanon"/>
+						<xs:enumeration value="dansk pop"/>
+						<xs:enumeration value="danske filmklassikere"/>
+						<xs:enumeration value="dick lit"/>
+						<xs:enumeration value="dokumentarfilm"/>
+						<xs:enumeration value="drama"/>
+						<xs:enumeration value="dukkefilm"/>
+						<xs:enumeration value="dyrefortællinger"/>
+						<xs:enumeration value="dystopier"/>
+						<xs:enumeration value="electronica"/>
+						<xs:enumeration value="erhvervsskildringer"/>
+						<xs:enumeration value="erindringer"/>
+						<xs:enumeration value="erotik"/>
+						<xs:enumeration value="europæiske klassikere"/>
+						<xs:enumeration value="eventyr"/>
+						<xs:enumeration value="eventyrlige fortællinger"/>
+						<xs:enumeration value="evergreen"/>
+						<xs:enumeration value="fabler"/>
+						<xs:enumeration value="fantastiske fortællinger"/>
+						<xs:enumeration value="fantasy"/>
+						<xs:enumeration value="farcer"/>
+						<xs:enumeration value="fiktion"/>
+						<xs:enumeration value="folk"/>
+						<xs:enumeration value="folkekomedier"/>
+						<xs:enumeration value="folkemusik"/>
+						<xs:enumeration value="for børn"/>
+						<xs:enumeration value="fremtidsfortællinger"/>
+						<xs:enumeration value="godmorgenhistorier"/>
+						<xs:enumeration value="godnathistorier"/>
+						<xs:enumeration value="gys og horror"/>
+						<xs:enumeration value="gys"/>
+						<xs:enumeration value="gå på opdagelse"/>
+						<xs:enumeration value="heavy metal"/>
+						<xs:enumeration value="heavy rock"/>
+						<xs:enumeration value="heltesagn"/>
+						<xs:enumeration value="hip hop"/>
+						<xs:enumeration value="house - lounge"/>
+						<xs:enumeration value="humor"/>
+						<xs:enumeration value="jazzfilm"/>
+						<xs:enumeration value="kalenderhistorier"/>
+						<xs:enumeration value="klassiske symfonier"/>
+						<xs:enumeration value="klaverkoncerter"/>
+						<xs:enumeration value="komedier"/>
+						<xs:enumeration value="kor"/>
+						<xs:enumeration value="krigsfilm"/>
+						<xs:enumeration value="krimi"/>
+						<xs:enumeration value="kunst og kunstnere"/>
+						<xs:enumeration value="kærlighed"/>
+						<xs:enumeration value="latin"/>
+						<xs:enumeration value="legender"/>
+						<xs:enumeration value="løgnehistorier"/>
+						<xs:enumeration value="mom lit"/>
+						<xs:enumeration value="musicalfilm"/>
+						<xs:enumeration value="myter"/>
+						<xs:enumeration value="new age"/>
+						<xs:enumeration value="nonfiktion"/>
+						<xs:enumeration value="nonsensfortællinger"/>
+						<xs:enumeration value="novellefilm"/>
+						<xs:enumeration value="opbyggelige bøger"/>
+						<xs:enumeration value="opera"/>
+						<xs:enumeration value="operafilm"/>
+						<xs:enumeration value="operetter"/>
+						<xs:enumeration value="operetteklassikere"/>
+						<xs:enumeration value="parafraser"/>
+						<xs:enumeration value="politifilm"/>
+						<xs:enumeration value="pop"/>
+						<xs:enumeration value="popfilm"/>
+						<xs:enumeration value="progressiv rock"/>
+						<xs:enumeration value="psykologisk thriller"/>
+						<xs:enumeration value="punk"/>
+						<xs:enumeration value="r&amp;b"/>
+						<xs:enumeration value="reggae"/>
+						<xs:enumeration value="religiøse bøger"/>
+						<xs:enumeration value="remser"/>
+						<xs:enumeration value="rim"/>
+						<xs:enumeration value="road movies"/>
+						<xs:enumeration value="robinsonader"/>
+						<xs:enumeration value="rock"/>
+						<xs:enumeration value="rockfilm"/>
+						<xs:enumeration value="sagaer"/>
+						<xs:enumeration value="sagn"/>
+						<xs:enumeration value="samfundskritik"/>
+						<xs:enumeration value="samfundssatire"/>
+						<xs:enumeration value="samfundsskildringer"/>
+						<xs:enumeration value="science fiction"/>
+						<xs:enumeration value="singer/songwriter"/>
+						<xs:enumeration value="sjove bøger"/>
+						<xs:enumeration value="slægtsromaner"/>
+						<xs:enumeration value="socialrealisme"/>
+						<xs:enumeration value="soul"/>
+						<xs:enumeration value="spændende bøger"/>
+						<xs:enumeration value="swing"/>
+						<xs:enumeration value="søfortællinger"/>
+						<xs:enumeration value="sørgelige bøger"/>
+						<xs:enumeration value="techno - dance"/>
+						<xs:enumeration value="tegnefilm"/>
+						<xs:enumeration value="thriller"/>
+						<xs:enumeration value="utopier"/>
+						<xs:enumeration value="verdensmusik"/>
+						<xs:enumeration value="violinkoncerter"/>
+						<xs:enumeration value="westerns"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:attribute name="function" type="dkdcplus:functionType"/>
+	<xs:attribute name="actPeriodStart">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="[0-9]{4}|[0-9]{4}-[0-9]{2}|[0-9]{4}-[0-9]{2}-[0-9]{2}"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="actPeriodEnd">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:pattern value="[0-9]{4}|[0-9]{4}-[0-9]{2}|[0-9]{4}-[0-9]{2}-[0-9]{2}"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="status" type="dkdcplus:statusType"/>
+	<xs:complexType name="creatorInfo">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute ref="dkdcplus:function"/>
+				<xs:attribute ref="dkdcplus:actPeriodStart"/>
+				<xs:attribute ref="dkdcplus:actPeriodEnd"/>
+				<xs:attribute ref="dkdcplus:status"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="functionType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="act"/>
+			<xs:enumeration value="aft"/>
+			<xs:enumeration value="anm"/>
+			<xs:enumeration value="ant"/>
+			<xs:enumeration value="arr"/>
+			<xs:enumeration value="art"/>
+			<xs:enumeration value="aud"/>
+			<xs:enumeration value="aui"/>
+			<xs:enumeration value="aus"/>
+			<xs:enumeration value="aut"/>
+			<xs:enumeration value="ccp"/>
+			<xs:enumeration value="chr"/>
+			<xs:enumeration value="cli"/>
+			<xs:enumeration value="cll"/>
+			<xs:enumeration value="cmm"/>
+			<xs:enumeration value="cmp"/>
+			<xs:enumeration value="cnd"/>
+			<xs:enumeration value="cng"/>
+			<xs:enumeration value="com"/>
+			<xs:enumeration value="cre"/>
+			<xs:enumeration value="ctb"/>
+			<xs:enumeration value="ctg"/>
+			<xs:enumeration value="dkani"/>
+			<xs:enumeration value="dkbea"/>
+			<xs:enumeration value="dkdes"/>
+			<xs:enumeration value="dkfig"/>
+			<xs:enumeration value="dkfvl"/>
+			<xs:enumeration value="dkind"/>
+			<xs:enumeration value="dkmdt"/>
+			<xs:enumeration value="dkmed"/>
+			<xs:enumeration value="dkmon"/>
+			<xs:enumeration value="dkops"/>
+			<xs:enumeration value="dkref"/>
+			<xs:enumeration value="dktek"/>
+			<xs:enumeration value="dnc"/>
+			<xs:enumeration value="drm"/>
+			<xs:enumeration value="drt"/>
+			<xs:enumeration value="dte"/>
+			<xs:enumeration value="edt"/>
+			<xs:enumeration value="ill"/>
+			<xs:enumeration value="inv"/>
+			<xs:enumeration value="itr"/>
+			<xs:enumeration value="ive"/>
+			<xs:enumeration value="ivr"/>
+			<xs:enumeration value="lbt"/>
+			<xs:enumeration value="ltg"/>
+			<xs:enumeration value="lyr"/>
+			<xs:enumeration value="mus"/>
+			<xs:enumeration value="nrt"/>
+			<xs:enumeration value="orm"/>
+			<xs:enumeration value="oth"/>
+			<xs:enumeration value="pht"/>
+			<xs:enumeration value="prf"/>
+			<xs:enumeration value="prg"/>
+			<xs:enumeration value="pro"/>
+			<xs:enumeration value="rce"/>
+			<xs:enumeration value="res"/>
+			<xs:enumeration value="rev"/>
+			<xs:enumeration value="scl"/>
+			<xs:enumeration value="sng"/>
+			<xs:enumeration value="stl"/>
+			<xs:enumeration value="trl"/>
+			<xs:enumeration value="wdc"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="statusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="preferred"/>
+			<xs:enumeration value="alternative"/>
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>

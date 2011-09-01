@@ -272,9 +272,6 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="os:identifier"/>
-				<xs:element ref="os:relations" minOccurs="0"/>
-				<xs:element ref="os:formatsAvailable"/>
 				<xs:choice>
 					<xs:sequence>
 						<xs:element ref="dkabm:record"/>
@@ -284,6 +281,9 @@ You should have received a copy of the GNU Affero General Public License along w
 					<xs:element ref="docbook:article"/>
 					<xs:element ref="oso:object"/>
 				</xs:choice>
+				<xs:element ref="os:identifier"/>
+				<xs:element ref="os:relations" minOccurs="0"/>
+				<xs:element ref="os:formatsAvailable"/>
 				<xs:element ref="os:queryResultExplanation" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
@@ -434,7 +434,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:hitCount"/>
 				<xs:element ref="os:collectionCount"/>
 				<xs:element ref="os:more"/>
-				<xs:element ref="os:searchResult" minOccurs="0"/>
+				<xs:element ref="os:searchResult" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="os:facetResult" minOccurs="0"/>
 				<xs:element ref="os:queryDebugResult" minOccurs="0"/>
 				<xs:element ref="os:time"/>
@@ -635,10 +635,15 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">The types of relations that the service can return.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
+			<xs:enumeration value="dbcbib:hasTrack"/>
+			<xs:enumeration value="dbcbib:isPartOfAlbum"/>
+			<xs:enumeration value="dbcbib:isPartOfManifestation"/>
 			<xs:enumeration value="dbcaddi:hasReview"/>
 			<xs:enumeration value="dbcaddi:isReviewOf"/>
 			<xs:enumeration value="dbcaddi:hasAnalysis"/>
 			<xs:enumeration value="dbcaddi:isAnalysisOf"/>
+			<xs:enumeration value="dbcaddi:hasImage"/>
+			<xs:enumeration value="dbcaddi:isImageOf"/>
 			<xs:enumeration value="dbcaddi:hasCover"/>
 			<xs:enumeration value="dbcaddi:isCoverOf"/>
 			<xs:enumeration value="dbcaddi:hasUserCreatedContent"/>
@@ -649,18 +654,15 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="dbcaddi:hasRingtone"/>
 			<xs:enumeration value="dbcaddi:isPartOfTheme"/>
 			<xs:enumeration value="dbcaddi:hasThemeMember"/>
-			<xs:enumeration value="dbcaddi:hasAuthorDescription"/>
-			<xs:enumeration value="dbcaddi:hasSubjectDescription"/>
+			<xs:enumeration value="dbcaddi:hasCreatorDescription"/>
 			<xs:enumeration value="dbcaddi:hasCreatorHomePage"/>
+			<xs:enumeration value="dbcaddi:hasSubjectDescription"/>
 			<xs:enumeration value="dbcaddi:hasFulltext"/>
-			<xs:enumeration value="dbcbib:hasTrack"/>
-			<xs:enumeration value="dbcbib:isPartOfAlbum"/>
-			<xs:enumeration value="dbcbib:isPartOfManifestation"/>
 			<xs:enumeration value="dbcaddi:hasOnlineAccess"/>
 			<xs:enumeration value="dbcaddi:hasRemoteAccess"/>
 			<xs:enumeration value="dbcaddi:hasOnSiteAccess"/>
 			<xs:enumeration value="dbcaddi:hasPayPerView"/>
-			<xs:enumeration value="dbcaddi:hasCreatorDescription"/>
+			<xs:enumeration value="dbcaddi:hasOpenUrl"/>
 			<xs:enumeration value="dcterms:creator"/>
 			<xs:enumeration value="dcterms:references"/>
 			<xs:enumeration value="dcterms:isReferencedBy"/>
