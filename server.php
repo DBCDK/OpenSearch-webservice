@@ -456,7 +456,7 @@ class openSearch extends webServiceServer {
         $result = &$ret->searchResponse->_value->result->_value;
         $result->hitCount->_value = $numFound;
         $result->collectionCount->_value = count($collections);
-        $result->more->_value = ($more ? 'TRUE' : 'FALSE');
+        $result->more->_value = ($more ? 'true' : 'false');
         $result->searchResult = $collections;
         $result->facetResult->_value = $facets;
         $result->debugResult->_value = $debug_result;
@@ -531,7 +531,7 @@ class openSearch extends webServiceServer {
         $result = &$ret->searchResponse->_value->result->_value;
         $result->hitCount->_value = 1;
         $result->collectionCount->_value = count($collections);
-        $result->more->_value = 'FALSE';
+        $result->more->_value = 'false';
         $result->searchResult = $collections;
         $result->facetResult->_value = '';
         $result->time->_value = $this->watch->splittime('Total');
