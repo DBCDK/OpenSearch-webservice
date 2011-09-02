@@ -480,6 +480,10 @@ class openSearch extends webServiceServer {
             $error = 'authentication_error';
             return $ret_error;
         }
+        if (empty($param->agency->_value) && empty($param->profile->_value)) {
+            $param->agency->_value = '100200';
+            $param->profile->_value = 'test';
+        }
         if ($agency = $param->agency->_value) {
             if ($param->profile->_value) {
                 if (!($agencies[$agency] = $this->get_agencies_from_profile($agency, $param->profile->_value))) {
