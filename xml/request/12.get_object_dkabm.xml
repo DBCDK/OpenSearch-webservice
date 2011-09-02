@@ -2,7 +2,9 @@
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch">
   <SOAP-ENV:Body>
     <ns1:getObjectRequest>
-      <ns1:identifier>710100:27246478</ns1:identifier>
+      <ns1:agency>100200</ns1:agency>
+      <ns1:profile>test</ns1:profile>
+      <ns1:identifier>100200:28727925</ns1:identifier>
       <ns1:objectFormat>dkabm</ns1:objectFormat>
     </ns1:getObjectRequest>
   </SOAP-ENV:Body>

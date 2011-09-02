@@ -3,6 +3,8 @@
   <SOAP-ENV:Body>
     <ns1:searchRequest>
       <ns1:query>menneskehavn</ns1:query>
+      <ns1:agency>100200</ns1:agency>
+      <ns1:profile>test</ns1:profile>
       <ns1:allRelations>true</ns1:allRelations>
       <ns1:relationData>type</ns1:relationData>
       <ns1:start>1</ns1:start>
