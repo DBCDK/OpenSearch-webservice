@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:docbook="http://docbook.org/ns/docbook">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:docbook="http://docbook.org/ns/docbook" targetNamespace="http://docbook.org/ns/docbook" elementFormDefault="qualified">
 	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
 	<xs:attributeGroup name="db.common.attributes">
@@ -435,7 +434,7 @@
 	<xs:element name="subjectset">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:subject"/>
+				<xs:element ref="docbook:subject" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -446,7 +445,7 @@
 	<xs:element name="subject">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:subjectterm"/>
+				<xs:element ref="docbook:subjectterm" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -464,7 +463,7 @@
 	<xs:element name="keywordset">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:keyword"/>
+				<xs:element ref="docbook:keyword" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -486,7 +485,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -545,7 +544,7 @@
 					<xs:element ref="docbook:simpara"/>
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
-				<xs:element maxOccurs="unbounded" ref="docbook:step"/>
+				<xs:element ref="docbook:step" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -560,7 +559,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
 					<xs:sequence>
@@ -766,8 +765,8 @@
 	<xs:element name="stepalternatives">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
-				<xs:element maxOccurs="unbounded" ref="docbook:step"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
+				<xs:element ref="docbook:step" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -785,7 +784,7 @@
 	<xs:element name="substeps">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:step"/>
+				<xs:element ref="docbook:step" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -808,7 +807,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -881,7 +880,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:anchor"/>
@@ -903,7 +902,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:anchor"/>
@@ -925,9 +924,9 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:attribution"/>
+				<xs:element ref="docbook:attribution" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
 					<xs:element ref="docbook:orderedlist"/>
@@ -1164,8 +1163,8 @@
 	<xs:element name="epigraph">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
-				<xs:element minOccurs="0" ref="docbook:attribution"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
+				<xs:element ref="docbook:attribution" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:anchor"/>
 					<xs:element ref="docbook:para"/>
@@ -1252,9 +1251,9 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:indexterm"/>
+				<xs:element ref="docbook:indexterm" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="docbook:para"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -1534,7 +1533,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -1593,7 +1592,7 @@
 					<xs:element ref="docbook:simpara"/>
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
-				<xs:element maxOccurs="unbounded" ref="docbook:listitem"/>
+				<xs:element ref="docbook:listitem" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -1617,7 +1616,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -1676,7 +1675,7 @@
 					<xs:element ref="docbook:simpara"/>
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
-				<xs:element maxOccurs="unbounded" ref="docbook:listitem"/>
+				<xs:element ref="docbook:listitem" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -1792,10 +1791,10 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:segtitle"/>
-				<xs:element maxOccurs="unbounded" ref="docbook:seglistitem"/>
+				<xs:element ref="docbook:segtitle" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:seglistitem" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -1912,7 +1911,7 @@
 	<xs:element name="seglistitem">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:seg"/>
+				<xs:element ref="docbook:seg" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -2029,7 +2028,7 @@
 	<xs:element name="simplelist">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:member"/>
+				<xs:element ref="docbook:member" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -2161,7 +2160,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -2220,7 +2219,7 @@
 					<xs:element ref="docbook:simpara"/>
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
-				<xs:element maxOccurs="unbounded" ref="docbook:varlistentry"/>
+				<xs:element ref="docbook:varlistentry" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -2239,7 +2238,7 @@
 	<xs:element name="varlistentry">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:term"/>
+				<xs:element ref="docbook:term" maxOccurs="unbounded"/>
 				<xs:element ref="docbook:listitem"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -2362,7 +2361,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -2421,7 +2420,7 @@
 					<xs:element ref="docbook:simpara"/>
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
-				<xs:element minOccurs="0" ref="docbook:caption"/>
+				<xs:element ref="docbook:caption" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -2442,7 +2441,7 @@
 	<xs:element name="informalexample">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
 					<xs:element ref="docbook:orderedlist"/>
@@ -2500,7 +2499,7 @@
 					<xs:element ref="docbook:simpara"/>
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
-				<xs:element minOccurs="0" ref="docbook:caption"/>
+				<xs:element ref="docbook:caption" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -2787,7 +2786,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:element ref="docbook:mediaobject"/>
 			</xs:sequence>
@@ -2804,7 +2803,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -2863,7 +2862,7 @@
 					<xs:element ref="docbook:simpara"/>
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
-				<xs:element minOccurs="0" ref="docbook:caption"/>
+				<xs:element ref="docbook:caption" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -2883,7 +2882,7 @@
 	<xs:element name="informalfigure">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
 					<xs:element ref="docbook:orderedlist"/>
@@ -2941,7 +2940,7 @@
 					<xs:element ref="docbook:simpara"/>
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
-				<xs:element minOccurs="0" ref="docbook:caption"/>
+				<xs:element ref="docbook:caption" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -2961,8 +2960,8 @@
 	<xs:element name="mediaobject">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
-				<xs:element minOccurs="0" ref="docbook:alt"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
+				<xs:element ref="docbook:alt" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:videoobject"/>
 					<xs:element ref="docbook:audioobject"/>
@@ -2970,7 +2969,7 @@
 					<xs:element ref="docbook:textobject"/>
 					<xs:element ref="docbook:imageobjectco"/>
 				</xs:choice>
-				<xs:element minOccurs="0" ref="docbook:caption"/>
+				<xs:element ref="docbook:caption" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -2980,8 +2979,8 @@
 	<xs:element name="inlinemediaobject">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
-				<xs:element minOccurs="0" ref="docbook:alt"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
+				<xs:element ref="docbook:alt" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:videoobject"/>
 					<xs:element ref="docbook:audioobject"/>
@@ -2998,7 +2997,7 @@
 	<xs:element name="videoobject">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 				<xs:element ref="docbook:videodata"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -3009,7 +3008,7 @@
 	<xs:element name="audioobject">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 				<xs:element ref="docbook:audiodata"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -3020,7 +3019,7 @@
 	<xs:element name="imageobject">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 				<xs:element ref="docbook:imagedata"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -3031,7 +3030,7 @@
 	<xs:element name="textobject">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 				<xs:choice>
 					<xs:element ref="docbook:phrase"/>
 					<xs:element ref="docbook:textdata"/>
@@ -3102,7 +3101,7 @@
 	<xs:element name="videodata">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -3147,7 +3146,7 @@
 	<xs:element name="audiodata">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -3159,7 +3158,7 @@
 	<xs:element name="imagedata">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -3204,7 +3203,7 @@
 	<xs:element name="textdata">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -3556,14 +3555,14 @@
 	<xs:element name="affiliation">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:shortaffil"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:jobtitle"/>
+				<xs:element ref="docbook:shortaffil" minOccurs="0"/>
+				<xs:element ref="docbook:jobtitle" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:choice>
-					<xs:element minOccurs="0" ref="docbook:org"/>
+					<xs:element ref="docbook:org" minOccurs="0"/>
 					<xs:sequence>
-						<xs:element minOccurs="0" ref="docbook:orgname"/>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:orgdiv"/>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:address"/>
+						<xs:element ref="docbook:orgname" minOccurs="0"/>
+						<xs:element ref="docbook:orgdiv" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:address" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 				</xs:choice>
 			</xs:sequence>
@@ -3863,7 +3862,7 @@
 					<xs:element ref="docbook:org"/>
 					<xs:element ref="docbook:orgname"/>
 				</xs:choice>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:affiliation"/>
+				<xs:element ref="docbook:affiliation" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -4082,8 +4081,8 @@
 	<xs:element name="copyright">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:year"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:holder"/>
+				<xs:element ref="docbook:year" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:holder" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -4475,7 +4474,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -4769,7 +4768,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="docbook:publishername"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:address"/>
+				<xs:element ref="docbook:address" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -4830,9 +4829,9 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:revision"/>
+				<xs:element ref="docbook:revision" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -4842,7 +4841,7 @@
 	<xs:element name="revision">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:revnumber"/>
+				<xs:element ref="docbook:revnumber" minOccurs="0"/>
 				<xs:element ref="docbook:date"/>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:authorinitials"/>
@@ -5355,7 +5354,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="docbook:refentrytitle"/>
-				<xs:element minOccurs="0" ref="docbook:manvolnum"/>
+				<xs:element ref="docbook:manvolnum" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -6340,7 +6339,7 @@
 	<xs:element name="alt">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:inlinemediaobject"/>
+				<xs:element ref="docbook:inlinemediaobject" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -6355,14 +6354,14 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:toc"/>
+				<xs:element ref="docbook:toc" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:set"/>
 					<xs:element ref="docbook:book"/>
 				</xs:choice>
-				<xs:element minOccurs="0" ref="docbook:setindex"/>
+				<xs:element ref="docbook:setindex" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -6380,7 +6379,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:glossary"/>
@@ -6414,7 +6413,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -6490,7 +6489,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -6566,7 +6565,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -6642,7 +6641,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -6712,27 +6711,27 @@
 							</xs:choice>
 							<xs:choice minOccurs="0">
 								<xs:sequence>
-									<xs:element maxOccurs="unbounded" ref="docbook:section"/>
-									<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+									<xs:element ref="docbook:section" maxOccurs="unbounded"/>
+									<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 								</xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+								<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 								<xs:sequence>
-									<xs:element maxOccurs="unbounded" ref="docbook:sect1"/>
-									<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+									<xs:element ref="docbook:sect1" maxOccurs="unbounded"/>
+									<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 								</xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+								<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 							</xs:choice>
 						</xs:sequence>
 						<xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:section"/>
-							<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+							<xs:element ref="docbook:section" maxOccurs="unbounded"/>
+							<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 						</xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 						<xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:sect1"/>
-							<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+							<xs:element ref="docbook:sect1" maxOccurs="unbounded"/>
+							<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 						</xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+						<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 					</xs:choice>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element ref="docbook:glossary"/>
@@ -6758,7 +6757,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -6828,27 +6827,27 @@
 							</xs:choice>
 							<xs:choice minOccurs="0">
 								<xs:sequence>
-									<xs:element maxOccurs="unbounded" ref="docbook:section"/>
-									<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+									<xs:element ref="docbook:section" maxOccurs="unbounded"/>
+									<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 								</xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+								<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 								<xs:sequence>
-									<xs:element maxOccurs="unbounded" ref="docbook:sect1"/>
-									<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+									<xs:element ref="docbook:sect1" maxOccurs="unbounded"/>
+									<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 								</xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+								<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 							</xs:choice>
 						</xs:sequence>
 						<xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:section"/>
-							<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+							<xs:element ref="docbook:section" maxOccurs="unbounded"/>
+							<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 						</xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 						<xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:sect1"/>
-							<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+							<xs:element ref="docbook:sect1" maxOccurs="unbounded"/>
+							<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 						</xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+						<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 					</xs:choice>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element ref="docbook:glossary"/>
@@ -6874,9 +6873,9 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:partintro"/>
+				<xs:element ref="docbook:partintro" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:glossary"/>
 					<xs:element ref="docbook:bibliography"/>
@@ -6909,7 +6908,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -6979,27 +6978,27 @@
 							</xs:choice>
 							<xs:choice minOccurs="0">
 								<xs:sequence>
-									<xs:element maxOccurs="unbounded" ref="docbook:section"/>
-									<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+									<xs:element ref="docbook:section" maxOccurs="unbounded"/>
+									<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 								</xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+								<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 								<xs:sequence>
-									<xs:element maxOccurs="unbounded" ref="docbook:sect1"/>
-									<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+									<xs:element ref="docbook:sect1" maxOccurs="unbounded"/>
+									<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 								</xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+								<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 							</xs:choice>
 						</xs:sequence>
 						<xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:section"/>
-							<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+							<xs:element ref="docbook:section" maxOccurs="unbounded"/>
+							<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 						</xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 						<xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:sect1"/>
-							<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+							<xs:element ref="docbook:sect1" maxOccurs="unbounded"/>
+							<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 						</xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+						<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 					</xs:choice>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element ref="docbook:glossary"/>
@@ -7025,7 +7024,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
 					<xs:sequence>
@@ -7088,27 +7087,27 @@
 						</xs:choice>
 						<xs:choice minOccurs="0">
 							<xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:section"/>
-								<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+								<xs:element ref="docbook:section" maxOccurs="unbounded"/>
+								<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 							</xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+							<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 							<xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:sect1"/>
-								<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+								<xs:element ref="docbook:sect1" maxOccurs="unbounded"/>
+								<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 							</xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+							<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 						</xs:choice>
 					</xs:sequence>
 					<xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:section"/>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:section" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+					<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 					<xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:sect1"/>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:sect1" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+					<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -7127,7 +7126,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
 					<xs:sequence>
@@ -7190,19 +7189,19 @@
 						</xs:choice>
 						<xs:choice minOccurs="0">
 							<xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:section"/>
-								<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+								<xs:element ref="docbook:section" maxOccurs="unbounded"/>
+								<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 							</xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
-							<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+							<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
+							<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 						</xs:choice>
 					</xs:sequence>
 					<xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:section"/>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:section" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+					<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 				</xs:choice>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:glossary"/>
@@ -7227,7 +7226,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -7303,7 +7302,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:glossary"/>
@@ -7375,27 +7374,27 @@
 						</xs:choice>
 						<xs:choice minOccurs="0">
 							<xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:section"/>
-								<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+								<xs:element ref="docbook:section" maxOccurs="unbounded"/>
+								<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 							</xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+							<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 							<xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:sect1"/>
-								<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+								<xs:element ref="docbook:sect1" maxOccurs="unbounded"/>
+								<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 							</xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+							<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 						</xs:choice>
 					</xs:sequence>
 					<xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:section"/>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:section" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+					<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 					<xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:sect1"/>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:sect1" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+					<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 				</xs:choice>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:glossary"/>
@@ -7434,7 +7433,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -7533,7 +7532,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
 					<xs:sequence>
@@ -7596,17 +7595,17 @@
 						</xs:choice>
 						<xs:choice minOccurs="0">
 							<xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:sect2"/>
-								<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+								<xs:element ref="docbook:sect2" maxOccurs="unbounded"/>
+								<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 							</xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+							<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 						</xs:choice>
 					</xs:sequence>
 					<xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:sect2"/>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:sect2" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+					<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 				</xs:choice>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:glossary"/>
@@ -7631,7 +7630,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
 					<xs:sequence>
@@ -7694,17 +7693,17 @@
 						</xs:choice>
 						<xs:choice minOccurs="0">
 							<xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:sect3"/>
-								<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+								<xs:element ref="docbook:sect3" maxOccurs="unbounded"/>
+								<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 							</xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+							<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 						</xs:choice>
 					</xs:sequence>
 					<xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:sect3"/>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:sect3" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+					<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 				</xs:choice>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:glossary"/>
@@ -7729,7 +7728,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
 					<xs:sequence>
@@ -7792,17 +7791,17 @@
 						</xs:choice>
 						<xs:choice minOccurs="0">
 							<xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:sect4"/>
-								<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+								<xs:element ref="docbook:sect4" maxOccurs="unbounded"/>
+								<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 							</xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+							<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 						</xs:choice>
 					</xs:sequence>
 					<xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:sect4"/>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:sect4" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+					<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 				</xs:choice>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:glossary"/>
@@ -7827,7 +7826,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
 					<xs:sequence>
@@ -7890,17 +7889,17 @@
 						</xs:choice>
 						<xs:choice minOccurs="0">
 							<xs:sequence>
-								<xs:element maxOccurs="unbounded" ref="docbook:sect5"/>
-								<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+								<xs:element ref="docbook:sect5" maxOccurs="unbounded"/>
+								<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 							</xs:sequence>
-							<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+							<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 						</xs:choice>
 					</xs:sequence>
 					<xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:sect5"/>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:sect5" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+					<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 				</xs:choice>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:glossary"/>
@@ -7925,7 +7924,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
 					<xs:sequence>
@@ -7986,9 +7985,9 @@
 							<xs:element ref="docbook:simpara"/>
 							<xs:element ref="docbook:annotation"/>
 						</xs:choice>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:simplesect"/>
+						<xs:element ref="docbook:simplesect" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:simplesect"/>
+					<xs:element ref="docbook:simplesect" maxOccurs="unbounded"/>
 				</xs:choice>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:glossary"/>
@@ -8013,10 +8012,10 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:partintro"/>
-				<xs:element maxOccurs="unbounded" ref="docbook:refentry"/>
+				<xs:element ref="docbook:partintro" minOccurs="0"/>
+				<xs:element ref="docbook:refentry" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -8028,14 +8027,14 @@
 	<xs:element name="refentry">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:indexterm"/>
-				<xs:element minOccurs="0" ref="docbook:info"/>
-				<xs:element minOccurs="0" ref="docbook:refmeta"/>
-				<xs:element maxOccurs="unbounded" ref="docbook:refnamediv"/>
-				<xs:element minOccurs="0" ref="docbook:refsynopsisdiv"/>
+				<xs:element ref="docbook:indexterm" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
+				<xs:element ref="docbook:refmeta" minOccurs="0"/>
+				<xs:element ref="docbook:refnamediv" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:refsynopsisdiv" minOccurs="0"/>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:refsection"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:refsect1"/>
+					<xs:element ref="docbook:refsection" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:refsect1" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -8048,11 +8047,11 @@
 	<xs:element name="refmeta">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:indexterm"/>
+				<xs:element ref="docbook:indexterm" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="docbook:refentrytitle"/>
-				<xs:element minOccurs="0" ref="docbook:manvolnum"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:refmiscinfo"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:indexterm"/>
+				<xs:element ref="docbook:manvolnum" minOccurs="0"/>
+				<xs:element ref="docbook:refmiscinfo" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:indexterm" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -8098,10 +8097,10 @@
 	<xs:element name="refnamediv">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:refdescriptor"/>
-				<xs:element maxOccurs="unbounded" ref="docbook:refname"/>
+				<xs:element ref="docbook:refdescriptor" minOccurs="0"/>
+				<xs:element ref="docbook:refname" maxOccurs="unbounded"/>
 				<xs:element ref="docbook:refpurpose"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:refclass"/>
+				<xs:element ref="docbook:refclass" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -8432,7 +8431,7 @@
 	<xs:element name="refclass">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:application"/>
+				<xs:element ref="docbook:application" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -8448,7 +8447,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
 					<xs:sequence>
@@ -8510,12 +8509,12 @@
 							<xs:element ref="docbook:annotation"/>
 						</xs:choice>
 						<xs:choice minOccurs="0">
-							<xs:element maxOccurs="unbounded" ref="docbook:refsection"/>
-							<xs:element maxOccurs="unbounded" ref="docbook:refsect2"/>
+							<xs:element ref="docbook:refsection" maxOccurs="unbounded"/>
+							<xs:element ref="docbook:refsect2" maxOccurs="unbounded"/>
 						</xs:choice>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:refsection"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:refsect2"/>
+					<xs:element ref="docbook:refsection" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:refsect2" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -8532,7 +8531,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
 					<xs:sequence>
@@ -8593,9 +8592,9 @@
 							<xs:element ref="docbook:simpara"/>
 							<xs:element ref="docbook:annotation"/>
 						</xs:choice>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:refsection"/>
+						<xs:element ref="docbook:refsection" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:refsection"/>
+					<xs:element ref="docbook:refsection" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -8614,7 +8613,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
 					<xs:sequence>
@@ -8675,9 +8674,9 @@
 							<xs:element ref="docbook:simpara"/>
 							<xs:element ref="docbook:annotation"/>
 						</xs:choice>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:refsect2"/>
+						<xs:element ref="docbook:refsect2" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:refsect2"/>
+					<xs:element ref="docbook:refsect2" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -8696,7 +8695,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
 					<xs:sequence>
@@ -8757,9 +8756,9 @@
 							<xs:element ref="docbook:simpara"/>
 							<xs:element ref="docbook:annotation"/>
 						</xs:choice>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:refsect3"/>
+						<xs:element ref="docbook:refsect3" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:element maxOccurs="unbounded" ref="docbook:refsect3"/>
+					<xs:element ref="docbook:refsect3" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -8778,7 +8777,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -8853,7 +8852,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -8912,7 +8911,7 @@
 					<xs:element ref="docbook:simpara"/>
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
-				<xs:element maxOccurs="unbounded" ref="docbook:glossentry"/>
+				<xs:element ref="docbook:glossentry" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -8923,12 +8922,12 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="docbook:glossterm"/>
-				<xs:element minOccurs="0" ref="docbook:acronym"/>
-				<xs:element minOccurs="0" ref="docbook:abbrev"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:indexterm"/>
+				<xs:element ref="docbook:acronym" minOccurs="0"/>
+				<xs:element ref="docbook:abbrev" minOccurs="0"/>
+				<xs:element ref="docbook:indexterm" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:choice>
 					<xs:element ref="docbook:glosssee"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:glossdef"/>
+					<xs:element ref="docbook:glossdef" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -8997,7 +8996,7 @@
 					<xs:element ref="docbook:simpara"/>
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:glossseealso"/>
+				<xs:element ref="docbook:glossseealso" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -9446,7 +9445,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -9506,10 +9505,10 @@
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
 				<xs:choice>
-					<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:glossdiv"/>
-					<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:glossentry"/>
+					<xs:element ref="docbook:glossdiv" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:glossentry" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:element minOccurs="0" ref="docbook:bibliography"/>
+				<xs:element ref="docbook:bibliography" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -9527,7 +9526,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -9586,7 +9585,7 @@
 					<xs:element ref="docbook:simpara"/>
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
-				<xs:element maxOccurs="unbounded" ref="docbook:glossentry"/>
+				<xs:element ref="docbook:glossentry" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -10052,7 +10051,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -10112,7 +10111,7 @@
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:bibliodiv"/>
+					<xs:element ref="docbook:bibliodiv" maxOccurs="unbounded"/>
 					<xs:choice maxOccurs="unbounded">
 						<xs:element ref="docbook:biblioentry"/>
 						<xs:element ref="docbook:bibliomixed"/>
@@ -10135,7 +10134,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -10214,7 +10213,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -10298,7 +10297,7 @@
 	<xs:element name="itermset">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:indexterm"/>
+				<xs:element ref="docbook:indexterm" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -10308,7 +10307,7 @@
 	<xs:element name="indexterm">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:primary"/>
+				<xs:element ref="docbook:primary" minOccurs="0"/>
 				<xs:choice minOccurs="0">
 					<xs:sequence>
 						<xs:element ref="docbook:secondary"/>
@@ -10317,15 +10316,15 @@
 								<xs:element ref="docbook:tertiary"/>
 								<xs:choice minOccurs="0">
 									<xs:element ref="docbook:see"/>
-									<xs:element maxOccurs="unbounded" ref="docbook:seealso"/>
+									<xs:element ref="docbook:seealso" maxOccurs="unbounded"/>
 								</xs:choice>
 							</xs:sequence>
 							<xs:element ref="docbook:see"/>
-							<xs:element maxOccurs="unbounded" ref="docbook:seealso"/>
+							<xs:element ref="docbook:seealso" maxOccurs="unbounded"/>
 						</xs:choice>
 					</xs:sequence>
 					<xs:element ref="docbook:see"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:seealso"/>
+					<xs:element ref="docbook:seealso" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -10910,7 +10909,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -10969,8 +10968,8 @@
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
 				<xs:choice>
-					<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:indexdiv"/>
-					<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:indexentry"/>
+					<xs:element ref="docbook:indexdiv" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:indexentry" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="docbook:segmentedlist"/>
 				</xs:choice>
 			</xs:sequence>
@@ -10991,7 +10990,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -11051,8 +11050,8 @@
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
 				<xs:choice>
-					<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:indexdiv"/>
-					<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:indexentry"/>
+					<xs:element ref="docbook:indexdiv" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:indexentry" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -11072,7 +11071,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -11131,7 +11130,7 @@
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:indexentry"/>
+					<xs:element ref="docbook:indexentry" maxOccurs="unbounded"/>
 					<xs:element ref="docbook:segmentedlist"/>
 				</xs:choice>
 			</xs:sequence>
@@ -11707,7 +11706,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -11785,7 +11784,7 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -11972,13 +11971,13 @@
 						<xs:element ref="docbook:titleabbrev"/>
 						<xs:element ref="docbook:subtitle"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:tasksummary"/>
-				<xs:element minOccurs="0" ref="docbook:taskprerequisites"/>
+				<xs:element ref="docbook:tasksummary" minOccurs="0"/>
+				<xs:element ref="docbook:taskprerequisites" minOccurs="0"/>
 				<xs:element ref="docbook:procedure"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:example"/>
-				<xs:element minOccurs="0" ref="docbook:taskrelated"/>
+				<xs:element ref="docbook:example" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:taskrelated" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -11993,7 +11992,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -12066,7 +12065,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -12139,7 +12138,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -12212,7 +12211,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -12271,7 +12270,7 @@
 					<xs:element ref="docbook:simpara"/>
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
-				<xs:element maxOccurs="unbounded" ref="docbook:callout"/>
+				<xs:element ref="docbook:callout" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -12339,16 +12338,16 @@
 			</xs:choice>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
-			<xs:attribute name="arearefs" use="required" type="xs:IDREFS"/>
+			<xs:attribute name="arearefs" type="xs:IDREFS" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="programlistingco">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 				<xs:element ref="docbook:areaspec"/>
 				<xs:element ref="docbook:programlisting"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:calloutlist"/>
+				<xs:element ref="docbook:calloutlist" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -12381,7 +12380,7 @@
 	<xs:element name="area">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:alt"/>
+				<xs:element ref="docbook:alt" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -12405,7 +12404,7 @@
 	<xs:element name="areaset">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:area"/>
+				<xs:element ref="docbook:area" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -12428,10 +12427,10 @@
 	<xs:element name="screenco">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 				<xs:element ref="docbook:areaspec"/>
 				<xs:element ref="docbook:screen"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:calloutlist"/>
+				<xs:element ref="docbook:calloutlist" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -12441,10 +12440,10 @@
 	<xs:element name="imageobjectco">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 				<xs:element ref="docbook:areaspec"/>
-				<xs:element maxOccurs="unbounded" ref="docbook:imageobject"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:calloutlist"/>
+				<xs:element ref="docbook:imageobject" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:calloutlist" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -12475,7 +12474,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:production"/>
@@ -12492,7 +12491,7 @@
 			<xs:sequence>
 				<xs:element ref="docbook:lhs"/>
 				<xs:element ref="docbook:rhs"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:constraint"/>
+				<xs:element ref="docbook:constraint" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -12548,7 +12547,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -12616,10 +12615,10 @@
 	<xs:element name="tgroup">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:colspec"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:spanspec"/>
-				<xs:element minOccurs="0" ref="docbook:thead"/>
-				<xs:element minOccurs="0" ref="docbook:tfoot"/>
+				<xs:element ref="docbook:colspec" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:spanspec" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:thead" minOccurs="0"/>
+				<xs:element ref="docbook:tfoot" minOccurs="0"/>
 				<xs:element ref="docbook:tbody"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -12628,7 +12627,7 @@
 			<xs:attribute name="char"/>
 			<xs:attribute name="charoff"/>
 			<xs:attribute name="tgroupstyle"/>
-			<xs:attribute name="cols" use="required" type="xs:NMTOKEN"/>
+			<xs:attribute name="cols" type="xs:NMTOKEN" use="required"/>
 			<xs:attribute name="colsep">
 				<xs:simpleType>
 					<xs:restriction base="xs:token">
@@ -12739,10 +12738,10 @@
 	<xs:element name="thead">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:colspec"/>
+				<xs:element ref="docbook:colspec" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:row"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:tr"/>
+					<xs:element ref="docbook:row" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:tr" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -12790,10 +12789,10 @@
 	<xs:element name="tfoot">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:colspec"/>
+				<xs:element ref="docbook:colspec" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:row"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:tr"/>
+					<xs:element ref="docbook:row" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:tr" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -12841,8 +12840,8 @@
 	<xs:element name="tbody">
 		<xs:complexType>
 			<xs:choice>
-				<xs:element maxOccurs="unbounded" ref="docbook:row"/>
-				<xs:element maxOccurs="unbounded" ref="docbook:tr"/>
+				<xs:element ref="docbook:row" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:tr" maxOccurs="unbounded"/>
 			</xs:choice>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -13126,9 +13125,9 @@
 	<xs:element name="entrytbl">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:colspec"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:spanspec"/>
-				<xs:element minOccurs="0" ref="docbook:thead"/>
+				<xs:element ref="docbook:colspec" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:spanspec" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:thead" minOccurs="0"/>
 				<xs:element ref="docbook:tbody"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -13175,29 +13174,29 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 					<xs:sequence>
 						<xs:element ref="docbook:title"/>
-						<xs:element minOccurs="0" ref="docbook:titleabbrev"/>
+						<xs:element ref="docbook:titleabbrev" minOccurs="0"/>
 					</xs:sequence>
-					<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:indexterm"/>
-					<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:textobject"/>
+					<xs:element ref="docbook:indexterm" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:textobject" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:choice>
-						<xs:element maxOccurs="unbounded" ref="docbook:mediaobject"/>
-						<xs:element maxOccurs="unbounded" ref="docbook:tgroup"/>
+						<xs:element ref="docbook:mediaobject" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:tgroup" maxOccurs="unbounded"/>
 					</xs:choice>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:element ref="docbook:caption"/>
 					<xs:choice>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:col"/>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:colgroup"/>
+						<xs:element ref="docbook:col" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:colgroup" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:thead"/>
-					<xs:element minOccurs="0" ref="docbook:tfoot"/>
+					<xs:element ref="docbook:thead" minOccurs="0"/>
+					<xs:element ref="docbook:tfoot" minOccurs="0"/>
 					<xs:choice>
-						<xs:element maxOccurs="unbounded" ref="docbook:tbody"/>
-						<xs:element maxOccurs="unbounded" ref="docbook:tr"/>
+						<xs:element ref="docbook:tbody" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:tr" maxOccurs="unbounded"/>
 					</xs:choice>
 				</xs:sequence>
 			</xs:choice>
@@ -13319,25 +13318,25 @@
 	<xs:element name="informaltable">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 				<xs:choice>
 					<xs:sequence>
-						<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:textobject"/>
+						<xs:element ref="docbook:textobject" minOccurs="0" maxOccurs="unbounded"/>
 						<xs:choice>
-							<xs:element maxOccurs="unbounded" ref="docbook:mediaobject"/>
-							<xs:element maxOccurs="unbounded" ref="docbook:tgroup"/>
+							<xs:element ref="docbook:mediaobject" maxOccurs="unbounded"/>
+							<xs:element ref="docbook:tgroup" maxOccurs="unbounded"/>
 						</xs:choice>
 					</xs:sequence>
 					<xs:sequence>
 						<xs:choice>
-							<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:col"/>
-							<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:colgroup"/>
+							<xs:element ref="docbook:col" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element ref="docbook:colgroup" minOccurs="0" maxOccurs="unbounded"/>
 						</xs:choice>
-						<xs:element minOccurs="0" ref="docbook:thead"/>
-						<xs:element minOccurs="0" ref="docbook:tfoot"/>
+						<xs:element ref="docbook:thead" minOccurs="0"/>
+						<xs:element ref="docbook:tfoot" minOccurs="0"/>
 						<xs:choice>
-							<xs:element maxOccurs="unbounded" ref="docbook:tbody"/>
-							<xs:element maxOccurs="unbounded" ref="docbook:tr"/>
+							<xs:element ref="docbook:tbody" maxOccurs="unbounded"/>
+							<xs:element ref="docbook:tr" maxOccurs="unbounded"/>
 						</xs:choice>
 					</xs:sequence>
 				</xs:choice>
@@ -13487,7 +13486,7 @@
 	<xs:element name="colgroup">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:col"/>
+				<xs:element ref="docbook:col" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
 			<xs:attribute name="class"/>
@@ -14001,11 +14000,11 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:msgentry"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:simplemsgentry"/>
+					<xs:element ref="docbook:msgentry" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:simplemsgentry" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -14016,9 +14015,9 @@
 	<xs:element name="msgentry">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element maxOccurs="unbounded" ref="docbook:msg"/>
-				<xs:element minOccurs="0" ref="docbook:msginfo"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:msgexplan"/>
+				<xs:element ref="docbook:msg" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:msginfo" minOccurs="0"/>
+				<xs:element ref="docbook:msgexplan" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -14029,7 +14028,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="docbook:msgtext"/>
-				<xs:element maxOccurs="unbounded" ref="docbook:msgexplan"/>
+				<xs:element ref="docbook:msgexplan" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -14047,7 +14046,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:element ref="docbook:msgmain"/>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -14068,7 +14067,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:element ref="docbook:msgtext"/>
 			</xs:sequence>
@@ -14085,7 +14084,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:element ref="docbook:msgtext"/>
 			</xs:sequence>
@@ -14102,7 +14101,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:element ref="docbook:msgtext"/>
 			</xs:sequence>
@@ -14264,7 +14263,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -14337,7 +14336,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -14397,8 +14396,8 @@
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:qandadiv"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:qandaentry"/>
+					<xs:element ref="docbook:qandadiv" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:qandaentry" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -14423,7 +14422,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -14483,8 +14482,8 @@
 					<xs:element ref="docbook:annotation"/>
 				</xs:choice>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:qandadiv"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:qandaentry"/>
+					<xs:element ref="docbook:qandadiv" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:qandaentry" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -14500,10 +14499,10 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:element ref="docbook:question"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:answer"/>
+				<xs:element ref="docbook:answer" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -14513,7 +14512,7 @@
 	<xs:element name="question">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:label"/>
+				<xs:element ref="docbook:label" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
 					<xs:element ref="docbook:orderedlist"/>
@@ -14580,7 +14579,7 @@
 	<xs:element name="answer">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:label"/>
+				<xs:element ref="docbook:label" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
 					<xs:element ref="docbook:orderedlist"/>
@@ -14675,14 +14674,14 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:alt"/>
+				<xs:element ref="docbook:alt" minOccurs="0"/>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:mediaobject"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:mathphrase"/>
+					<xs:element ref="docbook:mediaobject" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:mathphrase" maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:element minOccurs="0" ref="docbook:caption"/>
+				<xs:element ref="docbook:caption" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -14702,13 +14701,13 @@
 	<xs:element name="informalequation">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
-				<xs:element minOccurs="0" ref="docbook:alt"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
+				<xs:element ref="docbook:alt" minOccurs="0"/>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:mediaobject"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:mathphrase"/>
+					<xs:element ref="docbook:mediaobject" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:mathphrase" maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:element minOccurs="0" ref="docbook:caption"/>
+				<xs:element ref="docbook:caption" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -14718,10 +14717,10 @@
 	<xs:element name="inlineequation">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:alt"/>
+				<xs:element ref="docbook:alt" minOccurs="0"/>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:inlinemediaobject"/>
-					<xs:element maxOccurs="unbounded" ref="docbook:mathphrase"/>
+					<xs:element ref="docbook:inlinemediaobject" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:mathphrase" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="role"/>
@@ -15269,7 +15268,7 @@
 	<xs:element name="menuchoice">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:shortcut"/>
+				<xs:element ref="docbook:shortcut" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:guibutton"/>
 					<xs:element ref="docbook:guiicon"/>
@@ -15696,14 +15695,14 @@
 	<xs:element name="cmdsynopsis">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:command"/>
 					<xs:element ref="docbook:arg"/>
 					<xs:element ref="docbook:group"/>
 					<xs:element ref="docbook:sbr"/>
 				</xs:choice>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:synopfragment"/>
+				<xs:element ref="docbook:synopfragment" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -15948,7 +15947,7 @@
 	<xs:element name="funcsynopsis">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="docbook:info"/>
+				<xs:element ref="docbook:info" minOccurs="0"/>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:funcsynopsisinfo"/>
 					<xs:element ref="docbook:funcprototype"/>
@@ -16093,17 +16092,17 @@
 	<xs:element name="funcprototype">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:modifier"/>
+				<xs:element ref="docbook:modifier" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="docbook:funcdef"/>
 				<xs:choice>
 					<xs:element ref="docbook:void"/>
 					<xs:element ref="docbook:varargs"/>
 					<xs:sequence>
-						<xs:element maxOccurs="unbounded" ref="docbook:paramdef"/>
-						<xs:element minOccurs="0" ref="docbook:varargs"/>
+						<xs:element ref="docbook:paramdef" maxOccurs="unbounded"/>
+						<xs:element ref="docbook:varargs" minOccurs="0"/>
 					</xs:sequence>
 				</xs:choice>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:modifier"/>
+				<xs:element ref="docbook:modifier" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -16505,10 +16504,10 @@
 	<xs:element name="fieldsynopsis">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:modifier"/>
-				<xs:element minOccurs="0" ref="docbook:type"/>
+				<xs:element ref="docbook:modifier" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:type" minOccurs="0"/>
 				<xs:element ref="docbook:varname"/>
-				<xs:element minOccurs="0" ref="docbook:initializer"/>
+				<xs:element ref="docbook:initializer" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -16542,13 +16541,13 @@
 	<xs:element name="constructorsynopsis">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:modifier"/>
-				<xs:element minOccurs="0" ref="docbook:methodname"/>
+				<xs:element ref="docbook:modifier" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:methodname" minOccurs="0"/>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:methodparam"/>
-					<xs:element minOccurs="0" ref="docbook:void"/>
+					<xs:element ref="docbook:methodparam" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:void" minOccurs="0"/>
 				</xs:choice>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:exceptionname"/>
+				<xs:element ref="docbook:exceptionname" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -16559,13 +16558,13 @@
 	<xs:element name="destructorsynopsis">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:modifier"/>
-				<xs:element minOccurs="0" ref="docbook:methodname"/>
+				<xs:element ref="docbook:modifier" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:methodname" minOccurs="0"/>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:methodparam"/>
-					<xs:element minOccurs="0" ref="docbook:void"/>
+					<xs:element ref="docbook:methodparam" maxOccurs="unbounded"/>
+					<xs:element ref="docbook:void" minOccurs="0"/>
 				</xs:choice>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:exceptionname"/>
+				<xs:element ref="docbook:exceptionname" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -16576,18 +16575,18 @@
 	<xs:element name="methodsynopsis">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:modifier"/>
+				<xs:element ref="docbook:modifier" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:choice minOccurs="0">
 					<xs:element ref="docbook:type"/>
 					<xs:element ref="docbook:void"/>
 				</xs:choice>
 				<xs:element ref="docbook:methodname"/>
 				<xs:choice>
-					<xs:element maxOccurs="unbounded" ref="docbook:methodparam"/>
+					<xs:element ref="docbook:methodparam" maxOccurs="unbounded"/>
 					<xs:element ref="docbook:void"/>
 				</xs:choice>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:exceptionname"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:modifier"/>
+				<xs:element ref="docbook:exceptionname" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="docbook:modifier" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -16628,11 +16627,11 @@
 				<xs:choice>
 					<xs:sequence>
 						<xs:element ref="docbook:parameter"/>
-						<xs:element minOccurs="0" ref="docbook:initializer"/>
+						<xs:element ref="docbook:initializer" minOccurs="0"/>
 					</xs:sequence>
 					<xs:element ref="docbook:funcparams"/>
 				</xs:choice>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="docbook:modifier"/>
+				<xs:element ref="docbook:modifier" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="role"/>
 			<xs:attributeGroup ref="docbook:db.common.attributes"/>
@@ -16887,7 +16886,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -16960,7 +16959,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -17033,7 +17032,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -17106,7 +17105,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
@@ -17179,7 +17178,7 @@
 						<xs:element ref="docbook:title"/>
 						<xs:element ref="docbook:titleabbrev"/>
 					</xs:choice>
-					<xs:element minOccurs="0" ref="docbook:info"/>
+					<xs:element ref="docbook:info" minOccurs="0"/>
 				</xs:sequence>
 				<xs:choice maxOccurs="unbounded">
 					<xs:element ref="docbook:itemizedlist"/>
