@@ -27,6 +27,8 @@ require_once 'OLS_class_lib/cql2solr_class.php';
 
 //-----------------------------------------------------------------------------
 define(DEBUG_ON, FALSE);
+define(REL_TO_INTERNAL_OBJ, 1);       // relation points to internal object
+define(REL_TO_EXTERNAL_OBJ, 2);     // relation points to external object
 
 //-----------------------------------------------------------------------------
 class openSearch extends webServiceServer {
@@ -48,13 +50,13 @@ class openSearch extends webServiceServer {
 
     public function search($param) { 
         // set some defines
-            if (!$this->aaa->has_right('opensearch', 500)) {
-                $ret_error->searchResponse->_value->error->_value = 'authentication_error';
-                return $ret_error;
-            }
+        $param->trackingId->_value = verbose::set_tracking_id('os', $param->trackingId->_value);
+        if (!$this->aaa->has_right('opensearch', 500)) {
+            $ret_error->searchResponse->_value->error->_value = 'authentication_error';
+            return $ret_error;
+        }
         define('WSDL', $this->config->get_value('wsdl', 'setup'));
         define('MAX_COLLECTIONS', $this->config->get_value('max_collections', 'setup'));
-
 
         // check for unsupported stuff
         $ret_error->searchResponse->_value->error->_value = &$unsupported;
@@ -66,6 +68,10 @@ class openSearch extends webServiceServer {
         }
         if (empty($param->query->_value)) {
             $unsupported = 'Error: No query found in request';
+        }
+        if (empty($param->agency->_value) && empty($param->profile->_value)) {
+            $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
+            $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
         }
         if ($agency = $param->agency->_value) {
             if ($param->profile->_value) {
@@ -158,8 +164,8 @@ class openSearch extends webServiceServer {
         }
         $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
         $use_work_collection |= $sort_type[$sort] == 'random';
-        $key_relation_cache = md5($param->query->_value . '_' . $agency . '_' . $use_work_collection . '_' . 
-                                  $sort . '_' . $rank . '_' . $this->version);
+        $key_relation_cache = md5($param->query->_value . $this->repository . $filter_agency . 
+                                  $use_work_collection .  $sort . $rank . $this->version);
 
         $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
         // urldecode ???? $query = $cql2solr->convert(urldecode($param->query->_value));
@@ -432,7 +438,7 @@ class openSearch extends webServiceServer {
                                                &$fedora_relation, 
                                                $param->relationData->_value,
                                                $fid, 
-                                               $filter_agency, 
+                                               NULL, // no $filter_agency on search - bad performance
                                                $param->format->_value, 
                                                $this->xs_boolean_is_true($param->includeMarcXchange->_value), 
                                                $explain);
@@ -471,18 +477,23 @@ class openSearch extends webServiceServer {
             
     /** \brief Get an object in a specific format
     *
-    * param: identifier
+    * param: identifier - fedora pid
     *        objectFormat - one of dkabm, docbook, marcxchange, opensearchobject
+    *        allRelations - boolean
+    *        includeMarcXchange - boolean
+    *        relationData - type, uri og full
+    *        repository
     */
     public function getObject($param) { 
+        $param->trackingId->_value = verbose::set_tracking_id('os', $param->trackingId->_value);
         $ret_error->searchResponse->_value->error->_value = &$error;
         if (!$this->aaa->has_right('opensearch', 500)) {
             $error = 'authentication_error';
             return $ret_error;
         }
         if (empty($param->agency->_value) && empty($param->profile->_value)) {
-            $param->agency->_value = '100200';
-            $param->profile->_value = 'test';
+            $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
+            $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
         }
         if ($agency = $param->agency->_value) {
             if ($param->profile->_value) {
@@ -554,10 +565,13 @@ class openSearch extends webServiceServer {
      */
     private function get_agencies_from_profile($agency, $profile_name) {
         require_once 'OLS_class_lib/search_profile_class.php';
-        $profiles = new search_profiles($this->config->get_value('open_agency', 'setup'),
-                                        $this->config->get_value('cache_host', 'setup'),
-                                        $this->config->get_value('cache_port', 'setup'),
-                                        $this->config->get_value('cache_expire', 'setup'));
+        if (!($host = $this->config->get_value('profile_cache_host', 'setup')))
+            $host = $this->config->get_value('cache_host', 'setup');
+        if (!($port = $this->config->get_value('profile_cache_port', 'setup')))
+            $port = $this->config->get_value('cache_port', 'setup');
+        if (!($expire = $this->config->get_value('profile_cache_expire', 'setup')))
+            $expire = $this->config->get_value('cache_expire', 'setup');
+        $profiles = new search_profiles($this->config->get_value('open_agency', 'setup'), $host, $port, $expire);
         $profile = $profiles->get_profile($agency, $profile_name);
         if (! is_array($profile))
             return FALSE;
@@ -701,7 +715,7 @@ class openSearch extends webServiceServer {
                 verbose::log(FATAL, 'Cannot load RELS_EXT for ' . $rec_id . ' into DomXml');
             } elseif ($rels_dom->getElementsByTagName('Description')->item(0)) {
                 foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
-                    if ($tag->nodeType == XML_ELEMENT_NODE && $allowed_relation[$tag->tagName] && $this->is_searchable($tag->nodeValue, $filter)) {
+                    if ($tag->nodeType == XML_ELEMENT_NODE && $allowed_relation[$tag->tagName]) { 
                         //verbose::log(TRACE, $tag->localName . ' ' . $tag->getAttribute('xmlns'). ' -> ' .  array_search($tag->getAttribute('xmlns'), $this->xmlns));
                         if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
                             $rel_prefix .= ':';
@@ -709,13 +723,14 @@ class openSearch extends webServiceServer {
                         if ($rels_type == 'uri' || $rels_type == 'full') {
                             $relation->relationUri->_value = $tag->nodeValue;
                         }
-                        if ($rels_type == 'full') {
+                        if ($rels_type == 'full' 
+                          && $allowed_relation[$tag->tagName] == REL_TO_INTERNAL_OBJ 
+                          &&  $this->is_searchable($tag->nodeValue, $filter)) {
                             verbose::log(DEBUG, 'RFID: ' . $tag->nodeValue);
                             $related_obj = $this->curl->get(sprintf($this->repository['fedora_get_raw'], $tag->nodeValue));
                             if (@ !$rels_dom->loadXML($related_obj)) {
                                 verbose::log(FATAL, 'Cannot load ' . $tag->tagName . ' object for ' . $rec_id . ' into DomXml');
-                            }
-                            else {
+                            } else {
                                 $rel_obj = &$relation->relationObject->_value->object->_value;
                                 $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format, $include_marcx);
                                 $rel_obj->identifier->_value = $tag->nodeValue;
