@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:dcterms="http://purl.org/dc/terms/" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:annotation>
 		<xs:documentation>
@@ -17,7 +16,7 @@
       Soeren Pedersen (sorenpedersen@makeitright.dk)
     </xs:documentation>
 	</xs:annotation>
-	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_os.xsd"/>
+	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
 	<xs:import namespace="http://biblstandard.dk/ac/namespace/" schemaLocation="ac.xsd"/>
 	<xs:import namespace="http://biblstandard.dk/abm/namespace/dkdcplus/" schemaLocation="dkdcplus.xsd"/>
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>

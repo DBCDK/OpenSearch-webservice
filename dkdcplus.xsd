@@ -2,10 +2,10 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://biblstandard.dk/abm/namespace/dkdcplus/" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="en">
+	  XML Schema for the dkdcplus namespace.
+      Updated 2011-09-01 by DBC A/S.
+		
       XML Schema for the dkdcplus namespace.
-      
-	  Updated 2011-09-01 by DBC A/S.
-      
       Updated 2008-11-19 by Leif Andresen.
 
       Created 2005-11-13 by Per M. Hansen, Index Data.
@@ -13,7 +13,7 @@
 	</xs:annotation>
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
 	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
-	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_os.xsd"/>
+	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
 	<xs:element name="preferredName" substitutionGroup="dc:creator"/>
 	<xs:element name="alternativeName" substitutionGroup="dc:creator"/>
 	<xs:element name="actPeriod" substitutionGroup="dc:creator"/>

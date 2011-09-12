@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://biblstandard.dk/ac/namespace/" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="en">
@@ -32,7 +31,7 @@
 	</xs:annotation>
 	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
-	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_os.xsd"/>
+	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
 	<xs:element name="database" substitutionGroup="dc:any"/>
 	<xs:element name="transmitter" substitutionGroup="dc:any"/>
 	<xs:element name="filename" substitutionGroup="dc:any"/>
@@ -72,15 +71,18 @@
 			<xs:restriction base="dc:SimpleLiteral">
 				<xs:simpleType>
 					<xs:restriction base="xs:Name">
-						<xs:enumeration value="submitted"/>
 						<xs:enumeration value="created"/>
+						<xs:enumeration value="submitted"/>
 						<xs:enumeration value="modified"/>
+						<xs:enumeration value="checked"/>
 						<xs:enumeration value="link-collected"/>
 						<xs:enumeration value="resource-harvested"/>
-						<xs:enumeration value="checked"/>
 						<xs:enumeration value="resource-disappeared"/>
 						<xs:enumeration value="expired"/>
-						<xs:enumeration value="deleted-error-record"/>
+						<xs:enumeration value="mail-sent"/>
+						<xs:enumeration value="delete-error-record"/>
+						<xs:enumeration value="delete-disappearance"/>
+						<xs:enumeration value="delete-out-of-scope"/>
 					</xs:restriction>
 				</xs:simpleType>
 				<xs:attribute ref="xml:lang" use="prohibited"/>

@@ -31,7 +31,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:includeMarcXchange" minOccurs="0"/>
 				<xs:element ref="os:relationData" minOccurs="0"/>
 				<xs:element ref="os:repository" minOccurs="0"/>
-                <xs:element ref="os:trackingId" minOccurs="0"/>
+				<xs:element ref="os:trackingId" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -64,7 +64,7 @@ You should have received a copy of the GNU Affero General Public License along w
 					<xs:element ref="os:userDefinedRanking"/>
 				</xs:choice>
 				<xs:element ref="os:queryDebug" minOccurs="0"/>
-                <xs:element ref="os:trackingId" minOccurs="0"/>
+				<xs:element ref="os:trackingId" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -686,9 +686,9 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="random"/>
 		</xs:restriction>
 	</xs:simpleType>
-    <xs:element name="trackingId" type="xs:string">
-        <xs:annotation>
-            <xs:documentation xml:lang="en">Unique id to track this request</xs:documentation>
-        </xs:annotation>
-    </xs:element>
+	<xs:element name="trackingId" type="xs:string">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Unique id to track this request</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 </xs:schema>

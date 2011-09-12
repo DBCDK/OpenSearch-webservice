@@ -6,7 +6,7 @@
     </xs:documentation>
 	</xs:annotation>
 	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
-	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_os.xsd"/>
+	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_ext.xsd"/>
 	<xs:complexType name="pgvaerk">
 		<xs:simpleContent>
 			<xs:restriction base="dc:SimpleLiteral">

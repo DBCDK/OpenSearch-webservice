@@ -1,6 +1,4 @@
 <?xml version="1.0"?>
-<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
-<!-- edited with XMLSPY v5 rel. 3 U (http://www.xmlspy.com) by TS (Dansk BiblioteksCenter) -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="info:lc/xmlns/marcxchange-v1" targetNamespace="info:lc/xmlns/marcxchange-v1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1" xml:lang="en">
 	<xsd:annotation>
 		<xsd:documentation>

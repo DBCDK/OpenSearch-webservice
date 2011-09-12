@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Dansk Bibliotekscenter A/S (Dansk Bibliotekscenter A/S) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://purl.org/dc/dcmitype/" targetNamespace="http://purl.org/dc/dcmitype/" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="en">
       DCMI Type Vocabulary XML Schema
       XML Schema for http://purl.org/dc/dcmitype/ namespace
 
-      Created 2003-04-02
+      Created 2008-02-11
 
       Created by 
 
@@ -28,6 +27,8 @@
 					<xs:enumeration value="Dataset"/>
 					<xs:enumeration value="Event"/>
 					<xs:enumeration value="Image"/>
+					<xs:enumeration value="MovingImage"/>
+					<xs:enumeration value="StillImage"/>
 					<xs:enumeration value="InteractiveResource"/>
 					<xs:enumeration value="Service"/>
 					<xs:enumeration value="Software"/>

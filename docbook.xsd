@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:docbook="http://docbook.org/ns/docbook" targetNamespace="http://docbook.org/ns/docbook" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:docbook="http://docbook.org/ns/docbook" targetNamespace="http://docbook.org/ns/docbook" elementFormDefault="qualified" attributeFormDefault="qualified">
 	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
 	<xs:attributeGroup name="db.common.attributes">
