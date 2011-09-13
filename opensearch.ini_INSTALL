@@ -70,20 +70,31 @@ cache_host = localhost
 cache_port = 11211
 cache_expire = 600
 
+; memcache search profile - defaults to cache_host, cache_port, cache_expire if not defined
+;profile_cache_host = localhost
+;profile_cache_port = 11211
+profile_cache_expire = 60
+
+; search profile service end point
 open_agency = http://openagency.addi.dk/1.2/?action=openSearchProfile&agencyId=%s
+
+; default search_profile setting
+;agency_fallback = 100200
+;profile_fallback = test
 
 ; raw_index
 raw_index[] = facet.
 raw_index[] = phrase.
 
 ; relations which can be returned
+; relations of type 1 points to internal objects
+; relations of type 2 points to external objects
 relation["dbcaddi:hasReview"] = 1
 relation["dbcaddi:hasImage"] = 1
 relation["dbcaddi:isReviewOf"] = 1
 relation["dbcaddi:hasCover"] = 1
 relation["dbcaddi:isCoverOf"] = 1
 relation["dbcaddi:hasUserCreatedContent"] = 1
-relation["dbcaddi:hasSoundClip"] = 1
 relation["dbcaddi:hasDemo"] = 1
 relation["dbcaddi:hasTrailer"] = 1
 relation["dbcaddi:hasTutorial"] = 1
@@ -97,12 +108,14 @@ relation["dbcbib:isPartOfAlbum"] = 1
 ;relation["dbcbib:isPartOfManifestation"] = 1
 relation["dbcbib:hasAnalysis"] = 1
 relation["dbcbib:isAnalysisOf"] = 1
-relation["dbcbib:hasCreatorHomePage"] = 1
 relation["dbcbib:hasFulltext"] = 1
-relation["dbcbib:hasOnlineAccess"] = 1
-relation["dbcbib:hasRemoteAccess"] = 1
-relation["dbcbib:hasOnSiteAccess"] = 1
-relation["dbcbib:hasPayPerView"] = 1
+relation["dbcaddi:hasSoundClip"] = 2
+relation["dbcbib:hasCreatorHomePage"] = 2
+relation["dbcbib:hasOnlineAccess"] = 2
+relation["dbcbib:hasRemoteAccess"] = 2
+relation["dbcbib:hasOnSiteAccess"] = 2
+relation["dbcbib:hasPayPerView"] = 2
+relation["dbcbib:hasOpenUrl"] = 2
 
 relation["hasReview"] = 1
 relation["hasImage"] = 1
@@ -110,7 +123,6 @@ relation["isReviewOf"] = 1
 relation["hasCover"] = 1
 relation["isCoverOf"] = 1
 relation["hasUserCreatedContent"] = 1
-relation["hasSoundClip"] = 1
 relation["hasDemo"] = 1
 relation["hasTrailer"] = 1
 relation["hasTutorial"] = 1
@@ -124,12 +136,14 @@ relation["isPartOfAlbum"] = 1
 ;relation["isPartOfManifestation"] = 1
 relation["hasAnalysis"] = 1
 relation["isAnalysisOf"] = 1
-relation["hasCreatorHomePage"] = 1
 relation["hasFulltext"] = 1
-relation["hasOnlineAccess"] = 1
-relation["hasRemoteAccess"] = 1
-relation["hasOnSiteAccess"] = 1
-relation["hasPayPerView"] = 1
+relation["hasSoundClip"] = 2
+relation["hasCreatorHomePage"] = 2
+relation["hasOnlineAccess"] = 2
+relation["hasRemoteAccess"] = 2
+relation["hasOnSiteAccess"] = 2
+relation["hasPayPerView"] = 2
+relation["hasOpenUrl"] = 2
 
 ; test relation["isMemberOfWork"] = 1
 
@@ -208,7 +222,7 @@ sort[random] = random
 verbose = WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG+Z3950+OCI
 
 ; format for automatic timer dump %s is the soap-action used
-dump_timer = opensearch
+dump_timer = opensearch(%s)
 
 [aaa]
 ; aaa Authentication, Access control and Accounting
