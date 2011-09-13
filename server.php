@@ -655,10 +655,19 @@ class openSearch extends webServiceServer {
     public function show_info() {
         echo '<pre>';
         echo 'version             ' . $this->config->get_value('version', 'setup') . '<br/>';
+        echo 'agency              ' . $this->config->get_value('open_agency', 'setup') . '<br/>';
+        echo 'aaa_credentials     ' . $this->strip_oci_pwd($this->config->get_value('aaa_credentials', 'aaa')) . '<br/>';
         echo 'default_repository  ' . $this->config->get_value('default_repository', 'setup') . '<br/>';
-        echo 'repository          ';  print_r($this->config->get_value('repository', 'setup'));
+        echo 'repository          ' . print_r($this->config->get_value('repository', 'setup'), true) . '<br/>';
         echo '</pre>';
         die();
+    }
+
+    private function strip_oci_pwd($cred) {
+        if (($p1 = strpos($cred, '/')) && ($p2 = strpos($cred, '@')))
+            return substr($cred, 0, $p1) . '/********' . substr($cred, $p2);
+        else
+            return $cred;
     }
 
     /** \brief Parse a work relation and return array of ids
