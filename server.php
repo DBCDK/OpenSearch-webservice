@@ -73,7 +73,11 @@ class openSearch extends webServiceServer {
             $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
             $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
         }
-        if ($agency = $param->agency->_value) {
+        if (empty($param->agency->_value)) {
+            $unsupported = 'Error: No agency in request';
+        } elseif (empty($param->profile->_value)) {
+            $unsupported = 'Error: No profile in request';
+        } elseif ($agency = $param->agency->_value) {
             if ($param->profile->_value) {
                 if (!($agencies[$agency] = $this->get_agencies_from_profile($agency, $param->profile->_value)))
                     $unsupported = 'Error: Cannot fetch profile: ' . $param->profile->_value . ' for ' . $agency;
@@ -717,28 +721,28 @@ class openSearch extends webServiceServer {
                 foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
                     if ($tag->nodeType == XML_ELEMENT_NODE && $allowed_relation[$tag->tagName]) { 
                         //verbose::log(TRACE, $tag->localName . ' ' . $tag->getAttribute('xmlns'). ' -> ' .  array_search($tag->getAttribute('xmlns'), $this->xmlns));
-                        if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
-                            $rel_prefix .= ':';
-                        $relation->relationType->_value = $rel_prefix . $tag->localName;
-                        if ($rels_type == 'uri' || $rels_type == 'full') {
-                            $relation->relationUri->_value = $tag->nodeValue;
+                        if ($allowed_relation[$tag->tagName] <> REL_TO_INTERNAL_OBJ
+                          || $this->is_searchable($tag->nodeValue, $filter)) {
+                            if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
+                                $rel_prefix .= ':';
+                            $relation->relationType->_value = $rel_prefix . $tag->localName;
+                            if ($rels_type == 'uri' || $rels_type == 'full')
+                                $relation->relationUri->_value = $tag->nodeValue;
+                            if ($rels_type == 'full' && $allowed_relation[$tag->tagName] == REL_TO_INTERNAL_OBJ) {
+                                verbose::log(DEBUG, 'RFID: ' . $tag->nodeValue);
+                                $related_obj = $this->curl->get(sprintf($this->repository['fedora_get_raw'], $tag->nodeValue));
+                                if (@ !$rels_dom->loadXML($related_obj)) {
+                                    verbose::log(FATAL, 'Cannot load ' . $tag->tagName . ' object for ' . $rec_id . ' into DomXml');
+                                } else {
+                                    $rel_obj = &$relation->relationObject->_value->object->_value;
+                                    $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format, $include_marcx);
+                                    $rel_obj->identifier->_value = $tag->nodeValue;
+                                    $rel_obj->formatsAvailable->_value = $this->scan_for_formats($rels_dom);
+                                }
+                            } 
+                            $relations->relation[]->_value = $relation;
+                            unset($relation);
                         }
-                        if ($rels_type == 'full' 
-                          && $allowed_relation[$tag->tagName] == REL_TO_INTERNAL_OBJ 
-                          &&  $this->is_searchable($tag->nodeValue, $filter)) {
-                            verbose::log(DEBUG, 'RFID: ' . $tag->nodeValue);
-                            $related_obj = $this->curl->get(sprintf($this->repository['fedora_get_raw'], $tag->nodeValue));
-                            if (@ !$rels_dom->loadXML($related_obj)) {
-                                verbose::log(FATAL, 'Cannot load ' . $tag->tagName . ' object for ' . $rec_id . ' into DomXml');
-                            } else {
-                                $rel_obj = &$relation->relationObject->_value->object->_value;
-                                $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format, $include_marcx);
-                                $rel_obj->identifier->_value = $tag->nodeValue;
-                                $rel_obj->formatsAvailable->_value = $this->scan_for_formats($rels_dom);
-                            }
-                        }
-                        $relations->relation[]->_value = $relation;
-                        unset($relation);
                     }
                     //print_r($relations);
                     //echo $rels;
