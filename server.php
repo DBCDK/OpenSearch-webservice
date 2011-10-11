@@ -69,25 +69,22 @@ class openSearch extends webServiceServer {
         if (empty($param->query->_value)) {
             $unsupported = 'Error: No query found in request';
         }
+// for testing and group all
+        if (count($this->aaa->aaa_ip_groups) == 1 && $this->aaa->aaa_ip_groups['all']) {
+            $param->agency->_value = '100200';
+            $param->profile->_value = 'test';
+        }
         if (empty($param->agency->_value) && empty($param->profile->_value)) {
             $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
             $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
         }
-        if (empty($param->agency->_value)) {
+        if (empty($param->agency->_value))
             $unsupported = 'Error: No agency in request';
-        } elseif (empty($param->profile->_value)) {
+        elseif (empty($param->profile->_value))
             $unsupported = 'Error: No profile in request';
-        } elseif ($agency = $param->agency->_value) {
-            if ($param->profile->_value) {
-                if (!($agencies[$agency] = $this->get_agencies_from_profile($agency, $param->profile->_value)))
-                    $unsupported = 'Error: Cannot fetch profile: ' . $param->profile->_value . ' for ' . $agency;
-            } else
-                $agencies = $this->config->get_value('agency', 'agency');
-            if (isset($agencies[$agency]))
-                $filter_agency = $agencies[$agency];
-            else
-                $unsupported = 'Error: Unknown agency: ' . $agency;
-        }
+        elseif (!($filter_agency = $this->get_agencies_from_profile($param->agency->_value, $param->profile->_value)))
+            $unsupported = 'Error: Cannot fetch profile: ' . $param->profile->_value . 
+                           ' for ' . $param->agency->_value;
         $repositories = $this->config->get_value('repository', 'setup');
         if (empty($param->repository->_value))
             $this->repository = $repositories[$this->config->get_value('default_repository', 'setup')];
