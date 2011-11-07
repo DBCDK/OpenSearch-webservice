@@ -266,6 +266,7 @@ dump_timer = opensearch(%s)
 ;
 action[search][] = query
 action[search][] = agency
+action[search][] = profile
 action[search][] = allObjects
 action[search][] = callback
 action[search][] = collectionType
@@ -273,7 +274,7 @@ action[search][facets][] = facets.numberOfTerms
 action[search][facets][] = numberOfTerms
 action[search][facets][] = facets.facetName
 action[search][facets][] = facetName
-action[search][] = format
+action[search][] = includeMarcXchange
 action[search][] = outputType
 action[search][] = allRelations
 action[search][] = relationData
@@ -296,14 +297,19 @@ action[search][] = sort
 ;action[search][userDefinedRanking][rankField][] = userDefinedRanking.rankField.fieldType
 ;action[search][userDefinedRanking][rankField][] = userDefinedRanking.rankField.weight
 action[search][] = queryDebug
+action[search][] = trackingId
 
+action[getObject][] = agency
+action[getObject][] = profile
 action[getObject][] = identifier
 action[getObject][] = objectFormat
 action[getObject][] = allRelations
+action[getObject][] = callback
+action[getObject][] = includeMarcXchange
+action[getObject][] = outputType
 action[getObject][] = relationData
 action[getObject][] = repository
-action[getObject][] = callback
-action[getObject][] = outputType
+action[getObject][] = trackingId
 
 
 
