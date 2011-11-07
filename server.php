@@ -413,7 +413,7 @@ class openSearch extends webServiceServer {
                 $fedora_result = $this->curl->get($fedora_get);
                 $curl_err = $this->curl->get_status();
                 //verbose::log(TRACE, 'Fedora get: ' . $fedora_get);
-                verbose::log(DEBUG, 'SFID: ' . $fid);
+                //verbose::log(DEBUG, 'SFID: ' . $fid);
                 if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
                     $error = 'Error: Cannot fetch record: ' . $fid . ' - http-error: ' . $curl_err['http_code'];
                     verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $fedora_get);
@@ -521,7 +521,7 @@ class openSearch extends webServiceServer {
         }
         $fid = $param->identifier->_value;
         $record_uri =  sprintf($this->repository['fedora_get_raw'], $fid);
-        verbose::log(DEBUG, 'GFID: ' . $fid);
+        //verbose::log(DEBUG, 'GFID: ' . $fid);
         $fedora_result = $this->curl->get($record_uri);
         $curl_err = $this->curl->get_status();
         if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
@@ -735,7 +735,7 @@ class openSearch extends webServiceServer {
                             if ($rels_type == 'uri' || $rels_type == 'full')
                                 $relation->relationUri->_value = $tag->nodeValue;
                             if ($rels_type == 'full' && $allowed_relation[$tag->tagName] == REL_TO_INTERNAL_OBJ) {
-                                verbose::log(DEBUG, 'RFID: ' . $tag->nodeValue);
+                                //verbose::log(DEBUG, 'RFID: ' . $tag->nodeValue);
                                 $related_obj = $this->curl->get(sprintf($this->repository['fedora_get_raw'], $tag->nodeValue));
                                 if (@ !$rels_dom->loadXML($related_obj)) {
                                     verbose::log(FATAL, 'Cannot load ' . $tag->tagName . ' object for ' . $rec_id . ' into DomXml');
