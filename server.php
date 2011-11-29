@@ -338,23 +338,35 @@ class openSearch extends webServiceServer {
         // check if the search result contains the ids
         // allObject=0 - remove objects not included in the search result
         // allObject=1 & agency - remove objects not included in agency
-        if ($use_work_collection) {
-            $add_query = '';
+        //      
+        // split into multiple solr-searches each containing slightly less than 1000 elements
+        define('MAX_QUERY_ELEMENTS', 950);
+        $block_idx = $no_bool = 0;
+        if ($use_work_collection && ($this->xs_boolean_is_true($param->allObjects->_value) || $filter_agency)) {
+            $add_query[$block_idx] = '';
             foreach ($work_ids as $w_no => $w) {
                 if (count($w) > 1) {
+                    if ($add_query[$block_idx] && ($no_bool + count($w)) > MAX_QUERY_ELEMENTS) {
+                        $block_idx++;
+                        $no_bool = 0;
+                    }
                     foreach ($w as $id) {
-                        $add_query .= (empty($add_query) ? '' : ' OR ') . str_replace(':', '\:', $id);
+                        $add_query[$block_idx] .= (empty($add_query[$block_idx]) ? '' : ' OR ') . str_replace(':', '\:', $id);
+                        $no_bool++;
                     }
                 }
             }
-            if (!empty($add_query)) {     // use post here because query can be very long
-                if (!$this->xs_boolean_is_true($param->allObjects->_value))
-                    $q = '(' . urldecode($query['solr']) . ') AND rec.id:(' . $add_query . ')';
-                elseif ($filter_agency)
-                    $q = urldecode('rec.id:(' . $add_query . ') ');
-                else
-                    $q = '';
-                if ($q) {			
+            if (!empty($add_query[0]) || count($add_query) > 1) {    // use post here because query can be very long
+                foreach ($add_query as $add_idx => $add_q) {
+                    if (!$this->xs_boolean_is_true($param->allObjects->_value))
+                        $q = '(' . urldecode($query['solr']) . ') AND rec.id:(' . $add_q . ')';
+                    elseif ($filter_agency)
+                        $q = urldecode('rec.id:(' . $add_q . ') ');
+                    else {
+                        verbose::log(FATAL, 'Internal problem: Assert error. Line: ' . __LINE__);
+                        $error = 'Internal problem: Assert error. Line: ' . __LINE__;
+                        return $ret_error;
+                    }
                     // need to remove unwanted object from work_ids
                     $this->curl->set_post(array('wt' => 'phps',
                                                 'q' => $q,
@@ -365,22 +377,23 @@ class openSearch extends webServiceServer {
                     $this->watch->start('Solr 2');
                     $solr_result = $this->curl->get($this->repository['solr']);
                     $this->watch->stop('Solr 2');
-                    if (!$solr_2_arr = unserialize($solr_result)) {
+                    if (!($solr_2_arr[$add_idx] = unserialize($solr_result))) {
                         verbose::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
                         $error = 'Internal problem: Cannot decode Solr re-search';
                         return $ret_error;
                     }
-                    foreach ($work_ids as $w_no => $w_list) {
-                        if (count($w_list) > 1) {
-                            $hit_fid_array = array();
-                            foreach ($w_list as $w)
-                              foreach ($solr_2_arr['response']['docs'] as $fpid)
+                }
+                foreach ($work_ids as $w_no => $w_list) {
+                    if (count($w_list) > 1) {
+                        $hit_fid_array = array();
+                        foreach ($w_list as $w)
+                          foreach ($solr_2_arr as $s_2_a)
+                              foreach ($s_2_a['response']['docs'] as $fpid)
                                 if ($fpid['fedoraPid'] == $w) {
                                     $hit_fid_array[] = $w;
-                                    break;
+                                    break 2;
                                 }
-                            $work_ids[$w_no] = $hit_fid_array;
-                        }
+                        $work_ids[$w_no] = $hit_fid_array;
                     }
                 }
             }
@@ -722,7 +735,7 @@ class openSearch extends webServiceServer {
                 $rels_dom = new DomDocument();
             }
             if (@ !$rels_dom->loadXML($fedora_rels_obj)) {
-                verbose::log(FATAL, 'Cannot load RELS_EXT for ' . $rec_id . ' into DomXml');
+                verbose::log(DEBUG, 'Cannot load RELS_EXT for ' . $rec_id . ' into DomXml');
             } elseif ($rels_dom->getElementsByTagName('Description')->item(0)) {
                 foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
                     if ($tag->nodeType == XML_ELEMENT_NODE && $allowed_relation[$tag->tagName]) { 
