@@ -172,15 +172,23 @@ class openSearch extends webServiceServer {
         // urldecode ???? $query = $cql2solr->convert(urldecode($param->query->_value));
         // ' is handled differently in indexing and searching, so remove it until this is solved
         $query = $cql2solr->convert(str_replace("'", '', $param->query->_value), $rank_type[$rank]);
+        $solr_query = $cql2solr->edismax_convert($param->query->_value, $rank_type[$rank]);
+//print_r($query);
+//print_r($solr_query); 
+//die('test');
         //$query = $cql2solr->convert($param->query->_value, $rank_type[$rank]);
-        if (!$query['operands']) {
+        if (!$solr_query['operands']) {
             $error = 'Error: No query found in request';
             return $ret_error;
         }
         if ($sort) {
             $sort_q = '&sort=' . urlencode($sort_type[$sort]);
         }
-        
+        if ($rank_type[$rank]) {
+            $rank_q = '&qf=' . urlencode($cql2solr->make_boost($rank_type[$rank]['word_boost'])) . 
+                      '&pf=' . urlencode($cql2solr->make_boost($rank_type[$rank]['phrase_boost'])) . 
+                      '&tie=' . $rank_type[$rank]['tie'];
+        }
 
         if ($filter_agency) {
             $filter_q = rawurlencode($filter_agency);
@@ -195,19 +203,19 @@ class openSearch extends webServiceServer {
                 $facet_q .= '&facet.field=' . $param->facets->_value->facetName->_value;
         }
 
-        verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . urldecode($query['solr']));
-        if ($query['dismax'])
-            verbose::log(TRACE, 'CQL to DISMAX: ' . $param->query->_value . ' -> ' . urldecode($query['dismax']));
+        verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . $solr_query['edismax']);
+        if ($solr_query['edismax'])
+            verbose::log(TRACE, 'CQL to EDISMAX: ' . $param->query->_value . ' -> ' . $solr_query['edismax']);
 
         $debug_query = $this->xs_boolean_is_true($param->queryDebug->_value);
 
         // do the query
         $search_ids = array();
         if ($sort == 'random') {
-            if ($err = $this->get_solr_array($query['solr'], 0, 0, '', $facet_q, $filter_q, '', $debug_query, $solr_arr))
+            if ($err = $this->get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, $filter_q, '', $debug_query, $solr_arr))
                 $error = $err;
         } else {
-            if ($err = $this->get_solr_array($query['dismax'], 0, $rows, $sort_q, $facet_q, $filter_q, $boost_str, $debug_query, $solr_arr))
+            if ($err = $this->get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, $facet_q, $filter_q, $boost_str, $debug_query, $solr_arr))
                 $error = $err;
             else
                 foreach ($solr_arr['response']['docs'] as $fpid)
@@ -234,7 +242,7 @@ class openSearch extends webServiceServer {
             for ($w_idx = 0; $w_idx < $rows; $w_idx++) {
                 do { $no = rand(0, $numFound-1); } while (isset($used_search_fid[$no]));
                 $used_search_fid[$no] = TRUE;
-                $this->get_solr_array($query['solr'], $no, 1, '', '', $filter_q, '', $debug_query, $solr_arr);
+                $this->get_solr_array($solr_query['edismax'], $no, 1, '', '', '', $filter_q, '', $debug_query, $solr_arr);
                 $work_ids[] = array($solr_arr['response']['docs'][0]['fedoraPid']);
             }
         } 
@@ -259,9 +267,9 @@ class openSearch extends webServiceServer {
                 $fid = &$search_ids[$s_idx];
                 if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
                     $this->watch->start('Solr_add');
-                    verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . urldecode($query['solr']));
+                    verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']);
                     $rows *= 2;
-                    if ($err = $this->get_solr_array($query['dismax'], 0, $rows, $sort_q, '', $filter_q, $boost_str, $debug_query, $solr_arr)) {
+                    if ($err = $this->get_solr_array($solr_query['sdismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_str, $debug_query, $solr_arr)) {
                         $error = $err;
                         return $ret_error;
                     } 
@@ -332,7 +340,7 @@ class openSearch extends webServiceServer {
         }
 
         if (count($work_ids) < $step_value && count($search_ids) < $numFound) {
-            verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . urldecode($query['solr']));
+            verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']);
         }
 
         // check if the search result contains the ids
@@ -359,7 +367,7 @@ class openSearch extends webServiceServer {
             if (!empty($add_query[0]) || count($add_query) > 1) {    // use post here because query can be very long
                 foreach ($add_query as $add_idx => $add_q) {
                     if (!$this->xs_boolean_is_true($param->allObjects->_value))
-                        $q = '(' . urldecode($query['solr']) . ') AND rec.id:(' . $add_q . ')';
+                        $q = '(' . $solr_query['edismax'] . ') AND rec.id:(' . $add_q . ')';
                     elseif ($filter_agency)
                         $q = urldecode('rec.id:(' . $add_q . ') ');
                     else {
@@ -625,14 +633,14 @@ class openSearch extends webServiceServer {
      * @param $solr_arr
      *
      */
-    private function get_solr_array($q, $start, $rows, $sort, $facets, $filter, $boost, $debug, &$solr_arr) {
-        $solr_query = $this->repository['solr'] . "?wt=phps&q=$q&fq=$filter&start=$start&rows=$rows$sort$boost&fl=fedoraPid$facets" . ($debug ? '&debugQuery=on' : '');
+    private function get_solr_array($q, $start, $rows, $sort, $rank, $facets, $filter, $boost, $debug, &$solr_arr) {
+        $solr_query = $this->repository['solr'] . '?q=' . urlencode($q) . '&fq=' . $filter . '&start=' . $start . '&rows=' . $rows . $sort . $rank . $boost . $facets . ($debug ? '&debugQuery=on' : '') . '&fl=fedoraPid&defType=edismax&wt=phps';
     
           //echo $solr_query;
         //exit;
     
         verbose::log(TRACE, 'Query: ' . $solr_query);
-        verbose::log(DEBUG, 'Query: ' . $this->repository['solr'] . "?q=$q&fq=$filter&start=$start&rows=1$sort$boost&fl=fedoraPid$facets&debugQuery=on");
+        verbose::log(DEBUG, 'Query: ' . $this->repository['solr'] . "?q=" . urlencode($q) . "&fq=$filter&start=$start&rows=1$sort$boost&fl=fedoraPid$facets&defType=edismax&debugQuery=on");
         $solr_result = $this->curl->get($solr_query);
         if (empty($solr_result))
             return 'Internal problem: No answer from Solr';
@@ -788,7 +796,7 @@ class openSearch extends webServiceServer {
     private function is_searchable($rec_id, $filter_q) {
         if (empty($filter_q)) return TRUE;
 
-        $this->get_solr_array('rec.id:'.str_replace(':', '\:', $rec_id), 1, 0, '', '', rawurlencode($filter_q), '', '', $solr_arr);
+        $this->get_solr_array('rec.id:'.str_replace(':', '\:', $rec_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
         return $solr_arr['response']['numFound'];
     }
 
