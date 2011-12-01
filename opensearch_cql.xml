@@ -294,6 +294,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<supports type="relation">&gt;</supports>
 		<supports type="relation">&lt;</supports>
 		<supports type="relation">=</supports>
+		<supports type="relation">adj</supports>
 		<supports type="maskingCharacter">?</supports>
 		<supports type="maskingCharacter">*</supports>
 	</configInfo>
