@@ -33,6 +33,7 @@ define(REL_TO_EXTERNAL_OBJ, 2);     // relation points to external object
 //-----------------------------------------------------------------------------
 class openSearch extends webServiceServer {
     protected $curl;
+    protected $cache;
     protected $repository; // array containing solr and fedora uri's
 
     public function __construct(){
@@ -247,11 +248,11 @@ class openSearch extends webServiceServer {
             }
         } 
         else {
-            $cache = new cache($this->config->get_value('cache_host', 'setup'), 
-                            $this->config->get_value('cache_port', 'setup'), 
-                            $this->config->get_value('cache_expire', 'setup'));
+            $this->cache = new cache($this->config->get_value('cache_host', 'setup'), 
+                                     $this->config->get_value('cache_port', 'setup'), 
+                                     $this->config->get_value('cache_expire', 'setup'));
             if (empty($_GET['skipCache'])) {
-                if ($relation_cache = $cache->get($key_relation_cache)) {
+                if ($relation_cache = $this->cache->get($key_relation_cache)) {
                     verbose::log(STAT, 'Cache hit, lines: ' . count($relation_cache));
                 }                
                 else {
@@ -294,23 +295,15 @@ class openSearch extends webServiceServer {
                 } else {
                     if ($use_work_collection) {
                         $this->watch->start('get_w_id');
-                        $record_uri =  sprintf($this->repository['fedora_get_rels_ext'], $fid);
-                        $record_result = $this->curl->get($record_uri);
-                        $curl_err = $this->curl->get_status();
+                        $this->get_fedora_rels_ext($fid, $record_result);
                         /* ignore the fact that there is no RELS_EXT datastream
-                        *          if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
-                        *            $error = 'Error: Cannot fetch record: ' . $fid . ' - http-error: ' . $curl_err['http_code'];
-                        *            verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' ' . $curl_err['error'] . ' from: ' . $record_uri);
-                        *            return $ret_error;
-                        *          }
                         */
                         $this->watch->stop('get_w_id');
   
                         if ($work_id = $this->parse_rels_for_work_id($record_result)) {
                             // find other recs sharing the work-relation
                             $this->watch->start('get_fids');
-                            $work_uri = sprintf($this->repository['fedora_get_rels_ext'], $work_id);
-                            $work_result = $this->curl->get($work_uri);
+                            $this->get_fedora_rels_ext($work_id, $work_result);
                             if (DEBUG_ON) echo $work_result;
                             $this->watch->stop('get_fids');
                             if (!$fid_array = $this->parse_work_for_fedora_id($work_result, $fid)) {
@@ -415,8 +408,8 @@ class openSearch extends webServiceServer {
 
         $this->watch->stop('Build_id');
 
-        if ($cache)
-            $cache->set($key_relation_cache, $relation_cache);
+        if ($this->cache)
+            $this->cache->set($key_relation_cache, $relation_cache);
 
         if (DEBUG_ON) echo 'work_ids: '. "\n";
         if (DEBUG_ON) print_r($work_ids);
@@ -432,20 +425,12 @@ class openSearch extends webServiceServer {
                 if ($param->collectionType->_value == 'work-1' && !empty($objects))
                     $objects[]->_value = NULL;
                 else {
-                    $work_uri = sprintf($this->repository['fedora_get_rels_ext'], $work_id);
-                    $fedora_get =  sprintf($this->repository['fedora_get_raw'], $fid);
-                    $fedora_result = $this->curl->get($fedora_get);
-                    $curl_err = $this->curl->get_status();
-                    //verbose::log(TRACE, 'Fedora get: ' . $fedora_get);
-                    //verbose::log(DEBUG, 'SFID: ' . $fid);
-                    if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
-                        $error = 'Error: Cannot fetch record: ' . $fid . ' - http-error: ' . $curl_err['http_code'];
-                        verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $fedora_get);
+                    //$work_uri = sprintf($this->repository['fedora_get_rels_ext'], $work_id);
+                    if ($error = $this->get_fedora_raw($fid, $fedora_result))
                         return $ret_error;
-                    }
                     if ($this->xs_boolean_is_true($param->allRelations->_value)) {
                         //verbose::log(TRACE, 'rels_ext: ' . sprintf($this->repository['fedora_get_rels_ext'], $fid));
-                        $fedora_relation = $this->curl->get(sprintf($this->repository['fedora_get_rels_ext'], $fid));
+                        $this->get_fedora_rels_ext($fid, $fedora_relation);
                     }
                     if ($debug_query) {
                         unset($explain);
@@ -544,18 +529,14 @@ class openSearch extends webServiceServer {
             verbose::log(FATAL, $error);
             return $ret_error;
         }
+        $this->cache = new cache($this->config->get_value('cache_host', 'setup'), 
+                                 $this->config->get_value('cache_port', 'setup'), 
+                                 $this->config->get_value('cache_expire', 'setup'));
         $fid = $param->identifier->_value;
-        $record_uri =  sprintf($this->repository['fedora_get_raw'], $fid);
-        //verbose::log(DEBUG, 'GFID: ' . $fid);
-        $fedora_result = $this->curl->get($record_uri);
-        $curl_err = $this->curl->get_status();
-        if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
-            $error = 'Error: Cannot fetch record: ' . $fid . ' - http-error: ' . $curl_err['http_code'];
-            verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $fedora_get);
+        if ($error = $this->get_fedora_raw($fid, $fedora_result))
             return $ret_error;
-        }
         if ($this->xs_boolean_is_true($param->allRelations->_value))
-            $fedora_relation = $this->curl->get(sprintf($this->repository['fedora_get_rels_ext'], $fid));
+            $this->get_fedora_rels_ext($fid, $fedora_relation);
         $format = &$param->objectFormat->_value;
         $o->collection->_value->resultPosition->_value = 1;
         $o->collection->_value->numberOfObjects->_value = 1;
@@ -585,6 +566,38 @@ class openSearch extends webServiceServer {
     }
 
 /*******************************************************************************/
+
+    /** \brief 
+     *
+     */
+    private function get_fedora_raw($fid, &$fedora_rec) {
+        return $this->get_fedora($this->repository['fedora_get_raw'], $fid, $fedora_rec);
+    }
+
+    /** \brief 
+     *
+     */
+    private function get_fedora_rels_ext($fid, &$fedora_rel) {
+        return $this->get_fedora($this->repository['fedora_get_rels_ext'], $fid, $fedora_rel);
+    }
+
+    /** \brief 
+     *
+     */
+    private function get_fedora($uri, $fid, &$rec) {
+        $record_uri =  sprintf($uri, $fid);
+        if (!$this->cache || !$rec = $this->cache->get($record_uri)) {
+            $rec = $this->curl->get($record_uri);
+            $curl_err = $this->curl->get_status();
+            if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
+                verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri);
+                return 'Error: Cannot fetch record: ' . $fid . ' - http-error: ' . $curl_err['http_code'];
+            }
+            if ($this->cache) $this->cache->set($record_uri, $rec);
+        } 
+        // else verbose::log(STAT, 'Fedora cache hit for ' . $fid);
+        return;
+    }
 
     /** \brief Fetch a profile $profile_name for agency $agency and build Solr filter_query parm
      *
@@ -761,7 +774,7 @@ class openSearch extends webServiceServer {
                                 $relation->relationUri->_value = $tag->nodeValue;
                             if ($rels_type == 'full' && $allowed_relation[$tag->tagName] == REL_TO_INTERNAL_OBJ) {
                                 //verbose::log(DEBUG, 'RFID: ' . $tag->nodeValue);
-                                $related_obj = $this->curl->get(sprintf($this->repository['fedora_get_raw'], $tag->nodeValue));
+                                $this->get_fedora_raw($tag->nodeValue, $related_obj);
                                 if (@ !$rels_dom->loadXML($related_obj)) {
                                     verbose::log(FATAL, 'Cannot load ' . $tag->tagName . ' object for ' . $rec_id . ' into DomXml');
                                 } else {
