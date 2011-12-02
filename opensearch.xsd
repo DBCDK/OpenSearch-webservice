@@ -537,6 +537,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="manifestation"/>
 			<xs:enumeration value="work"/>
+			<xs:enumeration value="work-1"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="facetType">

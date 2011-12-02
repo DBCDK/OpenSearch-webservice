@@ -429,41 +429,45 @@ class openSearch extends webServiceServer {
         foreach ($work_ids as $work) {
             $objects = array();
             foreach ($work as $fid) {
-                $work_uri = sprintf($this->repository['fedora_get_rels_ext'], $work_id);
-                $fedora_get =  sprintf($this->repository['fedora_get_raw'], $fid);
-                $fedora_result = $this->curl->get($fedora_get);
-                $curl_err = $this->curl->get_status();
-                //verbose::log(TRACE, 'Fedora get: ' . $fedora_get);
-                //verbose::log(DEBUG, 'SFID: ' . $fid);
-                if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
-                    $error = 'Error: Cannot fetch record: ' . $fid . ' - http-error: ' . $curl_err['http_code'];
-                    verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $fedora_get);
-                    return $ret_error;
-                }
-                if ($this->xs_boolean_is_true($param->allRelations->_value)) {
-                    //verbose::log(TRACE, 'rels_ext: ' . sprintf($this->repository['fedora_get_rels_ext'], $fid));
-                    $fedora_relation = $this->curl->get(sprintf($this->repository['fedora_get_rels_ext'], $fid));
-                }
-                if ($debug_query) {
-                    unset($explain);
-                    foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
-                        if ($fid == $solr_rec['fedoraPid']) {
-                            $strange_idx = $solr_idx ? ' '.$solr_idx : '';
-                            $explain = $solr_arr['debug']['explain'][$strange_idx];
-                            break;
-                        }
+                if ($param->collectionType->_value == 'work-1' && !empty($objects))
+                    $objects[]->_value = NULL;
+                else {
+                    $work_uri = sprintf($this->repository['fedora_get_rels_ext'], $work_id);
+                    $fedora_get =  sprintf($this->repository['fedora_get_raw'], $fid);
+                    $fedora_result = $this->curl->get($fedora_get);
+                    $curl_err = $this->curl->get_status();
+                    //verbose::log(TRACE, 'Fedora get: ' . $fedora_get);
+                    //verbose::log(DEBUG, 'SFID: ' . $fid);
+                    if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
+                        $error = 'Error: Cannot fetch record: ' . $fid . ' - http-error: ' . $curl_err['http_code'];
+                        verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $fedora_get);
+                        return $ret_error;
                     }
-                  
-                }
-                $objects[]->_value = 
-                    $this->parse_fedora_object(&$fedora_result, 
-                                               &$fedora_relation, 
-                                               $param->relationData->_value,
-                                               $fid, 
-                                               NULL, // no $filter_agency on search - bad performance
-                                               $param->format->_value, 
-                                               $this->xs_boolean_is_true($param->includeMarcXchange->_value), 
-                                               $explain);
+                    if ($this->xs_boolean_is_true($param->allRelations->_value)) {
+                        //verbose::log(TRACE, 'rels_ext: ' . sprintf($this->repository['fedora_get_rels_ext'], $fid));
+                        $fedora_relation = $this->curl->get(sprintf($this->repository['fedora_get_rels_ext'], $fid));
+                    }
+                    if ($debug_query) {
+                        unset($explain);
+                        foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
+                            if ($fid == $solr_rec['fedoraPid']) {
+                                $strange_idx = $solr_idx ? ' '.$solr_idx : '';
+                                $explain = $solr_arr['debug']['explain'][$strange_idx];
+                                break;
+                            }
+                        }
+                      
+                    }
+                    $objects[]->_value = 
+                        $this->parse_fedora_object(&$fedora_result, 
+                                                   &$fedora_relation, 
+                                                   $param->relationData->_value,
+                                                   $fid, 
+                                                   NULL, // no $filter_agency on search - bad performance
+                                                   $param->format->_value, 
+                                                   $this->xs_boolean_is_true($param->includeMarcXchange->_value), 
+                                                   $explain);
+                    }
             }
             $o->collection->_value->resultPosition->_value = $rec_no++;
             $o->collection->_value->numberOfObjects->_value = count($objects);
