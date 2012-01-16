@@ -444,8 +444,8 @@ class openSearch extends webServiceServer {
                       
                     }
                     $objects[]->_value = 
-                        $this->parse_fedora_object(&$fedora_result, 
-                                                   &$fedora_relation, 
+                        $this->parse_fedora_object($fedora_result, 
+                                                   $fedora_relation, 
                                                    $param->relationData->_value,
                                                    $fid, 
                                                    NULL, // no $filter_agency on search - bad performance
@@ -541,8 +541,8 @@ class openSearch extends webServiceServer {
         $o->collection->_value->resultPosition->_value = 1;
         $o->collection->_value->numberOfObjects->_value = 1;
         $o->collection->_value->object[]->_value = 
-            $this->parse_fedora_object(&$fedora_result, 
-                                       &$fedora_relation, 
+            $this->parse_fedora_object($fedora_result, 
+                                       $fedora_relation, 
                                        $param->relationData->_value, 
                                        $fid, 
                                        $filter_agency, 
@@ -736,7 +736,7 @@ class openSearch extends webServiceServer {
      * @param $include_marcx   -
      * @param $debug_info      -
      */
-    private function parse_fedora_object(&$fedora_obj, $fedora_rels_obj, $rels_type, $rec_id, $filter, $format, $include_marcx=FALSE, $debug_info='') {
+    private function parse_fedora_object(&$fedora_obj, &$fedora_rels_obj, $rels_type, $rec_id, $filter, $format, $include_marcx=FALSE, $debug_info='') {
         static $dom, $rels_dom, $allowed_relation;
         if (empty($format)) {
             $format = 'dkabm';
