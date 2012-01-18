@@ -167,7 +167,7 @@ class openSearch extends webServiceServer {
         $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
         $use_work_collection |= $sort_type[$sort] == 'random';
         $key_relation_cache = md5($param->query->_value . $this->repository . $filter_agency . 
-                                  $use_work_collection .  $sort . $rank . $this->version);
+                                  $use_work_collection .  $sort . $rank . $boost_str . $this->version);
 
         $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
         // urldecode ???? $query = $cql2solr->convert(urldecode($param->query->_value));
@@ -436,8 +436,8 @@ class openSearch extends webServiceServer {
                         unset($explain);
                         foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
                             if ($fid == $solr_rec['fedoraPid']) {
-                                $strange_idx = $solr_idx ? ' '.$solr_idx : '';
-                                $explain = $solr_arr['debug']['explain'][$strange_idx];
+                                //$strange_idx = $solr_idx ? ' '.$solr_idx : '';
+                                $explain = $solr_arr['debug']['explain'][$fid];
                                 break;
                             }
                         }
