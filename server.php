@@ -207,7 +207,6 @@ class openSearch extends webServiceServer {
     }
 
     if (FEDORA_VER_2) $filter_q = '';
-    $filter_q = '';
 
     $rows = ($start + $step_value + 100) * 2;
     if ($param->facets->_value->facetName) {
@@ -237,8 +236,8 @@ class openSearch extends webServiceServer {
       if ($err = $this->get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, $facet_q, $filter_q, $boost_str, $debug_query, $solr_arr))
         $error = $err;
       else {
-        foreach ($solr_arr['response']['docs'] as $fpid) {
-          $search_ids[] = $fpid['fedoraPid'];
+        foreach ($solr_arr['response']['docs'] as $fdoc) {
+          $search_ids[] = $fdoc['fedoraPid'];
         }
       }
     }
@@ -288,7 +287,7 @@ class openSearch extends webServiceServer {
       if (DEBUG_ON) print_r($search_ids);
 
       for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
-        $fid = &$search_ids[$s_idx];
+        $fpid = &$search_ids[$s_idx];
         if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
           $this->watch->start('Solr_add');
           verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']);
@@ -299,14 +298,20 @@ class openSearch extends webServiceServer {
           }
           else {
             $search_ids = array();
-            foreach ($solr_arr['response']['docs'] as $fpid) {
-              $search_ids[] = $fpid['fedoraPid'];
+            foreach ($solr_arr['response']['docs'] as $fdoc) {
+              $search_ids[] = $fdoc['fedoraPid'];
             }
             $numFound = $solr_arr['response']['numFound'];
           }
           $this->watch->stop('Solr_add');
         }
-        if ($used_search_fids[$fid]) continue;
+        if (FEDORA_VER_2) {
+          $this->get_fedora_rels_ext($fpid, $unit_result);
+          $unit_id = $this->parse_rels_for_unit_id($unit_result);
+          if (DEBUG_ON) echo 'UR: ' . $fpid . ' -> ' . $unit_id . "\n";
+          $fpid = $unit_id;
+        }
+        if ($used_search_fids[$fpid]) continue;
         if (count($work_ids) >= $step_value) {
           $more = TRUE;
           break;
@@ -314,55 +319,50 @@ class openSearch extends webServiceServer {
 
         $w_no++;
         // find relations for the record in fedora
+        // fpid: id as found in solr's fedoraPid
         if ($relation_cache[$w_no]) {
-          $fid_array = $relation_cache[$w_no];
+          $fpid_array = $relation_cache[$w_no];
         }
         else {
           if ($use_work_collection) {
             $this->watch->start('get_w_id');
-            if (FEDORA_VER_2) {
-              $this->get_fedora_rels_ext($fid, $unit_result);
-              $unit_id = $this->parse_rels_for_unit_id($unit_result);
-              $this->get_fedora_rels_ext($unit_id, $record_result);
-            }
-            else
-              $this->get_fedora_rels_ext($fid, $record_result);
+            $this->get_fedora_rels_ext($fpid, $record_rels_ext);
             /* ignore the fact that there is no RELS_EXT datastream
             */
             $this->watch->stop('get_w_id');
-            if (DEBUG_ON) echo 'RR: ' . $record_result . "\n";
+            if (DEBUG_ON) echo 'RR: ' . $record_rels_ext . "\n";
 
-            if ($work_id = $this->parse_rels_for_work_id($record_result)) {
+            if ($work_id = $this->parse_rels_for_work_id($record_rels_ext)) {
               // find other recs sharing the work-relation
               $this->watch->start('get_fids');
-              $this->get_fedora_rels_ext($work_id, $work_result);
-              if (DEBUG_ON) echo 'WR: ' . $work_result . "\n";
+              $this->get_fedora_rels_ext($work_id, $work_rels_ext);
+              if (DEBUG_ON) echo 'WR: ' . $work_rels_ext . "\n";
               $this->watch->stop('get_fids');
-              if (!$fid_array = $this->parse_work_for_object_ids($work_result, $fid)) {
-                verbose::log(FATAL, 'Fedora fetch/parse record: ' . $work_id . ' refered from: ' . $fid);
-                $fid_array = array($fid);
+              if (!$fpid_array = $this->parse_work_for_object_ids($work_rels_ext, $fpid)) {
+                verbose::log(FATAL, 'Fedora fetch/parse work-record: ' . $work_id . ' refered from: ' . $fpid);
+                $fpid_array = array($fpid);
               }
               if (DEBUG_ON) {
-                echo 'fid: ' . $fid . ' -> ' . $work_id . " -> object(s):\n";
-                print_r($fid_array);
+                echo 'fid: ' . $fpid . ' -> ' . $work_id . " -> object(s):\n";
+                print_r($fpid_array);
               }
             }
             else
-              $fid_array = array($fid);
+              $fpid_array = array($fpid);
           }
           else
-            $fid_array = array($fid);
-          $relation_cache[$w_no] = $fid_array;
+            $fpid_array = array($fpid);
+          $relation_cache[$w_no] = $fpid_array;
         }
-        if (DEBUG_ON) print_r($fid_array);
+        if (DEBUG_ON) print_r($fpid_array);
 
-        foreach ($fid_array as $id) {
+        foreach ($fpid_array as $id) {
           $used_search_fids[$id] = TRUE;
           if ($w_no >= $start)
             $work_ids[$w_no][] = $id;
         }
         if ($w_no >= $start)
-          $work_ids[$w_no] = $fid_array;
+          $work_ids[$w_no] = $fpid_array;
       }
     }
 
@@ -377,6 +377,7 @@ class openSearch extends webServiceServer {
     // split into multiple solr-searches each containing slightly less than 1000 elements
     define('MAX_QUERY_ELEMENTS', 950);
     $block_idx = $no_bool = 0;
+    if (!FEDORA_VER_2) 
     if ($use_work_collection && ($this->xs_boolean_is_true($param->allObjects->_value) || $filter_agency)) {
       $add_query[$block_idx] = '';
       foreach ($work_ids as $w_no => $w) {
@@ -425,8 +426,8 @@ class openSearch extends webServiceServer {
             $hit_fid_array = array();
             foreach ($w_list as $w) {
               foreach ($solr_2_arr as $s_2_a) {
-                foreach ($s_2_a['response']['docs'] as $fpid) {
-                  if ($fpid['fedoraPid'] == $w) {
+                foreach ($s_2_a['response']['docs'] as $fdoc) {
+                  if ($fdoc['fedoraPid'] == $w) {
                     $hit_fid_array[] = $w;
                     break 2;
                   }
@@ -441,17 +442,16 @@ class openSearch extends webServiceServer {
 
 
     if (DEBUG_ON) echo 'txt: ' . $txt . "\n";
-    if (DEBUG_ON) print_r($solr_2_arr);
-    if (DEBUG_ON) print_r($add_query);
-    if (DEBUG_ON) print_r($used_search_fids);
+    if (DEBUG_ON) echo 'solr_2_arr: ' . print_r($solr_2_arr, TRUE) . "\n";
+    if (DEBUG_ON) echo 'add_query: ' . print_r($add_query, TRUE) . "\n";
+    if (DEBUG_ON) echo 'used_search_fids: ' . print_r($used_search_fids, TRUE) . "\n";
 
     $this->watch->stop('Build_id');
 
     if ($this->cache)
       $this->cache->set($key_relation_cache, $relation_cache);
 
-    if (DEBUG_ON) echo 'work_ids: '. "\n";
-    if (DEBUG_ON) print_r($work_ids);
+    if (DEBUG_ON) echo 'work_ids: ' . print_r($work_ids, TRUE) . "\n";
 
     // work_ids now contains the work-records and the fedoraPids they consist of
     // now fetch the records for each work/collection
@@ -460,20 +460,24 @@ class openSearch extends webServiceServer {
     $rec_no = max(1, $start);
     foreach ($work_ids as $work) {
       $objects = array();
-      foreach ($work as $fid) {
+      foreach ($work as $fpid) {
         if ($param->collectionType->_value <> 'work-1' || empty($objects)) {
-          if ($error = $this->get_fedora_raw($fid, $fedora_result))
+          if (FEDORA_VER_2) {
+            $this->get_fedora_rels_ext($fpid, $unit_rels_ext);
+            $fpid = $this->parse_unit_for_object_ids($unit_rels_ext);
+          }
+          if ($error = $this->get_fedora_raw($fpid, $fedora_result))
             return $ret_error;
           if ($this->xs_boolean_is_true($param->allRelations->_value)) {
-            //verbose::log(TRACE, 'rels_ext: ' . sprintf($this->repository['fedora_get_rels_ext'], $fid));
-            $this->get_fedora_rels_ext($fid, $fedora_relation);
+            //verbose::log(TRACE, 'rels_ext: ' . sprintf($this->repository['fedora_get_rels_ext'], $fpid));
+            $this->get_fedora_rels_ext($fpid, $fedora_relation);
           }
           if ($debug_query) {
             unset($explain);
             foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
-              if ($fid == $solr_rec['fedoraPid']) {
+              if ($fpid == $solr_rec['fedoraPid']) {
                 //$strange_idx = $solr_idx ? ' '.$solr_idx : '';
-                $explain = $solr_arr['debug']['explain'][$fid];
+                $explain = $solr_arr['debug']['explain'][$fpid];
                 break;
               }
             }
@@ -483,12 +487,14 @@ class openSearch extends webServiceServer {
             $this->parse_fedora_object($fedora_result,
                                        $fedora_relation,
                                        $param->relationData->_value,
-                                       $fid,
+                                       $fpid,
                                        NULL, // no $filter_agency on search - bad performance
                                        $param->format->_value,
                                        $this->xs_boolean_is_true($param->includeMarcXchange->_value),
                                        $explain);
         }
+        else
+          $objects[]->_value = NULL;
         // else $objects[]->_value = NULL;
       }
       $o->collection->_value->resultPosition->_value = $rec_no++;
@@ -575,11 +581,11 @@ class openSearch extends webServiceServer {
     $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
                              $this->config->get_value('cache_port', 'setup'),
                              $this->config->get_value('cache_expire', 'setup'));
-    $fid = $param->identifier->_value;
-    if ($error = $this->get_fedora_raw($fid, $fedora_result))
+    $fpid = $param->identifier->_value;
+    if ($error = $this->get_fedora_raw($fpid, $fedora_result))
       return $ret_error;
     if ($this->xs_boolean_is_true($param->allRelations->_value))
-      $this->get_fedora_rels_ext($fid, $fedora_relation);
+      $this->get_fedora_rels_ext($fpid, $fedora_relation);
     $format = &$param->objectFormat->_value;
     $o->collection->_value->resultPosition->_value = 1;
     $o->collection->_value->numberOfObjects->_value = 1;
@@ -587,7 +593,7 @@ class openSearch extends webServiceServer {
       $this->parse_fedora_object($fedora_result,
                                  $fedora_relation,
                                  $param->relationData->_value,
-                                 $fid,
+                                 $fpid,
                                  $filter_agency,
                                  $format,
                                  $this->xs_boolean_is_true($param->includeMarcXchange->_value));
@@ -613,32 +619,34 @@ class openSearch extends webServiceServer {
   /** \brief
    *
    */
-  private function get_fedora_raw($fid, &$fedora_rec) {
-    return $this->get_fedora($this->repository['fedora_get_raw'], $fid, $fedora_rec);
+  private function get_fedora_raw($fpid, &$fedora_rec) {
+    return $this->get_fedora($this->repository['fedora_get_raw'], $fpid, $fedora_rec);
   }
 
   /** \brief
    *
    */
-  private function get_fedora_rels_ext($fid, &$fedora_rel) {
-    return $this->get_fedora($this->repository['fedora_get_rels_ext'], $fid, $fedora_rel);
+  private function get_fedora_rels_ext($fpid, &$fedora_rel) {
+    return $this->get_fedora($this->repository['fedora_get_rels_ext'], $fpid, $fedora_rel);
   }
 
   /** \brief
    *
    */
-  private function get_fedora($uri, $fid, &$rec) {
-    $record_uri =  sprintf($uri, $fid);
+  private function get_fedora($uri, $fpid, &$rec) {
+    $record_uri =  sprintf($uri, $fpid);
+    if (DEBUG_ON) echo 'Fetch record: ' . $record_uri . "\n";
     if (!$this->cache || !$rec = $this->cache->get($record_uri)) {
       $rec = $this->curl->get($record_uri);
+//if (!strpos($uri, 'RELS')) die($rec);
       $curl_err = $this->curl->get_status();
       if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
         verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri);
-        return 'Error: Cannot fetch record: ' . $fid . ' - http-error: ' . $curl_err['http_code'];
+        return 'Error: Cannot fetch record: ' . $fpid . ' - http-error: ' . $curl_err['http_code'];
       }
       if ($this->cache) $this->cache->set($record_uri, $rec);
     }
-    // else verbose::log(STAT, 'Fedora cache hit for ' . $fid);
+    // else verbose::log(STAT, 'Fedora cache hit for ' . $fpid);
     return;
   }
 
@@ -747,6 +755,11 @@ class openSearch extends webServiceServer {
         $imo = $dom->getElementsByTagName('isPrimaryUnitObjectFor');
         if ($imo->item(0))
           return($imo->item(0)->nodeValue);
+        else {
+          $imo = $dom->getElementsByTagName('isMemberOfWork');
+          if ($imo->item(0))
+            return($imo->item(0)->nodeValue);
+        }
       }
       else {
         $imo = $dom->getElementsByTagName('isMemberOfWork');
@@ -781,7 +794,26 @@ class openSearch extends webServiceServer {
   /** \brief Parse a work relation and return array of ids
    *
    */
-  private function parse_work_for_object_ids($w_rel, $fid) {
+  private function parse_unit_for_object_ids($u_rel) {
+    static $dom;
+    $res = array();
+    if (empty($dom)) {
+      $dom = new DomDocument();
+    }
+    $dom->preserveWhiteSpace = false;
+    if (@ $dom->loadXML($u_rel)) {
+      $res = array();
+      $hpbo = $dom->getElementsByTagName('hasPrimaryBibObject');
+      if ($hpbo->item(0))
+        return($hpbo->item(0)->nodeValue);
+      return FALSE;
+    }
+  }
+
+  /** \brief Parse a work relation and return array of ids
+   *
+   */
+  private function parse_work_for_object_ids($w_rel, $fpid) {
     static $dom;
     $res = array();
     if (empty($dom)) {
@@ -790,20 +822,20 @@ class openSearch extends webServiceServer {
     $dom->preserveWhiteSpace = false;
     if (@ $dom->loadXML($w_rel)) {
       $res = array();
+      $res[] = $fpid;
       if (FEDORA_VER_2) {
-        $hpuo = $dom->getElementsByTagName('hasPrimaryUnitObject');
-        if ($hpuo->item(0))
-          $res[] = $puo = $hpuo->item(0)->nodeValue;
+        //$hpuo = $dom->getElementsByTagName('hasPrimaryUnitObject');
+        //if ($hpuo->item(0))
+          //$res[] = $puo = $hpuo->item(0)->nodeValue;
         $r_list = $dom->getElementsByTagName('hasMemberOfWork');
         foreach ($r_list as $r) {
-          if ($r->nodeValue <> $puo) $res[] = $r->nodeValue;
+          if ($r->nodeValue <> $fpid) $res[] = $r->nodeValue;
         }
       }
       else {
-        $res[] = $fid;
         $r_list = $dom->getElementsByTagName('hasManifestation');
         foreach ($r_list as $r) {
-          if ($r->nodeValue <> $fid) $res[] = $r->nodeValue;
+          if ($r->nodeValue <> $fpid) $res[] = $r->nodeValue;
         }
       }
       return $res;
