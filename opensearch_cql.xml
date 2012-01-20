@@ -18,8 +18,23 @@ You should have received a copy of the GNU Affero General Public License along w
 		<set identifier="info:srw/cql-context-set/1/dc-v1.1" name="dc"/>
 		<set identifier="info:srw/cql-context-set/2/rec-1.1" name="rec"/>
 		<set identifier="http://biblstandard.dk/ac/namespace/" name="ac"/>
+		<set identifier="info:srw/cql-context-set/1/bib-v1" name="bib"/>
 		<set identifier="http://oss.dbc.dk/ns/facet" name="facet"/>
 		<set identifier="http://oss.dbc.dk/ns/phrase" name="phrase"/>
+		<index>
+			<title lang="da">Serietitel</title>
+			<title lang="en">Title of series</title>
+			<map>
+				<name set="bib">titleSeries</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Klassifikation</title>
+			<title lang="en">Classification</title>
+			<map>
+				<name set="bib">classification</name>
+			</map>
+		</index>
 		<index>
 			<title lang="da">Fritekst</title>
 			<title lang="en">Full text</title>
@@ -189,6 +204,34 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
+			<title lang="da">Overordnet målgruppe (børn/voksen)</title>
+			<title lang="en">Audience category</title>
+			<map>
+				<name set="facet">category</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Fiktion/nonfiktion</title>
+			<title lang="en">Fiction/non-fiction</title>
+			<map>
+				<name set="facet">genreCategory</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Filial</title>
+			<title lang="en">Library branch</title>
+			<map>
+				<name set="facet">branch</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Afdeling</title>
+			<title lang="en">Department</title>
+			<map>
+				<name set="facet">department</name>
+			</map>
+		</index>
+		<index>
 			<title lang="da">Ophavsfacet</title>
 			<title lang="en">Creator facet</title>
 			<map>
@@ -277,13 +320,6 @@ You should have received a copy of the GNU Affero General Public License along w
 			<title lang="en">acSource facet</title>
 			<map>
 				<name set="facet">acsource</name>
-			</map>
-		</index>
-		<index>
-			<title lang="da">category-facet</title>
-			<title lang="en">category facet</title>
-			<map>
-				<name set="facet">category</name>
 			</map>
 		</index>
 	</indexInfo>
