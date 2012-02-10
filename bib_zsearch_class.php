@@ -338,7 +338,7 @@ class bib_zsearch
     if( $this->error )
       return;
 
-    $search['ccl']=$ccl;
+    $search['ccl']=utf8_decode($ccl);
 
     if( $start = $params->start->_value )
       $search['start'] = $start;
