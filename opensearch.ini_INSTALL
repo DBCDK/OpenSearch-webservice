@@ -9,10 +9,6 @@
 
 version = 2.2
 
-; Which format is fedora-records in
-; work_format 2 contains units
-work_format = 2
-
 ; wsdl for service
 wsdl = opensearch.wsdl
 
@@ -60,13 +56,19 @@ xmldir = ./xml
 default_repository = repos1
 
 ; url to solr and fedorainterface
+; work_format 2 contains units
+; set url's for fedora_get_raw, fedora_get_rels_ext and fedora_get_object_profile
+
 repository[repos1][solr] = http://someserver:8080/apache-solr-1.4-dev/select
 repository[repos1][fedora_get_raw] = http://someserver.dbc.dk:8080/fedora/get/%s/originalData.0
 repository[repos1][fedora_get_rels_ext] = http://someserver.dbc.dk:8080/fedora/get/%s/RELS-EXT
+repository[repos1][fedora_get_object_profile] = http://someserver.dbc.dk:8080/fedora/objects/%s/?format=xml
+repository[repos1][work_format] = 2
 
 repository[repos2][solr] = http://anotherserver:8080/apache-solr-1.4-dev/select
 repository[repos2][fedora_get_raw] = http://anotherserver.dbc.dk:8080/fedora/get/%s/originalData.0
 repository[repos2][fedora_get_rels_ext] = http://anotherserver.dbc.dk:8080/fedora/get/%s/RELS-EXT
+repository[repos2][fedora_get_object_profile] = http://anotherserver.dbc.dk:8080/fedora/objects/%s/?format=xml
 
 
 ; memcache
