@@ -56,7 +56,7 @@ xmldir = ./xml
 default_repository = repos1
 
 ; url to solr and fedorainterface
-; work_format 2 contains units
+; work_format = 2 fedora-object version bib.dk i.e. using units
 ; set url's for fedora_get_raw, fedora_get_rels_ext and fedora_get_object_profile
 
 repository[repos1][solr] = http://someserver:8080/apache-solr-1.4-dev/select
