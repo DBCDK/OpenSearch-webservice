@@ -29,6 +29,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:objectFormat"/>
 				<xs:element ref="os:allRelations" minOccurs="0"/>
 				<xs:element ref="os:callback" minOccurs="0"/>
+				<xs:element ref="os:includeHoldingsCount" minOccurs="0"/>
 				<xs:element ref="os:includeMarcXchange" minOccurs="0"/>
 				<xs:element ref="os:outputType" minOccurs="0"/>
 				<xs:element ref="os:relationData" minOccurs="0"/>
@@ -51,6 +52,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:callback" minOccurs="0"/>
 				<xs:element ref="os:collectionType" minOccurs="0"/>
 				<xs:element ref="os:facets" minOccurs="0"/>
+				<xs:element ref="os:includeHoldingsCount" minOccurs="0"/>
 				<xs:element ref="os:includeMarcXchange" minOccurs="0"/>
 				<xs:element ref="os:outputType" minOccurs="0"/>
 				<xs:element ref="os:allRelations" minOccurs="0"/>
@@ -245,15 +247,37 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">Number of objects in the search result.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="holdingsCount" type="xs:int">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Approximate number of libraries that owns one ore more copies of the manifeatation.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="identifier" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Unik identifier of an object.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="includeHoldingsCount" type="xs:boolean">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Whether to include holdings count if available (only on national level). Default is false.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="includeMarcXchange" type="xs:boolean">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Whether to include marcXchange record if available. Default is false.</xs:documentation>
 		</xs:annotation>
+	</xs:element>
+	<xs:element name="linkObject">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Description of a link (online access).</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="os:accessType" type="os:accessTypeType"/>
+				<xs:element ref="os:access" type="os:accessType"/>
+				<xs:element ref="os:linkTo" type="os:linkToType"/>
+			</xs:sequence>
+		</xs:complexType>
 	</xs:element>
 	<xs:element name="more" type="xs:boolean">
 		<xs:annotation>
@@ -286,6 +310,7 @@ You should have received a copy of the GNU Affero General Public License along w
 					<xs:element ref="oso:object"/>
 				</xs:choice>
 				<xs:element ref="os:identifier"/>
+				<xs:element ref="os:holdingsCount" minOccurs="0"/>
 				<xs:element ref="os:relations" minOccurs="0"/>
 				<xs:element ref="os:formatsAvailable"/>
 				<xs:element ref="os:queryResultExplanation" minOccurs="0"/>
@@ -385,7 +410,10 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:sequence>
 				<xs:element ref="os:relationType"/>
 				<xs:element ref="os:relationUri" minOccurs="0"/>
-				<xs:element ref="os:relationObject" minOccurs="0"/>
+				<xs:choice>
+					<xs:element ref="os:linkObject"/>
+				  <xs:element ref="os:relationObject"/>
+				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -530,6 +558,22 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">...</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:simpleType name="accessType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="free"/>
+			<xs:enumeration value="linkresolver"/>
+			<xs:enumeration value="onsite"/>
+			<xs:enumeration value="remote"/>
+			<xs:enumeration value="uni-c"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="accessTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="download"/>
+			<xs:enumeration value="openurl"/>
+			<xs:enumeration value="streaming"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="collectionTypeType">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The types of collections that the service can return.</xs:documentation>
@@ -592,6 +636,14 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="phrase"/>
 			<xs:enumeration value="word"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="linkToType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="file"/>
+			<xs:enumeration value="linkresolver"/>
+			<xs:enumeration value="webservice"/>
+			<xs:enumeration value="website"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="objectFormatType">
