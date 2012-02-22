@@ -603,6 +603,11 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="facet.dk5"/>
 			<xs:enumeration value="facet.acSource"/>
 			<xs:enumeration value="facet.category"/>
+			<xs:enumeration value="facet.genreCategory"/>
+			<xs:enumeration value="facet.branch"/>
+			<xs:enumeration value="facet.department"/>
+			<xs:enumeration value="facet.platform"/>
+			<xs:enumeration value="facet.isPartOf"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="fieldNameType">
