@@ -83,6 +83,16 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="access" type="os:accessType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">How to access the linked to resource (e.g. if it is free or not)</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="accessType" type="os:accessTypeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Whether the access is to e.g. streaming or download</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="agency" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Identifier of the agency using this service</xs:documentation>
@@ -273,11 +283,16 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="os:accessType" type="os:accessTypeType"/>
-				<xs:element ref="os:access" type="os:accessType"/>
-				<xs:element ref="os:linkTo" type="os:linkToType"/>
+				<xs:element ref="os:accessType"/>
+				<xs:element ref="os:access"/>
+				<xs:element ref="os:linkTo"/>
 			</xs:sequence>
 		</xs:complexType>
+	</xs:element>
+	<xs:element name="linkTo" type="os:linkToType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">What the link point so, e.g. a website.</xs:documentation>
+		</xs:annotation>
 	</xs:element>
 	<xs:element name="more" type="xs:boolean">
 		<xs:annotation>
@@ -608,6 +623,8 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="facet.department"/>
 			<xs:enumeration value="facet.platform"/>
 			<xs:enumeration value="facet.isPartOf"/>
+			<xs:enumeration value="facet.classfication"/>
+			<xs:enumeration value="facet.genre"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="fieldNameType">
