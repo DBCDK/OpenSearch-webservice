@@ -54,6 +54,7 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:facets" minOccurs="0"/>
 				<xs:element ref="os:includeHoldingsCount" minOccurs="0"/>
 				<xs:element ref="os:includeMarcXchange" minOccurs="0"/>
+				<xs:element ref="os:objectFormat" minOccurs="0"/>
 				<xs:element ref="os:outputType" minOccurs="0"/>
 				<xs:element ref="os:allRelations" minOccurs="0"/>
 				<xs:element ref="os:relationData" minOccurs="0"/>
@@ -231,6 +232,16 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The format that you want the service to return.</xs:documentation>
 		</xs:annotation>
+	</xs:element>
+	<xs:element name="formattedCollection">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The collection formatted by Open Format.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any processContents="skip"/>
+			</xs:sequence>
+		</xs:complexType>
 	</xs:element>
 	<xs:element name="formatsAvailable">
 		<xs:annotation>
@@ -499,7 +510,10 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="os:collection" maxOccurs="unbounded"/>
+				<xs:choice>
+					<xs:element ref="os:collection" maxOccurs="unbounded"/>
+					<xs:element ref="os:formattedCollection" maxOccurs="unbounded"/>
+				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -676,6 +690,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="dkabm"/>
 			<xs:enumeration value="docbook"/>
 			<xs:enumeration value="marcxchange"/>
+			<xs:enumeration value="bibliotekdkWorkDisplay"/>
 			<xs:enumeration value="opensearchobject"/>
 		</xs:restriction>
 	</xs:simpleType>
