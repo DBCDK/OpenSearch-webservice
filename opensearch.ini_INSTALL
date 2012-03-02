@@ -88,9 +88,9 @@ open_agency = http://openagency.addi.dk/1.2/?action=openSearchProfile&agencyId=%
 ;agency_fallback = 100200
 ;profile_fallback = test
 
-; raw_index
-raw_index[] = facet.
-raw_index[] = phrase.
+; raw_index - old feature, do not include
+;raw_index[] = facet.
+;raw_index[] = phrase.
 
 ; relations which can be returned
 ; relations of type 1 points to internal objects
