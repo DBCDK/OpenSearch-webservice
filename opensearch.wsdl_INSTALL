@@ -40,7 +40,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<wsdl:binding name="osSearchServiceSoapBinding" type="osw:osSearchServicePortType">
 		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
 		<wsdl:operation name="search">
-			<soap:operation soapAction="http://opensearch.addi.dk/2.2"/>
+			<soap:operation soapAction="http://opensearch.addi.dk"/>
 			<wsdl:input name="searchRequest">
 				<soap:body use="literal"/>
 			</wsdl:input>
@@ -52,7 +52,7 @@ You should have received a copy of the GNU Affero General Public License along w
 	<wsdl:binding name="getObjectServiceSoapBinding" type="osw:getObjectServicePortType">
 		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
 		<wsdl:operation name="getObject">
-			<soap:operation soapAction="http://opensearch.addi.dk/2.2"/>
+			<soap:operation soapAction="http://opensearch.addi.dk"/>
 			<wsdl:input name="getObjectRequest">
 				<soap:body use="literal"/>
 			</wsdl:input>
@@ -63,10 +63,10 @@ You should have received a copy of the GNU Affero General Public License along w
 	</wsdl:binding>
 	<wsdl:service name="osService">
 		<wsdl:port name="osSearchService" binding="osw:osSearchServiceSoapBinding">
-			<soap:address location="http://opensearch.addi.dk/2.2/"/>
+			<soap:address location="http://opensearch.addi.dk/2.3/"/>
 		</wsdl:port>
 		<wsdl:port name="getObjectService" binding="osw:getObjectServiceSoapBinding">
-			<soap:address location="http://opensearch.addi.dk/2.2/"/>
+			<soap:address location="http://opensearch.addi.dk/2.3/"/>
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
