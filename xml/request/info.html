@@ -10,7 +10,9 @@ Parameters:
       <li>callback:</li> for json-callback
       <li>collectionType:</li> manifestation or work or work-1 (defaults to work)
       <li>facets:</li> number and list of facets
+      <li>includeHoldingsCount:</li> boolean
       <li>includeMarcXchange:</li> boolean
+      <li>objectFormat:</li> dkabm, docbook, marcxchange, opensearchobject, bibliotekdkWorkDisplay
       <li>outputType:</li> <a href="show_enc.php?encoding=json">json</a>, php, xml
       <li>allRelations:</li> return relations for each objects
       <li>relationData:</li> return relation as "type", "uri" or "full"
@@ -28,8 +30,9 @@ Parameters:
   <li>getObject
     <ul>
       <li>identifier:</li> Record ID of record
-      <li>objectFormat:</li> dkabm, docbook, marcxchange, opensearchobject
+      <li>objectFormat:</li> dkabm, docbook, marcxchange, opensearchobject, bibliotekdkWorkDisplay
       <li>allRelations:</li> return relations for each objects
+      <li>includeHoldingsCount:</li> boolean
       <li>includeMarcXchange:</li> boolean
       <li>relationData:</li> return relation as "type", "uri" or "full"
       <li>repository:</li> for multiple repositories - normally not used

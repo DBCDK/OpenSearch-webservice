@@ -7,7 +7,7 @@
 ;service_http_error = HTTP/1.1 410 Gone
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
-version = 2.2
+version = 2.3
 
 ; wsdl for service
 wsdl = opensearch.wsdl
@@ -280,8 +280,10 @@ action[search][facets][] = facets.numberOfTerms
 action[search][facets][] = numberOfTerms
 action[search][facets][] = facets.facetName
 action[search][facets][] = facetName
+action[search][] = includeHoldingsCount
 action[search][] = includeMarcXchange
 action[search][] = outputType
+action[search][] = objectFormat
 action[search][] = allRelations
 action[search][] = relationData
 action[search][] = repository
@@ -311,6 +313,7 @@ action[getObject][] = identifier
 action[getObject][] = objectFormat
 action[getObject][] = allRelations
 action[getObject][] = callback
+action[getObject][] = includeHoldingsCount
 action[getObject][] = includeMarcXchange
 action[getObject][] = outputType
 action[getObject][] = relationData
