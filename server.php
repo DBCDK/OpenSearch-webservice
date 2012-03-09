@@ -242,9 +242,11 @@ class openSearch extends webServiceServer {
         $error = $err;
       else {
         foreach ($solr_arr['response']['docs'] as $fdoc) {
-          if (FEDORA_VER_2)
-            $search_ids[] = $fdoc['unit.id'][0];
-          else
+          if (FEDORA_VER_2) {
+            $uid = $fdoc['unit.id'][0];
+            //$local_data[$uid] = $fdoc['rec.collectionIdentifier'];
+            $search_ids[] = $uid;
+          } else
             $search_ids[] = $fdoc['fedoraPid'];
         }
       }
@@ -274,7 +276,12 @@ class openSearch extends webServiceServer {
         while (isset($used_search_fid[$no]));
         $used_search_fid[$no] = TRUE;
         $this->get_solr_array($solr_query['edismax'], $no, 1, '', '', '', $filter_q, '', $debug_query, $solr_arr);
-        $work_ids[] = array($solr_arr['response']['docs'][0]['fedoraPid']);
+        if (FEDORA_VER_2) {
+          $uid = $solr_arr['response']['docs'][0]['unit.id'];
+          //$local_data[$uid] = $solr_arr['response']['docs']['rec.collectionIdentifier'];
+          $work_ids[] = array($uid);
+        } else
+          $work_ids[] = array($solr_arr['response']['docs'][0]['fedoraPid']);
       }
     }
     else {
@@ -293,6 +300,7 @@ class openSearch extends webServiceServer {
       $w_no = 0;
 
       if (DEBUG_ON) print_r($search_ids);
+      //if (DEBUG_ON) print_r($local_data);
 
       for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
         $fpid = &$search_ids[$s_idx];
@@ -307,9 +315,11 @@ class openSearch extends webServiceServer {
           else {
             $search_ids = array();
             foreach ($solr_arr['response']['docs'] as $fdoc) {
-              if (FEDORA_VER_2)
-                $search_ids[] = $fdoc['unit.id'][0];
-              else
+              if (FEDORA_VER_2) {
+                $uid = $fdoc['unit.id'][0];
+                //$local_data[$uid] = $fdoc['rec.collectionIdentifier'];
+                $search_ids[] = $uid;
+              } else
                 $search_ids[] = $fdoc['fedoraPid'];
             }
             $numFound = $solr_arr['response']['numFound'];
@@ -687,10 +697,18 @@ class openSearch extends webServiceServer {
   /** \brief
    *
    */
+  private function get_fedora_datastreams($fpid, &$fedora_streams) {
+    return $this->get_fedora($this->repository['fedora_get_datastreams'], $fpid, $fedora_streams);
+  }
+
+  /** \brief
+   *
+   */
   private function get_fedora($uri, $fpid, &$rec) {
     $record_uri =  sprintf($uri, $fpid);
     if (DEBUG_ON) echo 'Fetch record: /' . $record_uri . "/\n";
     if (!$this->cache || !$rec = $this->cache->get($record_uri)) {
+      $this->curl->set_authentication('fedoraAdmin', 'fedoraAdmin');
       $rec = $this->curl->get($record_uri);
       $curl_err = $this->curl->get_status();
       if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
@@ -758,7 +776,15 @@ class openSearch extends webServiceServer {
    *
    */
   private function get_solr_array($q, $start, $rows, $sort, $rank, $facets, $filter, $boost, $debug, &$solr_arr) {
-    $solr_query = $this->repository['solr'] . '?q=' . urlencode($q) . '&fq=' . $filter . '&start=' . $start . '&rows=' . $rows . $sort . $rank . $boost . $facets . ($debug ? '&debugQuery=on' : '') . '&fl=' . (FEDORA_VER_2 ? 'unit.id' : 'fedoraPid') . '&defType=edismax&wt=phps';
+  // '&fl=' . (FEDORA_VER_2 ? 'unit.id,rec.collectionIdentifier' : 'fedoraPid') .
+    $solr_query = $this->repository['solr'] . 
+                    '?q=' . urlencode($q) . 
+                    '&fq=' . $filter . 
+                    '&start=' . $start . 
+                    '&rows=' . $rows . $sort . $rank . $boost . $facets . 
+                    ($debug ? '&debugQuery=on' : '') . 
+                    '&fl=' . (FEDORA_VER_2 ? 'unit.id' : 'fedoraPid') . 
+                    '&defType=edismax&wt=phps';
 
     //echo $solr_query;
     //exit;
@@ -908,14 +934,14 @@ class openSearch extends webServiceServer {
    * @param $debug_info      -
    */
   private function parse_fedora_object(&$fedora_obj, &$fedora_rels_obj, $rels_type, $rec_id, $filter, $format, $include_marcx=FALSE, $debug_info='') {
-    static $dom, $rels_dom, $allowed_relation;
+    static $dom, $rels_dom, $stream_dom, $allowed_relation;
     if (empty($format)) {
       $format = 'dkabm';
     }
     if (empty($dom)) {
       $dom = new DomDocument();
+      $dom->preserveWhiteSpace = false;
     }
-    $dom->preserveWhiteSpace = false;
     if (@ !$dom->loadXML($fedora_obj)) {
       verbose::log(FATAL, 'Cannot load recid ' . $rec_id . ' into DomXml');
       return;
@@ -930,6 +956,43 @@ class openSearch extends webServiceServer {
       if (empty($rels_dom)) {
         $rels_dom = new DomDocument();
       }
+
+// Handle relations comming from local_data streams
+// 2DO some testing to ensure this is only done when neede (asked for)
+      $this->get_fedora_datastreams($rec_id, $fedora_streams);
+      if (empty($stream_dom)) {
+        $stream_dom = new DomDocument();
+      }
+      if (@ !$stream_dom->loadXML($fedora_streams)) {
+        verbose::log(DEBUG, 'Cannot load STREAMS for ' . $rec_id . ' into DomXml');
+      } else {
+        foreach ($stream_dom->getElementsByTagName('datastream') as $node) {
+          if (substr($node->getAttribute('ID'), 0, 9) == 'localData') {
+            $dub_check = array();
+            foreach ($node->getElementsByTagName('link') as $link) {
+              $url = $link->getelementsByTagName('url')->item(0)->nodeValue;
+              if (empty($dup_check[$url])) {
+                unset($relation);
+                $relation->relationType->_value = 'dbcaddi:hasOnlineAccess';
+                $relation->relationUri->_value = $url;
+                $relation->linkObject->_value->accessType->_value = 
+                    $link->getelementsByTagName('accessType')->item(0)->nodeValue;
+                $relation->linkObject->_value->access->_value = 
+                    $link->getelementsByTagName('access')->item(0)->nodeValue;
+                $relation->linkObject->_value->linkTo->_value = 
+                    $link->getelementsByTagName('LinkTo')->item(0)->nodeValue;
+                $dup_check[$url] = TRUE;
+                $relations->relation[]->_value = $relation;
+              }
+              //echo 'll: ' . $link->getelementsByTagName('LinkTo')->item(0)->nodeValue;
+            }
+          }
+        }
+      }
+          //    var_dump($local_links);
+//echo "\nStream: " . $fedora_streams . "\n"; die();
+
+// Handle relations comming from RELS_EXT
       if (@ !$rels_dom->loadXML($fedora_rels_obj)) {
         verbose::log(DEBUG, 'Cannot load RELS_EXT for ' . $rec_id . ' into DomXml');
       }
