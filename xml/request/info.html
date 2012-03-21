@@ -25,17 +25,23 @@ Parameters:
       <li>userDefinedBoost:</li> 
       <li>userDefinedRanking:</li> 
       <li>queryDebug:</li> boolean for including debug-info in reply
+      <li>trackingId:</li> for debugging purposes
     </ul>
   </li>
   <li>getObject
     <ul>
+      <li>agency:</li> (currently partially supported)
+      <li>profile:</li> (currently partially supported)
       <li>identifier:</li> Record ID of record
       <li>objectFormat:</li> dkabm, docbook, marcxchange, opensearchobject, bibliotekdkWorkDisplay
       <li>allRelations:</li> return relations for each objects
+      <li>callback:</li> for json-callback
       <li>includeHoldingsCount:</li> boolean
       <li>includeMarcXchange:</li> boolean
+      <li>outputType:</li> <a href="show_enc.php?encoding=json">json</a>, php, xml
       <li>relationData:</li> return relation as "type", "uri" or "full"
       <li>repository:</li> for multiple repositories - normally not used
+      <li>trackingId:</li> for debugging purposes
     </ul>
   </li>
 </ul>
