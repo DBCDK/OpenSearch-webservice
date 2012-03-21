@@ -499,6 +499,12 @@ class openSearch extends webServiceServer {
     $this->watch->start('get_recs');
     $collections = array();
     $rec_no = max(1, $start);
+    $format = $param->objectFormat->_value;
+    if ($format == 'bibliotekdkWorkDisplay') {
+      $include_marcx = TRUE;
+    } else {
+      $include_marcx = $this->xs_boolean_is_true($param->includeMarcXchange->_value);
+    }
     foreach ($work_ids as $work) {
       $objects = array();
       foreach ($work as $fpid) {
@@ -531,7 +537,7 @@ class openSearch extends webServiceServer {
                                        $fpid,
                                        NULL, // no $filter_agency on search - bad performance
                                        $param->format->_value,
-                                       $this->xs_boolean_is_true($param->includeMarcXchange->_value),
+                                       $include_marcx,
                                        $explain);
         }
         else
@@ -546,6 +552,9 @@ class openSearch extends webServiceServer {
     }
     $this->watch->stop('get_recs');
 
+    if ($format == 'bibliotekdkWorkDisplay') {
+      $this->format_records($collections, $this->xs_boolean_is_true($param->includeMarcXchange->_value));
+    }
 
     if ($_REQUEST['work'] == 'debug') {
       echo "returned_work_ids: \n";
@@ -576,9 +585,12 @@ class openSearch extends webServiceServer {
 
   /** \brief Get an object in a specific format
   *
-  * param: identifier - fedora pid
+  * param: agency: 
+  *        profile:
+  *        identifier - fedora pid
   *        objectFormat - one of dkabm, docbook, marcxchange, opensearchobject
   *        allRelations - boolean
+  *        includeHoldingsCount - boolean
   *        includeMarcXchange - boolean
   *        relationData - type, uri og full
   *        repository
@@ -631,7 +643,12 @@ class openSearch extends webServiceServer {
       return $ret_error;
     if ($this->xs_boolean_is_true($param->allRelations->_value))
       $this->get_fedora_rels_ext($fpid, $fedora_relation);
-    $format = &$param->objectFormat->_value;
+    $format = $param->objectFormat->_value;
+    if ($format == 'bibliotekdkWorkDisplay') {
+      $include_marcx = TRUE;
+    } else {
+      $include_marcx = $this->xs_boolean_is_true($param->includeMarcXchange->_value);
+    }
     $o->collection->_value->resultPosition->_value = 1;
     $o->collection->_value->numberOfObjects->_value = 1;
     $o->collection->_value->object[]->_value =
@@ -641,8 +658,12 @@ class openSearch extends webServiceServer {
                                  $fpid,
                                  $filter_agency,
                                  $format,
-                                 $this->xs_boolean_is_true($param->includeMarcXchange->_value));
+                                 $include_marcx);
     $collections[]->_value = $o;
+
+    if ($format == 'bibliotekdkWorkDisplay') {
+      $this->format_records($collections, $this->xs_boolean_is_true($param->includeMarcXchange->_value));
+    }
 
     $result = &$ret->searchResponse->_value->result->_value;
     $result->hitCount->_value = 1;
@@ -660,6 +681,38 @@ class openSearch extends webServiceServer {
   }
 
   /*******************************************************************************/
+
+  /** \brief
+   *
+   */
+  private function format_records(&$collections, $keep_marcx) {
+    $this->watch->start('format');
+    $f_obj->formatRequest->_namespace = $this->xmlns['of'];
+    $f_obj->formatRequest->_value->originalData = $collections;
+    //foreach ($f_obj->formatRequest->_value->originalData as $i => $o)
+      //$f_obj->formatRequest->_value->originalData[$i]->_namespace = $this->xmlns['of'];
+    $f_obj->formatRequest->_value->outputFormat->_namespace = $this->xmlns['of'];
+    $f_obj->formatRequest->_value->outputFormat->_value = 'bibliotekdkFullDisplay';
+    $f_obj->formatRequest->_value->outputType->_namespace = $this->xmlns['of'];
+    $f_obj->formatRequest->_value->outputType->_value = 'php';
+    $f_xml = $this->objconvert->obj2soap($f_obj);
+    $this->curl->set_post($f_xml);
+    $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
+    $open_format_uri = $this->config->get_value('open_format', 'setup');
+    $f_result = $this->curl->get($open_format_uri);
+    $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['']);
+    if (!$fr_obj) {
+      $curl_err = $this->curl->get_status();
+      verbose::log(FATAL, 'openFormat http-error: ' . $curl_err['http_code'] . ' from: ' . $open_format_uri);
+    }
+    foreach ($collections as $idx => &$c) {
+      $c->_value->formattedCollection = $fr_obj->formatResponse->_value->bibliotekdkFullDisplay[$idx];
+      if (!$keep_marcx)
+        foreach ($c->_value->collection->_value->object as &$o)
+          unset($o->_value->collection);
+    }
+    $this->watch->stop('format');
+  }
 
   /** \brief
    *
@@ -1077,6 +1130,7 @@ class openSearch extends webServiceServer {
    */
   private function extract_record(&$dom, $rec_id, $format, $include_marcx=FALSE) {
     switch ($format) {
+      case 'bibliotekdkWorkDisplay':
       case 'dkabm':
         $rec = &$ret->record->_value;
         $record = &$dom->getElementsByTagName('record');
