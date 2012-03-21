@@ -84,6 +84,9 @@ profile_cache_expire = 60
 ; search profile service end point
 open_agency = http://openagency.addi.dk/1.2/?action=openSearchProfile&agencyId=%s
 
+; open format
+open_format = http://openformat.dbc.dk/0.1/
+
 ; default search_profile setting
 ;agency_fallback = 100200
 ;profile_fallback = test
