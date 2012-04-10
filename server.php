@@ -262,7 +262,7 @@ class openSearch extends webServiceServer {
       $debug_result->parsedQueryString->_value = $solr_arr['debug']['parsedquery_toString'];
     }
     $numFound = $solr_arr['response']['numFound'];
-    $facets = $this->parse_for_facets(&$solr_arr['facet_counts']);
+    $facets = $this->parse_for_facets($solr_arr['facet_counts']);
 
     $this->watch->start('Build_id');
     $work_ids = $used_search_fids = array();
