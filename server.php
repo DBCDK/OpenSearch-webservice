@@ -229,7 +229,7 @@ class openSearch extends webServiceServer {
     if ($solr_query['edismax'])
       verbose::log(TRACE, 'CQL to EDISMAX: ' . $param->query->_value . ' -> ' . $solr_query['edismax']);
 
-    $debug_query = $this->xs_boolean_is_true($param->queryDebug->_value);
+    $debug_query = $this->xs_boolean($param->queryDebug->_value);
 
     // do the query
     $search_ids = array();
@@ -399,7 +399,7 @@ class openSearch extends webServiceServer {
     define('MAX_QUERY_ELEMENTS', 950);
     $block_idx = $no_bool = 0;
     if (DEBUG_ON) echo 'work_ids: ' . print_r($work_ids, TRUE) . "\n";
-    if ($use_work_collection && ($this->xs_boolean_is_true($param->allObjects->_value) || $filter_agency)) {
+    if ($use_work_collection && ($this->xs_boolean($param->allObjects->_value) || $filter_agency)) {
       $add_query[$block_idx] = '';
       foreach ($work_ids as $w_no => $w) {
         if (count($w) > 1) {
@@ -419,7 +419,7 @@ class openSearch extends webServiceServer {
         else
           $which_rec_id = 'rec.id';
         foreach ($add_query as $add_idx => $add_q) {
-          if (!$this->xs_boolean_is_true($param->allObjects->_value)) {
+          if (!$this->xs_boolean($param->allObjects->_value)) {
             $q = '(' . $solr_query['edismax'] . ') AND ' . $which_rec_id . ':(' . $add_q . ')';
           }
           elseif ($filter_agency) {
@@ -503,7 +503,7 @@ class openSearch extends webServiceServer {
     if ($format == 'bibliotekdkWorkDisplay') {
       $include_marcx = TRUE;
     } else {
-      $include_marcx = $this->xs_boolean_is_true($param->includeMarcXchange->_value);
+      $include_marcx = $this->xs_boolean($param->includeMarcXchange->_value);
     }
     foreach ($work_ids as $work) {
       $objects = array();
@@ -515,7 +515,7 @@ class openSearch extends webServiceServer {
           }
           if ($error = $this->get_fedora_raw($fpid, $fedora_result))
             return $ret_error;
-          if ($this->xs_boolean_is_true($param->allRelations->_value)) {
+          if ($this->xs_boolean($param->allRelations->_value)) {
             //verbose::log(TRACE, 'rels_ext: ' . sprintf($this->repository['fedora_get_rels_ext'], $fpid));
             $this->get_fedora_rels_ext($fpid, $fedora_relation);
           }
@@ -553,7 +553,7 @@ class openSearch extends webServiceServer {
     $this->watch->stop('get_recs');
 
     if ($format == 'bibliotekdkWorkDisplay') {
-      $this->format_records($collections, $this->xs_boolean_is_true($param->includeMarcXchange->_value));
+      $this->format_records($collections, $this->xs_boolean($param->includeMarcXchange->_value));
     }
 
     if ($_REQUEST['work'] == 'debug') {
@@ -641,13 +641,13 @@ class openSearch extends webServiceServer {
     }
     if ($error = $this->get_fedora_raw($fpid, $fedora_result))
       return $ret_error;
-    if ($this->xs_boolean_is_true($param->allRelations->_value))
+    if ($this->xs_boolean($param->allRelations->_value))
       $this->get_fedora_rels_ext($fpid, $fedora_relation);
     $format = $param->objectFormat->_value;
     if ($format == 'bibliotekdkWorkDisplay') {
       $include_marcx = TRUE;
     } else {
-      $include_marcx = $this->xs_boolean_is_true($param->includeMarcXchange->_value);
+      $include_marcx = $this->xs_boolean($param->includeMarcXchange->_value);
     }
     $o->collection->_value->resultPosition->_value = 1;
     $o->collection->_value->numberOfObjects->_value = 1;
@@ -662,7 +662,7 @@ class openSearch extends webServiceServer {
     $collections[]->_value = $o;
 
     if ($format == 'bibliotekdkWorkDisplay') {
-      $this->format_records($collections, $this->xs_boolean_is_true($param->includeMarcXchange->_value));
+      $this->format_records($collections, $this->xs_boolean($param->includeMarcXchange->_value));
     }
 
     $result = &$ret->searchResponse->_value->result->_value;
@@ -689,8 +689,8 @@ class openSearch extends webServiceServer {
     $this->watch->start('format');
     $f_obj->formatRequest->_namespace = $this->xmlns['of'];
     $f_obj->formatRequest->_value->originalData = $collections;
-    //foreach ($f_obj->formatRequest->_value->originalData as $i => $o)
-      //$f_obj->formatRequest->_value->originalData[$i]->_namespace = $this->xmlns['of'];
+    foreach ($f_obj->formatRequest->_value->originalData as $i => $o)
+      $f_obj->formatRequest->_value->originalData[$i]->_namespace = $this->xmlns['of'];
     $f_obj->formatRequest->_value->outputFormat->_namespace = $this->xmlns['of'];
     $f_obj->formatRequest->_value->outputFormat->_value = 'bibliotekdkFullDisplay';
     $f_obj->formatRequest->_value->outputType->_namespace = $this->xmlns['of'];
@@ -706,7 +706,8 @@ class openSearch extends webServiceServer {
       verbose::log(FATAL, 'openFormat http-error: ' . $curl_err['http_code'] . ' from: ' . $open_format_uri);
     }
     foreach ($collections as $idx => &$c) {
-      $c->_value->formattedCollection = $fr_obj->formatResponse->_value->bibliotekdkFullDisplay[$idx];
+      //$c->_value->formattedCollection = $fr_obj->formatResponse->_value->bibliotekdkFullDisplay[$idx];
+      $c->_value->formattedCollection = $fr_obj->formatResponse->_value->fullDisplayHtml[$idx];
       if (!$keep_marcx)
         foreach ($c->_value->collection->_value->object as &$o)
           unset($o->_value->collection);
@@ -1011,7 +1012,7 @@ class openSearch extends webServiceServer {
       }
 
 // Handle relations comming from local_data streams
-// 2DO some testing to ensure this is only done when neede (asked for)
+// 2DO some testing to ensure this is only done when needed (asked for)
       $this->get_fedora_datastreams($rec_id, $fedora_streams);
       if (empty($stream_dom)) {
         $stream_dom = new DomDocument();
@@ -1085,6 +1086,8 @@ class openSearch extends webServiceServer {
 
     $ret = $rec;
     $ret->identifier->_value = $rec_id;
+    if ($this->xs_boolean($param->includeHoldingsCount->_value)) 
+      $ret->holdingsCount->_value = 1;
     if ($relations) $ret->relations->_value = $relations;
     $ret->formatsAvailable->_value = $this->scan_for_formats($dom);
     if ($debug_info) $ret->queryResultExplanation->_value = $debug_info;
@@ -1232,8 +1235,8 @@ class openSearch extends webServiceServer {
   /** \brief
    *  return true if xs:boolean is so
    */
-  private function xs_boolean_is_true($str) {
-    return (strtolower($str) == "true" || $str == 1);
+  private function xs_boolean($str) {
+    return (strtolower($str) == 'true' || $str == 1);
   }
 
 }
