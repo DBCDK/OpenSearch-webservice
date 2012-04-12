@@ -511,7 +511,11 @@ class openSearch extends webServiceServer {
         if ($param->collectionType->_value <> 'work-1' || empty($objects)) {
           if (FEDORA_VER_2) {
             $this->get_fedora_rels_ext($fpid, $unit_rels_ext);
-            $fpid = $this->parse_unit_for_object_ids($unit_rels_ext);
+            list($fpid, $unit_members) = $this->parse_unit_for_object_ids($unit_rels_ext);
+            if ($this->xs_boolean($param->includeHoldingsCount->_value)) {
+              // search rec.id=$fpid and pick ols.holdingsCount and add to $no_of_holdings
+              $no_of_holdings = $unit_members;
+            }
           }
           if ($error = $this->get_fedora_raw($fpid, $fedora_result))
             return $ret_error;
@@ -538,6 +542,7 @@ class openSearch extends webServiceServer {
                                        NULL, // no $filter_agency on search - bad performance
                                        $param->format->_value,
                                        $include_marcx,
+                                       $no_of_holdings,
                                        $explain);
         }
         else
@@ -553,7 +558,7 @@ class openSearch extends webServiceServer {
     $this->watch->stop('get_recs');
 
     if ($format == 'bibliotekdkWorkDisplay') {
-      $this->format_records($collections, $this->xs_boolean($param->includeMarcXchange->_value));
+      $this->format_records($collections, $this->xs_boolean($param->includeMarcXchange->_value), $format);
     }
 
     if ($_REQUEST['work'] == 'debug') {
@@ -643,6 +648,13 @@ class openSearch extends webServiceServer {
       return $ret_error;
     if ($this->xs_boolean($param->allRelations->_value))
       $this->get_fedora_rels_ext($fpid, $fedora_relation);
+    if ($this->xs_boolean($param->includeHoldingsCount->_value)) {
+      $this->get_fedora_rels_ext($fpid, $fedora_rels_ext);
+      $unit_id = $this->parse_rels_for_unit_id($fedora_rels_ext);
+      $this->get_fedora_rels_ext($unit_id, $unit_rels_ext);
+      list($dummy, $no_of_holdings) = $this->parse_unit_for_object_ids($unit_rels_ext);
+              // search rec.id=$fpid and pick ols.holdingsCount and add to $no_of_holdings
+    }
     $format = $param->objectFormat->_value;
     if ($format == 'bibliotekdkWorkDisplay') {
       $include_marcx = TRUE;
@@ -658,11 +670,12 @@ class openSearch extends webServiceServer {
                                  $fpid,
                                  $filter_agency,
                                  $format,
-                                 $include_marcx);
+                                 $include_marcx,
+                                 $no_of_holdings);
     $collections[]->_value = $o;
 
     if ($format == 'bibliotekdkWorkDisplay') {
-      $this->format_records($collections, $this->xs_boolean($param->includeMarcXchange->_value));
+      $this->format_records($collections, $this->xs_boolean($param->includeMarcXchange->_value), $format);
     }
 
     $result = &$ret->searchResponse->_value->result->_value;
@@ -685,14 +698,18 @@ class openSearch extends webServiceServer {
   /** \brief
    *
    */
-  private function format_records(&$collections, $keep_marcx) {
+  private function format_records(&$collections, $keep_marcx, $format) {
+    $form_array = array('bibliotekdkWorkDisplay' => 'bibliotekdkFullDisplay');
     $this->watch->start('format');
     $f_obj->formatRequest->_namespace = $this->xmlns['of'];
     $f_obj->formatRequest->_value->originalData = $collections;
     foreach ($f_obj->formatRequest->_value->originalData as $i => $o)
       $f_obj->formatRequest->_value->originalData[$i]->_namespace = $this->xmlns['of'];
     $f_obj->formatRequest->_value->outputFormat->_namespace = $this->xmlns['of'];
-    $f_obj->formatRequest->_value->outputFormat->_value = 'bibliotekdkFullDisplay';
+    if (isset($form_array[$format]))
+      $f_obj->formatRequest->_value->outputFormat->_value = $form_array[$format];
+    else
+      $f_obj->formatRequest->_value->outputFormat->_value = 'bibliotekdkFullDisplay';
     $f_obj->formatRequest->_value->outputType->_namespace = $this->xmlns['of'];
     $f_obj->formatRequest->_value->outputType->_value = 'php';
     $f_xml = $this->objconvert->obj2soap($f_obj);
@@ -937,10 +954,11 @@ class openSearch extends webServiceServer {
     $dom->preserveWhiteSpace = false;
     if (@ $dom->loadXML($u_rel)) {
       $res = array();
+      $hmof = $dom->getElementsByTagName('hasMemberOfUnit');
       $hpbo = $dom->getElementsByTagName('hasPrimaryBibObject');
       if ($hpbo->item(0))
-        return($hpbo->item(0)->nodeValue);
-      return FALSE;
+        return(array($hpbo->item(0)->nodeValue, $hmof->length));
+      return array(FALSE, FALSE);
     }
   }
 
@@ -987,7 +1005,7 @@ class openSearch extends webServiceServer {
    * @param $include_marcx   -
    * @param $debug_info      -
    */
-  private function parse_fedora_object(&$fedora_obj, &$fedora_rels_obj, $rels_type, $rec_id, $filter, $format, $include_marcx=FALSE, $debug_info='') {
+  private function parse_fedora_object(&$fedora_obj, &$fedora_rels_obj, $rels_type, $rec_id, $filter, $format, $include_marcx=FALSE, $holdings_count=NULL, $debug_info='') {
     static $dom, $rels_dom, $stream_dom, $allowed_relation;
     if (empty($format)) {
       $format = 'dkabm';
@@ -1086,8 +1104,8 @@ class openSearch extends webServiceServer {
 
     $ret = $rec;
     $ret->identifier->_value = $rec_id;
-    if ($this->xs_boolean($param->includeHoldingsCount->_value)) 
-      $ret->holdingsCount->_value = 1;
+    if (isset($holdings_count)) 
+      $ret->holdingsCount->_value = $holdings_count;
     if ($relations) $ret->relations->_value = $relations;
     $ret->formatsAvailable->_value = $this->scan_for_formats($dom);
     if ($debug_info) $ret->queryResultExplanation->_value = $debug_info;
