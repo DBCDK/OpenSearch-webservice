@@ -58,11 +58,18 @@ default_repository = repos1
 ; url to solr and fedorainterface
 ; work_format = 2 fedora-object version bib.dk i.e. using units
 ; set url's for fedora_get_raw, fedora_get_rels_ext and fedora_get_object_profile
+; - solr: url to solr-server
+; - fedora_get_raw: url to get raw record from fedora
+; - fedora_get_rels_ext: url to get rels_ext_record from fedora
+; - fedora_get_object_profile: url to get rels_ext_record from fedora
+; - search_profile_version: 2 (using submitter and original_format) or 3 (using rec.collectionIdentifier)
+; - work_format: 1 or 2 (using unit's)
 
 repository[repos1][solr] = http://someserver:8080/apache-solr-1.4-dev/select
 repository[repos1][fedora_get_raw] = http://someserver.dbc.dk:8080/fedora/get/%s/originalData.0
 repository[repos1][fedora_get_rels_ext] = http://someserver.dbc.dk:8080/fedora/get/%s/RELS-EXT
 repository[repos1][fedora_get_object_profile] = http://someserver.dbc.dk:8080/fedora/objects/%s/?format=xml
+repository[repos1][search_profile_version] = 3
 repository[repos1][work_format] = 2
 
 repository[repos2][solr] = http://anotherserver:8080/apache-solr-1.4-dev/select
@@ -82,7 +89,7 @@ cache_expire = 600
 profile_cache_expire = 60
 
 ; search profile service end point
-open_agency = http://openagency.addi.dk/1.2/?action=openSearchProfile&agencyId=%s
+open_agency = http://openagency.addi.dk/1.2/?action=openSearchProfile&agencyId=%s&profileVersion=%s
 
 ; open format
 open_format = http://openformat.dbc.dk/0.1/
