@@ -31,6 +31,7 @@ define(REL_TO_EXTERNAL_OBJ, 2);     // relation points to external object
 
 //-----------------------------------------------------------------------------
 class openSearch extends webServiceServer {
+  protected $cql2solr;
   protected $curl;
   protected $cache;
   protected $repository; // array containing solr and fedora uri's
@@ -72,6 +73,19 @@ class openSearch extends webServiceServer {
     if (empty($param->query->_value)) {
       $unsupported = 'Error: No query found in request';
     }
+    $repositories = $this->config->get_value('repository', 'setup');
+    if (empty($param->repository->_value)) {
+      $repository_name = $this->config->get_value('default_repository', 'setup');
+      $this->repository = $repositories[$repository_name];
+    }
+    else {
+      $repository_name = $param->repository->_value;
+      if (!$this->repository = $repositories[$param->repository->_value]) {
+        $unsupported = 'Error: Unknown repository: ' . $param->repository->_value;
+      }
+    }
+    define(FEDORA_VER_2, $this->repository['work_format'] == 2);
+
 // for testing and group all
     if (count($this->aaa->aaa_ip_groups) == 1 && $this->aaa->aaa_ip_groups['all']) {
       $param->agency->_value = '100200';
@@ -87,22 +101,10 @@ class openSearch extends webServiceServer {
     elseif (empty($param->profile->_value)) {
       $unsupported = 'Error: No profile in request';
     }
-    elseif (!($filter_agency = $this->get_agencies_from_profile($param->agency->_value, $param->profile->_value))) {
+    elseif (!($filter_agency = $this->get_agencies_from_profile($param->agency->_value, $param->profile->_value, $this->repository['search_profile_version']))) {
       $unsupported = 'Error: Cannot fetch profile: ' . $param->profile->_value .
                      ' for ' . $param->agency->_value;
     }
-    $repositories = $this->config->get_value('repository', 'setup');
-    if (empty($param->repository->_value)) {
-      $repository_name = $this->config->get_value('default_repository', 'setup');
-      $this->repository = $repositories[$repository_name];
-    }
-    else {
-      $repository_name = $param->repository->_value;
-      if (!$this->repository = $repositories[$param->repository->_value]) {
-        $unsupported = 'Error: Unknown repository: ' . $param->repository->_value;
-      }
-    }
-    define(FEDORA_VER_2, $this->repository['work_format'] == 2);
 
     $use_work_collection = ($param->collectionType->_value <> 'manifestation');
     if (($rr = $param->userDefinedRanking) || ($rr = $param->userDefinedBoost->_value->userDefinedRanking)) {
@@ -184,15 +186,15 @@ class openSearch extends webServiceServer {
     $key_relation_cache = md5($param->query->_value . $repository_name . $filter_agency .
                               $use_work_collection .  $sort . $rank . $boost_str . $this->version);
 
-    $cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
-    // urldecode ???? $query = $cql2solr->convert(urldecode($param->query->_value));
+    $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
+    // urldecode ???? $query = $this->cql2solr->convert(urldecode($param->query->_value));
     // ' is handled differently in indexing and searching, so remove it until this is solved
-    $query = $cql2solr->convert(str_replace("'", '', $param->query->_value), $rank_type[$rank]);
-    $solr_query = $cql2solr->edismax_convert($param->query->_value, $rank_type[$rank]);
+    $query = $this->cql2solr->convert(str_replace("'", '', $param->query->_value), $rank_type[$rank]);
+    $solr_query = $this->cql2solr->edismax_convert($param->query->_value, $rank_type[$rank]);
 //print_r($query);
 //print_r($solr_query);
 //die('test');
-    //$query = $cql2solr->convert($param->query->_value, $rank_type[$rank]);
+    //$query = $this->cql2solr->convert($param->query->_value, $rank_type[$rank]);
     if (!$solr_query['operands']) {
       $error = 'Error: No query found in request';
       return $ret_error;
@@ -201,8 +203,8 @@ class openSearch extends webServiceServer {
       $sort_q = '&sort=' . urlencode($sort_type[$sort]);
     }
     if ($rank_type[$rank]) {
-      $rank_qf = $cql2solr->make_boost($rank_type[$rank]['word_boost']);
-      $rank_pf = $cql2solr->make_boost($rank_type[$rank]['phrase_boost']);
+      $rank_qf = $this->cql2solr->make_boost($rank_type[$rank]['word_boost']);
+      $rank_pf = $this->cql2solr->make_boost($rank_type[$rank]['phrase_boost']);
       $rank_tie = $rank_type[$rank]['tie'];
       $rank_q = '&qf=' . urlencode($rank_qf) .  '&pf=' . urlencode($rank_pf) .  '&tie=' . $rank_tie;
     }
@@ -211,7 +213,7 @@ class openSearch extends webServiceServer {
       $filter_q = rawurlencode($filter_agency);
     }
 
-    if (FEDORA_VER_2) $filter_q = '';
+    //if (FEDORA_VER_2) $filter_q = '';
 
     $rows = ($start + $step_value + 100) * 2;
     if ($param->facets->_value->facetName) {
@@ -513,8 +515,7 @@ class openSearch extends webServiceServer {
             $this->get_fedora_rels_ext($fpid, $unit_rels_ext);
             list($fpid, $unit_members) = $this->parse_unit_for_object_ids($unit_rels_ext);
             if ($this->xs_boolean($param->includeHoldingsCount->_value)) {
-              // search rec.id=$fpid and pick ols.holdingsCount and add to $no_of_holdings
-              $no_of_holdings = $unit_members;
+              $no_of_holdings = $unit_members + $this->get_solr_holdings($fpid);
             }
           }
           if ($error = $this->get_fedora_raw($fpid, $fedora_result))
@@ -607,13 +608,22 @@ class openSearch extends webServiceServer {
       $error = 'authentication_error';
       return $ret_error;
     }
+    $repositories = $this->config->get_value('repository', 'setup');
+    if (empty($param->repository->_value)) {
+      $this->repository = $repositories[$this->config->get_value('default_repository', 'setup')];
+    }
+    elseif (!$this->repository = $repositories[$param->repository->_value]) {
+      $error = 'Error: Unknown repository: ' . $param->repository->_value;
+      verbose::log(FATAL, $error);
+      return $ret_error;
+    }
     if (empty($param->agency->_value) && empty($param->profile->_value)) {
       $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
       $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
     }
     if ($agency = $param->agency->_value) {
       if ($param->profile->_value) {
-        if (!($agencies[$agency] = $this->get_agencies_from_profile($agency, $param->profile->_value))) {
+        if (!($agencies[$agency] = $this->get_agencies_from_profile($agency, $param->profile->_value, $this->repository['search_profile_version']))) {
           $error = 'Error: Cannot fetch profile: ' . $param->profile->_value . ' for ' . $agency;
           return $ret_error;
         }
@@ -626,15 +636,6 @@ class openSearch extends webServiceServer {
         $error = 'Error: Unknown agency: ' . $agency;
         return $ret_error;
       }
-    }
-    $repositories = $this->config->get_value('repository', 'setup');
-    if (empty($param->repository->_value)) {
-      $this->repository = $repositories[$this->config->get_value('default_repository', 'setup')];
-    }
-    elseif (!$this->repository = $repositories[$param->repository->_value]) {
-      $error = 'Error: Unknown repository: ' . $param->repository->_value;
-      verbose::log(FATAL, $error);
-      return $ret_error;
     }
     $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
                              $this->config->get_value('cache_port', 'setup'),
@@ -653,7 +654,8 @@ class openSearch extends webServiceServer {
       $unit_id = $this->parse_rels_for_unit_id($fedora_rels_ext);
       $this->get_fedora_rels_ext($unit_id, $unit_rels_ext);
       list($dummy, $no_of_holdings) = $this->parse_unit_for_object_ids($unit_rels_ext);
-              // search rec.id=$fpid and pick ols.holdingsCount and add to $no_of_holdings
+      $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
+      $no_of_holdings += $this->get_solr_holdings($fpid);
     }
     $format = $param->objectFormat->_value;
     if ($format == 'bibliotekdkWorkDisplay') {
@@ -698,6 +700,25 @@ class openSearch extends webServiceServer {
   /** \brief
    *
    */
+  private function get_solr_holdings($pid) {
+    $holds = 0;
+    $q = $this->cql2solr->edismax_convert('rec.id=' . $pid);
+    $solr_query = $this->repository['solr'] . 
+                    '?q=' . $q['edismax'] .
+                    '&rows=1&fl=ols.holdingsCount&defType=edismax&wt=phps';
+
+    $solr_result = $this->curl->get($solr_query);
+    if (($solr_result) && ($solr_arr = unserialize($solr_result)))
+      $holds = intval($solr_arr['response']['docs'][0]['ols.holdingsCount'][0]);
+
+    if ($holds) $holds--;
+
+    return $holds;
+  }
+
+  /** \brief
+   *
+   */
   private function format_records(&$collections, $keep_marcx, $format) {
     $form_array = array('bibliotekdkWorkDisplay' => 'bibliotekdkFullDisplay');
     $this->watch->start('format');
@@ -725,9 +746,12 @@ class openSearch extends webServiceServer {
     foreach ($collections as $idx => &$c) {
       //$c->_value->formattedCollection = $fr_obj->formatResponse->_value->bibliotekdkFullDisplay[$idx];
       $c->_value->formattedCollection = $fr_obj->formatResponse->_value->fullDisplayHtml[$idx];
-      if (!$keep_marcx)
-        foreach ($c->_value->collection->_value->object as &$o)
+  // delete unwanted structures
+      foreach ($c->_value->collection->_value->object as &$o) {
+        unset($o->_value->record);
+        if (!$keep_marcx)
           unset($o->_value->collection);
+      }
     }
     $this->watch->stop('format');
   }
@@ -795,7 +819,7 @@ class openSearch extends webServiceServer {
   /** \brief Fetch a profile $profile_name for agency $agency and build Solr filter_query parm
    *
    */
-  private function get_agencies_from_profile($agency, $profile_name) {
+  private function get_agencies_from_profile($agency, $profile_name, $profile_version) {
     require_once 'OLS_class_lib/search_profile_class.php';
     if (!($host = $this->config->get_value('profile_cache_host', 'setup')))
       $host = $this->config->get_value('cache_host', 'setup');
@@ -804,14 +828,19 @@ class openSearch extends webServiceServer {
     if (!($expire = $this->config->get_value('profile_cache_expire', 'setup')))
       $expire = $this->config->get_value('cache_expire', 'setup');
     $profiles = new search_profiles($this->config->get_value('open_agency', 'setup'), $host, $port, $expire);
-    $profile = $profiles->get_profile($agency, $profile_name);
+    $profile_version = ($profile_version ? intval($profile_version) : 2);
+    $profile = $profiles->get_profile($agency, $profile_name, $profile_version);
     if (! is_array($profile))
       return FALSE;
     $ret = '';
     foreach ($profile as $p) {
-      $ret .= ($ret ? ' OR ' : '') .
-              '(submitter:' . $p['sourceOwner'] .  
-              ' AND original_format:' . $p['sourceFormat'] . ')';
+      if ($profile_version == 3)
+        $ret .= ($ret ? ' OR ' : '') .
+                'rec.collectionIdentifier:' . $p['sourceIdentifier'];
+      else
+        $ret .= ($ret ? ' OR ' : '') .
+                '(submitter:' . $p['sourceOwner'] .  
+                ' AND original_format:' . $p['sourceFormat'] . ')';
     }
     return $ret;
   }
