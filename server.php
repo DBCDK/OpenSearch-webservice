@@ -720,7 +720,7 @@ class openSearch extends webServiceServer {
    *
    */
   private function format_records(&$collections, $keep_marcx, $format) {
-    $form_array = array('bibliotekdkWorkDisplay' => 'bibliotekdkFullDisplay');
+    $form_array = array('bibliotekdkWorkDisplay' => 'bibliotekdkWorkDisplay');
     $this->watch->start('format');
     $f_obj->formatRequest->_namespace = $this->xmlns['of'];
     $f_obj->formatRequest->_value->originalData = $collections;
@@ -730,7 +730,7 @@ class openSearch extends webServiceServer {
     if (isset($form_array[$format]))
       $f_obj->formatRequest->_value->outputFormat->_value = $form_array[$format];
     else
-      $f_obj->formatRequest->_value->outputFormat->_value = 'bibliotekdkFullDisplay';
+      $f_obj->formatRequest->_value->outputFormat->_value = 'bibliotekdkWorkDisplay';
     $f_obj->formatRequest->_value->outputType->_namespace = $this->xmlns['of'];
     $f_obj->formatRequest->_value->outputType->_value = 'php';
     $f_xml = $this->objconvert->obj2soap($f_obj);
@@ -745,7 +745,7 @@ class openSearch extends webServiceServer {
     }
     foreach ($collections as $idx => &$c) {
       //$c->_value->formattedCollection = $fr_obj->formatResponse->_value->bibliotekdkFullDisplay[$idx];
-      $c->_value->formattedCollection = $fr_obj->formatResponse->_value->fullDisplayHtml[$idx];
+      $c->_value->formattedCollection = $fr_obj->formatResponse->_value->workDisplayHtml[$idx];
   // delete unwanted structures
       foreach ($c->_value->collection->_value->object as &$o) {
         unset($o->_value->record);
