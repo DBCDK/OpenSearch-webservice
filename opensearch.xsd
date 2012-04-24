@@ -751,6 +751,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="dbcaddi:hasThemeMember"/>
 			<xs:enumeration value="dbcaddi:hasCreatorDescription"/>
 			<xs:enumeration value="dbcaddi:hasCreatorHomePage"/>
+			<xs:enumeration value="dbcaddi:hasPublisherDescription"/>
 			<xs:enumeration value="dbcaddi:hasSubjectDescription"/>
 			<xs:enumeration value="dbcaddi:hasFulltext"/>
 			<xs:enumeration value="dbcaddi:hasOnlineAccess"/>
