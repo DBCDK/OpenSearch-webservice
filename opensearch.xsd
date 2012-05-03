@@ -693,6 +693,13 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="marcxchange"/>
 			<xs:enumeration value="bibliotekdkWorkDisplay"/>
 			<xs:enumeration value="opensearchobject"/>
+            <xs:enumeration value="briefDisplayHtml"/>
+            <xs:enumeration value="fullDisplayHtml"/>
+            <xs:enumeration value="workDisplayHtml"/>
+            <xs:enumeration value="briefDisplay"/>
+            <xs:enumeration value="fullDisplay"/>
+            <xs:enumeration value="refWorks"/>
+            <xs:enumeration value="ris"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="outputTypeType">
