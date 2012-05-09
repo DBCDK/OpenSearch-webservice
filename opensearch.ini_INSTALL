@@ -40,11 +40,10 @@ xmlns[dcmitype] = http://purl.org/dc/dcmitype/
 xmlns[dcterms] = http://purl.org/dc/terms/
 xmlns[ac] = http://biblstandard.dk/ac/namespace/
 xmlns[dkdcplus] = http://biblstandard.dk/abm/namespace/dkdcplus/
-;xmlns[marcx] = http://www.bs.dk/standards/MarcXchange
 xmlns[marcx] = info:lc/xmlns/marcxchange-v1
 xmlns[docbook] = http://docbook.org/ns/docbook
 xmlns[oso] = http://oss.dbc.dk/ns/opensearchobjects
-xmlns[dbcbibaddi] = http://oss.dbc.dk/rdf/dbcbibaddi#
+xmlns[dbcbib] = http://oss.dbc.dk/rdf/dbcbib#
 xmlns[dbcaddi] = http://oss.dbc.dk/rdf/dbcaddi#
 
 
@@ -79,9 +78,9 @@ repository[repos2][fedora_get_object_profile] = http://anotherserver.dbc.dk:8080
 
 
 ; memcache
-cache_host = localhost
-cache_port = 11211
-cache_expire = 600
+; cache_host = localhost
+; cache_port = 11211
+; cache_expire = 600
 
 ; memcache search profile - defaults to cache_host, cache_port, cache_expire if not defined
 ;profile_cache_host = localhost
@@ -111,35 +110,21 @@ open_format[ris][format] = ris
 ; - relationename as found in the RELS_EXT from fedora
 ; - relations of type 1 points to internal objects
 ; - relations of type 2 points to external objects
-relation["dbcbibaddi:hasReview"] = 1
 relation["dbcaddi:hasImage"] = 1
 relation["dbcaddi:isReviewOf"] = 1
-relation["dbcaddi:hasCover"] = 1
-relation["dbcaddi:isCoverOf"] = 1
-relation["dbcaddi:hasUserCreatedContent"] = 1
-relation["dbcaddi:hasDemo"] = 1
-relation["dbcaddi:hasTrailer"] = 1
-relation["dbcaddi:hasTutorial"] = 1
-relation["dbcaddi:hasRingtone"] = 1
-relation["dbcaddi:isPartOfTheme"] = 1
-relation["dbcaddi:hasThemeMember"] = 1
-relation["dbcaddi:hasAuthorDescription"] = 1
-relation["dbcaddi:hasSubjectDescription"] = 1
-relation["dbcbib:hasTrack"] = 1
-relation["dbcbib:isPartOfAlbum"] = 1
-;relation["dbcbib:isPartOfManifestation"] = 1
-relation["dbcbib:hasAnalysis"] = 1
-relation["dbcbib:isAnalysisOf"] = 1
-relation["dbcbib:hasFulltext"] = 1
+relation["dbcaddi:hasReview"] = 1
 relation["dbcaddi:hasSoundClip"] = 2
-relation["dbcbib:hasCreatorHomePage"] = 2
-relation["dbcbib:hasOnlineAccess"] = 2
-relation["dbcbib:hasRemoteAccess"] = 2
-relation["dbcbib:hasOnSiteAccess"] = 2
-relation["dbcbib:hasPayPerView"] = 2
-relation["dbcbib:hasOpenUrl"] = 2
+relation["dbcaddi:hasCreatorDescription"] = 1
+relation["dbcaddi:hasDescriptionFromPublisher"] = 1
+relation["dbcaddi:hasSubjectDescription"] = 1
+relation["dbcaddi:hasTrack"] = 1
+relation["dbcaddi:isPartOfAlbum"] = 1
+relation["dbcaddi:hasAnalysis"] = 1
+relation["dbcaddi:isAnalysisOf"] = 1
+relation["dbcaddi:hasCreatorHomePage"] = 2
+relation["dbcaddi:hasOnlineAccess"] = 2
 
-; test relation["isMemberOfWork"] = 1
+; test relation["dbcbib:isMemberOfWork"] = 1
 
 ; scan objects for these formats
 scan_format_table["dkabm:record"] = dkabm
@@ -307,15 +292,6 @@ action[getObject][] = outputType
 action[getObject][] = relationData
 action[getObject][] = repository
 action[getObject][] = trackingId
-
-
-
-[agency]
-agency[710100] = (submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink)) OR (submitter:710100 AND original_format:katalog) OR (submitter:150014)
-agency[775100] = (submitter:dbc AND original_format:(anmeld OR artikler OR matvurd OR dr_atlas OR dc_bonanza OR forfatterw OR faktalink)) OR (submitter:775100 AND original_format:(katalog OR ebsco OR ebrary)) OR (submitter:150014)
-agency[150013] = (submitter:150013 AND original_format:(pg OR dbc)) OR submitter:150014
-
-
 
 [howru]
 test[] = search&query=danmark&stepValue=1
