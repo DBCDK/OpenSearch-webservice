@@ -7,7 +7,7 @@
 ;service_http_error = HTTP/1.1 410 Gone
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
-version = 3.0
+version = 2.3
 
 ; wsdl for service
 wsdl = opensearch.wsdl
