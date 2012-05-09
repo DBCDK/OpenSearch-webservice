@@ -7,7 +7,7 @@
 ;service_http_error = HTTP/1.1 410 Gone
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
-version = 2.3
+version = 3.0
 
 ; wsdl for service
 wsdl = opensearch.wsdl
@@ -44,8 +44,8 @@ xmlns[dkdcplus] = http://biblstandard.dk/abm/namespace/dkdcplus/
 xmlns[marcx] = info:lc/xmlns/marcxchange-v1
 xmlns[docbook] = http://docbook.org/ns/docbook
 xmlns[oso] = http://oss.dbc.dk/ns/opensearchobjects
-;xmlns[dbcbibaddi] = http://oss.dbc.dk/rdf/dbcbibaddi#
-;xmlns[dbcaddi] = http://oss.dbc.dk/rdf/dbcaddi#
+xmlns[dbcbibaddi] = http://oss.dbc.dk/rdf/dbcbibaddi#
+xmlns[dbcaddi] = http://oss.dbc.dk/rdf/dbcaddi#
 
 
 
@@ -92,7 +92,10 @@ profile_cache_expire = 60
 open_agency = http://openagency.addi.dk/1.2/?action=openSearchProfile&agencyId=%s&profileVersion=%s
 
 ; open format
-open_format = http://openformat.dbc.dk/0.1/
+ws_open_format_uri = http://openformat.dbc.dk/0.1/
+open_format[bibliotekdkWorkDisplay][format] = bibliotekdkWorkDisplay
+open_format[ris][format] = ris
+
 
 ; default search_profile setting
 ;agency_fallback = 100200
@@ -103,9 +106,12 @@ open_format = http://openformat.dbc.dk/0.1/
 ;raw_index[] = phrase.
 
 ; relations which can be returned
-; relations of type 1 points to internal objects
-; relations of type 2 points to external objects
-relation["dbcaddi:hasReview"] = 1
+; relation["prefix:relationname"] = [12]
+; - prefix has to be declared with namespace in xmlns (above)
+; - relationename as found in the RELS_EXT from fedora
+; - relations of type 1 points to internal objects
+; - relations of type 2 points to external objects
+relation["dbcbibaddi:hasReview"] = 1
 relation["dbcaddi:hasImage"] = 1
 relation["dbcaddi:isReviewOf"] = 1
 relation["dbcaddi:hasCover"] = 1
@@ -132,34 +138,6 @@ relation["dbcbib:hasRemoteAccess"] = 2
 relation["dbcbib:hasOnSiteAccess"] = 2
 relation["dbcbib:hasPayPerView"] = 2
 relation["dbcbib:hasOpenUrl"] = 2
-
-relation["hasReview"] = 1
-relation["hasImage"] = 1
-relation["isReviewOf"] = 1
-relation["hasCover"] = 1
-relation["isCoverOf"] = 1
-relation["hasUserCreatedContent"] = 1
-relation["hasDemo"] = 1
-relation["hasTrailer"] = 1
-relation["hasTutorial"] = 1
-relation["hasRingtone"] = 1
-relation["isPartOfTheme"] = 1
-relation["hasThemeMember"] = 1
-relation["hasAuthorDescription"] = 1
-relation["hasSubjectDescription"] = 1
-relation["hasTrack"] = 1
-relation["isPartOfAlbum"] = 1
-;relation["isPartOfManifestation"] = 1
-relation["hasAnalysis"] = 1
-relation["isAnalysisOf"] = 1
-relation["hasFulltext"] = 1
-relation["hasSoundClip"] = 2
-relation["hasCreatorHomePage"] = 2
-relation["hasOnlineAccess"] = 2
-relation["hasRemoteAccess"] = 2
-relation["hasOnSiteAccess"] = 2
-relation["hasPayPerView"] = 2
-relation["hasOpenUrl"] = 2
 
 ; test relation["isMemberOfWork"] = 1
 

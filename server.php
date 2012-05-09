@@ -142,6 +142,14 @@ class openSearch extends webServiceServer {
       $rank = 'rank_none';
     }
 
+    $open_format = $this->config->get_value('open_format', 'setup');
+    $format = $param->objectFormat->_value;
+    if ($open_format[$format]) {
+      $is_open_format = TRUE;
+      if (!($open_format_name = $open_format[$format]['format']))
+        $open_format_name = $format;
+    }
+
     if ($unsupported) return $ret_error;
 
     /**
@@ -579,7 +587,7 @@ class openSearch extends webServiceServer {
     $result->more->_value = ($more ? 'true' : 'false');
     $result->searchResult = $collections;
     $result->facetResult->_value = $facets;
-    $result->debugResult->_value = $debug_result;
+    $result->queryDebugResult->_value = $debug_result;
     $result->time->_value = $this->watch->splittime('Total');
 
     //print_r($collections[0]);
@@ -637,6 +645,14 @@ class openSearch extends webServiceServer {
         return $ret_error;
       }
     }
+
+    $format = $param->objectFormat->_value;
+    if ($open_format[$format]) {
+      $is_open_format = TRUE;
+      if (!($open_format_name = $open_format[$format]['format']))
+        $open_format_name = $format;
+    }
+
     $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
                              $this->config->get_value('cache_port', 'setup'),
                              $this->config->get_value('cache_expire', 'setup'));
@@ -657,7 +673,6 @@ class openSearch extends webServiceServer {
       $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
       $no_of_holdings += $this->get_solr_holdings($fpid);
     }
-    $format = $param->objectFormat->_value;
     if ($format == 'bibliotekdkWorkDisplay') {
       $include_marcx = TRUE;
     } else {
@@ -736,8 +751,9 @@ class openSearch extends webServiceServer {
     $f_xml = $this->objconvert->obj2soap($f_obj);
     $this->curl->set_post($f_xml);
     $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
-    $open_format_uri = $this->config->get_value('open_format', 'setup');
+    $open_format_uri = $this->config->get_value('ws_open_format_uri', 'setup');
     $f_result = $this->curl->get($open_format_uri);
+    //$fr_obj = unserialize($f_result);
     $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['']);
     if (!$fr_obj) {
       $curl_err = $this->curl->get_status();
@@ -746,7 +762,7 @@ class openSearch extends webServiceServer {
     foreach ($collections as $idx => &$c) {
       //$c->_value->formattedCollection = $fr_obj->formatResponse->_value->bibliotekdkFullDisplay[$idx];
       $c->_value->formattedCollection = $fr_obj->formatResponse->_value->workDisplayHtml[$idx];
-  // delete unwanted structures
+  // remove unwanted structures
       foreach ($c->_value->collection->_value->object as &$o) {
         unset($o->_value->record);
         if (!$keep_marcx)
@@ -1099,35 +1115,36 @@ class openSearch extends webServiceServer {
       }
       elseif ($rels_dom->getElementsByTagName('Description')->item(0)) {
         foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
-          if ($tag->nodeType == XML_ELEMENT_NODE && $allowed_relation[$tag->tagName]) {
+          if ($tag->nodeType == XML_ELEMENT_NODE) {
+            if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
+              $rel_prefix .= ':';
+            else
+              $rel_prefix = '';
+            if ($rel_to = $allowed_relation[$rel_prefix . $tag->localName]) {
             //verbose::log(TRACE, $tag->localName . ' ' . $tag->getAttribute('xmlns'). ' -> ' .  array_search($tag->getAttribute('xmlns'), $this->xmlns));
-            if ($allowed_relation[$tag->tagName] <> REL_TO_INTERNAL_OBJ
-                || $this->is_searchable($tag->nodeValue, $filter)) {
-              if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
-                $rel_prefix .= ':';
-              $relation->relationType->_value = $rel_prefix . $tag->localName;
-              if ($rels_type == 'uri' || $rels_type == 'full')
-                $relation->relationUri->_value = $tag->nodeValue;
-              if ($rels_type == 'full' && $allowed_relation[$tag->tagName] == REL_TO_INTERNAL_OBJ) {
-                //verbose::log(DEBUG, 'RFID: ' . $tag->nodeValue);
-                $this->get_fedora_raw($tag->nodeValue, $related_obj);
-                if (@ !$rels_dom->loadXML($related_obj)) {
-                  verbose::log(FATAL, 'Cannot load ' . $tag->tagName . ' object for ' . $rec_id . ' into DomXml');
+              if ($rel_to <> REL_TO_INTERNAL_OBJ || $this->is_searchable($tag->nodeValue, $filter)) {
+                $relation->relationType->_value = $rel_prefix . $tag->localName;
+                if ($rels_type == 'uri' || $rels_type == 'full')
+                  $relation->relationUri->_value = $tag->nodeValue;
+                if ($rels_type == 'full' && $rel_to == REL_TO_INTERNAL_OBJ) {
+                  //verbose::log(DEBUG, 'RFID: ' . $tag->nodeValue);
+                  $this->get_fedora_raw($tag->nodeValue, $related_obj);
+                  if (@ !$rels_dom->loadXML($related_obj)) {
+                    verbose::log(FATAL, 'Cannot load ' . $tag->tagName . ' object for ' . $rec_id . ' into DomXml');
+                  }
+                  else {
+                    $rel_obj = &$relation->relationObject->_value->object->_value;
+                    $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format, $include_marcx);
+                    $rel_obj->identifier->_value = $tag->nodeValue;
+                    $rel_obj->formatsAvailable->_value = $this->scan_for_formats($rels_dom);
+                  }
                 }
-                else {
-                  $rel_obj = &$relation->relationObject->_value->object->_value;
-                  $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format, $include_marcx);
-                  $rel_obj->identifier->_value = $tag->nodeValue;
-                  $rel_obj->formatsAvailable->_value = $this->scan_for_formats($rels_dom);
-                }
+                $relations->relation[]->_value = $relation;
+                unset($relation);
               }
-              $relations->relation[]->_value = $relation;
-              unset($relation);
             }
           }
-          //print_r($relations);
-          //echo $rels;
-        }
+        }  // foreach ...
       }
     }
 
