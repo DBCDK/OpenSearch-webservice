@@ -31,7 +31,6 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:authentication" minOccurs="0"/>
 				<xs:element ref="os:callback" minOccurs="0"/>
 				<xs:element ref="os:includeHoldingsCount" minOccurs="0"/>
-				<xs:element ref="os:includeMarcXchange" minOccurs="0"/>
 				<xs:element ref="os:outputType" minOccurs="0"/>
 				<xs:element ref="os:relationData" minOccurs="0"/>
 				<xs:element ref="os:repository" minOccurs="0"/>
@@ -54,7 +53,6 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:collectionType" minOccurs="0"/>
 				<xs:element ref="os:facets" minOccurs="0"/>
 				<xs:element ref="os:includeHoldingsCount" minOccurs="0"/>
-				<xs:element ref="os:includeMarcXchange" minOccurs="0"/>
 				<xs:element ref="os:objectFormat" minOccurs="0"/>
 				<xs:element ref="os:outputType" minOccurs="0"/>
 				<xs:element ref="os:allRelations" minOccurs="0"/>

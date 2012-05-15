@@ -91,7 +91,10 @@ profile_cache_expire = 60
 open_agency = http://openagency.addi.dk/1.2/?action=openSearchProfile&agencyId=%s&profileVersion=%s
 
 ; open format
+; address to openFormat service
 ws_open_format_uri = http://openformat.dbc.dk/0.1/
+; formats supported by openFormat and possible name mapping
+; open_format[openSearch_format_name][format] = openFormat format name
 open_format[bibliotekdkWorkDisplay][format] = bibliotekdkWorkDisplay
 open_format[ris][format] = ris
 
