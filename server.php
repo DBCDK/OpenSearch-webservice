@@ -142,14 +142,8 @@ class openSearch extends webServiceServer {
       $rank = 'rank_none';
     }
 
-    $open_format = $this->config->get_value('open_format', 'setup');
-    $format = $param->objectFormat->_value;
-    if ($open_format[$format]) {
-      $is_open_format = TRUE;
-      if (!($open_format_name = $open_format[$format]['format']))
-        $open_format_name = $format;
-    }
-
+    $format = $this->set_format($param->objectFormat, $this->config->get_value('open_format', 'setup'));
+    
     if ($unsupported) return $ret_error;
 
     /**
@@ -509,12 +503,6 @@ class openSearch extends webServiceServer {
     $this->watch->start('get_recs');
     $collections = array();
     $rec_no = max(1, $start);
-    $format = $param->objectFormat->_value;
-    if ($format == 'bibliotekdkWorkDisplay') {
-      $include_marcx = TRUE;
-    } else {
-      $include_marcx = $this->xs_boolean($param->includeMarcXchange->_value);
-    }
     foreach ($work_ids as $work) {
       $objects = array();
       foreach ($work as $fpid) {
@@ -549,8 +537,7 @@ class openSearch extends webServiceServer {
                                        $param->relationData->_value,
                                        $fpid,
                                        NULL, // no $filter_agency on search - bad performance
-                                       $param->format->_value,
-                                       $include_marcx,
+                                       $format,
                                        $no_of_holdings,
                                        $explain);
         }
@@ -566,8 +553,8 @@ class openSearch extends webServiceServer {
     }
     $this->watch->stop('get_recs');
 
-    if ($format == 'bibliotekdkWorkDisplay') {
-      $this->format_records($collections, $this->xs_boolean($param->includeMarcXchange->_value), $format);
+    if ($format['found_open_format']) {
+      $this->format_records($collections, $format);
     }
 
     if ($_REQUEST['work'] == 'debug') {
@@ -605,7 +592,6 @@ class openSearch extends webServiceServer {
   *        objectFormat - one of dkabm, docbook, marcxchange, opensearchobject
   *        allRelations - boolean
   *        includeHoldingsCount - boolean
-  *        includeMarcXchange - boolean
   *        relationData - type, uri og full
   *        repository
   */
@@ -646,12 +632,7 @@ class openSearch extends webServiceServer {
       }
     }
 
-    $format = $param->objectFormat->_value;
-    if ($open_format[$format]) {
-      $is_open_format = TRUE;
-      if (!($open_format_name = $open_format[$format]['format']))
-        $open_format_name = $format;
-    }
+    $format = $this->set_format($param->objectFormat, $this->config->get_value('open_format', 'setup'));
 
     $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
                              $this->config->get_value('cache_port', 'setup'),
@@ -673,11 +654,6 @@ class openSearch extends webServiceServer {
       $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
       $no_of_holdings += $this->get_solr_holdings($fpid);
     }
-    if ($format == 'bibliotekdkWorkDisplay') {
-      $include_marcx = TRUE;
-    } else {
-      $include_marcx = $this->xs_boolean($param->includeMarcXchange->_value);
-    }
     $o->collection->_value->resultPosition->_value = 1;
     $o->collection->_value->numberOfObjects->_value = 1;
     $o->collection->_value->object[]->_value =
@@ -687,12 +663,12 @@ class openSearch extends webServiceServer {
                                  $fpid,
                                  $filter_agency,
                                  $format,
-                                 $include_marcx,
                                  $no_of_holdings);
     $collections[]->_value = $o;
 
-    if ($format == 'bibliotekdkWorkDisplay') {
-      $this->format_records($collections, $this->xs_boolean($param->includeMarcXchange->_value), $format);
+// FVS format
+    if ($format['found_open_format']) {
+      $this->format_records($collections, $format);
     }
 
     $result = &$ret->searchResponse->_value->result->_value;
@@ -711,6 +687,32 @@ class openSearch extends webServiceServer {
   }
 
   /*******************************************************************************/
+
+  private function set_format($objectFormat, $open_format) {
+    if (is_array($objectFormat))
+      $help = $objectFormat;
+    else
+      $help[] = $objectFormat;
+    foreach ($help as $of) {
+      if ($open_format[$of->_value]) {
+        $ret[$of->_value] = array('user_selected' => TRUE, 'is_open_format' => TRUE, 'format_name' => $open_format[$of->_value]['format']);
+        $ret['found_open_format'] = TRUE;
+      }
+      else {
+        $ret[$of->_value] = array('user_selected' => TRUE, 'is_open_format' => FALSE);
+      }
+    }
+    if ($ret['found_open_format']) {
+      if (empty($ret['dkabm']))
+        $ret['dkabm'] = array('user_selected' => FALSE, 'is_open_format' => FALSE);
+      if (empty($ret['marcxchange']))
+        $ret['marcxchange'] = array('user_selected' => FALSE, 'is_open_format' => FALSE);
+    }
+    elseif (empty($ret)) {
+      $ret['dkabm'] = array('user_selected' => TRUE, 'is_open_format' => FALSE);
+    }
+    return $ret;
+  }
 
   /** \brief
    *
@@ -734,38 +736,43 @@ class openSearch extends webServiceServer {
   /** \brief
    *
    */
-  private function format_records(&$collections, $keep_marcx, $format) {
-    $form_array = array('bibliotekdkWorkDisplay' => 'bibliotekdkWorkDisplay');
+  private function format_records(&$collections, $format) {
     $this->watch->start('format');
-    $f_obj->formatRequest->_namespace = $this->xmlns['of'];
-    $f_obj->formatRequest->_value->originalData = $collections;
-    foreach ($f_obj->formatRequest->_value->originalData as $i => $o)
-      $f_obj->formatRequest->_value->originalData[$i]->_namespace = $this->xmlns['of'];
-    $f_obj->formatRequest->_value->outputFormat->_namespace = $this->xmlns['of'];
-    if (isset($form_array[$format]))
-      $f_obj->formatRequest->_value->outputFormat->_value = $form_array[$format];
-    else
-      $f_obj->formatRequest->_value->outputFormat->_value = 'bibliotekdkWorkDisplay';
-    $f_obj->formatRequest->_value->outputType->_namespace = $this->xmlns['of'];
-    $f_obj->formatRequest->_value->outputType->_value = 'php';
-    $f_xml = $this->objconvert->obj2soap($f_obj);
-    $this->curl->set_post($f_xml);
-    $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
-    $open_format_uri = $this->config->get_value('ws_open_format_uri', 'setup');
-    $f_result = $this->curl->get($open_format_uri);
-    //$fr_obj = unserialize($f_result);
-    $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['']);
-    if (!$fr_obj) {
-      $curl_err = $this->curl->get_status();
-      verbose::log(FATAL, 'openFormat http-error: ' . $curl_err['http_code'] . ' from: ' . $open_format_uri);
+    foreach ($format as $format_name => $format_arr) {
+      if ($format_arr['is_open_format']) {
+        $f_obj->formatRequest->_namespace = $this->xmlns['of'];
+        $f_obj->formatRequest->_value->originalData = $collections;
+        foreach ($f_obj->formatRequest->_value->originalData as $i => $o)
+          $f_obj->formatRequest->_value->originalData[$i]->_namespace = $this->xmlns['of'];
+        $f_obj->formatRequest->_value->outputFormat->_namespace = $this->xmlns['of'];
+        $f_obj->formatRequest->_value->outputFormat->_value = $format_arr['format_name'];
+        $f_obj->formatRequest->_value->outputType->_namespace = $this->xmlns['of'];
+        $f_obj->formatRequest->_value->outputType->_value = 'php';
+        $f_xml = $this->objconvert->obj2soap($f_obj);
+        $this->curl->set_post($f_xml);
+        $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
+        $open_format_uri = $this->config->get_value('ws_open_format_uri', 'setup');
+        $f_result = $this->curl->get($open_format_uri);
+        //$fr_obj = unserialize($f_result);
+        $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['']);
+        if (!$fr_obj) {
+          $curl_err = $this->curl->get_status();
+          verbose::log(FATAL, 'openFormat http-error: ' . $curl_err['http_code'] . ' from: ' . $open_format_uri);
+        }
+        else {
+          $struct = key($fr_obj->formatResponse->_value);
+          foreach ($collections as $idx => &$c) {
+            $c->_value->formattedCollection->_value->{$struct} = $fr_obj->formatResponse->_value->{$struct}[$idx];
+          }
+        }
+      }
     }
     foreach ($collections as $idx => &$c) {
-      //$c->_value->formattedCollection = $fr_obj->formatResponse->_value->bibliotekdkFullDisplay[$idx];
-      $c->_value->formattedCollection = $fr_obj->formatResponse->_value->workDisplayHtml[$idx];
   // remove unwanted structures
       foreach ($c->_value->collection->_value->object as &$o) {
-        unset($o->_value->record);
-        if (!$keep_marcx)
+        if (!$format['dkabm']['user_selected'])
+          unset($o->_value->record);
+        if (!$format['marcxchange']['user_selected'])
           unset($o->_value->collection);
       }
     }
@@ -1047,14 +1054,10 @@ class openSearch extends webServiceServer {
    * @param $rec_id          - record id of the record
    * @param $filter          - agency filter
    * @param $format          -
-   * @param $include_marcx   -
    * @param $debug_info      -
    */
-  private function parse_fedora_object(&$fedora_obj, &$fedora_rels_obj, $rels_type, $rec_id, $filter, $format, $include_marcx=FALSE, $holdings_count=NULL, $debug_info='') {
+  private function parse_fedora_object(&$fedora_obj, &$fedora_rels_obj, $rels_type, $rec_id, $filter, $format, $holdings_count=NULL, $debug_info='') {
     static $dom, $rels_dom, $stream_dom, $allowed_relation;
-    if (empty($format)) {
-      $format = 'dkabm';
-    }
     if (empty($dom)) {
       $dom = new DomDocument();
       $dom->preserveWhiteSpace = false;
@@ -1064,7 +1067,7 @@ class openSearch extends webServiceServer {
       return;
     }
 
-    $rec = $this->extract_record($dom, $rec_id, $format, $include_marcx);
+    $rec = $this->extract_record($dom, $rec_id, $format);
 
     if ($fedora_rels_obj) {
       if (!isset($allowed_relation)) {
@@ -1134,7 +1137,7 @@ class openSearch extends webServiceServer {
                   }
                   else {
                     $rel_obj = &$relation->relationObject->_value->object->_value;
-                    $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format, $include_marcx);
+                    $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format);
                     $rel_obj->identifier->_value = $tag->nodeValue;
                     $rel_obj->formatsAvailable->_value = $this->scan_for_formats($rels_dom);
                   }
@@ -1195,65 +1198,64 @@ class openSearch extends webServiceServer {
   /** \brief Extract record and namespace for it
    *
    */
-  private function extract_record(&$dom, $rec_id, $format, $include_marcx=FALSE) {
-    switch ($format) {
-      case 'bibliotekdkWorkDisplay':
-      case 'dkabm':
-        $rec = &$ret->record->_value;
-        $record = &$dom->getElementsByTagName('record');
-        if ($record->item(0)) {
-          $ret->record->_namespace = $record->item(0)->lookupNamespaceURI('dkabm');
-        }
-        if ($record->item(0)) {
-          foreach ($record->item(0)->childNodes as $tag) {
-            if ($format == 'dkabm' || $tag->prefix == 'dc') {
-              if (trim($tag->nodeValue)) {
-                if ($tag->hasAttributes()) {
-                  foreach ($tag->attributes as $attr) {
-                    $o->_attributes-> {$attr->localName}->_namespace = $record->item(0)->lookupNamespaceURI($attr->prefix);
-                    $o->_attributes-> {$attr->localName}->_value = $attr->nodeValue;
+  private function extract_record(&$dom, $rec_id, $format) {
+    foreach ($format as $format_name => $format_arr) {
+      switch ($format_name) {
+        case 'dkabm':
+          $rec = &$ret->record->_value;
+          $record = &$dom->getElementsByTagName('record');
+          if ($record->item(0)) {
+            $ret->record->_namespace = $record->item(0)->lookupNamespaceURI('dkabm');
+          }
+          if ($record->item(0)) {
+            foreach ($record->item(0)->childNodes as $tag) {
+              if ($format == 'dkabm' || $tag->prefix == 'dc') {
+                if (trim($tag->nodeValue)) {
+                  if ($tag->hasAttributes()) {
+                    foreach ($tag->attributes as $attr) {
+                      $o->_attributes-> {$attr->localName}->_namespace = $record->item(0)->lookupNamespaceURI($attr->prefix);
+                      $o->_attributes-> {$attr->localName}->_value = $attr->nodeValue;
+                    }
                   }
+                  $o->_namespace = $record->item(0)->lookupNamespaceURI($tag->prefix);
+                  $o->_value = $this->char_norm(trim($tag->nodeValue));
+                  if (!($tag->localName == 'subject' && $tag->nodeValue == 'undefined'))
+                    $rec-> {$tag->localName}[] = $o;
+                  unset($o);
                 }
-                $o->_namespace = $record->item(0)->lookupNamespaceURI($tag->prefix);
-                $o->_value = $this->char_norm(trim($tag->nodeValue));
-                if (!($tag->localName == 'subject' && $tag->nodeValue == 'undefined'))
-                  $rec-> {$tag->localName}[] = $o;
-                unset($o);
               }
             }
           }
-        }
-        else
-          verbose::log(FATAL, 'No dkabm record found in ' . $rec_id);
-
-        if (! $include_marcx)   // include marcx-record below?
+          else
+            verbose::log(FATAL, 'No dkabm record found in ' . $rec_id);
           break;
-
-      case 'marcxchange':
-        $record = &$dom->getElementsByTagName('collection');
-        if ($record->item(0)) {
-          $ret->collection->_value = $this->xmlconvert->xml2obj($record->item(0), $this->xmlns['marcx']);
-          //$ret->collection->_namespace = $record->item(0)->lookupNamespaceURI('collection');
-          $ret->collection->_namespace = $this->xmlns['marcx'];
-        }
-        break;
-
-      case 'docbook':
-        $record = &$dom->getElementsByTagNameNS($this->xmlns['docbook'], 'article');
-        if ($record->item(0)) {
-          $ret->article->_value = $this->xmlconvert->xml2obj($record->item(0));
-          $ret->article->_namespace = $record->item(0)->lookupNamespaceURI('docbook');
-          //print_r($ret); die();
-        }
-        break;
-      case 'opensearchobject':
-        $record = &$dom->getElementsByTagNameNS($this->xmlns['oso'], 'object');
-        if ($record->item(0)) {
-          $ret->object->_value = $this->xmlconvert->xml2obj($record->item(0));
-          $ret->object->_namespace = $record->item(0)->lookupNamespaceURI('oso');
-          //print_r($ret); die();
-        }
-        break;
+  
+        case 'marcxchange':
+          $record = &$dom->getElementsByTagName('collection');
+          if ($record->item(0)) {
+            $ret->collection->_value = $this->xmlconvert->xml2obj($record->item(0), $this->xmlns['marcx']);
+            //$ret->collection->_namespace = $record->item(0)->lookupNamespaceURI('collection');
+            $ret->collection->_namespace = $this->xmlns['marcx'];
+          }
+          break;
+  
+        case 'docbook':
+          $record = &$dom->getElementsByTagNameNS($this->xmlns['docbook'], 'article');
+          if ($record->item(0)) {
+            $ret->article->_value = $this->xmlconvert->xml2obj($record->item(0));
+            $ret->article->_namespace = $record->item(0)->lookupNamespaceURI('docbook');
+            //print_r($ret); die();
+          }
+          break;
+        case 'opensearchobject':
+          $record = &$dom->getElementsByTagNameNS($this->xmlns['oso'], 'object');
+          if ($record->item(0)) {
+            $ret->object->_value = $this->xmlconvert->xml2obj($record->item(0));
+            $ret->object->_namespace = $record->item(0)->lookupNamespaceURI('oso');
+            //print_r($ret); die();
+          }
+          break;
+      }
     }
     return $ret;
   }
