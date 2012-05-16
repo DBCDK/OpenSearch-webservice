@@ -691,6 +691,8 @@ class openSearch extends webServiceServer {
   private function set_format($objectFormat, $open_format) {
     if (is_array($objectFormat))
       $help = $objectFormat;
+    elseif (empty($objectFormat->_value))
+      $help[]->_value = 'dkabm';
     else
       $help[] = $objectFormat;
     foreach ($help as $of) {
@@ -707,9 +709,6 @@ class openSearch extends webServiceServer {
         $ret['dkabm'] = array('user_selected' => FALSE, 'is_open_format' => FALSE);
       if (empty($ret['marcxchange']))
         $ret['marcxchange'] = array('user_selected' => FALSE, 'is_open_format' => FALSE);
-    }
-    elseif (empty($ret)) {
-      $ret['dkabm'] = array('user_selected' => TRUE, 'is_open_format' => FALSE);
     }
     return $ret;
   }
