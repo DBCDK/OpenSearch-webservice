@@ -36,6 +36,7 @@ class openSearch extends webServiceServer {
   protected $cache;
   protected $repository; // array containing solr and fedora uri's
   protected $work_format; // format for the fedora-objects
+  protected $tracking_id; // format for the fedora-objects
 
   public function __construct() {
     webServiceServer::__construct('opensearch.ini');
@@ -54,7 +55,7 @@ class openSearch extends webServiceServer {
 
   public function search($param) {
     // set some defines
-    $param->trackingId->_value = verbose::set_tracking_id('os', $param->trackingId->_value);
+    $this->tracking_id = verbose::set_tracking_id('os', $param->trackingId->_value);
     if (!$this->aaa->has_right('opensearch', 500)) {
       $ret_error->searchResponse->_value->error->_value = 'authentication_error';
       return $ret_error;
@@ -312,7 +313,7 @@ class openSearch extends webServiceServer {
           $this->watch->start('Solr_add');
           verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']);
           $rows *= 2;
-          if ($err = $this->get_solr_array($solr_query['sdismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_str, $debug_query, $solr_arr)) {
+          if ($err = $this->get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_str, $debug_query, $solr_arr)) {
             $error = $err;
             return $ret_error;
           }
@@ -412,7 +413,7 @@ class openSearch extends webServiceServer {
             $no_bool = 0;
           }
           foreach ($w as $id) {
-            $add_query[$block_idx] .= (empty($add_query[$block_idx]) ? '' : ' OR ') . str_replace(':', '\:', $id);
+            $add_query[$block_idx] .= (empty($add_query[$block_idx]) ? '' : ' OR ') . $id;
             $no_bool++;
           }
         }
@@ -424,10 +425,12 @@ class openSearch extends webServiceServer {
           $which_rec_id = 'rec.id';
         foreach ($add_query as $add_idx => $add_q) {
           if (!$this->xs_boolean($param->allObjects->_value)) {
-            $q = '(' . $solr_query['edismax'] . ') AND ' . $which_rec_id . ':(' . $add_q . ')';
+            $chk_query = $this->cql2solr->edismax_convert('(' . $param->query->_value . ') AND ' . $which_rec_id . '=(' . $add_q . ')', $rank_type[$rank]);
+            $q = $chk_query['edismax'];
           }
           elseif ($filter_agency) {
-            $q = urldecode($which_rec_id . ':(' . $add_q . ') ');
+            $chk_query = $this->cql2solr->edismax_convert($which_rec_id . '=(' . $add_q . ')');
+            $q = $chk_query['edismax'];
           }
           else {
             verbose::log(FATAL, 'Internal problem: Assert error. Line: ' . __LINE__);
@@ -596,7 +599,7 @@ class openSearch extends webServiceServer {
   *        repository
   */
   public function getObject($param) {
-    $param->trackingId->_value = verbose::set_tracking_id('os', $param->trackingId->_value);
+    $this->tracking_id = verbose::set_tracking_id('os', $param->trackingId->_value);
     $ret_error->searchResponse->_value->error->_value = &$error;
     if (!$this->aaa->has_right('opensearch', 500)) {
       $error = 'authentication_error';
@@ -747,6 +750,7 @@ class openSearch extends webServiceServer {
         $f_obj->formatRequest->_value->outputFormat->_value = $format_arr['format_name'];
         $f_obj->formatRequest->_value->outputType->_namespace = $this->xmlns['of'];
         $f_obj->formatRequest->_value->outputType->_value = 'php';
+        $f_obj->formatRequest->_value->trackingId->_value = $this->tracking_id;
         $f_xml = $this->objconvert->obj2soap($f_obj);
         $this->curl->set_post($f_xml);
         $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
