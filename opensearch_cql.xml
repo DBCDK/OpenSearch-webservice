@@ -324,9 +324,12 @@ You should have received a copy of the GNU Affero General Public License along w
 		</index>
 	</indexInfo>
 	<configInfo>
-		<supports type="booleanModifier">and</supports>
-		<supports type="booleanModifier">or</supports>
-		<supports type="booleanModifier">not</supports>
+		<supports type="danBooleanModifier">og</supports>
+		<supports type="danBooleanModifier">eller</supports>
+		<supports type="danBooleanModifier">ikke</supports>
+		<supports type="engBooleanModifier">and</supports>
+		<supports type="engBooleanModifier">or</supports>
+		<supports type="engBooleanModifier">not</supports>
 		<supports type="relation">&gt;</supports>
 		<supports type="relation">&lt;</supports>
 		<supports type="relation">=</supports>

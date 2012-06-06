@@ -45,6 +45,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="os:query"/>
+				<xs:element ref="os:language" minOccurs="0"/>
 				<xs:element ref="os:agency" minOccurs="0"/>
 				<xs:element ref="os:profile" minOccurs="0"/>
 				<xs:element ref="os:allObjects" minOccurs="0"/>
@@ -285,6 +286,11 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="includeMarcXchange" type="xs:boolean">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Whether to include marcXchange record if available. Default is false.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="language" type="os:languageType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Here you can specify the language of the user.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="linkObject">
@@ -671,6 +677,15 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="phrase"/>
 			<xs:enumeration value="word"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="languageType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The languages you can choose from.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="dan"/>
+			<xs:enumeration value="eng"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="linkToType">
