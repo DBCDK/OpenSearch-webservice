@@ -189,10 +189,10 @@ class openSearch extends webServiceServer {
     $key_relation_cache = md5($param->query->_value . $repository_name . $filter_agency .
                               $use_work_collection .  $sort . $rank . $boost_str . $this->version);
 
-    if ($param->language->_value <> 'dan') {
-      $param->language->_value = 'eng';
+    if ($param->queryLanguage->_value <> 'cqldan') {
+      $param->queryLanguage->_value = 'cqleng';
     }
-    $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config, $param->language->_value);
+    $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config, $param->queryLanguage->_value);
     // urldecode ???? $query = $this->cql2solr->convert(urldecode($param->query->_value));
     // ' is handled differently in indexing and searching, so remove it until this is solved
     $query = $this->cql2solr->convert(str_replace("'", '', $param->query->_value), $rank_type[$rank]);
