@@ -189,7 +189,10 @@ class openSearch extends webServiceServer {
     $key_relation_cache = md5($param->query->_value . $repository_name . $filter_agency .
                               $use_work_collection .  $sort . $rank . $boost_str . $this->version);
 
-    $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
+    if ($param->language->_value <> 'dan') {
+      $param->language->_value = 'eng';
+    }
+    $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config, $param->language->_value);
     // urldecode ???? $query = $this->cql2solr->convert(urldecode($param->query->_value));
     // ' is handled differently in indexing and searching, so remove it until this is solved
     $query = $this->cql2solr->convert(str_replace("'", '', $param->query->_value), $rank_type[$rank]);
@@ -522,6 +525,7 @@ class openSearch extends webServiceServer {
           if ($this->xs_boolean($param->allRelations->_value)) {
             //verbose::log(TRACE, 'rels_ext: ' . sprintf($this->repository['fedora_get_rels_ext'], $fpid));
             $this->get_fedora_rels_ext($fpid, $fedora_relation);
+            $this->get_fedora_rels_addi($fpid, $fedora_addi_relation);
           }
           if ($debug_query) {
             unset($explain);
@@ -806,6 +810,18 @@ class openSearch extends webServiceServer {
    */
   private function get_fedora_raw($fpid, &$fedora_rec) {
     return $this->get_fedora($this->repository['fedora_get_raw'], $fpid, $fedora_rec);
+  }
+
+  /** \brief
+   *
+   */
+  private function get_fedora_rels_addi($fpid, &$fedora_rel) {
+    if ($this->repository['fedora_get_rels_addi']) {
+      return $this->get_fedora($this->repository['fedora_get_rels_addi'], $fpid, $fedora_rel);
+    }
+    else {
+      return FALSE;
+    }
   }
 
   /** \brief
