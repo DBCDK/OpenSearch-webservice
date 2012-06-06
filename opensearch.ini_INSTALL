@@ -131,7 +131,7 @@ relation["dbcaddi:hasOnlineAccess"] = 2
 
 ; scan objects for these formats
 scan_format_table["dkabm:record"] = dkabm
-scan_format_table["collection"] = marcxchange
+scan_format_table["marcx:collection"] = marcxchange
 scan_format_table["docbook:article"] = docbook
 scan_format_table["oso:object"] = opensearchobject
 
@@ -247,6 +247,7 @@ dump_timer = opensearch(%s)
 ; from url: action=thisSoapAction&some.number=nn&another.number=mm
 ;
 action[search][] = query
+action[search][] = queryLanguage
 action[search][] = agency
 action[search][] = profile
 action[search][] = allObjects
