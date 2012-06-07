@@ -92,6 +92,7 @@ class openSearch extends webServiceServer {
       $param->agency->_value = '100200';
       $param->profile->_value = 'test';
     }
+    $search_profile_version = $this->repository['search_profile_version'];
     if (empty($param->agency->_value) && empty($param->profile->_value)) {
       $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
       $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
@@ -102,10 +103,11 @@ class openSearch extends webServiceServer {
     elseif (empty($param->profile->_value)) {
       $unsupported = 'Error: No profile in request';
     }
-    elseif (!($filter_agency = $this->get_agencies_from_profile($param->agency->_value, $param->profile->_value, $this->repository['search_profile_version']))) {
+    elseif (!($search_profile = $this->fetch_profile_from_agency($param->agency->_value, $param->profile->_value, $search_profile_version))) {
       $unsupported = 'Error: Cannot fetch profile: ' . $param->profile->_value .
                      ' for ' . $param->agency->_value;
     }
+    $filter_agency = $this->set_solr_filter($search_profile, $search_profile_version);
 
     $use_work_collection = ($param->collectionType->_value <> 'manifestation');
     if (($rr = $param->userDefinedRanking) || ($rr = $param->userDefinedBoost->_value->userDefinedRanking)) {
@@ -622,15 +624,17 @@ class openSearch extends webServiceServer {
       $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
       $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
     }
+    $search_profile_version = $this->repository['search_profile_version'];
     if ($agency = $param->agency->_value) {
       if ($param->profile->_value) {
-        if (!($agencies[$agency] = $this->get_agencies_from_profile($agency, $param->profile->_value, $this->repository['search_profile_version']))) {
+        if (!($search_profile = $this->fetch_profile_from_agency($agency, $param->profile->_value, $search_profile_version))) {
           $error = 'Error: Cannot fetch profile: ' . $param->profile->_value . ' for ' . $agency;
           return $ret_error;
         }
       }
       else
         $agencies = $this->config->get_value('agency', 'agency');
+      $agencies[$agency] = $this->set_solr_filter($search_profile, $search_profile_version);
       if (isset($agencies[$agency]))
         $filter_agency = $agencies[$agency];
       else {
@@ -858,22 +862,10 @@ class openSearch extends webServiceServer {
     return;
   }
 
-  /** \brief Fetch a profile $profile_name for agency $agency and build Solr filter_query parm
+  /** \brief Build Solr filter_query parm
    *
    */
-  private function get_agencies_from_profile($agency, $profile_name, $profile_version) {
-    require_once 'OLS_class_lib/search_profile_class.php';
-    if (!($host = $this->config->get_value('profile_cache_host', 'setup')))
-      $host = $this->config->get_value('cache_host', 'setup');
-    if (!($port = $this->config->get_value('profile_cache_port', 'setup')))
-      $port = $this->config->get_value('cache_port', 'setup');
-    if (!($expire = $this->config->get_value('profile_cache_expire', 'setup')))
-      $expire = $this->config->get_value('cache_expire', 'setup');
-    $profiles = new search_profiles($this->config->get_value('open_agency', 'setup'), $host, $port, $expire);
-    $profile_version = ($profile_version ? intval($profile_version) : 2);
-    $profile = $profiles->get_profile($agency, $profile_name, $profile_version);
-    if (! is_array($profile))
-      return FALSE;
+  private function set_solr_filter($profile, $profile_version) {
     $ret = '';
     foreach ($profile as $p) {
       if ($profile_version == 3)
@@ -885,6 +877,28 @@ class openSearch extends webServiceServer {
                 ' AND original_format:' . $p['sourceFormat'] . ')';
     }
     return $ret;
+  }
+
+  /** \brief Fetch a profile $profile_name for agency $agency
+   *
+   */
+  private function fetch_profile_from_agency($agency, $profile_name, $profile_version) {
+    require_once 'OLS_class_lib/search_profile_class.php';
+    if (!($host = $this->config->get_value('profile_cache_host', 'setup')))
+      $host = $this->config->get_value('cache_host', 'setup');
+    if (!($port = $this->config->get_value('profile_cache_port', 'setup')))
+      $port = $this->config->get_value('cache_port', 'setup');
+    if (!($expire = $this->config->get_value('profile_cache_expire', 'setup')))
+      $expire = $this->config->get_value('cache_expire', 'setup');
+    $profiles = new search_profiles($this->config->get_value('open_agency', 'setup'), $host, $port, $expire);
+    $profile_version = ($profile_version ? intval($profile_version) : 2);
+    $profile = $profiles->get_profile($agency, $profile_name, $profile_version);
+    if (is_array($profile)) {
+      return $profile;
+    }
+    else {
+      return FALSE;
+    }
   }
 
   /** \brief Build bq (BoostQuery) as field:content^weight
