@@ -31,7 +31,7 @@ define(REL_TO_EXTERNAL_OBJ, 2);     // relation points to external object
 
 //-----------------------------------------------------------------------------
 class openSearch extends webServiceServer {
-  rotected $cql2solr;
+  protected $cql2solr;
   protected $curl;
   protected $cache;
   protected $repository; // array containing solr and fedora uri's
