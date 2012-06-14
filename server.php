@@ -734,7 +734,9 @@ class openSearch extends webServiceServer {
                     '?q=' . $q['edismax'] .
                     '&rows=1&fl=ols.holdingsCount&defType=edismax&wt=phps';
 
+    $this->watch->start('solr_holdings');
     $solr_result = $this->curl->get($solr_query);
+    $this->watch->stop('solr_holdings');
     if (($solr_result) && ($solr_arr = unserialize($solr_result)))
       $holds = intval($solr_arr['response']['docs'][0]['ols.holdingsCount'][0]);
 
@@ -850,7 +852,9 @@ class openSearch extends webServiceServer {
     if (DEBUG_ON) echo 'Fetch record: /' . $record_uri . "/\n";
     if (!$this->cache || !$rec = $this->cache->get($record_uri)) {
       $this->curl->set_authentication('fedoraAdmin', 'fedoraAdmin');
+      $this->watch->start('fedora');
       $rec = $this->curl->get($record_uri);
+      $this->watch->stop('fedora');
       $curl_err = $this->curl->get_status();
       if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
         verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri);
