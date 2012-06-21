@@ -532,10 +532,10 @@ class openSearch extends webServiceServer {
           }
           if ($error = $this->get_fedora_raw($fpid, $fedora_result))
             return $ret_error;
-          if ($this->xs_boolean($param->allRelations->_value)) {
+          //if ($this->xs_boolean($param->allRelations->_value)) {
             //verbose::log(TRACE, 'rels_ext: ' . sprintf($this->repository['fedora_get_rels_ext'], $fpid));
             //$this->get_fedora_rels_ext($fpid, $fedora_relation);
-          }
+          //}
           if ($debug_query) {
             unset($explain);
             foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
@@ -606,7 +606,6 @@ class openSearch extends webServiceServer {
   *        profile:
   *        identifier - fedora pid
   *        objectFormat - one of dkabm, docbook, marcxchange, opensearchobject
-  *        allRelations - boolean
   *        includeHoldingsCount - boolean
   *        relationData - type, uri og full
   *        repository
@@ -662,21 +661,30 @@ class openSearch extends webServiceServer {
     }
     if ($error = $this->get_fedora_raw($fpid, $fedora_result))
       return $ret_error;
-    if ($this->xs_boolean($param->allRelations->_value))
-      $this->get_fedora_rels_ext($fpid, $fedora_relation);
-    if ($this->xs_boolean($param->includeHoldingsCount->_value)) {
+// 2DO 
+// relations are now on the unit, so this has to be found
+    if ($param->relationData->_value || $this->xs_boolean($param->includeHoldingsCount->_value)) {
       $this->get_fedora_rels_ext($fpid, $fedora_rels_ext);
       $unit_id = $this->parse_rels_for_unit_id($fedora_rels_ext);
-      $this->get_fedora_rels_ext($unit_id, $unit_rels_ext);
-      list($dummy, $no_of_holdings) = $this->parse_unit_for_object_ids($unit_rels_ext);
-      $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
-      $no_of_holdings += $this->get_solr_holdings($fpid);
+      if ($param->relationData->_value) {
+        $this->get_fedora_rels_addi($unit_id, $fedora_addi_relation);
+      }
+      if ($this->xs_boolean($param->includeHoldingsCount->_value)) {
+        $this->get_fedora_rels_ext($unit_id, $unit_rels_ext);
+        list($dummy, $no_of_holdings) = $this->parse_unit_for_object_ids($unit_rels_ext);
+        $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
+        $no_of_holdings += $this->get_solr_holdings($fpid);
+      }
     }
+//var_dump($fedora_rels_ext);
+//var_dump($unit_id);
+//var_dump($fedora_addi_relation);
+//die();
     $o->collection->_value->resultPosition->_value = 1;
     $o->collection->_value->numberOfObjects->_value = 1;
     $o->collection->_value->object[]->_value =
       $this->parse_fedora_object($fedora_result,
-                                 $fedora_relation,
+                                 $fedora_addi_relation,
                                  $param->relationData->_value,
                                  $fpid,
                                  $filter_agency,
@@ -741,7 +749,9 @@ class openSearch extends webServiceServer {
                     '?q=' . $q['edismax'] .
                     '&rows=1&fl=ols.holdingsCount&defType=edismax&wt=phps';
 
+    $this->watch->start('solr_holdings');
     $solr_result = $this->curl->get($solr_query);
+    $this->watch->stop('solr_holdings');
     if (($solr_result) && ($solr_arr = unserialize($solr_result)))
       $holds = intval($solr_arr['response']['docs'][0]['ols.holdingsCount'][0]);
 
@@ -857,7 +867,9 @@ class openSearch extends webServiceServer {
     if (DEBUG_ON) echo 'Fetch record: /' . $record_uri . "/\n";
     if (!$this->cache || !$rec = $this->cache->get($record_uri)) {
       $this->curl->set_authentication('fedoraAdmin', 'fedoraAdmin');
+      $this->watch->start('fedora');
       $rec = $this->curl->get($record_uri);
+      $this->watch->stop('fedora');
       $curl_err = $this->curl->get_status();
       if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
         $rec = '';
@@ -878,9 +890,11 @@ class openSearch extends webServiceServer {
   private function set_solr_filter($profile, $profile_version) {
     $ret = '';
     foreach ($profile as $p) {
-      if ($profile_version == 3)
-        $ret .= ($ret ? ' OR ' : '') .
-                'rec.collectionIdentifier:' . $p['sourceIdentifier'];
+      if ($profile_version == 3) {
+        if ($this->xs_boolean($p['sourceSearchable']))
+          $ret .= ($ret ? ' OR ' : '') .
+                  'rec.collectionIdentifier:' . $p['sourceIdentifier'];
+      }
       else
         $ret .= ($ret ? ' OR ' : '') .
                 '(submitter:' . $p['sourceOwner'] .  
@@ -1174,26 +1188,31 @@ class openSearch extends webServiceServer {
     if (@ !$stream_dom->loadXML($fedora_streams)) {
       verbose::log(DEBUG, 'Cannot load STREAMS for ' . $rec_id . ' into DomXml');
     } else {
-      foreach ($stream_dom->getElementsByTagName('datastream') as $node) {
-        if (substr($node->getAttribute('ID'), 0, 9) == 'localData') {
-          $dub_check = array();
-          foreach ($node->getElementsByTagName('link') as $link) {
-            $url = $link->getelementsByTagName('url')->item(0)->nodeValue;
-            if (empty($dup_check[$url])) {
-              unset($relation);
-              $relation->relationType->_value = 'dbcaddi:hasOnlineAccess';
-              $relation->relationUri->_value = $url;
-              $relation->linkObject->_value->accessType->_value = 
-                  $link->getelementsByTagName('accessType')->item(0)->nodeValue;
-              $relation->linkObject->_value->access->_value = 
-                  $link->getelementsByTagName('access')->item(0)->nodeValue;
-              $relation->linkObject->_value->linkTo->_value = 
-                  $link->getelementsByTagName('LinkTo')->item(0)->nodeValue;
-              $dup_check[$url] = TRUE;
-              $relations->relation[]->_value = $relation;
-              unset($relation);
+      if ($rels_type == 'type' || $rels_type == 'uri' || $rels_type == 'full') {
+        foreach ($stream_dom->getElementsByTagName('datastream') as $node) {
+          if (substr($node->getAttribute('ID'), 0, 9) == 'localData') {
+            $dub_check = array();
+            foreach ($node->getElementsByTagName('link') as $link) {
+              $url = $link->getelementsByTagName('url')->item(0)->nodeValue;
+              if (empty($dup_check[$url])) {
+                unset($relation);
+                $relation->relationType->_value = 
+                      $link->getelementsByTagName('relationType')->item(0)->nodeValue;
+                if ($rels_type == 'uri' || $rels_type == 'full') {
+                  $relation->relationUri->_value = $url;
+                  $relation->linkObject->_value->accessType->_value = 
+                      $link->getelementsByTagName('accessType')->item(0)->nodeValue;
+                  $relation->linkObject->_value->access->_value = 
+                      $link->getelementsByTagName('access')->item(0)->nodeValue;
+                  $relation->linkObject->_value->linkTo->_value = 
+                      $link->getelementsByTagName('LinkTo')->item(0)->nodeValue;
+                }
+                $dup_check[$url] = TRUE;
+                $relations->relation[]->_value = $relation;
+                unset($relation);
+              }
+              //echo 'll: ' . $link->getelementsByTagName('LinkTo')->item(0)->nodeValue;
             }
-            //echo 'll: ' . $link->getelementsByTagName('LinkTo')->item(0)->nodeValue;
           }
         }
       }
@@ -1225,6 +1244,7 @@ class openSearch extends webServiceServer {
           }
           if ($relation_type) {
           //verbose::log(TRACE, $tag->localName . ' ' . $tag->getAttribute('xmlns'). ' -> ' .  array_search($tag->getAttribute('xmlns'), $this->xmlns));
+            if ($rels_type == 'type' || $rels_type == 'uri' || $rels_type == 'full')
             if ($relation_type <> REL_TO_INTERNAL_OBJ || $this->is_searchable($tag->nodeValue, $filter)) {
               $relation->relationType->_value = $this_relation;
               if ($rels_type == 'uri' || $rels_type == 'full') {
@@ -1246,11 +1266,13 @@ class openSearch extends webServiceServer {
                 else {
                   $rel_obj = &$relation->relationObject->_value->object->_value;
                   $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format);
-                  $rel_obj->identifier->_value = $tag->nodeValue;
+                  $rel_obj->identifier->_value = $rel_uri;
                   $rel_obj->formatsAvailable->_value = $this->scan_for_formats($rels_dom);
                 }
               }
-              $relations->relation[]->_value = $relation;
+              if ($rels_type == 'type' || $relation->relationUri->_value) {
+                $relations->relation[]->_value = $relation;
+              }
               unset($relation);
             }
           }
@@ -1277,9 +1299,11 @@ class openSearch extends webServiceServer {
    *
    */
   private function is_searchable($rec_id, $filter_q) {
+// do not check for searchability, since the relation is found in the search_profile, it's ok to use it
+    return TRUE;
     if (empty($filter_q)) return TRUE;
 
-    $this->get_solr_array('rec.id:'.str_replace(':', '\:', $rec_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
+    $this->get_solr_array((FEDORA_VER_2 ? 'unit.id:' : 'rec.id:') . str_replace(':', '\:', $rec_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
     return $solr_arr['response']['numFound'];
   }
 
