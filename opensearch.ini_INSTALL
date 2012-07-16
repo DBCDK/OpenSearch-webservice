@@ -64,9 +64,12 @@ default_repository = repos1
 ; - search_profile_version: 2 (using submitter and original_format) or 3 (using rec.collectionIdentifier)
 ; - work_format: 1 or 2 (using unit's)
 
-repository[repos1][solr] = http://someserver:8080/apache-solr-1.4-dev/select
-repository[repos1][fedora_get_raw] = http://someserver.dbc.dk:8080/fedora/get/%s/originalData.0
-repository[repos1][fedora_get_rels_ext] = http://someserver.dbc.dk:8080/fedora/get/%s/RELS-EXT
+repository[repos1][solr] = http://someserver.dbc.dk:8080/solr-3.4.0/select
+repository[repos1][fedora_get_raw] = http://someserver.dbc.dk:9080/fedora/objects/%s/datastreams/commonData/content
+repository[repos1][fedora_get_rels_ext] = http://someserver.dbc.dk:9080/fedora/objects/%s/datastreams/RELS-SYS/content
+repository[repos1][fedora_get_rels_addi] = http://someserver.dbc.dk:9080/fedora/objects/%s/datastreams/RELS-EXT/content
+repository[repos1][fedora_get_object_profile] = http://someserver.dbc.dk:8080/fedora/objects/%s/?format=xml
+repository[repos1][fedora_get_datastreams] = http://someserver.dbc.dk:9080/fedora/objects/%s/objectXML
 repository[repos1][fedora_get_object_profile] = http://someserver.dbc.dk:8080/fedora/objects/%s/?format=xml
 repository[repos1][search_profile_version] = 3
 repository[repos1][work_format] = 2
