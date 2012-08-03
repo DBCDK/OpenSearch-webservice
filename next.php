@@ -109,6 +109,7 @@ class openSearch extends webServiceServer {
       $unsupported = 'Error: Cannot fetch profile: ' . $param->profile->_value .
                      ' for ' . $param->agency->_value;
     }
+    if ($unsupported) return $ret_error;
     $filter_agency = $this->set_solr_filter($this->search_profile, $this->search_profile_version);
 
 /// TEST 
@@ -933,7 +934,7 @@ class openSearch extends webServiceServer {
     $to = $this->kilde($to_id);
 //    echo "from: $from to: $to relation: $relation \n";
 
-    return (isset($rels[$from][$relation]) && isset($source[$to]));
+    return (isset($rels[$to][$relation]));
   }
 
   private function kilde($id) {
@@ -1238,12 +1239,13 @@ class openSearch extends webServiceServer {
             $this_relation = $tag->localName;
           $relation_type = $allowed_relation[$this_relation];
 //echo "this_relation: $this_relation relation_type: $relation_type\n";
-          if (FEDORA_VER_2) {
+          //verbose::log(DEBUG,  "this_relation: $this_relation relation_type: $relation_type");
+          if (FEDORA_VER_2 && $relation_type == 1) {
             if (! $this->check_valid_relation($rec_id, $tag->nodeValue, $this_relation, $this->search_profile))
               unset($relation_type);
           }
           if ($relation_type) {
-          //verbose::log(TRACE, $tag->localName . ' ' . $tag->getAttribute('xmlns'). ' -> ' .  array_search($tag->getAttribute('xmlns'), $this->xmlns));
+            //verbose::log(DEBUG, $tag->localName . ' ' . $tag->getAttribute('xmlns'). ' -> ' .  array_search($tag->getAttribute('xmlns'), $this->xmlns));
             if ($rels_type == 'type' || $rels_type == 'uri' || $rels_type == 'full')
             if ($relation_type <> REL_TO_INTERNAL_OBJ || $this->is_searchable($tag->nodeValue, $filter)) {
               $relation->relationType->_value = $this_relation;
@@ -1340,7 +1342,7 @@ class openSearch extends webServiceServer {
           }
           if ($record->item(0)) {
             foreach ($record->item(0)->childNodes as $tag) {
-              if ($format == 'dkabm' || $tag->prefix == 'dc') {
+//              if ($format_name == 'dkabm' || $tag->prefix == 'dc') {
                 if (trim($tag->nodeValue)) {
                   if ($tag->hasAttributes()) {
                     foreach ($tag->attributes as $attr) {
@@ -1354,12 +1356,13 @@ class openSearch extends webServiceServer {
                     $rec-> {$tag->localName}[] = $o;
                   unset($o);
                 }
-              }
+//              }
             }
           }
           else
             verbose::log(FATAL, 'No dkabm record found in ' . $rec_id);
           break;
+die();
   
         case 'marcxchange':
           $record = &$dom->getElementsByTagName('collection');
