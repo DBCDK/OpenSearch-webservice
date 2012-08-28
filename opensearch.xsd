@@ -160,6 +160,11 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">E.g presented as single manifestations or as collections of works.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="creationDate" type="xs:date">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The creation date of the original record or the object.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="error" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Message returned by the service, if an error occurs.</xs:documentation>
@@ -341,6 +346,7 @@ You should have received a copy of the GNU Affero General Public License along w
 					<xs:element ref="oso:object"/>
 				</xs:choice>
 				<xs:element ref="os:identifier"/>
+				<xs:element ref="os:creationDate" minOccurs="0"/>
 				<xs:element ref="os:holdingsCount" minOccurs="0"/>
 				<xs:element ref="os:relations" minOccurs="0"/>
 				<xs:element ref="os:formatsAvailable"/>
