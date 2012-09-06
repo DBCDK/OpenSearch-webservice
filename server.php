@@ -506,6 +506,8 @@ class openSearch extends webServiceServer {
     if ($this->cache)
       $this->cache->set($key_relation_cache, $relation_cache);
 
+    $missing_record = $this->config->get_value('missing_record', 'setup');
+
     // work_ids now contains the work-records and the fedoraPids they consist of
     // now fetch the records for each work/collection
     $this->watch->start('get_recs');
@@ -522,8 +524,16 @@ class openSearch extends webServiceServer {
               $no_of_holdings = $unit_members + $this->get_solr_holdings($fpid);
             }
           }
-          if ($error = $this->get_fedora_raw($fpid, $fedora_result))
-            return $ret_error;
+          if ($error = $this->get_fedora_raw($fpid, $fedora_result)) {
+// fetch empty record from ini-file and use instead of error
+            if ($missing_record) {
+              $error = NULL;
+              $fedora_result = sprintf($missing_record, $fpid);
+            }
+            else {
+              return $ret_error;
+            }
+          }
           if ($this->xs_boolean($param->allRelations->_value)) {
             //verbose::log(TRACE, 'rels_ext: ' . sprintf($this->repository['fedora_get_rels_ext'], $fpid));
             $this->get_fedora_rels_ext($fpid, $fedora_relation);

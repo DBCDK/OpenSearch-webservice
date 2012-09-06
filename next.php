@@ -514,6 +514,8 @@ class openSearch extends webServiceServer {
     if ($this->cache)
       $this->cache->set($key_relation_cache, $relation_cache);
 
+    $missing_record = $this->config->get_value('missing_record', 'setup');
+
     // work_ids now contains the work-records and the fedoraPids they consist of
     // now fetch the records for each work/collection
     $this->watch->start('get_recs');
@@ -531,12 +533,16 @@ class openSearch extends webServiceServer {
               $no_of_holdings = $unit_members + $this->get_solr_holdings($fpid);
             }
           }
-          if ($error = $this->get_fedora_raw($fpid, $fedora_result))
-            return $ret_error;
-          //if ($this->xs_boolean($param->allRelations->_value)) {
-            //verbose::log(TRACE, 'rels_ext: ' . sprintf($this->repository['fedora_get_rels_ext'], $fpid));
-            //$this->get_fedora_rels_ext($fpid, $fedora_relation);
-          //}
+          if ($error = $this->get_fedora_raw($fpid, $fedora_result)) {
+// fetch empty record from ini-file and use instead of error
+            if ($missing_record) {
+              $error = NULL;
+              $fedora_result = sprintf($missing_record, $fpid);
+            }
+            else {
+              return $ret_error;
+            }
+          }
           if ($debug_query) {
             unset($explain);
             foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
@@ -1269,6 +1275,7 @@ class openSearch extends webServiceServer {
                   $rel_obj = &$relation->relationObject->_value->object->_value;
                   $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format);
                   $rel_obj->identifier->_value = $rel_uri;
+                  $rel_obj->creationDate->_value = $this->get_creation_date($rels_dom);
                   $rel_obj->formatsAvailable->_value = $this->scan_for_formats($rels_dom);
                 }
               }
@@ -1284,6 +1291,7 @@ class openSearch extends webServiceServer {
 
     $ret = $rec;
     $ret->identifier->_value = $rec_id;
+    $ret->creationDate->_value = $this->get_creation_date($dom);
     if (isset($holdings_count)) 
       $ret->holdingsCount->_value = $holdings_count;
     if ($relations) $ret->relations->_value = $relations;
@@ -1307,6 +1315,15 @@ class openSearch extends webServiceServer {
 
     $this->get_solr_array((FEDORA_VER_2 ? 'unit.id:' : 'rec.id:') . str_replace(':', '\:', $rec_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
     return $solr_arr['response']['numFound'];
+  }
+
+  /** \brief Check rec for available formats
+   *
+   */
+  private function get_creation_date(&$dom) {
+    if ($p = &$dom->getElementsByTagName('adminData')->item(0)) {
+      return $p->getElementsByTagName('creationDate')->item(0)->nodeValue;
+    }
   }
 
   /** \brief Check rec for available formats
