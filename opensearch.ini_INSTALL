@@ -51,6 +51,10 @@ xmlns[dbcaddi] = http://oss.dbc.dk/rdf/dbcaddi#
 ; path to xml-examples
 xmldir = ./xml
 
+; set missing_record to handle inkonsistency between solr and fedora
+missing_record = <?xml version='1.0' encoding='UTF-8'?><ting:container xmlns:ting='http://www.dbc.dk/ting' xmlns:dkabm='http://biblstandard.dk/abm/namespace/dkabm/' xmlns:dc='http://purl.org/dc/elements/1.1/'><dkabm:record><dc:title>Cannot read record: %s</dc:title></dkabm:record></ting:container>
+
+
 ; default repository
 default_repository = repos1
 
