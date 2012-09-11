@@ -31,6 +31,8 @@ soapAction[getObject] = getObjectRequest
 
 ; prefixes and namespaces
 xmlns[] = http://oss.dbc.dk/ns/opensearch
+xmlns[of] = http://oss.dbc.dk/ns/openformat
+xmlns[ofo] = http://oss.dbc.dk/ns/openformatoutput
 xmlns[xs] = http://www.w3.org/2001/XMLSchema
 xmlns[xsi] = http://www.w3.org/2001/XMLSchema-instance
 xmlns[oss] = http://oss.dbc.dk/ns/osstypes
@@ -103,6 +105,7 @@ ws_open_format_uri = http://openformat.dbc.dk/0.1/
 ; formats supported by openFormat and possible name mapping
 ; open_format[openSearch_format_name][format] = openFormat format name
 open_format[bibliotekdkWorkDisplay][format] = bibliotekdkWorkDisplay
+open_format[refWorks][format] = refWorks
 open_format[ris][format] = ris
 
 
