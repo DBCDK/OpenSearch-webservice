@@ -881,6 +881,9 @@ class openSearch extends webServiceServer {
       if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
         $rec = '';
         if ($mandatory) {
+          if ($curl_err['http_code'] == 404) {
+            return 'record_not_found';
+          }
           verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri);
           return 'Error: Cannot fetch record: ' . $fpid . ' - http-error: ' . $curl_err['http_code'];
         }
