@@ -451,29 +451,28 @@ class openSearch extends webServiceServer {
             return $ret_error;
           }
           // need to remove unwanted object from work_ids
-          $post_array = array('wt' => 'phps',
-                              'q' => $q,
-                              'fq' => urldecode($filter_q),
-                              'start' => '0',
-                              'rows' => '50000',
-                              'defType' => 'edismax',
-                              'fl' => 'fedoraPid,unit.id');
-          if ($rank_qf) $post_array['qf'] = $rank_qf;
-          if ($rank_pf) $post_array['pf'] = $rank_pf;
-          if ($rank_tie) $post_array['tie'] = $rank_tie;
+          $post_query = 'wt=phps' .
+                       '&q=' . urlencode($q) .
+                       '&fq=' . $filter_q .
+                       '&start=0' .
+                       '&rows=50000' .
+                       '&defType=edismax' .
+                       '&fl=fedoraPid,unit.id';
+          if ($rank_qf) $post_query .= '&qf=' . $rank_qf;
+          if ($rank_pf) $post_query .= '&pf=' . $rank_pf;
+          if ($rank_tie) $post_query .= '&tie=' . $rank_tie;
 
           if (DEBUG_ON) {
-            echo 'post_array: ' . $this->repository['solr'];
-            foreach ($post_array as $pk => $pv)
-              echo '&' . $pk . '=' . urlencode($pv);
-            echo "/n";
+            echo 'post_array: ' . $this->repository['solr'] . '?' . $post_query . "\n";
           }
 
-          $this->curl->set_post($post_array);
+          $this->curl->set_post($post_query);
+          $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'));
           $this->watch->start('Solr 2');
           $solr_result = $this->curl->get($this->repository['solr']);
-          $this->curl->set_option(CURLOPT_POST, 0);  // remember to clear POST
           $this->watch->stop('Solr 2');
+// remember to clear POST 
+          $this->curl->set_option(CURLOPT_POST, 0);
           if (!($solr_2_arr[$add_idx] = unserialize($solr_result))) {
             verbose::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
             $error = 'Internal problem: Cannot decode Solr re-search';
@@ -1019,6 +1018,7 @@ class openSearch extends webServiceServer {
 
     verbose::log(TRACE, 'Query: ' . $solr_query);
     verbose::log(DEBUG, 'Query: ' . $this->repository['solr'] . "?q=" . urlencode($q) . "&fq=$filter&start=$start&rows=1$sort$boost&fl=fedoraPid,unit.id$facets&defType=edismax&debugQuery=on");
+    $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/plain; charset=utf-8'));
     $solr_result = $this->curl->get($solr_query);
     if (empty($solr_result))
       return 'Internal problem: No answer from Solr';
