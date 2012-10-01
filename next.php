@@ -562,9 +562,13 @@ class openSearch extends webServiceServer {
                                        $format,
                                        $no_of_holdings,
                                        $explain);
+        } else {
+          if (FEDORA_VER_2) {
+            $this->get_fedora_rels_ext($fpid, $unit_rels_ext);
+            list($fpid, $unit_members) = $this->parse_unit_for_object_ids($unit_rels_ext);
+          }
+          $objects[]->_value->identifier->_value = $fpid;
         }
-        else
-          $objects[]->_value = NULL;
         // else $objects[]->_value = NULL;
       }
       $o->collection->_value->resultPosition->_value = $rec_no++;
