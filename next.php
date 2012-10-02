@@ -39,6 +39,9 @@ class openSearch extends webServiceServer {
   protected $repository; // array containing solr and fedora uri's
   protected $work_format; // format for the fedora-objects
   protected $tracking_id; // format for the fedora-objects
+  protected $number_of_fedora_calls = 0;
+  protected $number_of_fedora_cached = 0;
+
 
   public function __construct() {
     webServiceServer::__construct('opensearch.ini');
@@ -601,7 +604,10 @@ class openSearch extends webServiceServer {
     $result->searchResult = $collections;
     $result->facetResult->_value = $facets;
     $result->queryDebugResult->_value = $debug_result;
-    $result->time->_value = $this->watch->splittime('Total');
+    $result->statInfo->_value->fedoraRecordsCached->_value = $this->number_of_fedora_cached;
+    $result->statInfo->_value->fedoraRecordsRead->_value = $this->number_of_fedora_calls;
+    $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
+
 
     //print_r($collections[0]);
     //exit;
@@ -875,7 +881,11 @@ class openSearch extends webServiceServer {
   private function get_fedora($uri, $fpid, &$rec, $mandatory=TRUE) {
     $record_uri =  sprintf($uri, $fpid);
     if (DEBUG_ON) echo 'Fetch record: /' . $record_uri . "/\n";
-    if (!$this->cache || !$rec = $this->cache->get($record_uri)) {
+    if ($this->cache && $rec = $this->cache->get($record_uri)) {
+      $this->number_of_fedora_cached++;
+    }
+    else {
+      $this->number_of_fedora_calls++;
       $this->curl->set_authentication('fedoraAdmin', 'fedoraAdmin');
       $this->watch->start('fedora');
       $rec = $this->curl->get($record_uri);
