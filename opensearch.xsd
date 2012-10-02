@@ -543,6 +543,18 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">The number of the first collection you want the service to return.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="statInfo">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Info about the internal ressource usage.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="os:fedoraCached"/>
+				<xs:element ref="os:fedoraReads"/>
+				<xs:element ref="os:time"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="stepValue" type="xs:int">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">The number of collections you want the service to return, counted from the value in start.</xs:documentation>
