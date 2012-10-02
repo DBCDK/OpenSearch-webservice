@@ -218,6 +218,16 @@ You should have received a copy of the GNU Affero General Public License along w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="fedoraRecordsCached" type="xs:int">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Number of records found in cache</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fedoraRecordsRead" type="xs:int">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Number of records read from fedora</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="fieldName" type="os:fieldNameType">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Name of field used in user defined ranking.</xs:documentation>
@@ -549,8 +559,8 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="os:fedoraCached"/>
-				<xs:element ref="os:fedoraReads"/>
+				<xs:element ref="os:fedoraRecordsCached"/>
+				<xs:element ref="os:fedoraRecordsRead"/>
 				<xs:element ref="os:time"/>
 			</xs:sequence>
 		</xs:complexType>
