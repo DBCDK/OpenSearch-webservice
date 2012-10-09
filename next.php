@@ -670,43 +670,51 @@ class openSearch extends webServiceServer {
     $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
                              $this->config->get_value('cache_port', 'setup'),
                              $this->config->get_value('cache_expire', 'setup'));
-    $fpid = $param->identifier->_value;
-    if ($this->deleted_object($fpid)) {
-      $error = 'Error: deleted record: ' . $fpid;
-      return $ret_error;
+    if (is_array($param->identifier)) {
+      $fpids = $param->identifier;
     }
-    if ($error = $this->get_fedora_raw($fpid, $fedora_result))
-      return $ret_error;
+    else {
+      $fpids = array($param->identifier);
+    }
+    foreach ($fpids as $fpid_number => $fpid) {
+      if ($this->deleted_object($fpid->_value)) {
+        $error = 'Error: deleted record: ' . $fpid->_value;
+        return $ret_error;
+      }
+      if ($error = $this->get_fedora_raw($fpid->_value, $fedora_result))
+        return $ret_error;
 // 2DO 
 // relations are now on the unit, so this has to be found
-    if ($param->relationData->_value || $this->xs_boolean($param->includeHoldingsCount->_value)) {
-      $this->get_fedora_rels_ext($fpid, $fedora_rels_ext);
-      $unit_id = $this->parse_rels_for_unit_id($fedora_rels_ext);
-      if ($param->relationData->_value) {
-        $this->get_fedora_rels_addi($unit_id, $fedora_addi_relation);
+      if ($param->relationData->_value || $this->xs_boolean($param->includeHoldingsCount->_value)) {
+        $this->get_fedora_rels_ext($fpid->_value, $fedora_rels_ext);
+        $unit_id = $this->parse_rels_for_unit_id($fedora_rels_ext);
+        if ($param->relationData->_value) {
+          $this->get_fedora_rels_addi($unit_id, $fedora_addi_relation);
+        }
+        if ($this->xs_boolean($param->includeHoldingsCount->_value)) {
+          $this->get_fedora_rels_ext($unit_id, $unit_rels_ext);
+          list($dummy, $no_of_holdings) = $this->parse_unit_for_object_ids($unit_rels_ext);
+          $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
+          $no_of_holdings += $this->get_solr_holdings($fpid);
+        }
       }
-      if ($this->xs_boolean($param->includeHoldingsCount->_value)) {
-        $this->get_fedora_rels_ext($unit_id, $unit_rels_ext);
-        list($dummy, $no_of_holdings) = $this->parse_unit_for_object_ids($unit_rels_ext);
-        $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
-        $no_of_holdings += $this->get_solr_holdings($fpid);
-      }
-    }
 //var_dump($fedora_rels_ext);
 //var_dump($unit_id);
 //var_dump($fedora_addi_relation);
 //die();
-    $o->collection->_value->resultPosition->_value = 1;
-    $o->collection->_value->numberOfObjects->_value = 1;
-    $o->collection->_value->object[]->_value =
-      $this->parse_fedora_object($fedora_result,
-                                 $fedora_addi_relation,
-                                 $param->relationData->_value,
-                                 $fpid,
-                                 $filter_agency,
-                                 $format,
-                                 $no_of_holdings);
-    $collections[]->_value = $o;
+      $o->collection->_value->resultPosition->_value = $fpid_number + 1;
+      $o->collection->_value->numberOfObjects->_value = 1;
+      $o->collection->_value->object[]->_value =
+        $this->parse_fedora_object($fedora_result,
+                                   $fedora_addi_relation,
+                                   $param->relationData->_value,
+                                   $fpid->_value,
+                                   $filter_agency,
+                                   $format,
+                                   $no_of_holdings);
+      $collections[]->_value = $o;
+      unset($o);
+    }
 
 // FVS format
     if ($format['found_open_format']) {
@@ -714,8 +722,8 @@ class openSearch extends webServiceServer {
     }
 
     $result = &$ret->searchResponse->_value->result->_value;
-    $result->hitCount->_value = 1;
-    $result->collectionCount->_value = count($collections);
+    $result->hitCount->_value = count($collections);
+    $result->collectionCount->_value = 1;
     $result->more->_value = 'false';
     $result->searchResult = $collections;
     $result->facetResult->_value = '';
