@@ -25,7 +25,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:sequence>
 				<xs:element ref="os:agency" minOccurs="0"/>
 				<xs:element ref="os:profile" minOccurs="0"/>
-				<xs:element ref="os:identifier"/>
+				<xs:element ref="os:identifier" maxOccurs="unbounded"/>
 				<xs:element ref="os:objectFormat"/>
 				<xs:element ref="os:allRelations" minOccurs="0"/>
 				<xs:element ref="os:authentication" minOccurs="0"/>
