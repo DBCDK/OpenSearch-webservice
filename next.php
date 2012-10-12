@@ -1404,7 +1404,6 @@ class openSearch extends webServiceServer {
           else
             verbose::log(FATAL, 'No dkabm record found in ' . $rec_id);
           break;
-die();
   
         case 'marcxchange':
           $record = &$dom->getElementsByTagName('collection');
