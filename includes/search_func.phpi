@@ -564,7 +564,7 @@ function private_Zpresent(&$search) {
         yaz_element($search["id"], $search["element"]);
         if (empty($search["start"])) $search["start"] = 1;
         $step = min($search["step"], $search["hits"]-$search["start"]+1);
-        yaz_range($search["id"], $search["start"], $step);
+        yaz_range($search["id"], intval($search["start"]), intval($step));
         if (isset($search["schema"]))
           yaz_schema($search["id"],$search["schema"]);
         yaz_present($search["id"]);
