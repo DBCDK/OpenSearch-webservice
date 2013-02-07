@@ -1315,11 +1315,10 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  private function char_norm($s) {
-    $from[] = "\xEA\x9C\xB2";
-    $to[] = 'Aa';
-    $from[] = "\xEA\x9C\xB3";
-    $to[] = 'aa';
+  private function normalize_chars($s) {
+    $from[] = "\xEA\x9C\xB2"; $to[] = 'Aa';
+    $from[] = "\xEA\x9C\xB3"; $to[] = 'aa';
+    $from[] = "\XEF\x83\xBC"; $to[] = "\xCC\x88";   // U+F0FC -> U+0308
     return str_replace($from, $to, $s);
   }
 
