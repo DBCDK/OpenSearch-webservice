@@ -80,11 +80,6 @@ repository[repos1][fedora_get_object_profile] = http://someserver.dbc.dk:8080/fe
 repository[repos1][search_profile_version] = 3
 repository[repos1][work_format] = 2
 
-repository[repos2][solr] = http://anotherserver:8080/apache-solr-1.4-dev/select
-repository[repos2][fedora_get_raw] = http://anotherserver.dbc.dk:8080/fedora/get/%s/originalData.0
-repository[repos2][fedora_get_rels_ext] = http://anotherserver.dbc.dk:8080/fedora/get/%s/RELS-EXT
-repository[repos2][fedora_get_object_profile] = http://anotherserver.dbc.dk:8080/fedora/objects/%s/?format=xml
-
 
 ; memcache
 ; cache_host = localhost
@@ -227,24 +222,30 @@ dump_timer = opensearch(%s)
 [aaa]
 ; aaa Authentication, Access control and Accounting
 ;
-; if aaa_credentials is set, the rights-object is created from
-; aaa_ip_rights below if ip-match otherwise it is set from
-; the FORS-server if aaa_credentials contains a valid fors-login
+; Creates a authentication object from aaa_ip_rights, aaa_fors_rights or aaa_credentials - in that order
 ;
-; oci credentials for FORS server
-;aaa_credentials = some_user/some_pwd@some.server.dbc.dk
-; memcache server - use localhost in one-webserver environment
-;aaa_cache_address = localhost:11211
-; number of seconds to cache authentication and access rights info
-;aaa_cache_seconds = 3600
-;
-; As an alternative to FORS rights, rights can be set here for selected ip-addresses
+; Rights can be set here for selected ip-addresses
 ; aaa_ip_rights[group-identifier][ip_list] = list of ip's
 ; aaa_ip_rights[group-identifier][ressource][<named ressource>] = right to <named ressource>
 ; aaa_ip_rights[group-identifier][ressource][<named ressource 2>] = right to <named ressource 2>
 ;
 ;aaa_ip_rights[dbc][ip_list] = 172.16.0.0-172.31.255.255;193.111.162.0-193.111.162.255
 ;aaa_ip_rights[dbc][ressource][opensearch] = 500
+;
+; if not found in aaa_ip_rights the authentication object is created from the FORS
+; either by using the WS specified by aaa_fors_rights or by OCI specified by aaa_credentials
+;
+; uri for a fors rights webservice - aaa_fors_rights have precedence over aaa_credentials
+;aaa_fors_rights = http://forsrights.some.server/?action=forsRights&outputType=php&userIdAut=%s&groupIdAut=%s&passwordAut=%s&ipAddress=%s
+;
+; oci credentials for FORS server
+;aaa_credentials = ora_user/ora_passwd@some.server.dk
+;
+; memcache server for the authentication object - use localhost in one-webserver environment
+;aaa_cache_address = localhost:11211
+; number of seconds to cache authentication and access rights info
+;aaa_cache_seconds = 3600
+;
 
 
 [rest]
