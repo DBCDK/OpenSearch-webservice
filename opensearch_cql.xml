@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<database/>
 	</serverInfo>
 	<metaInfo>
-	    <dateModified>12/17/2013</dateModified>
+	    <dateModified>02/17/2014</dateModified>
 	</metaInfo>
 	<indexInfo>
 	    <set identifier="info:srw/cql-context-set/1/cql-v1.1" name="cql"/>
@@ -34,6 +34,13 @@ You should have received a copy of the GNU Affero General Public License along w
 			<title lang="da">Internt register</title>
 			<map hidden="1">
 				<name set="cql">allIndexes</name>
+			</map>
+		</index>
+		<index>
+			<title lang="en">Same as no index</title>
+			<title lang="da">Fritekst, samme som intet index</title>
+			<map>
+				<name set="cql">serverChoice</name>
 			</map>
 		</index>
 		<index>
@@ -749,8 +756,8 @@ You should have received a copy of the GNU Affero General Public License along w
 			<title lang="en">No English description available</title>
 			<title lang="da">Forfatter</title>
 			<map>
-				<name set="dkcclterm">fo</name>
-				<alias>fo</alias>
+				<name set="dkcclterm" slop="6">fo</name>
+				<alias set="" slop="5">fo</alias>
 			</map>
 		</index>
 		<index>
@@ -1198,7 +1205,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<title lang="da">Titel</title>
 			<map>
 				<name set="dkcclterm">ti</name>
-				<alias>ti</alias>
+				<alias slop="20">ti</alias>
 			</map>
 		</index>
 		<index>
@@ -1669,28 +1676,25 @@ You should have received a copy of the GNU Affero General Public License along w
 			<title lang="da">Materialetype (enkeltord)</title>
 			<title lang="en">Material type (term)</title>
 			<map>
-				<name set="term">type</name>
+				<name set="term" filter="1">type</name>
 			</map>
 		</index>
 		<index>
 			<title lang="da">Overordnet materialekategori (enkeltord)</title>
 			<title lang="en">Type category (term)</title>
 			<map>
-				<name set="term">typeCategory</name>
+				<name set="term" filter="1">typeCategory</name>
 			</map>
 		</index>
 		<index>
 			<title lang="da">Værktype (enkeltord)</title>
 			<title lang="en">Work type (term)</title>
 			<map>
-				<name set="term">workType</name>
+				<name set="term" filter="1">workType</name>
 			</map>
 		</index>
 	</indexInfo>
 	<configInfo>
-		<supports type="danBooleanModifier">OG</supports>
-		<supports type="danBooleanModifier">ELLER</supports>
-		<supports type="danBooleanModifier">IKKE</supports>
 		<supports type="engBooleanModifier">AND</supports>
 		<supports type="engBooleanModifier">OR</supports>
 		<supports type="engBooleanModifier">NOT</supports>
