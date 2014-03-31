@@ -33,13 +33,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 Documentation
 -------------
-http://gnit.dk/doc/opensearch ?
+http://oss.dbc.dk/plone/services/open-search
 
-USe Doxygen to get code documentation
+Use Doxygen to get code documentation
 
 
 Installation
 ------------
+The webservice requires [class_lib](svn://oss.dbc.dk/sync_php/php/OpenLibrary/class_lib) 
+to be installed in ./OLS_class_lib
+
 In the php.ini file:
 - make sure that always_populate_raw_post_data = On
 
@@ -47,5 +50,7 @@ Copy opensearch.ini_INSTALL to opensearch.ini and edit it to reflect your setup
 
 Copy opensearch.wsdl_INSTALL to opensearch.wsdl and modify 
 the location of the service (at the end of the file)
+
+Create a symbolic link from index.php to server.php or modify your webserver to default to server.php
 
 Consider copying robots.txt_INSTALL to robots.txt

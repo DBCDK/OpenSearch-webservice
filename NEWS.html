@@ -1,6 +1,60 @@
 <pre>
 3.0
 ===
+sort.date is integer allowing function sort as map(sort.date,2030,999999,0) for bottoming out invalid years
+bug 16977: collections with more than MAX_OBJECTS_IN_WORK manifestations didn't mark (and cache) all manifestations as used
+opensearch_cql.xml: hidden attribute on <map>
+ini: cql_file = opensearch_cql.xml
+function diffCqlFileWithSolr() - US 1178
+ini: url_override - US 1178
+bugz: 16646
+xsd: queryFilter for the filter part of the query
+opensearch_cql.xml: alias tags for alternate index names. US 1145
+ini: added display.titleFull to solr_format[briefDisplay][format]
+xsd: titleFull
+ini: [format] section - includes openFormat logic into openSearch
+ini: set default_namespace_prefix = os and change xmlns[] to xmlns[os]
+xsd: linkCollectionIdentifier
+bugfix: work-1
+cache keys use config->get_inifile_hash() instead of version
+Handling of local data streams: Selecting the proper stream depending on collectionIdentifier. 
+Handling of local data streams: Checking resulting record from relations according to the search profile.
+ini: new ini-file struct for repository - added fedora structure. 
+ini: num_found_collaps_limit and num_found_collapsing_field - will use num_found_collapsing_field when num found is below num_found_collaps_limit
+ini: added sort[] for work_type, record_owner and article_date - US #990
+xsd: added sortType for work_type, record_owner and article_date - US #990
+ini: rank_frequency - US #1079: udvidelse af openbib.dk - rankering
+ini: collapsing_field 
+unit.id from SOLR can be scalar or array
+Bugfix: ((røde OR blå) AND ekspres AND kattler) OR (ekspres AND kattler NOT røde) is now parsed correctly
+Include external relations (from commonData) for relation-records included when request->relationData equals full #US 983
+xsd, getObject: error on object level. If one or more records are deleted/unknown
+ini: added relation_group_source_tab
+relation: isPartOfManifestation for research-libraries maps to 870970-forsk - #US884
+ini: added agency_types url
+ini: rename profile_cache_* to agency_cache_*
+ini: added xmlns[kml] = http://www.opengis.net/kml/2.2
+ini: updated the rank structure to use version 3 registers
+ini: rename open_agency to agency_search_profile
+queryLanguage: bestMatch US #122
+ini: showinfo section
+ini: removed relation structure - is now part of the search profile
+ini: removed search_profile_version from repository[]
+ini: fedora_get_rels_ext renamed to fedora_get_rels_hierarchy in repository structure
+ini: delete fedora_get_datastreams from repository structure
+ini: Added phrase_index[]
+Better (?) cql-2-solr parser
+trackingId in reply in statInfo
+work-objects containing more than 100 objects is cut to 100 objects
+collectionType = work-1 is somewhat broken - it return to much information
+sorting of objects within a collection using sort.complexKey
+ini: remove all " from inifile settings - these are set by the inifile_class
+ini: max_identical_relation_names
+ini: holdings_db - url to holdings-service
+ini: solr_format with briefDisplay
+briefWorkDisplay
+dropped work_format in ini-file
+created new repository OpenBibdk for
 getObject: more than one identifier can be specified
 statInfo in result
 for collectionType=work-1 return identifier for all object
@@ -147,7 +201,7 @@ Updated all xsd
 0.6
 ===
 Moved code to abstract class 
-Support for atributes and namespaces
+Support for attributes and namespaces
 
 0.4
 ===

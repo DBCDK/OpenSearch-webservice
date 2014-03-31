@@ -63,10 +63,10 @@ You should have received a copy of the GNU Affero General Public License along w
 	</wsdl:binding>
 	<wsdl:service name="osService">
 		<wsdl:port name="osSearchService" binding="osw:osSearchServiceSoapBinding">
-			<soap:address location="http://opensearch.addi.dk/2.3/"/>
+			<soap:address location="http://opensearch.addi.dk/3.0/"/>
 		</wsdl:port>
 		<wsdl:port name="getObjectService" binding="osw:getObjectServiceSoapBinding">
-			<soap:address location="http://opensearch.addi.dk/2.3/"/>
+			<soap:address location="http://opensearch.addi.dk/3.0/"/>
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
