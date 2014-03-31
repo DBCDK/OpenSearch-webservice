@@ -1709,7 +1709,7 @@ class openSearch extends webServiceServer {
       $this->curl->set_url($url['url'], $no);
     }
     $solr_results = $this->curl->get();
-    $this->curl->close();
+    //$this->curl->close();
     if (empty($solr_results))
       return 'Internal problem: No answer from Solr';
     if (count($urls) > 1) {
