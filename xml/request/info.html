@@ -3,7 +3,8 @@ Parameters:
   <li>search
     <ul>
       <li>query:</li> <a href="opensearch_cql.xml">cql</a>-query, <a href="http://zing.z3950.org/cql/intro.html">A Gentle Introduction to cql</a>
-      <li>queryLanguage:</li> cqldan or cqleng - defaults to cqleng
+      <li>queryFilter:</li> for the filter part of the query
+      <li>queryLanguage:</li> cqldan, cqleng or bestMatch - defaults to cqleng
       <li>agency:</li> 
       <li>profile:</li> Name of search profile
       <li>allObjects:</li> returns all objects in a collection
@@ -12,14 +13,14 @@ Parameters:
       <li>collectionType:</li> manifestation or work or work-1 (defaults to work)
       <li>facets:</li> number and list of facets
       <li>includeHoldingsCount:</li> boolean
-      <li>objectFormat:</li> dkabm, docbook, marcxchange, opensearchobject, bibliotekdkWorkDisplay, briefDisplayHtml, fullDisplayHtml, workDisplayHtml, briefDisplay, fullDisplay, refWorks, ris
+      <li>objectFormat:</li> dkabm, docbook, marcxchange, opensearchobject, briefWorkDisplay, bibliotekdkWorkDisplay, briefDisplayHtml, fullDisplayHtml, workDisplayHtml, briefDisplay, fullDisplay, refWorks, ris
       <li>outputType:</li> <a href="show_enc.php?encoding=json">json</a>, php, xml
       <li>relationData:</li> return relation as "type", "uri" or "full"
       <li>repository:</li> for multiple repositories - normally not used
       <li>source:</li> source of data (currently not supported)
       <li>start:</li> First record counting from 1
       <li>stepValue:</li> number of records
-      <li>rank:</li> rank_general, rank_title, rank_creator
+      <li>rank:</li> rank_general, rank_title, rank_creator, rank_frequency
       <li>sort:</li> date_ascending, date_descending, creator_ascending, creator_descending, random
       <li>userDefinedBoost:</li> 
       <li>userDefinedRanking:</li> 
