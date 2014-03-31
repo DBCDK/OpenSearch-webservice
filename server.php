@@ -137,10 +137,10 @@ class openSearch extends webServiceServer {
     if ($param->source->_value == 'bibliotekdk') {
       require_once('bib_zsearch_class.php');
 
-      $this->watch->start('bibdk_search');
+      $this->watch->start('bibdk_z3950_search');
       $bib_search = new bib_zsearch($this->config,$this->watch);
       $response = $bib_search->response($param);
-      $this->watch->stop('bibdk_search');
+      $this->watch->stop('bibdk_z3950_search');
 
       return $response;
     }
