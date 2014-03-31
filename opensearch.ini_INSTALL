@@ -7,13 +7,16 @@
 ;service_http_error = HTTP/1.1 410 Gone
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
-version = 2.3
+;version
+; Note that the version is used as part of the cache key, so do not run 2 versions of the service with identical
+; version name, unless you specificly want them to share cache
+version = 3.0
 
 ; wsdl for service
 wsdl = opensearch.wsdl
 
 ; in_house_domain may use ?ShowInfo and use create_sample form
-; in_house_domain = .mycompany.dk
+in_house_domain = @MY_DOMAIN@
 
 ; set to TRUE to expose the create_sample form
 ;show_samples = 1
@@ -29,8 +32,22 @@ soapAction[search] = searchRequest
 soapAction[getObject] = getObjectRequest
 
 
+; url_override
+; url_override[url_command] = functionToCall
+; if start of request equals url_command and functionToCall exists, it will be called
+; like: myservice.dk/myversion?url_command
+; ShowInfo, Version, HowRU, RegressionTest are found in the abstract service
+; if not specified, defaults to HowRU, ShowInfo and Version
+url_override[ShowInfo] = ShowInfo
+url_override[Version] = Version
+url_override[HowRU] = HowRU
+url_override[RegressionTest] = RegressionTest
+; diffCqlFileWithSolr - use &repository= in url if set
+url_override[diffCqlFileWithSolr] = diffCqlFileWithSolr
+
 ; prefixes and namespaces
-xmlns[] = http://oss.dbc.dk/ns/opensearch
+default_namespace_prefix = os
+xmlns[os] = http://oss.dbc.dk/ns/opensearch
 xmlns[of] = http://oss.dbc.dk/ns/openformat
 xmlns[ofo] = http://oss.dbc.dk/ns/openformatoutput
 xmlns[xs] = http://www.w3.org/2001/XMLSchema
@@ -42,6 +59,7 @@ xmlns[dcmitype] = http://purl.org/dc/dcmitype/
 xmlns[dcterms] = http://purl.org/dc/terms/
 xmlns[ac] = http://biblstandard.dk/ac/namespace/
 xmlns[dkdcplus] = http://biblstandard.dk/abm/namespace/dkdcplus/
+xmlns[kml] = http://www.opengis.net/kml/2.2
 xmlns[marcx] = info:lc/xmlns/marcxchange-v1
 xmlns[docbook] = http://docbook.org/ns/docbook
 xmlns[oso] = http://oss.dbc.dk/ns/opensearchobjects
@@ -57,96 +75,106 @@ xmldir = ./xml
 missing_record = <?xml version='1.0' encoding='UTF-8'?><ting:container xmlns:ting='http://www.dbc.dk/ting' xmlns:dkabm='http://biblstandard.dk/abm/namespace/dkabm/' xmlns:dc='http://purl.org/dc/elements/1.1/'><dkabm:record><dc:title>Cannot read record: %s</dc:title></dkabm:record></ting:container>
 
 
+; cql file - xml file containing useable registers and cql operators. Defaults to opensearch_cql.xml
+cql_file = opensearch_cql.xml
+
 ; default repository
-default_repository = repos1
+default_repository = @REPOSITORY_NAME@
+
+; define fedora parameters for get_raw, get_rels_hierarchy, get_rels_addi, get_object_profile and get_datastream
+; - get_raw: parameters to get raw record from fedora - commonData stream
+; - get_rels_hierarchy: parameters to get work-/unit-structure relations from fedora - RELS-SYS stream
+; - get_rels_addi: parameters to get addi relation datastream - RELS-EXT stream
+; - get_object_profile: parameters to get object state/profile from fedora - if not set, deleted records will be returned
+; - get_datastreams: parameters to get datastreams for an object
+fedora[get_raw] = %s/datastreams/commonData/content
+fedora[get_rels_hierarchy] = %s/datastreams/RELS-SYS/content
+fedora[get_rels_addi] = %s/datastreams/RELS-EXT/content
+fedora[get_object_profile] = %s?format=xml
+fedora[get_datastreams] = %s/datastreams?format=xml
 
 ; url to solr and fedorainterface
-; work_format = 2 fedora-object version bib.dk i.e. using units
-; set url's for fedora_get_raw, fedora_get_rels_ext and fedora_get_object_profile
 ; - solr: url to solr-server
-; - fedora_get_raw: url to get raw record from fedora
-; - fedora_get_rels_ext: url to get rels_ext_record from fedora
-; - fedora_get_object_profile: url to get rels_ext_record from fedora
-; - search_profile_version: 2 (using submitter and original_format) or 3 (using rec.collectionIdentifier)
-; - work_format: 1 or 2 (using unit's)
+; - fedora: url to fedora
+; The fedora structure above, will set the repository parameters appending each function to "fedora_" giving
+; fedora_get_raw, fedora_get_rels... Remember to end the fedora uri with a slash
+; If one or more of these does not follow the "normal" parameter, they can be set directly below like
+; repository[my_repository][fedora_get_datastreams] = special/%s/parameter?format=...
 
-repository[repos1][solr] = http://someserver.dbc.dk:8080/solr-3.4.0/select
-repository[repos1][fedora_get_raw] = http://someserver.dbc.dk:9080/fedora/objects/%s/datastreams/commonData/content
-repository[repos1][fedora_get_rels_ext] = http://someserver.dbc.dk:9080/fedora/objects/%s/datastreams/RELS-SYS/content
-repository[repos1][fedora_get_rels_addi] = http://someserver.dbc.dk:9080/fedora/objects/%s/datastreams/RELS-EXT/content
-repository[repos1][fedora_get_object_profile] = http://someserver.dbc.dk:8080/fedora/objects/%s/?format=xml
-repository[repos1][fedora_get_datastreams] = http://someserver.dbc.dk:9080/fedora/objects/%s/objectXML
-repository[repos1][fedora_get_object_profile] = http://someserver.dbc.dk:8080/fedora/objects/%s/?format=xml
-repository[repos1][search_profile_version] = 3
-repository[repos1][work_format] = 2
-
+repository[@REPOSITORY_NAME@][solr] = @SOLR@
+repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 
 ; memcache
-; cache_host = localhost
-; cache_port = 11211
-; cache_expire = 600
+cache_host = localhost
+cache_port = 11211
+cache_expire = 600
 
 ; memcache search profile - defaults to cache_host, cache_port, cache_expire if not defined
-;profile_cache_host = localhost
-;profile_cache_port = 11211
-profile_cache_expire = 60
+agency_cache_host = localhost
+agency_cache_port = 11211
+agency_cache_expire = 60
 
 ; search profile service end point
-open_agency = http://openagency.addi.dk/1.2/?action=openSearchProfile&agencyId=%s&profileVersion=%s
+; agency_search_profile =  http://some.openagency/?action=openSearchProfile&agencyId=%s&profileVersion=%s
+agency_search_profile = @AGENCY_SEARCH_PROFILE@
+; 
+; agency_types = http://some.openagency/?action=findLibrary&libraryType=Forskningsbibliotek&outputType=json
+; agency_types = http://some.openagency/?action=findLibrary&libraryType=Alle&outputType=json
+agency_types = @AGENCY_TYPES@
 
-; open format
-; address to openFormat service
-ws_open_format_uri = http://openformat.dbc.dk/0.1/
+; holding db - return number of items in stock and number of items available for lending
+holdings_db = @HOLDINGS_DB@
+
+; open format - address to openFormat service
+; Use ws_open_format_uri if you want to run openFormat (php) on a different server than this one
+; otherwise set ws_open_format_uri to space and define the [format] section below thereby including openformat directly in opensearch
+ws_open_format_uri = @OPEN_FORMAT@
+
 ; formats supported by openFormat and possible name mapping
 ; open_format[openSearch_format_name][format] = openFormat format name
 open_format[bibliotekdkWorkDisplay][format] = bibliotekdkWorkDisplay
+open_format[briefWorkDisplay][format] = briefWorkDisplay
 open_format[refWorks][format] = refWorks
 open_format[ris][format] = ris
 
+; formats supported by solr-indexes. Comma separated list of solr tags
+; fedora.identifier will take the id of the manifestation from the fedora object
+;solr_format[briefDisplay][format] = display.accessType,display.creator,fedoraPid,rec.id,fedora.identifier,display.language,display.partOf,display.title,display.titleFull,display.type,display.workType
+solr_format[briefDisplay][format] = display.accessType,display.creator,fedoraPid,fedora.identifier,display.language,display.partOf,display.title,display.titleFull,display.dependentTitle,display.type,display.workType,display.multiVolumeType
+solr_format[score][format] = score
+
+; if solr's field collapsing should be used, define the collapsing field here
+; performs poorly on large sets
+; if collapsing_field is set, the 2 num_found_collaps* are ignored
+; collapsing_field = fedoraPid
+
+; Use collapsing field for modifying hit count when prelimary hit count is below hit_count_collaps_limit
+; if collapsing_field above is set, these 2 parameters are ignored
+num_found_collaps_limit = 500
+num_found_collapsing_field = fedoraPid
 
 ; default search_profile setting
-;agency_fallback = 100200
-;profile_fallback = test
+agency_fallback = @AGENCY_FALLBACK@
+profile_fallback = @AGENCY_PROFILE_FALLBACK@
 
-; raw_index - old feature, do not include
-;raw_index[] = facet.
-;raw_index[] = phrase.
+; relation_group_source_tab
+; ...[relation][agency type][collection name] = mapped source
+relation_group_source_tab[dbcbib:isPartOfManifestation][Forskningsbibliotek][katalog] = 870970-forsk
 
-; relations which can be returned
-; relation["prefix:relationname"] = [12]
-; - prefix has to be declared with namespace in xmlns (above)
-; - relationename as found in the RELS_EXT from fedora
-; - relations of type 1 points to internal objects
-; - relations of type 2 points to external objects
-relation["dbcaddi:hasImage"] = 1
-relation["dbcaddi:isReviewOf"] = 1
-relation["dbcaddi:hasReview"] = 1
-relation["dbcaddi:hasSample"] = 2
-relation["dbcaddi:hasCreatorDescription"] = 1
-relation["dbcaddi:hasDescriptionFromPublisher"] = 1
-relation["dbcaddi:hasSubjectDescription"] = 1
-relation["dbcbib:hasTrack"] = 1
-relation["dbcbib:isPartOfAlbum"] = 1
-relation["dbcbib:isPartOfManifestation"] = 1
-relation["dbcaddi:hasAnalysis"] = 1
-relation["dbcaddi:isAnalysisOf"] = 1
-relation["dbcaddi:hasAdaptation"] = 1
-relation["dbcaddi:isAdaptationOf"] = 1
-relation["dbcaddi:hasManuscript"] = 1
-relation["dbcaddi:isManuscriptOf"] = 1
-relation["dbcaddi:hasSoundtrack"] = 1
-relation["dbcaddi:isSoundtrackOfGame"] = 1
-relation["dbcaddi:isSoundtrackOfMovie"] = 1
-relation["dbcaddi:hasCreatorHomePage"] = 2
-relation["dbcaddi:hasOnlineAccess"] = 2
 
-; test relation["dbcbib:isMemberOfWork"] = 1
+; phrase indexes
+phrase_index[] = facet
+phrase_index[] = phrase
+phrase_index[] = dkcclphrase
+
+; maximum number of identical relationnames returned
+max_identical_relation_names = 20
 
 ; scan objects for these formats
-scan_format_table["dkabm:record"] = dkabm
-scan_format_table["marcx:collection"] = marcxchange
-scan_format_table["docbook:article"] = docbook
-scan_format_table["oso:object"] = opensearchobject
+scan_format_table[dkabm:record] = dkabm
+scan_format_table[marcx:collection] = marcxchange
+scan_format_table[docbook:article] = docbook
+scan_format_table[oso:object] = opensearchobject
 
 ; number of second to wait for a solr reply
 solr_timeout = 30
@@ -156,6 +184,8 @@ max_collections = 50
 
 ; logfile for verbose output
 logfile = /tmp/opensearch.log
+; logging to syslog is defined like:
+;logfile = syslog://LOG_LOCAL0
 
 ; sorting & ranking
 ; rank[<rank_name>][<rank_parameter>][<rank_register>] = boost_value
@@ -167,30 +197,48 @@ logfile = /tmp/opensearch.log
 ;   boost_value for rank_register
 ;
 
-rank[rank_title][word_boost]["dc.title"] = 4
-rank[rank_title][phrase_boost]["dc.title"] = 8
-rank[rank_title][word_boost]["cql.anyIndexes"] = 1
-rank[rank_title][phrase_boost]["cql.anyIndexes"] = 1
+rank[rank_verification][word_boost][rankterm.title] = 4
+rank[rank_verification][phrase_boost][rankphrase.title] = 8
+rank[rank_verification][word_boost][rankterm.creator] = 4
+rank[rank_verification][phrase_boost][rankphrase.creator] = 6
+rank[rank_verification][word_boost][cql.allIndexes] = 1
+rank[rank_verification][phrase_boost][cql.allIndexes] = 1
+rank[rank_verification][tie] = 0.1
+
+rank[rank_subject][word_boost][rankterm.subject] = 5
+rank[rank_subject][phrase_boost][rankphrase.subject] = 10
+rank[rank_subject][word_boost][rankterm.title] = 3
+rank[rank_subject][phrase_boost][rankphrase.title] = 6
+rank[rank_subject][word_boost][rankterm.description] = 2
+rank[rank_subject][phrase_boost][rankterm.description] = 3
+rank[rank_subject][word_boost][cql.allIndexes] = 1
+rank[rank_subject][phrase_boost][cql.allIndexes] = 1
+rank[rank_subject][tie] = 0.1
+
+rank[rank_title][word_boost][dkcclterm.ti] = 4
+rank[rank_title][phrase_boost][dkcclphrase.lti] = 8
+rank[rank_title][word_boost][term.default] = 1
+rank[rank_title][phrase_boost][term.default] = 1
 rank[rank_title][tie] = 0.1
 
-rank[rank_creator][word_boost]["dc.creator"] = 4
-rank[rank_creator][phrase_boost]["dc.creator"] = 8
-rank[rank_creator][word_boost]["cql.anyIndexes"] = 1
-rank[rank_creator][phrase_boost]["cql.anyIndexes"] = 1
+rank[rank_creator][word_boost][dkcclterm.fo] = 4
+rank[rank_creator][phrase_boost][dkcclphrase.lfo] = 8
+rank[rank_creator][word_boost][term.default] = 1
+rank[rank_creator][phrase_boost][term.default] = 1
 rank[rank_creator][tie] = 0.1
 
-rank[rank_general][word_boost]["dc.title"] = 3
-rank[rank_general][phrase_boost]["dc.title"] = 6
-rank[rank_general][word_boost]["dc.creator"] = 4
-rank[rank_general][phrase_boost]["dc.creator"] = 8
-rank[rank_general][word_boost]["dc.subject"] = 2
-rank[rank_general][phrase_boost]["dc.subject"] = 3
-rank[rank_general][word_boost]["cql.anyIndexes"] = 1
-rank[rank_general][phrase_boost]["cql.anyIndexes"] = 1
+rank[rank_general][word_boost][dkcclterm.ti] = 3
+rank[rank_general][phrase_boost][dkcclphrase.lti] = 6
+rank[rank_general][word_boost][dkcclterm.fo] = 4
+rank[rank_general][phrase_boost][dkcclphrase.lfo] = 8
+rank[rank_general][word_boost][dkcclterm.em] = 2
+rank[rank_general][phrase_boost][dkcclphrase.lem] = 3
+rank[rank_general][word_boost][term.default] = 1
+rank[rank_general][phrase_boost][term.default] = 1
 rank[rank_general][tie] = 0.1
 
-rank[rank_none][word_boost]["cql.anyIndexes"] = 0.1
-rank[rank_none][phrase_boost]["cql.anyIndexes"] = 0.1
+rank[rank_none][word_boost][term.default] = 0.1
+rank[rank_none][phrase_boost][term.default] = 0.1
 rank[rank_none][tie] = 1
 
 sort[title_ascending] = sort.title asc
@@ -199,8 +247,18 @@ sort[creator_ascending] = sort.creator asc
 sort[creator_descending] = sort.creator desc
 sort[date_ascending] = sort.date asc
 sort[date_descending] = sort.date desc
+;sort[date_ascending] = map(sort.date,0,0,9999) asc
+;sort[date_descending] = map(sort.date,2050,999999,0) desc
 sort[acquisitionDate_ascending] = sort.acquisitionDate asc
 sort[acquisitionDate_descending] = sort.acquisitionDate desc
+
+sort[work_type_ascending] = sort.work_type asc
+sort[work_type_descending] = sort.work_type desc
+sort[record_owner_ascending] = sort.recordOwner asc
+sort[record_owner_descending] = sort.recordOwner desc
+sort[article_date_ascending] = sort.articleDate asc
+sort[article_date_descending] = sort.articleDate desc
+
 sort[random] = random
 
 
@@ -214,10 +272,40 @@ sort[random] = random
 ;   DEBUG   - debugging info
 ;   Z3959   - calls to z3950 services
 ;   OCI     - oracle
-verbose = WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG+Z3950+OCI
+verbose = @VERBOSE_LEVEL@
 
 ; format for automatic timer dump %s is the soap-action used
 dump_timer = opensearch(%s)
+
+[format]
+; if ws_open_format_uri is not defined (or blank) in the [setup] section, openformat functionality
+; will be included in opensearch and the settings in this section will be used. Unlesss you want to
+; run openFormat on a different server than this on, you should use this section
+
+; list of java/javacript formatters
+; Adding more than 1 js_server will parallelize formating over these servers
+; - if the js_server has more than 1 cpu, parallelizing can be done by adding the same server several times
+;
+;js_server[] = some_server.dk:8018/openformat
+;js_server[] = some_server.dk:8018/openformat
+;js_server[] = some_server.dk:8018/openformat
+;js_server[] = some_server.dk:8018/openformat
+;js_server[] = some_other_server.dk:8018/openformat
+;js_server[] = some_other_server.dk:8018/openformat
+@FORMAT_JS_SERVER_BLOCK@
+
+
+; timeout in seconds for java/javascript formatters
+curl_timeout = @FORMAT_CURL_TIMEOUT@
+
+; cache setting for the format part
+; - cache_host: name of cache server, use localhost in caching is done locally
+; - cache_port: port for cachng host
+; - cache_expire: number of seconds before a cahed entry will expire
+;cache_host = localhost
+;cache_port = 11211
+;cache_expire = 600
+@FORMAT_CACHE_SETTINGS_BLOCK@
 
 [aaa]
 ; aaa Authentication, Access control and Accounting
@@ -229,8 +317,7 @@ dump_timer = opensearch(%s)
 ; aaa_ip_rights[group-identifier][ressource][<named ressource>] = right to <named ressource>
 ; aaa_ip_rights[group-identifier][ressource][<named ressource 2>] = right to <named ressource 2>
 ;
-;aaa_ip_rights[dbc][ip_list] = 172.16.0.0-172.31.255.255;193.111.162.0-193.111.162.255
-;aaa_ip_rights[dbc][ressource][opensearch] = 500
+@AAA_IP_RIGHTS_BLOCK@
 ;
 ; if not found in aaa_ip_rights the authentication object is created from the FORS
 ; either by using the WS specified by aaa_fors_rights or by OCI specified by aaa_credentials
@@ -266,6 +353,7 @@ dump_timer = opensearch(%s)
 ; from url: action=thisSoapAction&some.number=nn&another.number=mm
 ;
 action[search][] = query
+action[search][] = queryFilter
 action[search][] = queryLanguage
 action[search][] = agency
 action[search][] = profile
@@ -311,6 +399,23 @@ action[getObject][] = outputType
 action[getObject][] = relationData
 action[getObject][] = repository
 action[getObject][] = trackingId
+
+[showinfo]
+; section to dump setting online
+; make one or more line to display if ?ShowInfo is part of the url
+; __var__ will be replace by the corresponding ini-file setting - if it exists
+; __var.section__ will be replace by the corresponding ini-file setting from section [section]
+; this will only work if the user from in_house_domain - see above
+;showinfo[] = <pre>
+;showinfo[] = version:            __version.setup__
+;showinfo[] = logfile:            __logfile.setup__
+;showinfo[] = verbose:            __verbose__
+;showinfo[] = agency:             __open_agency__
+;showinfo[] = holdings:           __holdings_db__
+;showinfo[] = aaa_credentials:    __aaa_credentials__
+;showinfo[] = default_repository: __default_repository__
+;showinfo[] = repository:         __repository__
+;showinfo[] = </pre>
 
 [howru]
 test[] = search&query=danmark&stepValue=1

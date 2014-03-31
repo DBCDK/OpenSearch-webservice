@@ -48,7 +48,7 @@
 		<xs:complexContent mixed="true">
 			<xs:restriction base="xs:anyType">
 				<xs:sequence>
-					<xs:any processContents="lax" minOccurs="0" maxOccurs="0"/>
+					<xs:any processContents="lax" minOccurs="0"/>
 				</xs:sequence>
 				<xs:attribute ref="xml:lang" use="optional"/>
 			</xs:restriction>
