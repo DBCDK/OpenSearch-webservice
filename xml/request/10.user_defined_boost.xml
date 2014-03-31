@@ -2,7 +2,7 @@
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch">
   <SOAP-ENV:Body>
     <ns1:searchRequest>
-      <ns1:query>dc.title=high fidelity</ns1:query>
+      <ns1:query>dkcclterm.ti=high fidelity</ns1:query>
       <ns1:agency>100200</ns1:agency>
       <ns1:profile>test</ns1:profile>
       <ns1:collectionType>manifestation</ns1:collectionType>
