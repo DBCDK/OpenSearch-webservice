@@ -23,22 +23,28 @@
 //-----------------------------------------------------------------------------
 require_once('OLS_class_lib/webServiceServer_class.php');
 require_once 'OLS_class_lib/memcache_class.php';
-require_once 'OLS_class_lib/cql2solr_class.php';
-
-//-----------------------------------------------------------------------------
-define(REL_TO_INTERNAL_OBJ, 1);       // relation points to internal object
-define(REL_TO_EXTERNAL_OBJ, 2);     // relation points to external object
+require_once 'OLS_class_lib/solr_query_class.php';
 
 //-----------------------------------------------------------------------------
 class openSearch extends webServiceServer {
-  protected $number_of_fedora_calls;
-  protected $number_of_fedora_cached;
   protected $cql2solr;
   protected $curl;
   protected $cache;
+  protected $search_profile;
+  protected $search_profile_version = 3;
+  protected $repository_name;
   protected $repository; // array containing solr and fedora uri's
-  protected $work_format; // format for the fedora-objects
-  protected $tracking_id; // format for the fedora-objects
+  protected $tracking_id; 
+  protected $query_language = 'cqleng'; 
+  protected $number_of_fedora_calls = 0;
+  protected $number_of_fedora_cached = 0;
+  protected $collapsing_field = FALSE;  // if used, defined in ini-file
+  protected $separate_field_query_style = TRUE; // seach as field:(a OR b) ie FALSE or (field:a OR field:b) ie TRUE
+  protected $valid_relation = array(); 
+  protected $valid_source = array(); 
+  protected $rank_frequence_debug;
+  protected $cql_file = 'opensearch_cql.xml';
+
 
   public function __construct() {
     webServiceServer::__construct('opensearch.ini');
@@ -49,14 +55,24 @@ class openSearch extends webServiceServer {
     $this->curl->set_option(CURLOPT_TIMEOUT, $timeout);
 
     define(DEBUG_ON, $this->debug);
+    if (!$mir = $this->config->get_value('max_identical_relation_names', 'setup'))
+      $mir = 20;
+    define(MAX_IDENTICAL_RELATIONS, $mir);
+    define(MAX_OBJECTS_IN_WORK, 100);
+    define('AND_OP', 'AND');
+    define('OR_OP', 'OR');
+
+    if ($cf = $this->config->get_value('cql_file', 'setup'))
+      $this->cql_file = $cf;
   }
 
-  /**
-      \brief Handles the request and set up the response
-  */
+  /** \brief Entry search: Handles the request and set up the response
+   *
+   */
 
   public function search($param) {
     // set some defines
+//if (DEBUG) { var_dump($param); die(); }
     $this->tracking_id = verbose::set_tracking_id('os', $param->trackingId->_value);
     if (!$this->aaa->has_right('opensearch', 500)) {
       $ret_error->searchResponse->_value->error->_value = 'authentication_error';
@@ -67,34 +83,21 @@ class openSearch extends webServiceServer {
 
     // check for unsupported stuff
     $ret_error->searchResponse->_value->error->_value = &$unsupported;
-    if ($param->format->_value == 'short') {
-      $unsupported = 'Error: format short is not supported';
-    }
-    if ($param->format->_value == 'full') {
-      $unsupported = 'Error: format full is not supported';
+    if ($param->queryFilter->_value) {
+      $param->query->_value .= ($param->queryLanguage->_value == 'cqldan' ? ' OG ' : ' AND ') . $param->queryFilter->_value;
     }
     if (empty($param->query->_value)) {
       $unsupported = 'Error: No query found in request';
     }
-    $repositories = $this->config->get_value('repository', 'setup');
-    if (empty($param->repository->_value)) {
-      $repository_name = $this->config->get_value('default_repository', 'setup');
-      $this->repository = $repositories[$repository_name];
+    if ($repository_error = self::set_repositories($param->repository->_value)) {
+      $unsupported = $repository_error;
     }
-    else {
-      $repository_name = $param->repository->_value;
-      if (!$this->repository = $repositories[$param->repository->_value]) {
-        $unsupported = 'Error: Unknown repository: ' . $param->repository->_value;
-      }
-    }
-    define(FEDORA_VER_2, $this->repository['work_format'] == 2);
 
 // for testing and group all
     if (count($this->aaa->aaa_ip_groups) == 1 && $this->aaa->aaa_ip_groups['all']) {
       $param->agency->_value = '100200';
       $param->profile->_value = 'test';
     }
-    $search_profile_version = $this->repository['search_profile_version'];
     if (empty($param->agency->_value) && empty($param->profile->_value)) {
       $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
       $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
@@ -105,13 +108,876 @@ class openSearch extends webServiceServer {
     elseif (empty($param->profile->_value)) {
       $unsupported = 'Error: No profile in request';
     }
-    elseif (!($search_profile = $this->fetch_profile_from_agency($param->agency->_value, $param->profile->_value, $search_profile_version))) {
+    elseif (!($this->search_profile = self::fetch_profile_from_agency($param->agency->_value, $param->profile->_value))) {
       $unsupported = 'Error: Cannot fetch profile: ' . $param->profile->_value .
                      ' for ' . $param->agency->_value;
     }
-    $filter_agency = $this->set_solr_filter($search_profile, $search_profile_version);
+    if ($unsupported) return $ret_error;
+    $filter_agency = self::set_solr_filter($this->search_profile);
 
+    if ($ufc = $this->config->get_value('collapsing_field', 'setup')) {
+      $this->collapsing_field = $ufc;
+    }
     $use_work_collection = ($param->collectionType->_value <> 'manifestation');
+
+    if ($unsupported = self::parse_for_ranking($param, $rank, $rank_types)) {
+      return $ret_error;
+    }
+    if ($unsupported = self::parse_for_sorting($param, $sort, $sort_types)) {
+      return $ret_error;
+    }
+
+    $format = self::set_format($param->objectFormat, $this->config->get_value('open_format', 'setup'), $this->config->get_value('solr_format', 'setup'));
+    
+    if ($unsupported) return $ret_error;
+
+    /**
+        pjo 31-08-10
+        If source is set and equals 'bibliotekdk' use bib_zsearch_class to zsearch for records
+    if ($param->source->_value == 'bibliotekdk') {
+      require_once('bib_zsearch_class.php');
+
+      $this->watch->start('bibdk_search');
+      $bib_search = new bib_zsearch($this->config,$this->watch);
+      $response = $bib_search->response($param);
+      $this->watch->stop('bibdk_search');
+
+      return $response;
+    }
+    */
+
+    /**
+    *  Approach
+    *  a) Do the solr search and fetch enough unit-ids in result
+    *  b) Fetch a unit-ids work-object unless the record has been found
+    *     in an earlier handled work-objects
+    *  c) Collect unit-ids in this work-object
+    *  d) repeat b. and c. until the request number of objects is found
+    *  e) if allObject is not set, do a new search combined the users search
+    *     with an or'ed list of the unit-ids in the active objects and
+    *     remove the unit-ids not found in the result
+    *  f) Read full records fom fedora for objects in result
+    *
+    *  if $use_work_collection is FALSE skip b) to e)
+    */
+
+    $ret_error->searchResponse->_value->error->_value = &$error;
+
+    $this->watch->start('Solr');
+    $start = $param->start->_value;
+    if (empty($start) && $step_value) {
+      $start = 1;
+    }
+    $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
+    $use_work_collection |= $sort_types[$sort[0]] == 'random';
+    $key_work_struct = md5($param->query->_value . $this->repository_name . $filter_agency .
+                              $use_work_collection .  implode('', $sort) . $rank . $boost_str . $this->config->get_inifile_hash());
+
+    if ($param->queryLanguage->_value) {
+      $this->query_language = $param->queryLanguage->_value;
+    }
+    $this->cql2solr = new SolrQuery($this->cql_file, $this->config, $this->query_language);
+    $solr_query = $this->cql2solr->cql_2_edismax($param->query->_value);
+    if ($solr_query['error']) {
+      $error = $solr_query['error'];
+      return $ret_error;
+    }
+    if (!$solr_query['operands']) {
+      $error = 'Error: No query found in request';
+      return $ret_error;
+    }
+
+    if ($filter_agency) {
+      $filter_q = rawurlencode($filter_agency);
+    }
+
+    if ($this->query_language == 'bestMatch') {
+      $sort_q .= '&mm=1';
+      foreach ($solr_query['best_match'] as $key => $val) {
+        $sort_q .= '&' . $key . '=' . urlencode($val);
+        $best_match_debug->$key->_value = $val;
+      }
+    }
+    elseif ($sort) {
+      foreach ($sort as $s) {
+        $ss[] = urlencode($sort_types[$s]);
+      }
+      $sort_q = '&sort=' . implode(',', $ss);
+    }
+    if ($rank == 'rank_frequency') {
+      if ($new_rank = self::guess_rank($solr_query, $rank_types[$rank], $filter_q)) {
+        $rank = $new_rank;
+      }
+      else {
+        $rank = 'rank_none';
+      }
+    }
+    if ($rank_types[$rank]) {
+      $rank_qf = $this->cql2solr->make_boost($rank_types[$rank]['word_boost']);
+      $rank_pf = $this->cql2solr->make_boost($rank_types[$rank]['phrase_boost']);
+      $rank_tie = $rank_types[$rank]['tie'];
+      $rank_q = '&qf=' . urlencode($rank_qf) .  '&pf=' . urlencode($rank_pf) .  '&tie=' . $rank_tie;
+    }
+
+    $rows = ($start + $step_value + 100) * 2;
+    if ($param->facets->_value->facetName) {
+      $facet_q .= '&facet=true&facet.limit=' . $param->facets->_value->numberOfTerms->_value;
+      if (is_array($param->facets->_value->facetName)) {
+        foreach ($param->facets->_value->facetName as $facet_name) {
+          $facet_q .= '&facet.field=' . $facet_name->_value;
+        }
+      }
+      elseif (is_scalar($param->facets->_value->facetName->_value)) {
+        $facet_q .= '&facet.field=' . $param->facets->_value->facetName->_value;
+      }
+    }
+
+    verbose::log(TRACE, 'CQL to EDISMAX: ' . $param->query->_value . ' -> ' . $solr_query['edismax']);
+
+    $debug_query = $this->xs_boolean($param->queryDebug->_value);
+
+    // do the query
+    if ($sort[0] == 'random') {
+      if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, $filter_q, '', $debug_query, $solr_arr))
+        $error = $err;
+      else {
+        $numFound = self::get_num_found($solr_arr);
+      }
+    }
+    else {
+      if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_str, $debug_query, $solr_arr))
+        $error = $err;
+      else {
+        self::extract_unit_id_from_solr($solr_arr, $search_ids);
+        $numFound = self::get_num_found($solr_arr);
+      }
+    }
+    $this->watch->stop('Solr');
+
+    if ($error) return $ret_error;
+
+    if ($debug_query) {
+      if ($best_match_debug) {
+        $debug_result->bestMatch->_value = $best_match_debug;
+      }
+      $debug_result->rawQueryString->_value = $solr_arr['debug']['rawquerystring'];
+      $debug_result->queryString->_value = $solr_arr['debug']['querystring'];
+      $debug_result->parsedQuery->_value = $solr_arr['debug']['parsedquery'];
+      $debug_result->parsedQueryString->_value = $solr_arr['debug']['parsedquery_toString'];
+      if ($this->rank_frequence_debug) {
+        $debug_result->rankFrequency->_value = $this->rank_frequence_debug;
+      }
+    }
+    //$facets = self::parse_for_facets($solr_arr);
+
+    $this->watch->start('Build_id');
+    $work_ids = $used_search_fids = array();
+    if ($sort[0] == 'random') {
+      $rows = min($step_value, $numFound);
+      $more = $step_value < $numFound;
+      for ($w_idx = 0; $w_idx < $rows; $w_idx++) {
+        do {
+          $no = rand(0, $numFound-1);
+        } while (isset($used_search_fid[$no]));
+        $used_search_fid[$no] = TRUE;
+        self::get_solr_array($solr_query['edismax'], $no, 1, '', '', '', $filter_q, '', $debug_query, $solr_arr);
+        $uid =  self::get_first_solr_element($solr_arr, 'unit.id');
+        //$local_data[$uid] = $solr_arr['response']['docs']['rec.collectionIdentifier'];
+        $work_ids[] = array($uid);
+      }
+    }
+    else {
+      $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
+                               $this->config->get_value('cache_port', 'setup'),
+                               $this->config->get_value('cache_expire', 'setup'));
+      if (empty($_GET['skipCache'])) {
+        if ($work_cache_struct = $this->cache->get($key_work_struct)) {
+          verbose::log(STAT, 'Cache hit, lines: ' . count($work_cache_struct));
+        }
+        else {
+          verbose::log(STAT, 'Cache miss');
+        }
+      }
+
+      $w_no = 0;
+
+      if (DEBUG_ON) print_r($search_ids);
+      //if (DEBUG_ON) print_r($local_data);
+
+      for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
+        $uid = &$search_ids[$s_idx];
+        if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
+          $this->watch->start('Solr_add');
+          verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']);
+          $rows *= 2;
+          if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_str, $debug_query, $solr_arr)) {
+            $error = $err;
+            return $ret_error;
+          }
+          else {
+            self::extract_unit_id_from_solr($solr_arr, $search_ids);
+            $numFound = self::get_num_found($solr_arr);
+          }
+          $this->watch->stop('Solr_add');
+        }
+        if (FALSE) {
+          self::get_fedora_rels_hierarchy($uid, $unit_result);
+          $unit_id = self::parse_rels_for_unit_id($unit_result);
+          if (DEBUG_ON) echo 'UR: ' . $uid . ' -> ' . $unit_id . "\n";
+          $uid = $unit_id;
+        }
+        if ($used_search_fids[$uid]) continue;
+        if (count($work_ids) >= $step_value) {
+          $more = TRUE;
+          break;
+        }
+
+        $w_no++;
+        // find relations for the record in fedora
+        // uid: id as found in solr's fedoraPid
+        if ($work_cache_struct[$w_no]) {
+          $uid_array = $work_cache_struct[$w_no];
+        }
+        else {
+          if ($use_work_collection) {
+            $this->watch->start('get_w_id');
+            self::get_fedora_rels_hierarchy($uid, $record_rels_hierarchy);
+            /* ignore the fact that there is no RELS_HIERARCHY datastream
+            */
+            $this->watch->stop('get_w_id');
+            if (DEBUG_ON) echo 'RR: ' . $record_rels_hierarchy . "\n";
+
+            if ($work_id = self::parse_rels_for_work_id($record_rels_hierarchy)) {
+              // find other recs sharing the work-relation
+              $this->watch->start('get_fids');
+              self::get_fedora_rels_hierarchy($work_id, $work_rels_hierarchy);
+              if (DEBUG_ON) echo 'WR: ' . $work_rels_hierarchy . "\n";
+              $this->watch->stop('get_fids');
+              if (!$uid_array = self::parse_work_for_object_ids($work_rels_hierarchy, $uid)) {
+                verbose::log(FATAL, 'Fedora fetch/parse work-record: ' . $work_id . ' refered from: ' . $uid);
+                $uid_array = array($uid);
+              }
+              if (DEBUG_ON) {
+                echo 'fid: ' . $uid . ' -> ' . $work_id . " -> object(s):\n";
+                print_r($uid_array);
+              }
+            }
+            else {
+              verbose::log(WARNING, 'Cannot find work_id for unit: ' . $uid);
+              $uid_array = array($uid);
+            }
+          }
+          else
+            $uid_array = array($uid);
+        }
+
+        foreach ($uid_array as $id) {
+          $used_search_fids[$id] = TRUE;
+        }
+        $work_cache_struct[$w_no] = $uid_array;
+        if (count($uid_array) >= MAX_OBJECTS_IN_WORK) {
+          verbose::log(FATAL, 'Fedora work-record: ' . $work_id . ' refered from: ' . $uid . ' contains ' . count($uid_array) . ' objects');
+          array_splice($uid_array, MAX_OBJECTS_IN_WORK);
+        }
+        if ($w_no >= $start)
+          $work_ids[$w_no] = $uid_array;
+      }
+    }
+
+    if (count($work_ids) < $step_value && count($search_ids) < $numFound) {
+      verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']);
+    }
+
+    // check if the search result contains the ids
+    // allObject=0 - remove objects not included in the search result
+    // allObject=1 & agency - remove objects not included in agency
+    //
+    // split into multiple solr-searches each containing slightly less than 1000 elements
+    define('MAX_QUERY_ELEMENTS', 950);
+    $block_idx = $no_bool = 0;
+    if (DEBUG_ON) echo 'work_ids: ' . print_r($work_ids, TRUE) . "\n";
+    if ($numFound && $use_work_collection && $step_value) {
+      $no_of_rows = 1;
+      $add_queries[$block_idx] = '';
+      $which_rec_id = 'unit.id';
+      foreach ($work_ids as $w_no => $w) {
+        if (TRUE || count($w) > 1 || $format['found_solr_format']) {
+          if ($add_queries[$block_idx] && ($no_bool + count($w)) > MAX_QUERY_ELEMENTS) {
+            $block_idx++;
+            $no_bool = 0;
+          }
+          foreach ($w as $id) {
+            $id = str_replace(':', '\:', $id);
+            if ($this->separate_field_query_style) {
+              $add_queries[$block_idx] .= (empty($add_queries[$block_idx]) ? '' : ' ' . OR_OP . ' ') . $which_rec_id . ':' . $id;
+            }
+            else {
+              $add_queries[$block_idx] .= (empty($add_queries[$block_idx]) ? '' : ' ' . OR_OP . ' ') . $id;
+            }
+            $no_bool++;
+            $no_of_rows++;
+          }
+        }
+      }
+  // code below should always run in order to at least check against search profile
+      if (TRUE || !empty($add_queries[0]) || count($add_queries) > 1 || $format['found_solr_format']) {
+        foreach ($add_queries as $add_idx => $add_query) {
+          if ($this->separate_field_query_style) {
+              $add_q =  '(' . $add_query . ')';
+          }
+          else {
+              $add_q =  $which_rec_id . ':(' . $add_query . ')';
+          }
+          if (self::xs_boolean($param->allObjects->_value)) {
+            $chk_query['edismax'] =  $add_q;
+          }
+          else {
+            $chk_query = $this->cql2solr->cql_2_edismax($param->query->_value);
+            if ($add_query) {
+              $chk_query['edismax'] =  '(' . $chk_query['edismax'] . ') ' . AND_OP . ' ' . $add_q;
+            }
+          }
+          if ($chk_query['error']) {
+            $error = $chk_query['error'];
+            return $ret_error;
+          }
+          $q = $chk_query['edismax'];
+          if ($format['found_solr_format']) {
+            foreach ($format as $f) {
+              if ($f['is_solr_format']) {
+                $add_fl .= ',' . $f['format_name'];
+              }
+            }
+          }
+          $post_query = 'q=' . urlencode($q) .
+                       '&fq=' . $filter_q .
+//                       '&fq=(' . $filter_q . ')+AND+unit.isPrimaryObject:true' .
+                       '&wt=phps' .
+                       '&start=0' .
+                       '&rows=' . '999999' . // $no_of_rows . 
+                       '&defType=edismax' .
+                       '&fl=rec.collectionIdentifier,unit.isPrimaryObject,unit.id,sort.complexKey' . $add_fl;
+          if ($rank_qf) $post_query .= '&qf=' . $rank_qf;
+          if ($rank_pf) $post_query .= '&pf=' . $rank_pf;
+          if ($rank_tie) $post_query .= '&tie=' . $rank_tie;
+          verbose::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $post_query) . '&debugQuery=on');
+
+          if (DEBUG_ON) {
+            echo 'post_array: ' . $this->repository['solr'] . '?' . $post_query . "\n";
+          }
+
+          $this->curl->set_post($post_query, 0); // use post here because query can be very long
+          $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'), 0);
+          $this->watch->start('Solr 2');
+          $solr_result = $this->curl->get($this->repository['solr'], 0);
+          $this->watch->stop('Solr 2');
+// remember to clear POST 
+          $this->curl->set_option(CURLOPT_POST, 0, 0);
+          if (!($solr_2_arr[$add_idx] = unserialize($solr_result))) {
+            verbose::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
+            $error = 'Internal problem: Cannot decode Solr re-search';
+            return $ret_error;
+          }
+        }
+        foreach ($work_ids as $w_no => $w_list) {
+          if (count($w_list) > 0) {
+            $hit_fid_array = array();
+            foreach ($w_list as $w) {
+              foreach ($solr_2_arr as $s_2_a) {
+                foreach ($s_2_a['response']['docs'] as $fdoc) {
+                  $p_id =  self::scalar_or_first_elem($fdoc['unit.id']);
+                  if ($p_id == $w) {
+                    $hit_fid_array[] = $w;
+                    $unit_sort_keys[$w] = $fdoc['sort.complexKey'] . '  ' . $p_id;
+                    $collection_identifier[$w] =  self::scalar_or_first_elem($fdoc['rec.collectionIdentifier']);
+                    break 2;
+                  }
+                }
+              }
+            }
+            if (empty($hit_fid_array)) {
+              verbose::log(ERROR, 'Re-search: Cannot find any of ' . implode(',', $w_list) . ' in unit.id');
+              $work_ids[$w_no] = array($w_list[0]);
+            }
+            else {
+              $work_ids[$w_no] = $hit_fid_array;
+            }
+          }
+        }
+      }
+      if (DEBUG_ON) echo 'work_ids after research: ' . print_r($work_ids, TRUE) . "\n";
+    }
+
+    if (DEBUG_ON) echo 'txt: ' . $txt . "\n";
+    if (DEBUG_ON) echo 'solr_2_arr: ' . print_r($solr_2_arr, TRUE) . "\n";
+    if (DEBUG_ON) echo 'add_queries: ' . print_r($add_queries, TRUE) . "\n";
+    if (DEBUG_ON) echo 'used_search_fids: ' . print_r($used_search_fids, TRUE) . "\n";
+
+    $this->watch->stop('Build_id');
+
+    if ($this->cache)
+      $this->cache->set($key_work_struct, $work_cache_struct);
+
+    $missing_record = $this->config->get_value('missing_record', 'setup');
+
+    // work_ids now contains the work-records and the fedoraPids they consist of
+    // now fetch the records for each work/collection
+    $this->watch->start('get_recs');
+    $collections = array();
+    $rec_no = max(1, $start);
+    $HOLDINGS = ' holdings ';
+    foreach ($work_ids as &$work) {
+      $objects = array();
+      foreach ($work as $unit_id) {
+        $data_stream = self::set_data_stream_name($collection_identifier[$unit_id]);
+        self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
+        self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
+        list($fpid, $unit_members) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
+        $sort_holdings = ' ';
+        unset($no_of_holdings);
+        if (self::xs_boolean($param->includeHoldingsCount->_value)) {
+          $no_of_holdings = self::get_holdings($fpid);
+        }
+        if ((strpos($unit_sort_keys[$unit_id], $HOLDINGS) !== FALSE)) {
+          $holds = isset($no_of_holdings) ? $no_of_holdings : self::get_holdings($fpid);
+          $sort_holdings = sprintf(' %04d ', 9999 - intval($holds['have']));
+        }
+        $fpid_sort_keys[$fpid] = str_replace($HOLDINGS, $sort_holdings, $unit_sort_keys[$unit_id]);
+        if ($error = self::get_fedora_raw($fpid, $fedora_result, $data_stream)) {
+// fetch empty record from ini-file and use instead of error
+          if ($missing_record) {
+            $error = NULL;
+            $fedora_result = sprintf($missing_record, $fpid);
+          }
+          else {
+            return $ret_error;
+          }
+        }
+        if ($debug_query) {
+          unset($explain);
+          if ($this->collapsing_field) {
+            foreach ($solr_arr['grouped'][$this->collapsing_field]['groups'] as $solr_idx => $solr_grp) {
+              if ($fpid == $solr_grp['groupValue']) {
+                $explain = $solr_arr['debug']['explain'][$fpid];
+                break;
+              }
+            }
+          }
+          else {
+            foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
+              if ($fpid == $solr_rec['fedoraPid']) {
+                $explain = $solr_arr['debug']['explain'][$fpid];
+                break;
+              }
+            }
+          }
+
+        }
+        $sort_key = $fpid_sort_keys[$fpid] . ' ' . sprintf('%04d', count($objects));
+        $sorted_work[$sort_key] = $unit_id;
+        $objects[$sort_key]->_value =
+          self::parse_fedora_object($fedora_result,
+                                    $fedora_addi_relation,
+                                    $param->relationData->_value,
+                                    $fpid,
+                                    NULL, // no $filter_agency on search - bad performance
+                                    $format,
+                                    $no_of_holdings,
+                                    $explain);
+      }
+      $work = $sorted_work;
+      if (DEBUG_ON) print_r($sorted_work);
+      unset($sorted_work);
+      $o->collection->_value->resultPosition->_value = $rec_no++;
+      $o->collection->_value->numberOfObjects->_value = count($objects);
+      if (count($objects) > 1) {
+        ksort($objects);
+      }
+      $o->collection->_value->object = $objects;
+      $collections[]->_value = $o;
+      unset($o);
+    }
+    if (DEBUG_ON) print_r($unit_sort_keys);
+    if (DEBUG_ON) print_r($fpid_sort_keys);
+    $this->watch->stop('get_recs');
+
+  // TODO: if an openFormat is specified, we need to remove data so openFormat dont format unneeded stuff
+  // But apparently, openFormat breaks when receiving an empty object
+    if ($param->collectionType->_value == 'work-1') {
+      foreach ($collections as &$c) {
+        $collection_no = 0;
+        foreach ($c->_value->collection->_value->object as &$o) {
+          if ($collection_no++) {
+            foreach ($o->_value as $tag => $val) {
+              if (!in_array($tag, array('identifier', 'creationDate', 'formatsAvailable'))) {
+                unset($o->_value->$tag);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if ($step_value) {
+      if ($format['found_open_format']) {
+        self::format_records($collections, $format);
+      }
+      if ($format['found_solr_format']) {
+        self::format_solr($collections, $format, $solr_2_arr, $work_ids, $fpid_sort_keys);
+      }
+      self::remove_unselected_formats($collections, $format);
+    }
+
+// try to get a better hitCount by looking for primaryObjects only 
+    $nfcl = intval($this->config->get_value('num_found_collaps_limit', 'setup'));
+    if ($nfcl >= $numFound) {
+      if ($nfcf = $this->config->get_value('num_found_collapsing_field', 'setup')) {
+        $this->collapsing_field = $nfcf;
+      }
+    }
+    $this->watch->start('Solr 3');
+    //if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, '(' . $filter_q . ')+AND+unit.isPrimaryObject:true', '', $debug_query, $solr_arr)) {
+    if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, $filter_q, '', $debug_query, $solr_arr)) {
+      $this->watch->stop('Solr 3');
+      $error = $err;
+      return $ret_error;
+    }
+    else {
+      $this->watch->stop('Solr 3');
+      if ($n = self::get_num_found($solr_arr)) {
+        verbose::log(STAT, 'Modify hitcount from: ' . $numFound . ' to ' . $n);
+        $numFound = $n;
+      }
+      $facets = self::parse_for_facets($solr_arr);
+    }
+/*
+*/
+
+//var_dump($solr_2_arr);
+//var_dump($work_cache_struct);
+//die();
+    if ($_REQUEST['work'] == 'debug') {
+      echo "returned_work_ids: \n";
+      print_r($work_ids);
+      echo "cache: \n";
+      print_r($work_cache_struct);
+      die();
+    }
+    //if (DEBUG_ON) { print_r($work_cache_struct); die(); }
+    //if (DEBUG_ON) { print_r($collections); die(); }
+    //if (DEBUG_ON) { print_r($solr_arr); die(); }
+
+    $result = &$ret->searchResponse->_value->result->_value;
+    $result->hitCount->_value = $numFound;
+    $result->collectionCount->_value = count($collections);
+    $result->more->_value = ($more ? 'true' : 'false');
+    if (isset($rank)) {
+      $result->rankUsed->_value = $rank;
+    }
+    $result->searchResult = $collections;
+    $result->facetResult->_value = $facets;
+    $result->queryDebugResult->_value = $debug_result;
+    $result->statInfo->_value->fedoraRecordsCached->_value = $this->number_of_fedora_cached;
+    $result->statInfo->_value->fedoraRecordsRead->_value = $this->number_of_fedora_calls;
+    $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
+    $result->statInfo->_value->trackingId->_value = $this->tracking_id;
+
+
+    //print_r($collections[0]);
+    //exit;
+
+    return $ret;
+  }
+
+
+  /** \brief Entry getObject: Get an object in a specific format
+  *
+  * param: agency: 
+  *        profile:
+  *        identifier - fedora pid
+  *        objectFormat - one of dkabm, docbook, marcxchange, opensearchobject
+  *        includeHoldingsCount - boolean
+  *        relationData - type, uri og full
+  *        repository
+  */
+  public function getObject($param) {
+    $this->tracking_id = verbose::set_tracking_id('os', $param->trackingId->_value);
+    $ret_error->searchResponse->_value->error->_value = &$error;
+    if (!$this->aaa->has_right('opensearch', 500)) {
+      $error = 'authentication_error';
+      return $ret_error;
+    }
+    if ($error = self::set_repositories($param->repository->_value)) {
+      verbose::log(FATAL, $error);
+      return $ret_error;
+    }
+    if (empty($param->agency->_value) && empty($param->profile->_value)) {
+      $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
+      $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
+    }
+    if ($agency = $param->agency->_value) {
+      if ($param->profile->_value) {
+        if (!($this->search_profile = self::fetch_profile_from_agency($agency, $param->profile->_value))) {
+          $error = 'Error: Cannot fetch profile: ' . $param->profile->_value . ' for ' . $agency;
+          return $ret_error;
+        }
+      }
+      else
+        $agencies = $this->config->get_value('agency', 'agency');
+      $agencies[$agency] = self::set_solr_filter($this->search_profile);
+      if (isset($agencies[$agency]))
+        $filter_agency = $agencies[$agency];
+      else {
+        $error = 'Error: Unknown agency: ' . $agency;
+        return $ret_error;
+      }
+    }
+    if ($filter_agency) {
+      $filter_q = rawurlencode($filter_agency);
+    }
+
+    $format = self::set_format($param->objectFormat, 
+                               $this->config->get_value('open_format', 'setup'), 
+                               $this->config->get_value('solr_format', 'setup'));
+    $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
+                             $this->config->get_value('cache_port', 'setup'),
+                             $this->config->get_value('cache_expire', 'setup'));
+
+    if (is_array($param->identifier)) {
+      $fpids = $param->identifier;
+    }
+    else {
+      $fpids = array($param->identifier);
+    }
+    if ($format['found_solr_format']) {
+      foreach ($format as $f) {
+        if ($f['is_solr_format']) {
+          $add_fl .= ',' . $f['format_name'];
+        }
+      }
+    }
+    foreach ($fpids as $fpid_number => $fpid) {
+      $id_array[] = $fpid->_value;
+    }
+    $this->cql2solr = new SolrQuery($this->cql_file, $this->config);
+    $chk_query = $this->cql2solr->cql_2_edismax('rec.id=(' . implode($id_array, ' ' . OR_OP . ' ') . ')');
+    $solr_q = $this->repository['solr'] .
+              '?wt=phps' .
+              '&q=' . urlencode($chk_query['edismax']) .
+              '&fq=' . $filter_q .
+              '&start=0' .
+              '&rows=50000' .
+              '&defType=edismax' .
+              '&fl=rec.collectionIdentifier,fedoraPid,rec.id,unit.id' . $add_fl;
+    $solr_result = $this->curl->get($solr_q);
+    $solr_2_arr[] = unserialize($solr_result);
+
+    foreach ($fpids as $fpid_number => $fpid) {
+      foreach ($solr_2_arr as $s_2_a) {
+        foreach ($s_2_a['response']['docs'] as $fdoc) {
+          $p_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
+          if ($p_id == $fpid->_value) {
+            $collection_identifier =  self::scalar_or_first_elem($fdoc['rec.collectionIdentifier']);
+            break 2;
+          }
+        }
+      }
+      $data_stream = self::set_data_stream_name($collection_identifier);
+//var_dump($filter_q);
+//var_dump($solr_2_arr);
+//var_dump($collection_identifier);
+//var_dump($data_stream); die();
+      
+      if (self::deleted_object($fpid->_value)) {
+        $rec_error = 'Error: deleted record: ' . $fpid->_value;
+      }
+      elseif ($error = self::get_fedora_raw($fpid->_value, $fedora_result, $data_stream)) {
+        $rec_error = 'Error: unknown/missing record: ' . $fpid->_value;
+      }
+      elseif ($param->relationData->_value || 
+          $format['found_solr_format'] || 
+          self::xs_boolean($param->includeHoldingsCount->_value)) {
+        self::get_fedora_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
+        $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
+        if ($param->relationData->_value) {
+          self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
+        }
+        if (self::xs_boolean($param->includeHoldingsCount->_value)) {
+          self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
+          list($dummy, $dummy) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
+          $this->cql2solr = new SolrQuery($this->cql_file, $this->config);
+          $no_of_holdings = self::get_holdings($fpid->_value);
+        }
+      }
+//var_dump($fedora_rels_hierarchy);
+//var_dump($unit_id);
+//var_dump($fedora_addi_relation);
+//die();
+      $o->collection->_value->resultPosition->_value = $fpid_number + 1;
+      $o->collection->_value->numberOfObjects->_value = 1;
+      if ($rec_error) {
+        $o->collection->_value->object[]->_value->error->_value = $rec_error;
+        unset($rec_error);
+      } 
+      else {
+        $o->collection->_value->object[]->_value =
+          self::parse_fedora_object($fedora_result,
+                                    $fedora_addi_relation,
+                                    $param->relationData->_value,
+                                    $fpid->_value,
+                                    $filter_agency,
+                                    $format,
+                                    $no_of_holdings);
+      }
+      $collections[]->_value = $o;
+      unset($o);
+      $id_array[] = $unit_id;
+      $work_ids[$fpid_number + 1] = array($unit_id);
+      unset($unit_id);
+    }
+
+    if ($format['found_open_format']) {
+      self::format_records($collections, $format);
+    }
+    if ($format['found_solr_format']) {
+/*
+      foreach ($format as $f) {
+        if ($f['is_solr_format']) {
+          $add_fl .= ',' . $f['format_name'];
+        }
+      }
+      $chk_query = $this->cql2solr->cql_2_edismax('unit.id=(' . implode($id_array, ' ' . OR_OP . ' ') . ')');
+      $solr_q = $this->repository['solr'] .
+                '?wt=phps' .
+                '&q=' . urlencode($chk_query['edismax']) .
+                '&start=0' .
+                '&rows=50000' .
+                '&defType=edismax' .
+                '&fl=unit.id' . $add_fl;
+      $solr_result = $this->curl->get($solr_q);
+      $solr_2_arr[] = unserialize($solr_result);
+*/
+      self::format_solr($collections, $format, $solr_2_arr, $work_ids);
+    }
+    self::remove_unselected_formats($collections, $format);
+
+    $result = &$ret->searchResponse->_value->result->_value;
+    $result->hitCount->_value = count($collections);
+    $result->collectionCount->_value = 1;
+    $result->more->_value = 'false';
+    $result->searchResult = $collections;
+    $result->facetResult->_value = '';
+    $result->statInfo->_value->fedoraRecordsCached->_value = $this->number_of_fedora_cached;
+    $result->statInfo->_value->fedoraRecordsRead->_value = $this->number_of_fedora_calls;
+    $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
+    $result->statInfo->_value->trackingId->_value = $this->tracking_id;
+
+    //print_r($param);
+    //print_r($fedora_result);
+    //print_r($objects);
+    //print_r($ret); die();
+    return $ret;
+  }
+
+  /*******************************************************************************/
+
+  /** \brief Compares registers in cql_file with solr, using the luke request handler:
+   *   http://wiki.apache.org/solr/LukeRequestHandler
+   */
+  protected function diffCqlFileWithSolr() {
+    $repos = $this->config->get_value('repository', 'setup');
+    if (!$rep = $_REQUEST['repository']) {
+      $rep = $this->config->get_value('default_repository', 'setup');
+    }
+    $luke_url = $repos[$rep]['solr'];
+    if (empty($luke_url)) {
+      die('Cannot find url to solr for repository: ' . $rep);
+    }
+    $luke = $this->config->get_value('luke', 'setup');
+    foreach ($luke as $from => $to) {
+      $luke_url = str_replace($from, $to, $luke_url);
+    }
+    $luke_result = json_decode($this->curl->get($luke_url));
+    if (!$luke_result) {
+      die('Cannot fetch register info from solr: ' . $luke_url);
+    }
+    $luke_fields = &$luke_result->fields;
+    $dom = new DomDocument();
+    $dom->load($this->cql_file) || die('Cannot read cql_file: ' . $this->cql_file);
+
+    foreach ($dom->getElementsByTagName('indexInfo') as $info_item) {
+      foreach ($info_item->getElementsByTagName('index') as $index_item) {
+        if ($map_item = $index_item->getElementsByTagName('map')->item(0)) {
+          if ($name_item = $map_item->getElementsByTagName('name')->item(0)) {
+            $full_name = $name_item->getAttribute('set').'.'.$name_item->nodeValue;
+            if ($luke_fields->$full_name) {
+              unset($luke_fields->$full_name);
+            } 
+            else {
+              $cql_regs[] = $full_name;
+            } 
+          } 
+        }
+      }
+    }
+
+    echo '<html><body><h1>Found in ' . $this->cql_file . ' but not in Solr</h1>';
+    foreach ($cql_regs as $cr)
+      echo $cr . '</br>';
+    echo '</br><h1>Found in Solr but not in ' . $this->cql_file . '</h1>';
+    foreach ($luke_fields as $lf => $obj)
+      echo $lf . '</br>';
+    
+    die('</body></html>');
+  }
+
+  /*******************************************************************************/
+
+  /** \brief Sets this->repository from user parameter or defaults to ini-file setup
+   *
+   */
+  private function set_repositories($repository) {
+    $repositories = $this->config->get_value('repository', 'setup');
+    if (!$fedora = $this->config->get_value('fedora', 'setup')) {
+      $fedora = array();
+    }
+    if (!$this->repository_name = $repository) {
+      $this->repository_name = $this->config->get_value('default_repository', 'setup');
+    }
+    if ($this->repository = $repositories[$this->repository_name]) {
+      foreach ($fedora as $key => $url_par) {
+        if (empty($this->repository['fedora_' . $key])) {
+          $this->repository['fedora_' . $key] = $this->repository['fedora'] . $url_par;
+        }
+      }
+    }
+    else {
+      return 'Error: Unknown repository: ' . $this->repository_name;
+    }
+  }
+
+  /** \brief return data stream name depending on collection identifier
+   *  - if $col_id (rec.collectionIdentifier) startes with 7 - dataStream: localData.$col_id
+   *  - else dataStream: commonData
+   *
+   */
+  private function set_data_stream_name($col_id) {
+    if ($col_id && (substr($col_id, 0, 1) == '7')) {
+      $data_stream = 'localData.' . $col_id;
+    }
+    else {
+      $data_stream = 'commonData';
+    }
+    if (DEBUG_ON) {
+      echo 'dataStream: ' . $data_stream . PHP_EOL;
+    }
+    return $data_stream;
+  }
+
+  /** \brief parse input for rank parameters
+   *
+   */
+  private function parse_for_ranking($param, &$rank, &$rank_types) {
     if (($rr = $param->userDefinedRanking) || ($rr = $param->userDefinedBoost->_value->userDefinedRanking)) {
       $rank = 'rank';
       $rank_user['tie'] = $rr->_value->tieValue->_value;
@@ -131,588 +997,147 @@ class openSearch extends webServiceServer {
       // make sure anyIndexes will be part of the dismax-search
       if (empty($rank_user['word_boost']['cql.anyIndexes'])) $rank_user['word_boost']['cql.anyIndexes'] = 1;
       if (empty($rank_user['phrase_boost']['cql.anyIndexes'])) $rank_user['phrase_boost']['cql.anyIndexes'] = 1;
-      $rank_type[$rank] = $rank_user;
-    }
-    elseif ($sort = $param->sort->_value) {
-      $sort_type = $this->config->get_value('sort', 'setup');
-      if (!isset($sort_type[$sort])) $unsupported = 'Error: Unknown sort: ' . $sort;
+      $rank_types[$rank] = $rank_user;
     }
     elseif (($rank = $param->rank->_value) || ($rank = $param->userDefinedBoost->_value->rank->_value)) {
-      $rank_type = $this->config->get_value('rank', 'setup');
-      if (!isset($rank_type[$rank])) $unsupported = 'Error: Unknown rank: ' . $rank;
+      $rank_types = $this->config->get_value('rank', 'setup');
     }
-
-    if (($boost_str = $this->boostUrl($param->userDefinedBoost->_value->boostField)) && empty($rank)) {
-      $rank_type = $this->config->get_value('rank', 'setup');
+    elseif (($boost_str = self::boostUrl($param->userDefinedBoost->_value->boostField)) && empty($rank)) {
+      $rank_types = $this->config->get_value('rank', 'setup');
       $rank = 'rank_none';
     }
-
-    $format = $this->set_format($param->objectFormat, $this->config->get_value('open_format', 'setup'));
-    
-    if ($unsupported) return $ret_error;
-
-    /**
-        pjo 31-08-10
-        If source is set and equals 'bibliotekdk' use bib_zsearch_class to zsearch for records
-    */
-    if ($param->source->_value == 'bibliotekdk') {
-      require_once('bib_zsearch_class.php');
-
-      $this->watch->start('bibdk_search');
-      $bib_search = new bib_zsearch($this->config,$this->watch);
-      $response = $bib_search->response($param);
-      $this->watch->stop('bibdk_search');
-
-      return $response;
+    if ($rank && !isset($rank_types[$rank])) {
+      return 'Error: Unknown rank: ' . $rank;
     }
+  }
 
-    /**
-    *  Approach
-    *  a) Do the solr search and fetch enough fedoraPids in result
-    *  b) Fetch a fedoraPids work-object unless the record has been found
-    *     in an earlier handled work-objects
-    *  c) Collect fedoraPids in this work-object
-    *  d) repeat b. and c. until the requeste number of objects is found
-    *  e) if allObject is not set, do a new search combined the users search
-    *     with an or'ed list of the fedoraPids in the active objects and
-    *     remove the fedoraPids not found in the result
-    *  f) Read full records fom fedora for objects in result
-    *
-    *  if $use_work_collection is FALSE skip b) to e)
-    */
-
-    $ret_error->searchResponse->_value->error->_value = &$error;
-
-    $this->watch->start('Solr');
-    $start = $param->start->_value;
-    if (empty($start) && $step_value) {
-      $start = 1;
-    }
-    $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
-    $use_work_collection |= $sort_type[$sort] == 'random';
-    $key_relation_cache = md5($param->query->_value . $repository_name . $filter_agency .
-                              $use_work_collection .  $sort . $rank . $boost_str . $this->version);
-
-    if ($param->queryLanguage->_value <> 'cqldan') {
-      $param->queryLanguage->_value = 'cqleng';
-    }
-    $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config, $param->queryLanguage->_value);
-    // urldecode ???? $query = $this->cql2solr->convert(urldecode($param->query->_value));
-    // ' is handled differently in indexing and searching, so remove it until this is solved
-    $query = $this->cql2solr->convert(str_replace("'", '', $param->query->_value), $rank_type[$rank]);
-    $solr_query = $this->cql2solr->edismax_convert($param->query->_value, $rank_type[$rank]);
-//print_r($query);
-//print_r($solr_query);
-//die('test');
-    //$query = $this->cql2solr->convert($param->query->_value, $rank_type[$rank]);
-    if (!$solr_query['operands']) {
-      $error = 'Error: No query found in request';
-      return $ret_error;
-    }
-    if ($sort) {
-      $sort_q = '&sort=' . urlencode($sort_type[$sort]);
-    }
-    if ($rank_type[$rank]) {
-      $rank_qf = $this->cql2solr->make_boost($rank_type[$rank]['word_boost']);
-      $rank_pf = $this->cql2solr->make_boost($rank_type[$rank]['phrase_boost']);
-      $rank_tie = $rank_type[$rank]['tie'];
-      $rank_q = '&qf=' . urlencode($rank_qf) .  '&pf=' . urlencode($rank_pf) .  '&tie=' . $rank_tie;
-    }
-
-    if ($filter_agency) {
-      $filter_q = rawurlencode($filter_agency);
-    }
-
-    //if (FEDORA_VER_2) $filter_q = '';
-
-    $rows = ($start + $step_value + 100) * 2;
-    if ($param->facets->_value->facetName) {
-      $facet_q .= '&facet=true&facet.limit=' . $param->facets->_value->numberOfTerms->_value;
-      if (is_array($param->facets->_value->facetName)) {
-        foreach ($param->facets->_value->facetName as $facet_name) {
-          $facet_q .= '&facet.field=' . $facet_name->_value;
-        }
+  /** \brief 
+   *
+   */
+  private function guess_rank($solr_query, $guesses, $filter) {
+    $freqs = self::get_register_freqency($solr_query['edismax'], array_keys($guesses), $filter);
+    $max = -1;
+    $idx = 0;
+    foreach ($guesses as $reg => $rank) {
+      $this->rank_frequence_debug->$reg->_value = $freqs[$idx];
+      $debug_str .= $rank . '(' . $freqs[$idx] . ') ';
+      if ($freqs[$idx] > $max) {
+        $ret = $rank;
+        $max = $freqs[$idx];
       }
-      else
-        $facet_q .= '&facet.field=' . $param->facets->_value->facetName->_value;
+      $idx++;
     }
+    verbose::log(DEBUG, 'Rank frequency: ' . $ret . ' from: ' . $debug_str);
+    return $ret;
 
-    verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . $solr_query['edismax']);
-    if ($solr_query['edismax'])
-      verbose::log(TRACE, 'CQL to EDISMAX: ' . $param->query->_value . ' -> ' . $solr_query['edismax']);
+  }
 
-    $debug_query = $this->xs_boolean($param->queryDebug->_value);
+  /** \brief parse input for sort parameters
+   *
+   */
+  private function parse_for_sorting($param, &$sort, &$sort_types) {
+    if (!is_array($sort)) {
+      $sort = array();
+    }
+    if ($param->sort) {
+      $random = FALSE;
+      if (is_array($param->sort)) {
+        $sorts = &$param->sort;
+      }
+      else {
+        $sorts[] = $param->sort;
+      }
+      $sort_types = $this->config->get_value('sort', 'setup');
+      foreach ($sorts as $s) {
+        if (!isset($sort_types[$s->_value])) {
+          return 'Error: Unknown sort: ' . $s->_value;
+        }
+        $random = $random || ($s->_value == 'random');
+        if ($random && count($sort)) {
+          return 'Error: Random sorting can only be used alone';
+        }
+        $sort[] = $s->_value;
+      }
+    }
+  }
 
-    // do the query
+  /** \brief Encapsules how to get the data from the first element
+   *
+   */
+  private function get_first_solr_element($solr_arr, $element) {
+    if ($this->collapsing_field) {
+      $solr_docs = &$solr_arr['grouped'][$this->collapsing_field]['groups'][0]['doclist']['docs'];
+    }
+    else {
+      $solr_docs = &$solr_arr['response']['docs'];
+    }
+    return self::scalar_or_first_elem($solr_docs[0][$element]);
+  }
+
+  /** \brief Encapsules how to get hit count from the solr result
+   *
+   */
+  private function get_num_found($solr_arr) {
+    if ($this->collapsing_field) {
+      return self::get_num_grouped($solr_arr);
+    }
+    else {
+      return self::get_num_response($solr_arr);
+    }
+  }
+
+  private function get_num_grouped($solr_arr) {
+    return $solr_arr['grouped'][$this->collapsing_field]['ngroups'];
+  } 
+
+  private function get_num_response($solr_arr) {
+    return $solr_arr['response']['numFound'];
+  } 
+
+  /** \brief Encapsules extraction of unit.id's from the solr result
+   *
+   */
+  private function extract_unit_id_from_solr($solr_arr, &$search_ids) {
+    static $u_err = 0;
     $search_ids = array();
-    if ($sort == 'random') {
-      if ($err = $this->get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, $filter_q, '', $debug_query, $solr_arr))
-        $error = $err;
-    }
-    else {
-      if ($err = $this->get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, $facet_q, $filter_q, $boost_str, $debug_query, $solr_arr))
-        $error = $err;
-      else {
-        foreach ($solr_arr['response']['docs'] as $fdoc) {
-          if (FEDORA_VER_2) {
-            $uid = $fdoc['unit.id'][0];
-            //$local_data[$uid] = $fdoc['rec.collectionIdentifier'];
-            $search_ids[] = $uid;
-          } else
-            $search_ids[] = $fdoc['fedoraPid'];
+    if ($this->collapsing_field) {
+      $solr_groups = &$solr_arr['grouped'][$this->collapsing_field]['groups'];
+      foreach ($solr_groups as &$gdoc) {
+        if ($uid = $gdoc['doclist']['docs'][0]['unit.id']) {
+          $search_ids[] = self::scalar_or_first_elem($uid);
         }
-      }
-    }
-    $this->watch->stop('Solr');
-
-    if ($error) return $ret_error;
-
-    if ($debug_query) {
-      $debug_result->rawQueryString->_value = $solr_arr['debug']['rawquerystring'];
-      $debug_result->queryString->_value = $solr_arr['debug']['querystring'];
-      $debug_result->parsedQuery->_value = $solr_arr['debug']['parsedquery'];
-      $debug_result->parsedQueryString->_value = $solr_arr['debug']['parsedquery_toString'];
-    }
-    $numFound = $solr_arr['response']['numFound'];
-    $facets = $this->parse_for_facets($solr_arr['facet_counts']);
-
-    $this->watch->start('Build_id');
-    $work_ids = $used_search_fids = array();
-    if ($sort == 'random') {
-      $rows = min($step_value, $numFound);
-      $more = $step_value < $numFound;
-      for ($w_idx = 0; $w_idx < $rows; $w_idx++) {
-        do {
-          $no = rand(0, $numFound-1);
+        elseif (++$u_err < 10) {
+          verbose::log(FATAL, 'Missing unit.id in solr_result. Record no: ' . (count($search_ids) + $u_err));
         }
-        while (isset($used_search_fid[$no]));
-        $used_search_fid[$no] = TRUE;
-        $this->get_solr_array($solr_query['edismax'], $no, 1, '', '', '', $filter_q, '', $debug_query, $solr_arr);
-        if (FEDORA_VER_2) {
-          $uid = $solr_arr['response']['docs'][0]['unit.id'];
-          //$local_data[$uid] = $solr_arr['response']['docs']['rec.collectionIdentifier'];
-          $work_ids[] = array($uid);
-        } else
-          $work_ids[] = array($solr_arr['response']['docs'][0]['fedoraPid']);
       }
     }
     else {
-      $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
-                               $this->config->get_value('cache_port', 'setup'),
-                               $this->config->get_value('cache_expire', 'setup'));
-      if (empty($_GET['skipCache'])) {
-        if ($relation_cache = $this->cache->get($key_relation_cache)) {
-          verbose::log(STAT, 'Cache hit, lines: ' . count($relation_cache));
+      $solr_docs = &$solr_arr['response']['docs'];
+      foreach ($solr_docs as &$fdoc) {
+        if ($uid = $fdoc['unit.id']) {
+          $search_ids[] = self::scalar_or_first_elem($uid);
         }
-        else {
-          verbose::log(STAT, 'Cache miss');
+        elseif (++$u_err < 10) {
+          verbose::log(FATAL, 'Missing unit.id in solr_result. Record no: ' . (count($search_ids) + $u_err));
         }
       }
-
-      $w_no = 0;
-
-      if (DEBUG_ON) print_r($search_ids);
-      //if (DEBUG_ON) print_r($local_data);
-
-      for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
-        $fpid = &$search_ids[$s_idx];
-        if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
-          $this->watch->start('Solr_add');
-          verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']);
-          $rows *= 2;
-          if ($err = $this->get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_str, $debug_query, $solr_arr)) {
-            $error = $err;
-            return $ret_error;
-          }
-          else {
-            $search_ids = array();
-            foreach ($solr_arr['response']['docs'] as $fdoc) {
-              if (FEDORA_VER_2) {
-                $uid = $fdoc['unit.id'][0];
-                //$local_data[$uid] = $fdoc['rec.collectionIdentifier'];
-                $search_ids[] = $uid;
-              } else
-                $search_ids[] = $fdoc['fedoraPid'];
-            }
-            $numFound = $solr_arr['response']['numFound'];
-          }
-          $this->watch->stop('Solr_add');
-        }
-        if (FALSE && FEDORA_VER_2) {
-          $this->get_fedora_rels_ext($fpid, $unit_result);
-          $unit_id = $this->parse_rels_for_unit_id($unit_result);
-          if (DEBUG_ON) echo 'UR: ' . $fpid . ' -> ' . $unit_id . "\n";
-          $fpid = $unit_id;
-        }
-        if ($used_search_fids[$fpid]) continue;
-        if (count($work_ids) >= $step_value) {
-          $more = TRUE;
-          break;
-        }
-
-        $w_no++;
-        // find relations for the record in fedora
-        // fpid: id as found in solr's fedoraPid
-        if ($relation_cache[$w_no]) {
-          $fpid_array = $relation_cache[$w_no];
-        }
-        else {
-          if ($use_work_collection) {
-            $this->watch->start('get_w_id');
-            $this->get_fedora_rels_ext($fpid, $record_rels_ext);
-            /* ignore the fact that there is no RELS_EXT datastream
-            */
-            $this->watch->stop('get_w_id');
-            if (DEBUG_ON) echo 'RR: ' . $record_rels_ext . "\n";
-
-            if ($work_id = $this->parse_rels_for_work_id($record_rels_ext)) {
-              // find other recs sharing the work-relation
-              $this->watch->start('get_fids');
-              $this->get_fedora_rels_ext($work_id, $work_rels_ext);
-              if (DEBUG_ON) echo 'WR: ' . $work_rels_ext . "\n";
-              $this->watch->stop('get_fids');
-              if (!$fpid_array = $this->parse_work_for_object_ids($work_rels_ext, $fpid)) {
-                verbose::log(FATAL, 'Fedora fetch/parse work-record: ' . $work_id . ' refered from: ' . $fpid);
-                $fpid_array = array($fpid);
-              }
-              if (DEBUG_ON) {
-                echo 'fid: ' . $fpid . ' -> ' . $work_id . " -> object(s):\n";
-                print_r($fpid_array);
-              }
-            }
-            else
-              $fpid_array = array($fpid);
-          }
-          else
-            $fpid_array = array($fpid);
-          $relation_cache[$w_no] = $fpid_array;
-        }
-        if (DEBUG_ON) print_r($fpid_array);
-
-        foreach ($fpid_array as $id) {
-          $used_search_fids[$id] = TRUE;
-          if ($w_no >= $start)
-            $work_ids[$w_no][] = $id;
-        }
-        if ($w_no >= $start)
-          $work_ids[$w_no] = $fpid_array;
-      }
     }
-
-    if (count($work_ids) < $step_value && count($search_ids) < $numFound) {
-      verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']);
-    }
-
-    // check if the search result contains the ids
-    // allObject=0 - remove objects not included in the search result
-    // allObject=1 & agency - remove objects not included in agency
-    //
-    // split into multiple solr-searches each containing slightly less than 1000 elements
-    define('MAX_QUERY_ELEMENTS', 950);
-    $block_idx = $no_bool = 0;
-    if (DEBUG_ON) echo 'work_ids: ' . print_r($work_ids, TRUE) . "\n";
-    if ($use_work_collection && ($this->xs_boolean($param->allObjects->_value) || $filter_agency)) {
-      $add_query[$block_idx] = '';
-      foreach ($work_ids as $w_no => $w) {
-        if (count($w) > 1) {
-          if ($add_query[$block_idx] && ($no_bool + count($w)) > MAX_QUERY_ELEMENTS) {
-            $block_idx++;
-            $no_bool = 0;
-          }
-          foreach ($w as $id) {
-            $add_query[$block_idx] .= (empty($add_query[$block_idx]) ? '' : ' OR ') . $id;
-            $no_bool++;
-          }
-        }
-      }
-      if (!empty($add_query[0]) || count($add_query) > 1) {    // use post here because query can be very long
-        if (FEDORA_VER_2) 
-          $which_rec_id = 'unit.id';
-        else
-          $which_rec_id = 'rec.id';
-        foreach ($add_query as $add_idx => $add_q) {
-          if (!$this->xs_boolean($param->allObjects->_value)) {
-            $chk_query = $this->cql2solr->edismax_convert('(' . $param->query->_value . ') AND ' . $which_rec_id . '=(' . $add_q . ')', $rank_type[$rank]);
-            $q = $chk_query['edismax'];
-          }
-          elseif ($filter_agency) {
-            $chk_query = $this->cql2solr->edismax_convert($which_rec_id . '=(' . $add_q . ')');
-            $q = $chk_query['edismax'];
-          }
-          else {
-            verbose::log(FATAL, 'Internal problem: Assert error. Line: ' . __LINE__);
-            $error = 'Internal problem: Assert error. Line: ' . __LINE__;
-            return $ret_error;
-          }
-          // need to remove unwanted object from work_ids
-          $post_query = 'wt=phps' .
-                       '&q=' . urlencode($q) .
-                       '&fq=' . $filter_q .
-                       '&start=0' .
-                       '&rows=50000' .
-                       '&defType=edismax' .
-                       '&fl=fedoraPid,unit.id';
-          if ($rank_qf) $post_query .= '&qf=' . $rank_qf;
-          if ($rank_pf) $post_query .= '&pf=' . $rank_pf;
-          if ($rank_tie) $post_query .= '&tie=' . $rank_tie;
-
-          if (DEBUG_ON) {
-            echo 'post_array: ' . $this->repository['solr'] . '?' . $post_query . "\n";
-          }
-
-          $this->curl->set_post($post_query);
-          $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'));
-          $this->watch->start('Solr 2');
-          $solr_result = $this->curl->get($this->repository['solr']);
-// remember to clear POST and Content-Type
-          $this->curl->set_option(CURLOPT_POST, 0);  
-          $this->watch->stop('Solr 2');
-          if (!($solr_2_arr[$add_idx] = unserialize($solr_result))) {
-            verbose::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
-            $error = 'Internal problem: Cannot decode Solr re-search';
-            return $ret_error;
-          }
-        }
-        foreach ($work_ids as $w_no => $w_list) {
-          if (count($w_list) > 1) {
-            $hit_fid_array = array();
-            foreach ($w_list as $w) {
-              foreach ($solr_2_arr as $s_2_a) {
-                foreach ($s_2_a['response']['docs'] as $fdoc) {
-                  if (FEDORA_VER_2) 
-                    $p_id = &$fdoc['unit.id'][0];
-                  else
-                    $p_id = &$fdoc['fedoraPid'];
-                  if ($p_id == $w) {
-                    $hit_fid_array[] = $w;
-                    break 2;
-                  }
-                }
-              }
-            }
-            $work_ids[$w_no] = $hit_fid_array;
-          }
-        }
-      }
-      if (DEBUG_ON) echo 'work_ids after research: ' . print_r($work_ids, TRUE) . "\n";
-    }
-
-    if (DEBUG_ON) echo 'txt: ' . $txt . "\n";
-    if (DEBUG_ON) echo 'solr_2_arr: ' . print_r($solr_2_arr, TRUE) . "\n";
-    if (DEBUG_ON) echo 'add_query: ' . print_r($add_query, TRUE) . "\n";
-    if (DEBUG_ON) echo 'used_search_fids: ' . print_r($used_search_fids, TRUE) . "\n";
-
-    $this->watch->stop('Build_id');
-
-    if ($this->cache)
-      $this->cache->set($key_relation_cache, $relation_cache);
-
-    $missing_record = $this->config->get_value('missing_record', 'setup');
-
-    // work_ids now contains the work-records and the fedoraPids they consist of
-    // now fetch the records for each work/collection
-    $this->watch->start('get_recs');
-    $collections = array();
-    $rec_no = max(1, $start);
-    foreach ($work_ids as $work) {
-      $objects = array();
-      foreach ($work as $fpid) {
-        if ($param->collectionType->_value <> 'work-1' || empty($objects)) {
-          if (FEDORA_VER_2) {
-            $this->get_fedora_rels_ext($fpid, $unit_rels_ext);
-            list($fpid, $unit_members) = $this->parse_unit_for_object_ids($unit_rels_ext);
-            if ($this->xs_boolean($param->includeHoldingsCount->_value)) {
-              $no_of_holdings = $unit_members + $this->get_solr_holdings($fpid);
-            }
-          }
-          if ($error = $this->get_fedora_raw($fpid, $fedora_result)) {
-// fetch empty record from ini-file and use instead of error
-            if ($missing_record) {
-              $error = NULL;
-              $fedora_result = sprintf($missing_record, $fpid);
-            }
-            else {
-              return $ret_error;
-            }
-          }
-          if ($this->xs_boolean($param->allRelations->_value)) {
-            //verbose::log(TRACE, 'rels_ext: ' . sprintf($this->repository['fedora_get_rels_ext'], $fpid));
-            $this->get_fedora_rels_ext($fpid, $fedora_relation);
-            $this->get_fedora_rels_addi($fpid, $fedora_addi_relation);
-          }
-          if ($debug_query) {
-            unset($explain);
-            foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
-              if ($fpid == $solr_rec['fedoraPid']) {
-                //$strange_idx = $solr_idx ? ' '.$solr_idx : '';
-                $explain = $solr_arr['debug']['explain'][$fpid];
-                break;
-              }
-            }
-
-          }
-          $objects[]->_value =
-            $this->parse_fedora_object($fedora_result,
-                                       $fedora_relation,
-                                       $param->relationData->_value,
-                                       $fpid,
-                                       NULL, // no $filter_agency on search - bad performance
-                                       $format,
-                                       $no_of_holdings,
-                                       $explain);
-        }
-        else
-          $objects[]->_value = NULL;
-        // else $objects[]->_value = NULL;
-      }
-      $o->collection->_value->resultPosition->_value = $rec_no++;
-      $o->collection->_value->numberOfObjects->_value = count($objects);
-      $o->collection->_value->object = $objects;
-      $collections[]->_value = $o;
-      unset($o);
-    }
-    $this->watch->stop('get_recs');
-
-    if ($format['found_open_format']) {
-      $this->format_records($collections, $format);
-    }
-
-    if ($_REQUEST['work'] == 'debug') {
-      echo "returned_work_ids: \n";
-      print_r($work_ids);
-      echo "cache: \n";
-      print_r($relation_cache);
-      die();
-    }
-    //if (DEBUG_ON) { print_r($relation_cache); die(); }
-    //if (DEBUG_ON) { print_r($collections); die(); }
-    //if (DEBUG_ON) { print_r($solr_arr); die(); }
-
-    $result = &$ret->searchResponse->_value->result->_value;
-    $result->hitCount->_value = $numFound;
-    $result->collectionCount->_value = count($collections);
-    $result->more->_value = ($more ? 'true' : 'false');
-    $result->searchResult = $collections;
-    $result->facetResult->_value = $facets;
-    $result->queryDebugResult->_value = $debug_result;
-    $result->statInfo->_value->fedoraRecordsCached->_value = $this->number_of_fedora_cached;
-    $result->statInfo->_value->fedoraRecordsRead->_value = $this->number_of_fedora_calls;
-    $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
-
-    //print_r($collections[0]);
-    //exit;
-
-    return $ret;
   }
 
-
-  /** \brief Get an object in a specific format
-  *
-  * param: agency: 
-  *        profile:
-  *        identifier - fedora pid
-  *        objectFormat - one of dkabm, docbook, marcxchange, opensearchobject
-  *        allRelations - boolean
-  *        includeHoldingsCount - boolean
-  *        relationData - type, uri og full
-  *        repository
-  */
-  public function getObject($param) {
-    $this->tracking_id = verbose::set_tracking_id('os', $param->trackingId->_value);
-    $ret_error->searchResponse->_value->error->_value = &$error;
-    if (!$this->aaa->has_right('opensearch', 500)) {
-      $error = 'authentication_error';
-      return $ret_error;
+  /** \brief Return first element of array or the element for scalar vars
+   *
+   */
+  private function scalar_or_first_elem($mixed) {
+    if (is_array($mixed) || is_object($mixed)) {
+      return reset($mixed);
     }
-    $repositories = $this->config->get_value('repository', 'setup');
-    if (empty($param->repository->_value)) {
-      $this->repository = $repositories[$this->config->get_value('default_repository', 'setup')];
-    }
-    elseif (!$this->repository = $repositories[$param->repository->_value]) {
-      $error = 'Error: Unknown repository: ' . $param->repository->_value;
-      verbose::log(FATAL, $error);
-      return $ret_error;
-    }
-    if (empty($param->agency->_value) && empty($param->profile->_value)) {
-      $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
-      $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
-    }
-    $search_profile_version = $this->repository['search_profile_version'];
-    if ($agency = $param->agency->_value) {
-      if ($param->profile->_value) {
-        if (!($search_profile = $this->fetch_profile_from_agency($agency, $param->profile->_value, $search_profile_version))) {
-          $error = 'Error: Cannot fetch profile: ' . $param->profile->_value . ' for ' . $agency;
-          return $ret_error;
-        }
-      }
-      else
-        $agencies = $this->config->get_value('agency', 'agency');
-      $agencies[$agency] = $this->set_solr_filter($search_profile, $search_profile_version);
-      if (isset($agencies[$agency]))
-        $filter_agency = $agencies[$agency];
-      else {
-        $error = 'Error: Unknown agency: ' . $agency;
-        return $ret_error;
-      }
-    }
-
-    $format = $this->set_format($param->objectFormat, $this->config->get_value('open_format', 'setup'));
-
-    $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
-                             $this->config->get_value('cache_port', 'setup'),
-                             $this->config->get_value('cache_expire', 'setup'));
-    $fpid = $param->identifier->_value;
-    if ($this->deleted_object($fpid)) {
-      $error = 'Error: deleted record: ' . $fpid;
-      return $ret_error;
-    }
-    if ($error = $this->get_fedora_raw($fpid, $fedora_result))
-      return $ret_error;
-    if ($this->xs_boolean($param->allRelations->_value))
-      $this->get_fedora_rels_ext($fpid, $fedora_relation);
-    if ($this->xs_boolean($param->includeHoldingsCount->_value)) {
-      $this->get_fedora_rels_ext($fpid, $fedora_rels_ext);
-      $unit_id = $this->parse_rels_for_unit_id($fedora_rels_ext);
-      $this->get_fedora_rels_ext($unit_id, $unit_rels_ext);
-      list($dummy, $no_of_holdings) = $this->parse_unit_for_object_ids($unit_rels_ext);
-      $this->cql2solr = new cql2solr('opensearch_cql.xml', $this->config);
-      $no_of_holdings += $this->get_solr_holdings($fpid);
-    }
-    $o->collection->_value->resultPosition->_value = 1;
-    $o->collection->_value->numberOfObjects->_value = 1;
-    $o->collection->_value->object[]->_value =
-      $this->parse_fedora_object($fedora_result,
-                                 $fedora_relation,
-                                 $param->relationData->_value,
-                                 $fpid,
-                                 $filter_agency,
-                                 $format,
-                                 $no_of_holdings);
-    $collections[]->_value = $o;
-
-// FVS format
-    if ($format['found_open_format']) {
-      $this->format_records($collections, $format);
-    }
-
-    $result = &$ret->searchResponse->_value->result->_value;
-    $result->hitCount->_value = 1;
-    $result->collectionCount->_value = count($collections);
-    $result->more->_value = 'false';
-    $result->searchResult = $collections;
-    $result->facetResult->_value = '';
-    $result->time->_value = $this->watch->splittime('Total');
-
-    //print_r($param);
-    //print_r($fedora_result);
-    //print_r($objects);
-    //print_r($ret); die();
-    return $ret;
+    return $mixed;
   }
 
-  /*******************************************************************************/
-
-  private function set_format($objectFormat, $open_format) {
+  /** \brief decides which formats to include in result and how the should be build
+   *
+   */
+  private function set_format($objectFormat, $open_format, $solr_format) {
     if (is_array($objectFormat))
       $help = $objectFormat;
     elseif (empty($objectFormat->_value))
@@ -724,11 +1149,15 @@ class openSearch extends webServiceServer {
         $ret[$of->_value] = array('user_selected' => TRUE, 'is_open_format' => TRUE, 'format_name' => $open_format[$of->_value]['format']);
         $ret['found_open_format'] = TRUE;
       }
+      elseif ($solr_format[$of->_value]) {
+        $ret[$of->_value] = array('user_selected' => TRUE, 'is_solr_format' => TRUE, 'format_name' => $solr_format[$of->_value]['format']);
+        $ret['found_solr_format'] = TRUE;
+      }
       else {
-        $ret[$of->_value] = array('user_selected' => TRUE, 'is_open_format' => FALSE);
+        $ret[$of->_value] = array('user_selected' => TRUE, 'is_solr_format' => FALSE);
       }
     }
-    if ($ret['found_open_format']) {
+    if ($ret['found_open_format'] || $ret['found_solr_format']) {
       if (empty($ret['dkabm']))
         $ret['dkabm'] = array('user_selected' => FALSE, 'is_open_format' => FALSE);
       if (empty($ret['marcxchange']))
@@ -737,64 +1166,196 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  /** \brief
+  /** \brief Fetch holding from extern web service
    *
    */
-  private function get_solr_holdings($pid) {
-    $holds = 0;
-    $q = $this->cql2solr->edismax_convert('rec.id=' . $pid);
-    $solr_query = $this->repository['solr'] . 
-                    '?q=' . $q['edismax'] .
-                    '&rows=1&fl=ols.holdingsCount&defType=edismax&wt=phps';
-
-    $this->watch->start('solr_holdings');
-    $solr_result = $this->curl->get($solr_query);
-    $this->watch->stop('solr_holdings');
-    if (($solr_result) && ($solr_arr = unserialize($solr_result)))
-      $holds = intval($solr_arr['response']['docs'][0]['ols.holdingsCount'][0]);
-
-    if ($holds) $holds--;
-
+  private function get_holdings($pid) {
+    static $hold_ws_url;
+    static $dom;
+    if (empty($hold_ws_url)) {
+      $hold_ws_url = $this->config->get_value('holdings_db', 'setup');
+    }
+    $this->watch->start('holdings');
+    $hold_url = sprintf($hold_ws_url, $pid);
+    $holds = $this->curl->get($hold_url);
+    $this->watch->stop('holdings');
+    $curl_err = $this->curl->get_status();
+    if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
+      verbose::log(FATAL, 'holdings_db http-error: ' . $curl_err['http_code'] . ' from: ' . $hold_url);
+      $holds = array('have' => 0, 'lend' => 0);
+    }
+    else {
+      if (empty($dom)) {
+        $dom = new DomDocument();
+      }
+      $dom->preserveWhiteSpace = false;
+      if (@ $dom->loadXML($holds)) {
+        $holds = array('have' => $dom->getElementsByTagName('librariesHave')->item(0)->nodeValue,
+                       'lend' => $dom->getElementsByTagName('librariesLend')->item(0)->nodeValue);
+      }
+    }
     return $holds;
   }
 
-  /** \brief
+  /** \brief Pick tags from solr result and create format
+   *
+   */
+  private function format_solr(&$collections, $format, $solr, &$work_ids, $fpid_sort_keys = array()) {
+    $solr_display_ns = $this->xmlns['ds'];
+    $this->watch->start('format_solr');
+    foreach ($format as $format_name => $format_arr) {
+      if ($format_arr['is_solr_format']) {
+        $format_tags = explode(',', $format_arr['format_name']);
+        foreach ($collections as $idx => &$c) {
+          $rec_no = $c->_value->collection->_value->resultPosition->_value;
+          foreach ($work_ids[$rec_no] as $mani_no => $unit_no) {
+            if (is_array($solr[0]['response']['docs'])) {
+              $fpid = $c->_value->collection->_value->object[$mani_no]->_value->identifier->_value;
+              foreach ($solr[0]['response']['docs'] as $solr_doc) {
+                $doc_units = is_array($solr_doc['unit.id']) ? $solr_doc['unit.id'] : array($solr_doc['unit.id']);
+                if (is_array($doc_units) && in_array($unit_no, $doc_units)) {
+                  foreach ($format_tags as $format_tag) {
+                    if ($solr_doc[$format_tag] || $format_tag == 'fedora.identifier') {
+                      if (strpos($format_tag, '.')) {
+                        list($tag_NS, $tag_value) = explode('.', $format_tag);
+                      }
+                      else {
+                        $tag_value = $format_tag;
+                      }
+                      if ($format_tag == 'fedora.identifier') {
+                        $mani->_value->$tag_value->_namespace = $solr_display_ns;
+                        $mani->_value->$tag_value->_value = $fpid;
+                      }
+                      else {
+                        if (is_array($solr_doc[$format_tag])) {
+                          if (TRUE) {
+                            $mani->_value->$tag_value->_namespace = $solr_display_ns;
+                            $mani->_value->$tag_value->_value = self::normalize_chars($solr_doc[$format_tag][0]);
+                          }
+                          else {
+                            foreach ($solr_doc[$format_tag] as $solr_tag) {
+                              $help->_namespace = $solr_display_ns;
+                              $help->_value = self::normalize_chars($solr_tag);
+                              $mani->_value->{$tag_value}[] = $help;
+                              unset($help);
+                            }
+                          }
+                        }
+                        else {
+                          $mani->_value->$tag_value->_namespace = $solr_display_ns;
+                          $mani->_value->$tag_value->_value = self::normalize_chars($solr_doc[$format_tag]);
+                        }
+                      }
+                    }
+                  }
+                  break;
+                }
+              }
+            }
+            if ($mani) {   // should contain data, but for some odd reason it can be empty. Some bug in the solr-indexes?
+              $mani->_namespace = $solr_display_ns;
+              $sort_key = $fpid_sort_keys[$fpid] . sprintf('%04d', $mani_no);
+		      $manifestation->manifestation[$sort_key] = $mani;
+            }
+            unset($mani);
+          }
+// need to loop thru objects to put data correct
+          if (is_array($manifestation->manifestation)) {
+            ksort($manifestation->manifestation);
+          }
+          $c->_value->formattedCollection->_value->$format_name->_namespace = $solr_display_ns;
+          $c->_value->formattedCollection->_value->$format_name->_value = $manifestation;
+          unset($manifestation);
+        }
+      }
+    }
+    $this->watch->stop('format_solr');
+  }
+
+  /** \brief Setup call to OpenFormat and execute the format request
+   * If ws_open_format_uri is set, the format request is send to that server otherwise
+   * openformat is included using the [format] section from config
    *
    */
   private function format_records(&$collections, $format) {
+    static $formatRecords;
     $this->watch->start('format');
     foreach ($format as $format_name => $format_arr) {
       if ($format_arr['is_open_format']) {
-        $f_obj->formatRequest->_namespace = $this->xmlns['of'];
-        $f_obj->formatRequest->_value->originalData = $collections;
-        foreach ($f_obj->formatRequest->_value->originalData as $i => $o)
-          $f_obj->formatRequest->_value->originalData[$i]->_namespace = $this->xmlns['of'];
-        $f_obj->formatRequest->_value->outputFormat->_namespace = $this->xmlns['of'];
-        $f_obj->formatRequest->_value->outputFormat->_value = $format_arr['format_name'];
-        $f_obj->formatRequest->_value->outputType->_namespace = $this->xmlns['of'];
-        $f_obj->formatRequest->_value->outputType->_value = 'php';
-        $f_obj->formatRequest->_value->trackingId->_value = $this->tracking_id;
-        $f_xml = $this->objconvert->obj2soap($f_obj);
-        $this->curl->set_post($f_xml);
-        $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
-        $open_format_uri = $this->config->get_value('ws_open_format_uri', 'setup');
-        $f_result = $this->curl->get($open_format_uri);
-        //$fr_obj = unserialize($f_result);
-        $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['']);
-        if (!$fr_obj) {
-          $curl_err = $this->curl->get_status();
-          verbose::log(FATAL, 'openFormat http-error: ' . $curl_err['http_code'] . ' from: ' . $open_format_uri);
+        if ($open_format_uri = $this->config->get_value('ws_open_format_uri', 'setup')) {
+          $f_obj->formatRequest->_namespace = $this->xmlns['of'];
+          $f_obj->formatRequest->_value->originalData = $collections;
+  // need to set correct namespace
+          foreach ($f_obj->formatRequest->_value->originalData as $i => &$oD) {
+            $save_ns[$i] = $oD->_namespace;
+            $oD->_namespace = $this->xmlns['of'];
+          }
+          $f_obj->formatRequest->_value->outputFormat->_namespace = $this->xmlns['of'];
+          $f_obj->formatRequest->_value->outputFormat->_value = $format_arr['format_name'];
+          $f_obj->formatRequest->_value->outputType->_namespace = $this->xmlns['of'];
+          $f_obj->formatRequest->_value->outputType->_value = 'php';
+          $f_obj->formatRequest->_value->trackingId->_value = $this->tracking_id;
+          $f_xml = $this->objconvert->obj2soap($f_obj);
+          $this->curl->set_post($f_xml);
+          $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
+          $f_result = $this->curl->get($open_format_uri);
+          //$fr_obj = unserialize($f_result);
+          $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['of']);
+  // need to restore correct namespace
+          foreach ($f_obj->formatRequest->_value->originalData as $i => &$oD) {
+            $oD->_namespace = $save_ns[$i];
+          }
+          if (!$fr_obj) {
+            $curl_err = $this->curl->get_status();
+            verbose::log(FATAL, 'openFormat http-error: ' . $curl_err['http_code'] . ' from: ' . $open_format_uri);
+          }
+          else {
+            $struct = key($fr_obj->formatResponse->_value);
+            foreach ($collections as $idx => &$c) {
+              $c->_value->formattedCollection->_value->{$struct} = $fr_obj->formatResponse->_value->{$struct}[$idx];
+            }
+          }
         }
         else {
-          $struct = key($fr_obj->formatResponse->_value);
-          foreach ($collections as $idx => &$c) {
-            $c->_value->formattedCollection->_value->{$struct} = $fr_obj->formatResponse->_value->{$struct}[$idx];
+          require_once('OLS_class_lib/format_class.php');
+          if (empty($formatRecords)) {
+            $formatRecords = new FormatRecords($this->config->get_section('format'), $this->xmlns['of'], $this->objconvert, $this->xmlconvert, $this->watch);
+          }
+          $param->outputFormat->_value = $format_arr['format_name'];
+          $param->outputFormat->_namespace = $this->xmlns['of'];
+          $param->originalData = $collections;
+  // need to set correct namespace
+          foreach ($param->originalData as $i => &$oD) {
+            $save_ns[$i] = $oD->_namespace;
+            $oD->_namespace = $this->xmlns['of'];
+          }
+          $f_result = $formatRecords->format($param->originalData, $param);
+          $fr_obj = $this->objconvert->set_obj_namespace($f_result, $this->xmlns['os']);
+  // need to restore correct namespace
+          foreach ($param->originalData as $i => &$oD) {
+            $oD->_namespace = $save_ns[$i];
+          }
+          if (!$fr_obj) {
+            $curl_err = $formatRecords->get_status();
+            verbose::log(FATAL, 'openFormat http-error: ' . $curl_err[0]['http_code'] . ' - check [format] settings in ini-file');
+          }
+          else {
+            $struct = key($fr_obj[0]);
+            foreach ($collections as $idx => &$c) {
+              $c->_value->formattedCollection->_value->{$struct} = $fr_obj[$idx]->{$struct};
+            }
           }
         }
       }
     }
+    $this->watch->stop('format');
+  }
+
+  /** \brief Remove not asked for format from result
+   *
+   */
+  private function remove_unselected_formats(&$collections, &$format) {
     foreach ($collections as $idx => &$c) {
-  // remove unwanted structures
       foreach ($c->_value->collection->_value->object as &$o) {
         if (!$format['dkabm']['user_selected'])
           unset($o->_value->record);
@@ -802,17 +1363,16 @@ class openSearch extends webServiceServer {
           unset($o->_value->collection);
       }
     }
-    $this->watch->stop('format');
   }
 
-  /** \brief
+  /** \brief Check whether an object i deleted or not
    *
    */
   private function deleted_object($fpid) {
     static $dom;
     $state = '';
     if ($obj_url = $this->repository['fedora_get_object_profile']) {
-      $this->get_fedora($obj_url, $fpid, $obj_rec);
+      self::get_fedora($obj_url, $fpid, $obj_rec);
       if ($obj_rec) {
         if (empty($dom))
           $dom = new DomDocument();
@@ -821,61 +1381,68 @@ class openSearch extends webServiceServer {
           $state = $dom->getElementsByTagName('objState')->item(0)->nodeValue;
       }
     }
-    return $state == "D";
+    return $state == 'D';
   }
 
-  /** \brief
+  /** \brief Fetch a raw record from fedora
    *
    */
-  private function get_fedora_raw($fpid, &$fedora_rec) {
-    return $this->get_fedora($this->repository['fedora_get_raw'], $fpid, $fedora_rec);
+  private function get_fedora_raw($fpid, &$fedora_rec, $datastream_id = 'commonData') {
+    return self::get_fedora(str_replace('commonData', $datastream_id, $this->repository['fedora_get_raw']), $fpid, $fedora_rec);
   }
 
-  /** \brief
+  /** \brief Fetch a rels_addi record from fedora
    *
    */
   private function get_fedora_rels_addi($fpid, &$fedora_rel) {
     if ($this->repository['fedora_get_rels_addi']) {
-      return $this->get_fedora($this->repository['fedora_get_rels_addi'], $fpid, $fedora_rel);
+      return self::get_fedora($this->repository['fedora_get_rels_addi'], $fpid, $fedora_rel, FALSE);
     }
     else {
       return FALSE;
     }
   }
 
-  /** \brief
+  /** \brief Fetch a rels_hierarchy record from fedora
    *
    */
-  private function get_fedora_rels_ext($fpid, &$fedora_rel) {
-    return $this->get_fedora($this->repository['fedora_get_rels_ext'], $fpid, $fedora_rel);
+  private function get_fedora_rels_hierarchy($fpid, &$fedora_rel) {
+    return self::get_fedora($this->repository['fedora_get_rels_hierarchy'], $fpid, $fedora_rel);
   }
 
-  /** \brief
+  /** \brief Fetch datastreams for a record from fedora
    *
    */
-  private function get_fedora_datastreams($fpid, &$fedora_streams) {
-    return $this->get_fedora($this->repository['fedora_get_datastreams'], $fpid, $fedora_streams);
+  private function get_fedora_datastreams($fpid, &$fedora_obj) {
+    return self::get_fedora($this->repository['fedora_get_datastreams'], $fpid, $fedora_obj);
   }
 
-  /** \brief
+  /** \brief Setup call to fedora and execute it
    *
    */
-  private function get_fedora($uri, $fpid, &$rec) {
+  private function get_fedora($uri, $fpid, &$rec, $mandatory=TRUE) {
     $record_uri =  sprintf($uri, $fpid);
-    if (DEBUG_ON) echo 'Fetch record: /' . $record_uri . "/\n";
-    if ($this->cache && $rec = $this->cache->get($record_uri)) {
+    verbose::log(STAT, 'get_fedora: ' . $record_uri);
+    if (DEBUG_ON) echo 'Fetch record: ' . $record_uri . "\n";
+    if ($this->cache && ($rec = $this->cache->get($record_uri))) {
       $this->number_of_fedora_cached++;
     }
     else {
       $this->number_of_fedora_calls++;
       $this->curl->set_authentication('fedoraAdmin', 'fedoraAdmin');
       $this->watch->start('fedora');
-      $rec = $this->curl->get($record_uri);
+      $rec = self::normalize_chars($this->curl->get($record_uri));
       $this->watch->stop('fedora');
       $curl_err = $this->curl->get_status();
       if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
-        verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri);
-        return 'Error: Cannot fetch record: ' . $fpid . ' - http-error: ' . $curl_err['http_code'];
+        $rec = '';
+        if ($mandatory) {
+          if ($curl_err['http_code'] == 404) {
+            return 'record_not_found';
+          }
+          verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri);
+          return 'Error: Cannot fetch record: ' . $fpid . ' - http-error: ' . $curl_err['http_code'];
+        }
       }
       if ($this->cache) $this->cache->set($record_uri, $rec);
     }
@@ -886,34 +1453,160 @@ class openSearch extends webServiceServer {
   /** \brief Build Solr filter_query parm
    *
    */
-  private function set_solr_filter($profile, $profile_version) {
+  private function set_solr_filter($profile) {
     $ret = '';
     foreach ($profile as $p) {
-      if ($profile_version == 3)
-        $ret .= ($ret ? ' OR ' : '') .
-                'rec.collectionIdentifier:' . $p['sourceIdentifier'];
-      else
-        $ret .= ($ret ? ' OR ' : '') .
-                '(submitter:' . $p['sourceOwner'] .  
-                ' AND original_format:' . $p['sourceFormat'] . ')';
+      if (self::xs_boolean($p['sourceSearchable'])) {
+        $ret .= ($ret ? ' OR ' : '') . 'rec.collectionIdentifier:' . $p['sourceIdentifier'];
+      }
     }
     return $ret;
+  }
+
+  /** \brief Check an external relation against the search_profile
+   *
+   */
+  private function check_valid_external_relation($collection, $relation, $profile) {
+    self::set_valid_relations_and_sources($profile);
+    $valid = isset($this->valid_relation[$collection][$relation]);
+    if (DEBUG_ON) {
+      echo "from: $collection relation: $relation - " . ($valid ? '' : 'no ') . "go\n";
+    }
+    return $valid;
+  }
+
+  /** \brief Check an internal relation against the search_profile
+   *
+   */
+  private function check_valid_internal_relation($unit_id, $relation, $profile) {
+    self::set_valid_relations_and_sources($profile);
+    self::get_fedora_rels_hierarchy($unit_id, $rels_hierarchy);
+    $pid = self::fetch_primary_bib_object($rels_hierarchy);
+    foreach (self::find_record_sources_and_group_by_relation($pid, $relation) as $to_record_source) {
+      $valid = isset($this->valid_relation[$to_record_source][$relation]);
+      if (DEBUG_ON) {
+        echo "pid: $pid to: $to_record_source relation: $relation - " . ($valid ? '' : 'no ') . "go\n";
+      }
+      if ($valid) {
+        return $to_record_source;
+      }
+    }
+
+    return FALSE;
+  }
+
+  /** \brief find sources from pid and the local datastreams of the object
+   *  group the pid using the relation_group_source_tab 
+   *
+   */
+  private function find_record_sources_and_group_by_relation($pid, $relation) {
+    static $group_source_tab;
+    if (!isset($group_source_tab)) {
+      $group_source_tab = $this->config->get_value('relation_group_source_tab', 'setup');
+    }
+    $sources = self::fetch_valid_sources_from_stream($pid);
+    $record_source = self::record_source_from_pid($pid);
+    list($agency, $collection) = self::split_record_source($record_source);
+    if ($group_source = $group_source_tab[$relation][self::get_agency_type($agency)][$collection]) {
+      $sources[] = $group_source;
+    }
+    else {
+      $sources[] = $record_source;
+    }
+    return $sources;
+  }
+
+  /** \brief finds the local datastreams for a given object
+   *
+   */
+  private function fetch_valid_sources_from_stream($pid) {
+    static $dom;
+    if (empty($dom)) {
+      $dom = new DomDocument();
+      $dom->preserveWhiteSpace = false;
+    }
+    self::get_fedora_datastreams($pid, $ds_xml);
+    $ret = array();
+    if (@ $dom->loadXML($ds_xml)) {
+      foreach ($dom->getElementsByTagName('datastream') as $tag) {
+        list($localData, $stream) = explode('.', $tag->getAttribute('dsid'), 2);
+        if (!empty($stream) && ($localData == 'localData')) {
+          $ret[] = $stream;
+        }
+      }
+      if (DEBUG_ON) {
+        echo 'datastreams: ' . implode('; ', $ret) . PHP_EOL;
+      }
+    }
+    return $ret;
+  }
+
+  /** \brief sets valid relations from the search profile
+   *
+   */
+  private function set_valid_relations_and_sources($profile) {
+    if (empty($this->valid_relation)) {
+      foreach ($profile as $src) {
+        $this->valid_source[$src['sourceIdentifier']] = TRUE;
+        if ($src['relation']) {
+          foreach ($src['relation'] as $rel) {
+            if ($rel['rdfLabel'])
+              $this->valid_relation[$src['sourceIdentifier']][$rel['rdfLabel']] = TRUE;
+            if ($rel['rdfInverse'])
+              $this->valid_relation[$src['sourceIdentifier']][$rel['rdfInverse']] = TRUE;
+          }
+        }
+      }
+
+      if (DEBUG_ON) {
+        print_r($profile);
+        echo "rels:\n"; print_r($this->valid_relation); echo "source:\n"; print_r($this->valid_source);
+      }
+    }
+  }
+
+  /** \brief Fetch agency types from OpenAgency, cache the result, and return agency type for $agency
+   *
+   */
+  private function get_agency_type($agency) {
+    static $agency_type_tab;
+    if (!isset($agency_type_tab)) {
+      require_once 'OLS_class_lib/agency_type_class.php';
+      $cache = self::get_agency_cache_info();
+      $agency_types = new agency_type($this->config->get_value('agency_types', 'setup'), 
+                                         $cache['host'], $cache['port'], $cache['expire']);
+    }
+    $agency_type = $agency_types->get_agency_type($agency);
+    if ($agency_types->get_branch_type($agency) <> 'D')
+      return $agency_type;
+
+    return FALSE;
+  }
+
+  /** \brief Extract source part of an ID
+   *
+   */
+  private function record_source_from_pid($id) {
+    list($ret, $dummy) = explode(':', $id, 2);
+    return $ret;
+  }
+
+  /** \brief Split a record source
+   *
+   */
+  private function split_record_source($record_source) {
+    return explode('-', $record_source, 2);
   }
 
   /** \brief Fetch a profile $profile_name for agency $agency
    *
    */
-  private function fetch_profile_from_agency($agency, $profile_name, $profile_version) {
+  private function fetch_profile_from_agency($agency, $profile_name) {
     require_once 'OLS_class_lib/search_profile_class.php';
-    if (!($host = $this->config->get_value('profile_cache_host', 'setup')))
-      $host = $this->config->get_value('cache_host', 'setup');
-    if (!($port = $this->config->get_value('profile_cache_port', 'setup')))
-      $port = $this->config->get_value('cache_port', 'setup');
-    if (!($expire = $this->config->get_value('profile_cache_expire', 'setup')))
-      $expire = $this->config->get_value('cache_expire', 'setup');
-    $profiles = new search_profiles($this->config->get_value('open_agency', 'setup'), $host, $port, $expire);
-    $profile_version = ($profile_version ? intval($profile_version) : 2);
-    $profile = $profiles->get_profile($agency, $profile_name, $profile_version);
+    $cache = self::get_agency_cache_info();
+    $profiles = new search_profiles($this->config->get_value('agency_search_profile', 'setup'), 
+                                    $cache['host'], $cache['port'], $cache['expire']);
+    $profile = $profiles->get_profile($agency, $profile_name, $this->search_profile_version);
     if (is_array($profile)) {
       return $profile;
     }
@@ -922,10 +1615,23 @@ class openSearch extends webServiceServer {
     }
   }
 
+  /** \brief Get info for OpenAgency cache style/setup
+   *
+   */
+  private function get_agency_cache_info() {
+    if (!($ret['host'] = $this->config->get_value('agency_cache_host', 'setup')))
+      $ret['host'] = $this->config->get_value('cache_host', 'setup');
+    if (!($ret['port'] = $this->config->get_value('agency_cache_port', 'setup')))
+      $ret['port'] = $this->config->get_value('cache_port', 'setup');
+    if (!($ret['expire'] = $this->config->get_value('agency_cache_expire', 'setup')))
+      $ret['expire'] = $this->config->get_value('cache_expire', 'setup');
+    return $ret;
+  }
+
   /** \brief Build bq (BoostQuery) as field:content^weight
    *
    */
-  public static function boostUrl($boost) {
+  private static function boostUrl($boost) {
     $ret = '';
     if ($boost) {
       $boosts = (is_array($boost) ? $boost : array($boost));
@@ -953,39 +1659,81 @@ class openSearch extends webServiceServer {
    *
    */
   private function get_solr_array($q, $start, $rows, $sort, $rank, $facets, $filter, $boost, $debug, &$solr_arr) {
-  // '&fl=' . (FEDORA_VER_2 ? 'unit.id,rec.collectionIdentifier' : 'fedoraPid') .
-    $solr_query = $this->repository['solr'] . 
-                    '?q=' . urlencode($q) . 
-                    '&fq=' . $filter . 
-                    '&start=' . $start . 
-                    '&rows=' . $rows . $sort . $rank . $boost . $facets . 
-                    ($debug ? '&debugQuery=on' : '') . 
-                    '&fl=' . (FEDORA_VER_2 ? 'unit.id' : 'fedoraPid') . 
-                    '&defType=edismax&wt=phps';
+    $solr_urls[0] = self::create_solr_url($q, $start, $rows, $sort, $rank, $facets, $filter, $boost, $debug, $this->collapsing_field);
+    return self::do_solr($solr_urls, $solr_arr);
+  }
 
-    //echo $solr_query;
-    //exit;
+  /** \brief fetch hit count for each register in a given list
+   *
+   */
+  private function get_register_freqency($q, $registers, $filter) {
+    foreach ($registers as $reg_name => $reg_value) {
+      $solr_urls[]['url'] = $this->repository['solr'] .  
+                            '?q=' . $reg_value . ':(' . urlencode($q) .  ')&fq=' . $filter .  '&start=1&rows=0&wt=phps';
+      $ret[$reg_name] = 0;
+    }
+    $err = self::do_solr($solr_urls, $solr_arr);
+    $n = 0;
+    foreach ($registers as $reg_name => $reg_value) {
+      $ret[$reg_name] = self::get_num_response($solr_arr[$n++]);
+    }
+    return $ret;
+  }
 
-    verbose::log(TRACE, 'Query: ' . $solr_query);
-    verbose::log(DEBUG, 'Query: ' . $this->repository['solr'] . "?q=" . urlencode($q) . "&fq=$filter&start=$start&rows=1$sort$boost&fl=fedoraPid,unit.id$facets&defType=edismax&debugQuery=on");
-    $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/plain; charset=utf-8'));
-    $solr_result = $this->curl->get($solr_query);
-    if (empty($solr_result))
+  /** \brief build a solr url from a variety of parameters (and an url for debugging)
+   *
+   */
+  private function create_solr_url($q, $start, $rows, $sort, $rank, $facets, $filter, $boost, $debug, $collapsing) {
+    if ($collapsing) {
+      $collaps_pars = '&group=true&group.ngroups=true&group.facet=true&group.field=' . $collapsing;
+    }
+    $url = $this->repository['solr'] .
+                    '?q=' . urlencode($q) .
+                    '&fq=' . $filter .
+                    '&start=' . $start .  $sort . $rank . $boost . $facets .  $collaps_pars .
+                    '&defType=edismax';
+    $debug_url = $url . '&fl=fedoraPid,unit.id&rows=1&debugQuery=on';
+    $url .= '&fl=unit.id&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
+
+    return array('url' => $url, 'debug' => $debug_url);
+  }
+
+  /** \brief send one or more requests to Solr
+   *
+   */
+  private function do_solr($urls, &$solr_arr) {
+    foreach ($urls as $no => $url) {
+      verbose::log(TRACE, 'Query: ' . $url['url']);
+      verbose::log(DEBUG, 'Query: ' . $url['debug']);
+      $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/plain; charset=utf-8'), $no);
+      $this->curl->set_url($url['url'], $no);
+    }
+    $solr_results = $this->curl->get();
+    $this->curl->close();
+    if (empty($solr_results))
       return 'Internal problem: No answer from Solr';
-    if (!$solr_arr = unserialize($solr_result))
+    if (count($urls) > 1) {
+      foreach ($solr_results as &$solr_result) {
+        if (!$solr_arr[] = unserialize($solr_result)) {
+          return 'Internal problem: Cannot decode Solr result';
+        }
+      }
+    }
+    elseif (!$solr_arr = unserialize($solr_results)) {
       return 'Internal problem: Cannot decode Solr result';
+    }
   }
 
   /** \brief Parse a rels-ext record and extract the unit id
    *
    */
-  private function parse_rels_for_unit_id($rels_ext) {
+  private function parse_rels_for_unit_id($rels_hierarchy) {
     static $dom;
     if (empty($dom)) {
       $dom = new DomDocument();
+      $dom->preserveWhiteSpace = false;
     }
-    $dom->preserveWhiteSpace = false;
-    if (@ $dom->loadXML($rels_ext)) {
+    if (@ $dom->loadXML($rels_hierarchy)) {
       $imo = $dom->getElementsByTagName('isPrimaryBibObjectFor');
       if ($imo->item(0))
         return($imo->item(0)->nodeValue);
@@ -1002,51 +1750,31 @@ class openSearch extends webServiceServer {
   /** \brief Parse a rels-ext record and extract the work id
    *
    */
-  private function parse_rels_for_work_id($rels_ext) {
+  private function parse_rels_for_work_id($rels_hierarchy) {
     static $dom;
     if (empty($dom)) {
       $dom = new DomDocument();
     }
     $dom->preserveWhiteSpace = false;
-    if (@ $dom->loadXML($rels_ext))
-      if (FEDORA_VER_2) {
-        $imo = $dom->getElementsByTagName('isPrimaryUnitObjectFor');
-        if ($imo->item(0))
-          return($imo->item(0)->nodeValue);
-        else {
-          $imo = $dom->getElementsByTagName('isMemberOfWork');
-          if ($imo->item(0))
-            return($imo->item(0)->nodeValue);
-        }
-      }
+    if (@ $dom->loadXML($rels_hierarchy))
+      $imo = $dom->getElementsByTagName('isPrimaryUnitObjectFor');
+      if (is_object($imo) && $imo->item(0))
+        return($imo->item(0)->nodeValue);
       else {
         $imo = $dom->getElementsByTagName('isMemberOfWork');
-        if ($imo->item(0))
+        if (is_object($imo) && $imo->item(0))
           return($imo->item(0)->nodeValue);
       }
 
     return FALSE;
   }
 
-  /** \brief Echos config-settings
+  /** \brief Fetch id for primaryBibObject
    *
    */
-  public function show_info() {
-    echo '<pre>';
-    echo 'version             ' . $this->config->get_value('version', 'setup') . '<br/>';
-    echo 'agency              ' . $this->config->get_value('open_agency', 'setup') . '<br/>';
-    echo 'aaa_credentials     ' . $this->strip_oci_pwd($this->config->get_value('aaa_credentials', 'aaa')) . '<br/>';
-    echo 'default_repository  ' . $this->config->get_value('default_repository', 'setup') . '<br/>';
-    echo 'repository          ' . print_r($this->config->get_value('repository', 'setup'), true) . '<br/>';
-    echo '</pre>';
-    die();
-  }
-
-  private function strip_oci_pwd($cred) {
-    if (($p1 = strpos($cred, '/')) && ($p2 = strpos($cred, '@')))
-      return substr($cred, 0, $p1) . '/********' . substr($cred, $p2);
-    else
-      return $cred;
+  private function fetch_primary_bib_object($u_rel) {
+    $arr = self::parse_unit_for_object_ids($u_rel);
+    return $arr[0];
   }
 
   /** \brief Parse a work relation and return array of ids
@@ -1072,7 +1800,7 @@ class openSearch extends webServiceServer {
   /** \brief Parse a work relation and return array of ids
    *
    */
-  private function parse_work_for_object_ids($w_rel, $fpid) {
+  private function parse_work_for_object_ids($w_rel, $uid) {
     static $dom;
     $res = array();
     if (empty($dom)) {
@@ -1081,21 +1809,13 @@ class openSearch extends webServiceServer {
     $dom->preserveWhiteSpace = false;
     if (@ $dom->loadXML($w_rel)) {
       $res = array();
-      $res[] = $fpid;
-      if (FEDORA_VER_2) {
-        //$hpuo = $dom->getElementsByTagName('hasPrimaryUnitObject');
-        //if ($hpuo->item(0))
-          //$res[] = $puo = $hpuo->item(0)->nodeValue;
-        $r_list = $dom->getElementsByTagName('hasMemberOfWork');
-        foreach ($r_list as $r) {
-          if ($r->nodeValue <> $fpid) $res[] = $r->nodeValue;
-        }
-      }
-      else {
-        $r_list = $dom->getElementsByTagName('hasManifestation');
-        foreach ($r_list as $r) {
-          if ($r->nodeValue <> $fpid) $res[] = $r->nodeValue;
-        }
+      $res[] = $uid;
+      //$hpuo = $dom->getElementsByTagName('hasPrimaryUnitObject');
+      //if ($hpuo->item(0))
+        //$res[] = $puo = $hpuo->item(0)->nodeValue;
+      $r_list = $dom->getElementsByTagName('hasMemberOfWork');
+      foreach ($r_list as $r) {
+        if ($r->nodeValue <> $uid) $res[] = $r->nodeValue;
       }
       return $res;
     }
@@ -1104,116 +1824,46 @@ class openSearch extends webServiceServer {
   /** \brief Parse a fedora object and extract record and relations
    *
    * @param $fedora_obj      - the bibliographic record from fedora
-   * @param $fedora_rels_obj - corresponding relation object
+   * @param $fedora_addi_obj - corresponding relation object
    * @param $rels_type       - level for returning relations
    * @param $rec_id          - record id of the record
    * @param $filter          - agency filter
    * @param $format          -
    * @param $debug_info      -
    */
-  private function parse_fedora_object(&$fedora_obj, &$fedora_rels_obj, $rels_type, $rec_id, $filter, $format, $holdings_count=NULL, $debug_info='') {
-    static $dom, $rels_dom, $stream_dom, $allowed_relation;
-    if (empty($dom)) {
-      $dom = new DomDocument();
-      $dom->preserveWhiteSpace = false;
+  private function parse_fedora_object(&$fedora_obj, $fedora_addi_obj, $rels_type, $rec_id, $filter, $format, $holdings_count, $debug_info='') {
+    static $fedora_dom;
+    if (empty($fedora_dom)) {
+      $fedora_dom = new DomDocument();
+      $fedora_dom->preserveWhiteSpace = false;
     }
-    if (@ !$dom->loadXML($fedora_obj)) {
+    if (@ !$fedora_dom->loadXML($fedora_obj)) {
       verbose::log(FATAL, 'Cannot load recid ' . $rec_id . ' into DomXml');
       return;
     }
 
-    $rec = $this->extract_record($dom, $rec_id, $format);
+    $rec = self::extract_record($fedora_dom, $rec_id, $format);
 
-    if ($fedora_rels_obj) {
-      if (!isset($allowed_relation)) {
-        $allowed_relation = $this->config->get_value('relation', 'setup');
-      }
-      if (empty($rels_dom)) {
-        $rels_dom = new DomDocument();
-      }
-
-// Handle relations comming from local_data streams
-// 2DO some testing to ensure this is only done when needed (asked for)
-      $this->get_fedora_datastreams($rec_id, $fedora_streams);
-      if (empty($stream_dom)) {
-        $stream_dom = new DomDocument();
-      }
-      if (@ !$stream_dom->loadXML($fedora_streams)) {
-        verbose::log(DEBUG, 'Cannot load STREAMS for ' . $rec_id . ' into DomXml');
-      } else {
-        foreach ($stream_dom->getElementsByTagName('datastream') as $node) {
-          if (substr($node->getAttribute('ID'), 0, 9) == 'localData') {
-            $dub_check = array();
-            foreach ($node->getElementsByTagName('link') as $link) {
-              $url = $link->getelementsByTagName('url')->item(0)->nodeValue;
-              if (empty($dup_check[$url])) {
-                unset($relation);
-                $relation->relationType->_value = 'dbcaddi:hasOnlineAccess';
-                $relation->relationUri->_value = $url;
-                $relation->linkObject->_value->accessType->_value = 
-                    $link->getelementsByTagName('accessType')->item(0)->nodeValue;
-                $relation->linkObject->_value->access->_value = 
-                    $link->getelementsByTagName('access')->item(0)->nodeValue;
-                $relation->linkObject->_value->linkTo->_value = 
-                    $link->getelementsByTagName('LinkTo')->item(0)->nodeValue;
-                $dup_check[$url] = TRUE;
-                $relations->relation[]->_value = $relation;
-              }
-              //echo 'll: ' . $link->getelementsByTagName('LinkTo')->item(0)->nodeValue;
-            }
-          }
-        }
-      }
-          //    var_dump($local_links);
-//echo "\nStream: " . $fedora_streams . "\n"; die();
-
-// Handle relations comming from RELS_EXT
-      if (@ !$rels_dom->loadXML($fedora_rels_obj)) {
-        verbose::log(DEBUG, 'Cannot load RELS_EXT for ' . $rec_id . ' into DomXml');
-      }
-      elseif ($rels_dom->getElementsByTagName('Description')->item(0)) {
-        foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
-          if ($tag->nodeType == XML_ELEMENT_NODE) {
-            if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
-              $rel_prefix .= ':';
-            else
-              $rel_prefix = '';
-            if ($rel_to = $allowed_relation[$rel_prefix . $tag->localName]) {
-            //verbose::log(TRACE, $tag->localName . ' ' . $tag->getAttribute('xmlns'). ' -> ' .  array_search($tag->getAttribute('xmlns'), $this->xmlns));
-              if ($rel_to <> REL_TO_INTERNAL_OBJ || $this->is_searchable($tag->nodeValue, $filter)) {
-                $relation->relationType->_value = $rel_prefix . $tag->localName;
-                if ($rels_type == 'uri' || $rels_type == 'full')
-                  $relation->relationUri->_value = $tag->nodeValue;
-                if ($rels_type == 'full' && $rel_to == REL_TO_INTERNAL_OBJ) {
-                  //verbose::log(DEBUG, 'RFID: ' . $tag->nodeValue);
-                  $this->get_fedora_raw($tag->nodeValue, $related_obj);
-                  if (@ !$rels_dom->loadXML($related_obj)) {
-                    verbose::log(FATAL, 'Cannot load ' . $tag->tagName . ' object for ' . $rec_id . ' into DomXml');
-                  }
-                  else {
-                    $rel_obj = &$relation->relationObject->_value->object->_value;
-                    $rel_obj = $this->extract_record($rels_dom, $tag->nodeValue, $format);
-                    $rel_obj->identifier->_value = $tag->nodeValue;
-                    $rel_obj->formatsAvailable->_value = $this->scan_for_formats($rels_dom);
-                  }
-                }
-                $relations->relation[]->_value = $relation;
-                unset($relation);
-              }
-            }
-          }
-        }  // foreach ...
-      }
+    if (in_array($rels_type, array('type', 'uri', 'full'))) {
+      self::get_relations_from_datastream_domobj($relations, $fedora_dom, $rels_type);
+      self::get_relations_from_addi_stream($relations, $fedora_addi_obj, $rels_type, $filter, $format);
     }
 
     $ret = $rec;
     $ret->identifier->_value = $rec_id;
-    if (isset($holdings_count)) 
-      $ret->holdingsCount->_value = $holdings_count;
+    $ret->creationDate->_value = self::get_creation_date($fedora_dom);
+// hack
+    if (empty($ret->creationDate->_value) && (strpos($rec_id, 'tsart:') || strpos($rec_id, 'avis:'))) {
+      unset($holdings_count);
+    }
+    if (is_array($holdings_count)) {
+      $ret->holdingsCount->_value = $holdings_count['have'];
+      $ret->lendingLibraries->_value = $holdings_count['lend'];
+    }
     if ($relations) $ret->relations->_value = $relations;
-    $ret->formatsAvailable->_value = $this->scan_for_formats($dom);
+    $ret->formatsAvailable->_value = self::scan_for_formats($fedora_dom);
     if ($debug_info) $ret->queryResultExplanation->_value = $debug_info;
-    if (DEBUG_ON) var_dump($ret);
+    //if (DEBUG_ON) var_dump($ret);
 
     //print_r($ret);
     //exit;
@@ -1224,11 +1874,22 @@ class openSearch extends webServiceServer {
   /** \brief Check if a record is searchable
    *
    */
-  private function is_searchable($rec_id, $filter_q) {
+  private function is_searchable($unit_id, $filter_q) {
+// do not check for searchability, since the relation is found in the search_profile, it's ok to use it
+    return TRUE;
     if (empty($filter_q)) return TRUE;
 
-    $this->get_solr_array('rec.id:'.str_replace(':', '\:', $rec_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
+    self::get_solr_array('unit.id:' . str_replace(':', '\:', $unit_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
     return $solr_arr['response']['numFound'];
+  }
+
+  /** \brief Check rec for available formats
+   *
+   */
+  private function get_creation_date(&$dom) {
+    if ($p = &$dom->getElementsByTagName('adminData')->item(0)) {
+      return $p->getElementsByTagName('creationDate')->item(0)->nodeValue;
+    }
   }
 
   /** \brief Check rec for available formats
@@ -1250,6 +1911,156 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
+  /** \brief Handle relations in commonData streams
+   * @param relations (object) return parameter, the relations found
+   * @param rec_id (string) commonData record id
+   * @param rels_type (string) type, uri or full
+   *
+   */
+  private function get_relations_from_commonData_stream(&$relations, $rec_id, $rels_type) {
+    static $stream_dom;
+    self::get_fedora_raw($rec_id, $fedora_streams);
+    if (empty($stream_dom)) {
+      $stream_dom = new DomDocument();
+    }
+    if (@ !$stream_dom->loadXML($fedora_streams)) {
+      verbose::log(DEBUG, 'Cannot load STREAMS for ' . $rec_id . ' into DomXml');
+    } else {
+      self::get_relations_from_datastream_domobj($relations, $stream_dom, $rels_type);
+    }
+  }
+
+  /** \brief Handle relations located in commonData/localData streams in dom representation
+   * @param relations (object) return parameter, the relations found
+   * @param stream_dom (domDocument) commonData or localData stream
+   * @param rels_type (string) type, uri or full
+   *
+   */
+  private function get_relations_from_datastream_domobj(&$relations, &$stream_dom, $rels_type) {
+    $dub_check = array();
+    foreach ($stream_dom->getElementsByTagName('link') as $link) {
+      $url = $link->getelementsByTagName('url')->item(0)->nodeValue;
+      if (empty($dup_check[$url])) {
+        $this_relation = $link->getelementsByTagName('relationType')->item(0)->nodeValue;
+        unset($lci);
+        $relation_ok = FALSE;
+        foreach ($link->getelementsByTagName('collectionIdentifier') as $collection) {
+          $relation_ok = $relation_ok || 
+                            self::check_valid_external_relation($collection->nodeValue, $this_relation, $this->search_profile);
+          $lci[]->_value = $collection->nodeValue;
+        }
+        if ($relation_ok) {
+          if (!$relation->relationType->_value = $this_relation) {   // ????? WHY - is relationType sometimes empty?
+            $relation->relationType->_value = $link->getelementsByTagName('access')->item(0)->nodeValue;
+          }
+          if ($rels_type == 'uri' || $rels_type == 'full') {
+            $relation->relationUri->_value = $url;
+            if ($nv = $link->getelementsByTagName('accessType')->item(0)->nodeValue) {
+              $relation->linkObject->_value->accessType->_value = $nv;
+            }
+            if ($nv = $link->getelementsByTagName('access')->item(0)->nodeValue) {
+              $relation->linkObject->_value->access->_value = $nv;
+            }
+            $relation->linkObject->_value->linkTo->_value = $link->getelementsByTagName('linkTo')->item(0)->nodeValue;
+            if ($lci) {
+              $relation->linkObject->_value->linkCollectionIdentifier = $lci;
+            }
+          }
+          $dup_check[$url] = TRUE;
+          $relations->relation[]->_value = $relation;
+          unset($relation);
+        }
+      }
+    }
+  }
+
+  /** \brief Handle relations comming from addi streams
+   *
+   */
+  private function get_relations_from_addi_stream(&$relations, $fedora_addi_obj, $rels_type, $filter, $format) {
+    static $rels_dom;
+    if (empty($rels_dom)) {
+      $rels_dom = new DomDocument();
+    }
+    @ $rels_dom->loadXML($fedora_addi_obj);
+    if ($rels_dom->getElementsByTagName('Description')->item(0)) {
+      $relation_count = array();
+      foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
+        if ($tag->nodeType == XML_ELEMENT_NODE) {
+          if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
+            $this_relation = $rel_prefix . ':' . $tag->localName;
+          else
+            $this_relation = $tag->localName;
+          if ($relation_count[$this_relation]++ < MAX_IDENTICAL_RELATIONS &&
+              $rel_source = self::check_valid_internal_relation($tag->nodeValue, $this_relation, $this->search_profile)) {
+            self::get_fedora_rels_hierarchy($tag->nodeValue, $rels_sys);
+            $rel_uri = self::fetch_primary_bib_object($rels_sys);
+            self::get_fedora_raw($rel_uri, $related_obj);
+            if (@ !$rels_dom->loadXML($related_obj)) {
+              verbose::log(FATAL, 'Cannot load ' . $rel_uri . ' object from commonData into DomXml');
+              $rels_dom = NULL;
+            }
+            $collection_id = self::get_element_from_admin_data($rels_dom, 'collectionIdentifier');
+            if (empty($this->valid_relation[$collection_id])) {  // handling of local data streams
+              if (DEBUG_ON) { 
+                echo 'Datastream(s): ' . implode(',', self::fetch_valid_sources_from_stream($rel_uri)) . PHP_EOL;
+              }
+              foreach (self::fetch_valid_sources_from_stream($rel_uri) as $source) {
+                if ($this->valid_relation[$source]) {
+                  if (DEBUG_ON) { 
+                    echo '--- use: ' . $source . PHP_EOL;
+                  }
+                   
+                  $collection_id = $source;
+                  self::get_fedora_raw($rel_uri, $related_obj, self::set_data_stream_name($collection_id));
+                  if (@ !$rels_dom->loadXML($related_obj)) {
+                    verbose::log(FATAL, 'Cannot load ' . $rel_uri . ' object from ' . $source . ' into DomXml');
+                    $rels_dom = NULL;
+                  }
+                  break;
+                }
+              }
+            }
+            if (isset($this->valid_relation[$collection_id]) && self::is_searchable($tag->nodeValue, $filter)) {
+              $relation->relationType->_value = $this_relation;
+              if ($rels_type == 'uri' || $rels_type == 'full') {
+                $relation->relationUri->_value = $rel_uri;
+              }
+              if (is_object($rels_dom) && ($rels_type == 'full')) {
+                $rel_obj = &$relation->relationObject->_value->object->_value;
+                $rel_obj = self::extract_record($rels_dom, $tag->nodeValue, $format);
+                $rel_obj->identifier->_value = $rel_uri;
+                $rel_obj->creationDate->_value = self::get_creation_date($rels_dom);
+                self::get_relations_from_commonData_stream($ext_relations, $rel_uri, $rels_type);
+                if ($ext_relations) {
+                  $rel_obj->relations->_value = $ext_relations;
+                  unset($ext_relations);
+                }
+                $rel_obj->formatsAvailable->_value = self::scan_for_formats($rels_dom);
+              }
+              if ($rels_type == 'type' || $relation->relationUri->_value) {
+                $relations->relation[]->_value = $relation;
+              }
+              unset($relation);
+            }
+          }
+        }
+      }  // foreach ...
+    }
+  }
+
+  /** \brief gets a given element from the adminData part
+   *
+   */
+  private function get_element_from_admin_data(&$dom, $tag_name) {
+    if ($ads = $dom->getElementsByTagName('adminData')->item(0)) {
+      if ($cis = $ads->getElementsByTagName($tag_name)->item(0)) {
+         return($cis->nodeValue);
+      }
+    }
+    return NULL;
+  }
+
   /** \brief Extract record and namespace for it
    *
    */
@@ -1264,7 +2075,7 @@ class openSearch extends webServiceServer {
           }
           if ($record->item(0)) {
             foreach ($record->item(0)->childNodes as $tag) {
-              if ($format == 'dkabm' || $tag->prefix == 'dc') {
+//              if ($format_name == 'dkabm' || $tag->prefix == 'dc') {
                 if (trim($tag->nodeValue)) {
                   if ($tag->hasAttributes()) {
                     foreach ($tag->attributes as $attr) {
@@ -1273,16 +2084,17 @@ class openSearch extends webServiceServer {
                     }
                   }
                   $o->_namespace = $record->item(0)->lookupNamespaceURI($tag->prefix);
-                  $o->_value = $this->char_norm(trim($tag->nodeValue));
-                  if (!($tag->localName == 'subject' && $tag->nodeValue == 'undefined'))
-                    $rec-> {$tag->localName}[] = $o;
+                  $o->_value = trim($tag->nodeValue);
+                  if ($tag->localName && !($tag->localName == 'subject' && $tag->nodeValue == 'undefined'))
+                    $rec->{$tag->localName}[] = $o;
                   unset($o);
                 }
-              }
+//              }
             }
           }
-          else
+          else {
             verbose::log(FATAL, 'No dkabm record found in ' . $rec_id);
+          }
           break;
   
         case 'marcxchange':
@@ -1315,7 +2127,10 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  private function char_norm($s) {
+  /** \brief Handle non-standardized characters - one day maybe, this code can be deleted
+   *
+   */
+  private function normalize_chars($s) {
     $from[] = "\xEA\x9C\xB2"; $to[] = 'Aa';
     $from[] = "\xEA\x9C\xB3"; $to[] = 'aa';
     $from[] = "\XEF\x83\xBC"; $to[] = "\xCC\x88";   // U+F0FC -> U+0308
@@ -1333,9 +2148,9 @@ class openSearch extends webServiceServer {
   *   - frequence
   *   - term
   */
-  private function parse_for_facets(&$facets) {
-    if ($facets['facet_fields']) {
-      foreach ($facets['facet_fields'] as $facet_name => $facet_field) {
+  private function parse_for_facets(&$solr_arr) {
+    if (is_array($solr_arr['facet_counts']['facet_fields'])) {
+      foreach ($solr_arr['facet_counts']['facet_fields'] as $facet_name => $facet_field) {
         $facet->facetName->_value = $facet_name;
         foreach ($facet_field as $term => $freq) {
           if ($term && $freq) {
