@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<explain xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://explain.z3950.org/dtd/2.0/ http://explain.z3950.org/dtd/zeerex-2.0.xsd" xmlns="http://explain.z3950.org/dtd/2.0/">
-<!-- This file is part of Open Library System.
-Copyright © 2009, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+<?xml-stylesheet type="text/xsl" href="explain.xsl"?>
+<explain xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://explain.z3950.org/dtd/2.0/" xsi:schemaLocation="http://explain.z3950.org/dtd/2.0/ http://explain.z3950.org/dtd/zeerex-2.0.xsd">
+	<!-- This file is part of Open Library System.
+Copyright © 2012, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
 Open Library System is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -13,110 +14,1438 @@ You should have received a copy of the GNU Affero General Public License along w
 		<port/>
 		<database/>
 	</serverInfo>
+	<metaInfo>
+	    <dateModified>12/17/2013</dateModified>
+	</metaInfo>
 	<indexInfo>
-		<set identifier="info:srw/cql-context-set/1/cql-v1.1" name="cql"/>
-		<set identifier="info:srw/cql-context-set/1/dc-v1.1" name="dc"/>
-		<set identifier="info:srw/cql-context-set/2/rec-1.1" name="rec"/>
-		<set identifier="http://biblstandard.dk/ac/namespace/" name="ac"/>
-		<set identifier="info:srw/cql-context-set/1/bib-v1" name="bib"/>
+	    <set identifier="info:srw/cql-context-set/1/cql-v1.1" name="cql"/>
+		<set identifier="http://oss.dbc.dk/ns/display" name="display"/>
+		<set identifier="http://oss.dbc.dk/ns/dkcclphrase" name="dkcclphrase"/>
+		<set identifier="http://oss.dbc.dk/ns/dkcclterm" name="dkcclterm"/>
 		<set identifier="http://oss.dbc.dk/ns/facet" name="facet"/>
 		<set identifier="http://oss.dbc.dk/ns/phrase" name="phrase"/>
+		<set identifier="http://oss.dbc.dk/ns/rankphrase" name="rankphrase"/>
+		<set identifier="http://oss.dbc.dk/ns/rankterm" name="rankterm"/>
+		<set identifier="info:srw/cql-context-set/2/rec-1.1" name="rec"/>
+		<set identifier="http://oss.dbc.dk/ns/rankterm" name="sort"/>
+		<set identifier="http://oss.dbc.dk/ns/term" name="term"/>
+		<set identifier="http://oss.dbc.dk/ns/unit" name="unit"/>
 		<index>
-			<title lang="da">Serietitel</title>
-			<title lang="en">Title of series</title>
-			<map>
-				<name set="bib">titleSeries</name>
+			<title lang="da">Internt register</title>
+			<map hidden="1">
+				<name set="cql">allIndexes</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Klassifikation</title>
-			<title lang="en">Classification</title>
-			<map>
-				<name set="bib">classification</name>
-			</map>
-		</index>
-		<index>
-			<title lang="da">Fritekst</title>
-			<title lang="en">Full text</title>
+			<title lang="en">Same as term.default</title>
+			<title lang="da">Fritekst, samme som term.default</title>
 			<map>
 				<name set="cql">anyIndexes</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Ophav</title>
-			<title lang="en">Creator</title>
-			<map>
-				<name set="dc">creator</name>
+			<title lang="da">Display register</title>
+			<map hidden="1">
+				<name set="display">accessType</name>
 			</map>
 		</index>
 		<index>
+			<title lang="da">Display register</title>
+			<map hidden="1">
+				<name set="display">creator</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Display register</title>
+			<map hidden="1">
+				<name set="display">dependentTitle</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Display register</title>
+			<map hidden="1">
+				<name set="display">language</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Display register</title>
+			<map hidden="1">
+				<name set="display">partOf</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Display register</title>
+			<map hidden="1">
+				<name set="display">title</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Display register</title>
+			<map hidden="1">
+				<name set="display">titleFull</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Display register</title>
+			<map hidden="1">
+				<name set="display">type</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Display register</title>
+			<map hidden="1">
+				<name set="display">workType</name>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">BCM klassifikation</title>
+			<map>
+				<name set="dkcclphrase">bcm</name>
+				<alias>bcm</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">DB klassifikation</title>
+			<map>
+				<name set="dkcclphrase">dbk</name>
+				<alias>dbk</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Dewey klassifikation</title>
+			<map>
+				<name set="dkcclphrase">ddc</name>
+				<alias>ddc</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">AGROVOC emneord</title>
+			<map>
+				<name set="dkcclphrase">lac</name>
+				<alias>lac</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">NAL emneord</title>
+			<map>
+				<name set="dkcclphrase">lag</name>
+				<alias>lag</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">DK5 alfabetisk underdeling</title>
+			<map>
+				<name set="dkcclphrase">lau</name>
+				<alias>lau</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Brugsret og tilgængelighed</title>
+			<map>
+				<name set="dkcclphrase">lbr</name>
+				<alias>lbr</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">LCC klassifikation</title>
+			<map>
+				<name set="dkcclphrase">lcc</name>
+				<alias>lcc</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Klassifikation, alle felter (OBS: indeholder 085 udover koder i cl)</title>
+			<map>
+				<name set="dkcclphrase">lcl</name>
+				<alias>lcl</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">COMPASS emneord</title>
+			<map>
+				<name set="dkcclphrase">lcp</name>
+				<alias>lcp</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">DBC emneord</title>
+			<map>
+				<name set="dkcclphrase">ldb</name>
+				<alias>ldb</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">DBC-faglitterære emneord</title>
+			<map>
+				<name set="dkcclphrase">ldf</name>
+				<alias>ldf</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">DK5 klassifikation</title>
+			<map>
+				<name set="dkcclphrase">ldk</name>
+				<alias>ldk</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">DBC-skønlitterære emneord</title>
+			<map>
+				<name set="dkcclphrase">lds</name>
+				<alias>lds</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">EPT emneord</title>
+			<map>
+				<name set="dkcclphrase">led</name>
+				<alias>led</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Kontrollerede faglitterære emneord (Ikke system-specifikke)</title>
+			<map>
+				<name set="dkcclphrase">lef</name>
+				<alias>lef</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Korporationsnavne som emneord</title>
+			<map>
+				<name set="dkcclphrase">lek</name>
+				<alias>lek</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Alle emneord</title>
+			<map>
+				<name set="dkcclphrase">lem</name>
+				<alias>lem</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Personnavne som emneord</title>
+			<map>
+				<name set="dkcclphrase">lep</name>
+				<alias>lep</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Kontrollerede skønlitterære emneord  (Ikke system-specifikke)</title>
+			<map>
+				<name set="dkcclphrase">les</name>
+				<alias>les</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Forfatter med funktionsangivelser</title>
+			<map>
+				<name set="dkcclphrase">lff</name>
+				<alias>lff</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Formbetegnelse som emneord DBC</title>
+			<map>
+				<name set="dkcclphrase">lfm</name>
+				<alias>lfm</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Forfattere</title>
+			<map>
+				<name set="dkcclphrase">lfo</name>
+				<alias>lfo</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">gammel DK5 klassifikation</title>
+			<map>
+				<name set="dkcclphrase">lgd</name>
+				<alias>lgd</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Hovedtitel</title>
+			<map>
+				<name set="dkcclphrase">lht</name>
+				<alias>lht</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Kontrollerede emneord</title>
+			<map>
+				<name set="dkcclphrase">lke</name>
+				<alias>lke</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">lokal klassifikation</title>
+			<map>
+				<name set="dkcclphrase">lkl</name>
+				<alias>lkl</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">korporativ forfatter</title>
+			<map>
+				<name set="dkcclphrase">lko</name>
+				<alias>lko</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Regions-Amt-Kommunenummer</title>
+			<map>
+				<name set="dkcclphrase">lkn</name>
+				<alias>lkn</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">materialetype - klar tekst</title>
+			<map>
+				<name set="dkcclphrase">lma</name>
+				<alias>lma</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">musikemneord</title>
+			<map>
+				<name set="dkcclphrase">lme</name>
+				<alias>lme</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">musikopstilling - udfoldet tekst</title>
+			<map>
+				<name set="dkcclphrase">lmo</name>
+				<alias>lmo</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">MESH emneord</title>
+			<map>
+				<name set="dkcclphrase">lms</name>
+				<alias>lms</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Niveau/brugerkategori</title>
+			<map>
+				<name set="dkcclphrase">lnb</name>
+				<alias>lnb</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Musikalsk notation DBC</title>
+			<map>
+				<name set="dkcclphrase">lnm</name>
+				<alias>lnm</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Nøgletitel</title>
+			<map>
+				<name set="dkcclphrase">lnt</name>
+				<alias>lnt</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Klassifikation som opstilling</title>
+			<map>
+				<name set="dkcclphrase">lok</name>
+				<alias>lok</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Paralleltitel</title>
+			<map>
+				<name set="dkcclphrase">lpa</name>
+				<alias>lpa</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Personlig forfatter</title>
+			<map>
+				<name set="dkcclphrase">lpe</name>
+				<alias>lpe</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Opstillingselement</title>
+			<map>
+				<name set="dkcclphrase">lpo</name>
+				<alias>lpo</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">periodica relationstitel</title>
+			<map>
+				<name set="dkcclphrase">lrt</name>
+				<alias>lrt</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">serietitel</title>
+			<map>
+				<name set="dkcclphrase">lse</name>
+				<alias>lse</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Serieoplysninger uden numre</title>
+			<map>
+				<name set="dkcclphrase">lso</name>
+				<alias>lso</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Senere titel</title>
+			<map>
+				<name set="dkcclphrase">lst</name>
+				<alias>lst</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
 			<title lang="da">Titel</title>
-			<title lang="en">Title</title>
 			<map>
-				<name set="dc">title</name>
+				<name set="dkcclphrase">lti</name>
+				<alias>lti</alias>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Beskrivelse</title>
-			<title lang="en">Description</title>
+			<title lang="en">No English description available</title>
+			<title lang="da">Tekniske oplysninger</title>
 			<map>
-				<name set="dc">description</name>
+				<name set="dkcclphrase">lts</name>
+				<alias>lts</alias>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Emne</title>
-			<title lang="en">Subject</title>
+			<title lang="en">No English description available</title>
+			<title lang="da">Tidligere titel</title>
 			<map>
-				<name set="dc">subject</name>
+				<name set="dkcclphrase">ltt</name>
+				<alias>ltt</alias>
 			</map>
 		</index>
 		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Ukontrollerede emneord</title>
+			<map>
+				<name set="dkcclphrase">luk</name>
+				<alias>luk</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Uniform titel</title>
+			<map>
+				<name set="dkcclphrase">lut</name>
+				<alias>lut</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Værtspublikationstitel</title>
+			<map>
+				<name set="dkcclphrase">lvp</name>
+				<alias>lvp</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Værtspublikationstitel uden nummeroplysninger</title>
+			<map>
+				<name set="dkcclphrase">lvx</name>
+				<alias>lvx</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">NAL klassifikation</title>
+			<map>
+				<name set="dkcclphrase">nal</name>
+				<alias>nal</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">NLM klassifikation</title>
+			<map>
+				<name set="dkcclphrase">nlm</name>
+				<alias>nlm</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">UDK notation</title>
+			<map>
+				<name set="dkcclphrase">udk</name>
+				<alias>udk</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">AGROVOC emneord</title>
+			<map>
+				<name set="dkcclterm">ac</name>
+				<alias>ac</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">NAL emneord</title>
+			<map>
+				<name set="dkcclterm">ag</name>
+				<alias>ag</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Ajourføringstidspunkt</title>
+			<map>
+				<name set="dkcclterm">aj</name>
+				<alias>aj</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Anbefalinger og restriktioner i kodeform</title>
+			<map>
+				<name set="dkcclterm">ar</name>
+				<alias>ar</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Alfabetisk underdeling DK5</title>
+			<map>
+				<name set="dkcclterm">au</name>
+				<alias>au</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Producentens stregkode/EAN</title>
+			<map>
+				<name set="dkcclterm">bc</name>
+				<alias>bc</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Brugsret og tilgængelighed</title>
+			<map>
+				<name set="dkcclterm">br</name>
+				<alias>br</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Søge-/opstillingskoder for børnelitteratur</title>
+			<map>
+				<name set="dkcclterm">bs</name>
+				<alias>bs</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Klassifikation, alle koder</title>
+			<map>
+				<name set="dkcclterm">cl</name>
+				<alias>cl</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">CODEN</title>
+			<map>
+				<name set="dkcclterm">co</name>
+				<alias>co</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">COMPASS emneord</title>
+			<map>
+				<name set="dkcclterm">cp</name>
+				<alias>cp</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">DBC-emneord</title>
+			<map>
+				<name set="dkcclterm">db</name>
+				<alias>db</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">DBC-faglitterære emneord</title>
+			<map>
+				<name set="dkcclterm">df</name>
+				<alias>df</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">DK5</title>
+			<map>
+				<name set="dkcclterm">dk</name>
+				<alias>dk</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">DBC-skønlitterære emneord</title>
+			<map>
+				<name set="dkcclterm">ds</name>
+				<alias>ds</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">EPT emneord</title>
+			<map>
+				<name set="dkcclterm">ed</name>
+				<alias>ed</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Kontrollerede faglitterære emneord (Ikke system-specifik)</title>
+			<map>
+				<name set="dkcclterm">ef</name>
+				<alias>ef</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Ejerkode</title>
+			<map>
+				<name set="dkcclterm">ej</name>
+				<alias>ej</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Korporationsnavne som emneord</title>
+			<map>
+				<name set="dkcclterm">ek</name>
+				<alias>ek</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Emneord</title>
+			<map>
+				<name set="dkcclterm">em</name>
+				<alias>em</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Numre på ens materiale</title>
+			<map>
+				<name set="dkcclterm">en</name>
+				<alias>en</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Personnavn som emneord</title>
+			<map>
+				<name set="dkcclterm">ep</name>
+				<alias>ep</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Kontrollerede skønlitterære emneord (Ikke system-specifik)</title>
+			<map>
+				<name set="dkcclterm">es</name>
+				<alias>es</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Forfatter i beskrivelsen</title>
+			<map>
+				<name set="dkcclterm">fb</name>
+				<alias>fb</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">FUI-Koder</title>
+			<map>
+				<name set="dkcclterm">fg</name>
+				<alias>fg</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Forlagets navn</title>
+			<map>
+				<name set="dkcclterm">fl</name>
+				<alias>fl</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Form betegnelse som emneord</title>
+			<map>
+				<name set="dkcclterm">fm</name>
+				<alias>fm</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Forfatter</title>
+			<map>
+				<name set="dkcclterm">fo</name>
+				<alias>fo</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Forkortet version af punktbøger</title>
+			<map>
+				<name set="dkcclterm">fv</name>
+				<alias>fv</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Forældet dk-klassemærke</title>
+			<map>
+				<name set="dkcclterm">gd</name>
+				<alias>gd</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Primær materialebetegnelse</title>
+			<map>
+				<name set="dkcclterm">hm</name>
+				<alias>hm</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Hovedtitel</title>
+			<map>
+				<name set="dkcclterm">ht</name>
+				<alias>ht</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">ISBN</title>
+			<map>
+				<name set="dkcclterm">ib</name>
+				<alias>ib</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">ISRC</title>
+			<map>
+				<name set="dkcclterm">ic</name>
+				<alias>ic</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Identifikationsnummer</title>
+			<map>
+				<name set="dkcclterm">id</name>
+				<alias>id</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">ISMN</title>
+			<map>
+				<name set="dkcclterm">im</name>
+				<alias>im</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">ISSN</title>
+			<map>
+				<name set="dkcclterm">in</name>
+				<alias>in</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Pakkeidentifikation</title>
+			<map>
+				<name set="dkcclterm">ip</name>
+				<alias>ip</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">ISRN</title>
+			<map>
+				<name set="dkcclterm">ir</name>
+				<alias>ir</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Internationale standardnumre</title>
+			<map>
+				<name set="dkcclterm">is</name>
+				<alias>is</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">LIX</title>
+			<map>
+				<name set="dkcclterm">ix</name>
+				<alias>ix</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Konsulentafmærkningskoder</title>
+			<map>
+				<name set="dkcclterm">ka</name>
+				<alias>ka</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Kontrollerede emneord</title>
+			<map>
+				<name set="dkcclterm">ke</name>
+				<alias>ke</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Konsulentgrupperingskoder</title>
+			<map>
+				<name set="dkcclterm">kg</name>
+				<alias>kg</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Katalogkode</title>
+			<map>
+				<name set="dkcclterm">kk</name>
+				<alias>kk</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Lokal klassifikation</title>
+			<map>
+				<name set="dkcclterm">kl</name>
+				<alias>kl</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Kartografiske oplysninger</title>
+			<map>
+				<name set="dkcclterm">km</name>
+				<alias>km</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Regions-Amt-Kommunenummer</title>
+			<map>
+				<name set="dkcclterm">kn</name>
+				<alias>kn</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Korporativ forfatter</title>
+			<map>
+				<name set="dkcclterm">ko</name>
+				<alias>ko</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Katalogkode - rettelse</title>
+			<map>
+				<name set="dkcclterm">kr</name>
+				<alias>kr</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Katalogkode - ekspres</title>
+			<map>
+				<name set="dkcclterm">kx</name>
+				<alias>kx</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">ID-nummer på post på højere niveau</title>
+			<map>
+				<name set="dkcclterm">ld</name>
+				<alias>ld</alias>
+			</map>
+		</index>
+		<index>
+            <title lang="en">No English description available</title>
+            <title lang="da">Link til autoritetsbase</title>
+            <map>
+                <name set="dkcclterm">li</name>
+                <alias>li</alias>
+            </map>
+        </index>
+        <index>
+            <title lang="en">No English description available</title>
+            <title lang="da">LET-tal</title>
+            <map>
+                <name set="dkcclterm">ll</name>
+                <alias>ll</alias>
+            </map>
+        </index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Biblioteksnumre på katalogiseringskilde</title>
+			<map>
+				<name set="dkcclterm">ln</name>
+				<alias>ln</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
 			<title lang="da">Materialetype</title>
-			<title lang="en">Type of material</title>
 			<map>
-				<name set="dc">type</name>
+				<name set="dkcclterm">ma</name>
+				<alias>ma</alias>
 			</map>
 		</index>
 		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Musikemneord</title>
+			<map>
+				<name set="dkcclterm">me</name>
+				<alias>me</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Musikopstilling</title>
+			<map>
+				<name set="dkcclterm">mo</name>
+				<alias>mo</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">MESH emneord</title>
+			<map>
+				<name set="dkcclterm">ms</name>
+				<alias>ms</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Niveau-emneord</title>
+			<map>
+				<name set="dkcclterm">nb</name>
+				<alias>nb</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Library of Congress control number</title>
+			<map>
+				<name set="dkcclterm">nl</name>
+				<alias>nl</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Musikalsk notation</title>
+			<map>
+				<name set="dkcclterm">nm</name>
+				<alias>nm</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Noter</title>
+			<map>
+				<name set="dkcclterm">no</name>
+				<alias>no</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Numre</title>
+			<map>
+				<name set="dkcclterm">nr</name>
+				<alias>nr</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Note til materialevalg</title>
+			<map>
+				<name set="dkcclterm">ns</name>
+				<alias>ns</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Nøgletitel</title>
+			<map>
+				<name set="dkcclterm">nt</name>
+				<alias>nt</alias>
+			</map>
+		</index>
+		<index>
+            <title lang="en">No English description available</title>
+            <title lang="da">Niveaukode for faglitteratur</title>
+            <map>
+                <name set="dkcclterm">nv</name>
+                <alias>nv</alias>
+            </map>
+        </index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">OCLC control number</title>
+			<map>
+				<name set="dkcclterm">oc</name>
+				<alias>oc</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Klassifikation som opstilling</title>
+			<map>
+				<name set="dkcclterm">ok</name>
+				<alias>ok</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Oprettelsesdato</title>
+			<map>
+				<name set="dkcclterm">op</name>
+				<alias>op</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Sprog i originaludgave</title>
+			<map>
+				<name set="dkcclterm">ou</name>
+				<alias>ou</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Paralleltitel</title>
+			<map>
+				<name set="dkcclterm">pa</name>
+				<alias>pa</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Personlig forfatter</title>
+			<map>
+				<name set="dkcclterm">pe</name>
+				<alias>pe</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Opstillingselement</title>
+			<map>
+				<name set="dkcclterm">po</name>
+				<alias>po</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Forlagets hjemsted</title>
+			<map>
+				<name set="dkcclterm">pu</name>
+				<alias>pu</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Relationstitel, periodica</title>
+			<map>
+				<name set="dkcclterm">rt</name>
+				<alias>rt</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Serietitel</title>
+			<map>
+				<name set="dkcclterm">se</name>
+				<alias>se</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Seddelfortegnelseskoder</title>
+			<map>
+				<name set="dkcclterm">sf</name>
+				<alias>sf</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Serieoplysninger uden numre</title>
+			<map>
+				<name set="dkcclterm">so</name>
+				<alias>so</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
 			<title lang="da">Sprog</title>
-			<title lang="en">Language</title>
 			<map>
-				<name set="dc">language</name>
+				<name set="dkcclterm">sp</name>
+				<alias>sp</alias>
 			</map>
 		</index>
 		<index>
-			<title lang="da">År</title>
-			<title lang="en">Year</title>
+			<title lang="en">No English description available</title>
+			<title lang="da">Senere titel</title>
 			<map>
-				<name set="dc">date</name>
+				<name set="dkcclterm">st</name>
+				<alias>st</alias>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Kilde</title>
-			<title lang="en">Source</title>
+			<title lang="en">No English description available</title>
+			<title lang="da">Tidligere og lokale faustnumre</title>
 			<map>
-				<name set="dc">source</name>
+				<name set="dkcclterm">tf</name>
+				<alias>tf</alias>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Udgiver</title>
-			<title lang="en">Publisher</title>
+            <title lang="en">No English description available</title>
+            <title lang="da">Tilgængelighed</title>
+            <map>
+                <name set="dkcclterm">tg</name>
+                <alias>tg</alias>
+            </map>
+        </index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Titel</title>
 			<map>
-				<name set="dc">publisher</name>
+				<name set="dkcclterm">ti</name>
+				<alias>ti</alias>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Id-nummer</title>
-			<title lang="en">Identifier</title>
+			<title lang="en">No English description available</title>
+			<title lang="da">Tekniske oplysninger</title>
 			<map>
-				<name set="dc">identifier</name>
+				<name set="dkcclterm">ts</name>
+				<alias>ts</alias>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Brøndkilde</title>
-			<title lang="en">Data well source</title>
+			<title lang="en">No English description available</title>
+			<title lang="da">Tidligere titel</title>
 			<map>
-				<name set="ac">source</name>
+				<name set="dkcclterm">tt</name>
+				<alias>tt</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Ukontrollerede emneord</title>
+			<map>
+				<name set="dkcclterm">uk</name>
+				<alias>uk</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Udgivelsesland</title>
+			<map>
+				<name set="dkcclterm">ul</name>
+				<alias>ul</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Uniform titel</title>
+			<map>
+				<name set="dkcclterm">ut</name>
+				<alias>ut</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Udgivelsesstatus</title>
+			<map>
+				<name set="dkcclterm">uu</name>
+				<alias>uu</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Værtspublikationstitel</title>
+			<map>
+				<name set="dkcclterm">vp</name>
+				<alias>vp</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">URL</title>
+			<map>
+				<name set="dkcclterm">ww</name>
+				<alias>ww</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en">No English description available</title>
+			<title lang="da">Udgivelsesår</title>
+			<map>
+				<name set="dkcclterm">år</name>
+				<alias>år</alias>
+			</map>
+		</index>
+		<index>
+            <title lang="da">Adgang (facet)</title>
+            <title lang="en">Access (facet)</title>
+            <map>
+                <name set="facet">access</name>
+            </map>
+        </index>
+		<index>
+			<title lang="da">Kilde (facet)</title>
+			<title lang="en">Source (facet)</title>
+			<map>
+				<name set="facet">acSource</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Målgruppe (facet)</title>
+			<title lang="en">Audience (facet)</title>
+			<map>
+				<name set="facet">audience</name>
+			</map>
+		</index>
+		<index>
+            <title lang="da">Brugerniveau (facet)</title>
+            <title lang="en">Audience category (facet)</title>
+            <map>
+                <name set="facet">audienceCategory</name>
+            </map>
+        </index>
+		<index>
+			<title lang="da">Voksen- eller børnematerialer (facet)</title>
+			<title lang="en">Adult or childrens materials (facet)</title>
+			<map>
+				<name set="facet">category</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Ophav (facet)</title>
+			<title lang="en">Creator (facet)</title>
+			<map>
+				<name set="facet">creator</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Dato (facet)</title>
+			<title lang="en">Date (facet)</title>
+			<map>
+				<name set="facet">date</name>
+			</map>
+		</index>
+		<index>
+            <title lang="da">DK5 Klassifikation (facet)</title>
+            <title lang="en">DK5 classification (facet)</title>
+            <map>
+                <name set="facet">dk5</name>
+            </map>
+        </index>
+		<index>
+			<title lang="da">Form (facet)</title>
+			<title lang="en">Form (facet)</title>
+			<map>
+				<name set="facet">form</name>
+			</map>
+		</index>
+		<index>
+            <title lang="da">Spilplatform (facet)</title>
+            <title lang="en">Game platform (facet)</title>
+            <map>
+                <name set="facet">gamePlatform</name>
+            </map>
+        </index>
+		<index>
+			<title lang="da">Genre (facet)</title>
+			<title lang="en">Genre (facet)</title>
+			<map>
+				<name set="facet">genre</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Genre kategori (facet)</title>
+			<title lang="en">Genre category (facet)</title>
+			<map>
+				<name set="facet">genreCategory</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Sprog (facet)</title>
+			<title lang="en">Language (facet)</title>
+			<map>
+				<name set="facet">language</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Fagligt niveau (facet)</title>
+			<title lang="en">Level (facet)</title>
+			<map>
+				<name set="facet">level</name>
+			</map>
+		</index>
+		<index>
+            <title lang="da">Lettal (facet)</title>
+            <title lang="en">Readability level (facet)</title>
+            <map>
+                <name set="facet">let</name>
+            </map>
+        </index>
+        <index>
+            <title lang="da">Litterær form (facet)</title>
+            <title lang="en">Literary form (facet)</title>
+            <map>
+                <name set="facet">literaryForm</name>
+            </map>
+        </index>
+        <index>
+            <title lang="da">Lix (facet)</title>
+            <title lang="en">Readability index (facet)</title>
+            <map>
+                <name set="facet">lix</name>
+            </map>
+        </index>
+        <index>
+            <title lang="da">Filmnationalitet (facet)</title>
+            <title lang="en">Nationality of movie (facet)</title>
+            <map>
+                <name set="facet">nationality</name>
+            </map>
+        </index>
+		<index>
+            <title lang="da">Del af (facet)</title>
+            <title lang="en">Part of (facet)</title>
+            <map>
+                <name set="facet">partOf</name>
+            </map>
+        </index>
+        <index>
+            <title lang="da">Hovedophav (facet)</title>
+            <title lang="en">Primary Creator (facet)</title>
+            <map>
+                <name set="facet">primaryCreator</name>
+            </map>
+        </index>
+		<index>
+			<title lang="da">Noder (facet)</title>
+			<title lang="en">Sheetmusic (facet)</title>
+			<map>
+				<name set="facet">sheetMusic</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Emne (facet)</title>
+			<title lang="en">Subject (facet)</title>
+			<map>
+				<name set="facet">subject</name>
+			</map>
+		</index>
+		<index>
+            <title lang="da">Serietitle (facet)</title>
+            <title lang="en">Title of series (facet)</title>
+            <map>
+                <name set="facet">titleSeries</name>
+            </map>
+        </index>
+		<index>
+			<title lang="da">Materialetype (facet)</title>
+			<title lang="en">Material type (facet)</title>
+			<map>
+				<name set="facet">type</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Målgruppe (frase)</title>
+			<title lang="en">Audience (phrase)</title>
+			<map>
+				<name set="phrase">audience</name>
 			</map>
 		</index>
 		<index>
@@ -127,216 +1456,253 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
-			<title lang="da">Titel (frase)</title>
-			<title lang="en">Title (phrase)</title>
+			<title lang="da">Genre (frase)</title>
+			<title lang="en">Genre (phrase)</title>
 			<map>
-				<name set="phrase">title</name>
+				<name set="phrase">genre</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Beskrivelse (frase)</title>
-			<title lang="en">Description (phrase)</title>
+			<title lang="da">Originaltitel (frase)</title>
+			<title lang="en">Original title (phrase)</title>
 			<map>
-				<name set="phrase">description</name>
+				<name set="phrase">originalTitle</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Emne (frase)</title>
-			<title lang="en">Subject (phrase)</title>
+			<title lang="da">Anmeldt ophav (frase)</title>
+			<title lang="en">Reviewed creator (phrase)</title>
+			<map>
+				<name set="phrase">reviewedCreator</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Anmeldt id (frase)</title>
+			<title lang="en">Reviewed identifier (phrase)</title>
+			<map>
+				<name set="phrase">reviewedIdentifier</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Anmeldt forlag (frase)</title>
+			<title lang="en">Reviewed publisher (phrase)</title>
+			<map>
+				<name set="phrase">reviewedPublisher</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Anmeldt titel (frase)</title>
+			<title lang="en">Reviewed title (phrase)</title>
+			<map>
+				<name set="phrase">reviewedTitle</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Anmelder (frase)</title>
+			<title lang="en">Reviewer (phrase)</title>
+			<map>
+				<name set="phrase">reviewer</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Emne (frase) - pt kun anmeldelser</title>
+			<title lang="en">Subject (phrase) - at the moment only reviews</title>
 			<map>
 				<name set="phrase">subject</name>
 			</map>
 		</index>
 		<index>
+			<title lang="da">Titel fra serie (frase)</title>
+			<title lang="en">Title from series (phrase)</title>
+			<map>
+				<name set="phrase">titleFromSeries</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Serietitel (frase)</title>
+			<title lang="en">Series title (phrase)</title>
+			<map>
+				<name set="phrase">titleSeries</name>
+			</map>
+		</index>
+		<index>
 			<title lang="da">Materialetype (frase)</title>
-			<title lang="en">Type of material (phrase)</title>
+			<title lang="en">Material type (phrase)</title>
 			<map>
 				<name set="phrase">type</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Sprog (frase)</title>
-			<title lang="en">Language (phrase)</title>
-			<map>
-				<name set="phrase">language</name>
-			</map>
-		</index>
-		<index>
-			<title lang="da">År (frase)</title>
-			<title lang="en">Year (phrase)</title>
-			<map>
-				<name set="phrase">date</name>
-			</map>
-		</index>
-		<index>
-			<title lang="da">Kilde (frase)</title>
-			<title lang="en">Source (phrase)</title>
-			<map>
-				<name set="phrase">source</name>
-			</map>
-		</index>
-		<index>
-			<title lang="da">Udgiver (frase)</title>
-			<title lang="en">Publisher (phrase)</title>
-			<map>
-				<name set="phrase">publisher</name>
-			</map>
-		</index>
-				<index>
-			<title lang="da">Fritekst (frase)</title>
-			<title lang="en">Full text (phrase)</title>
-			<map>
-				<name set="phrase">anyIndexes</name>
-			</map>
-		</index>
-		<index>
-			<title lang="da">Id-nummer</title>
-			<title lang="en">Identifier (phrase)</title>
-			<map>
-				<name set="phrase">identifier</name>
-			</map>
-		</index>
-		<index>
-			<title lang="da">Objektidentifikator</title>
-			<title lang="en">Object identifier</title>
+			<title lang="da">Id (post/objekt)</title>
+			<title lang="en">Identifier (record/object)</title>
 			<map>
 				<name set="rec">id</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Overordnet målgruppe (børn/voksen)</title>
-			<title lang="en">Audience category</title>
+			<title lang="da">Adgangsmåde (enkeltord)</title>
+			<title lang="en">Access type (term)</title>
 			<map>
-				<name set="facet">category</name>
+				<name set="term">accessType</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Fiktion/nonfiktion</title>
-			<title lang="en">Fiction/non-fiction</title>
+			<title lang="da">Accessionsdato (enkeltord)</title>
+			<title lang="en">Acquisition date (term)</title>
 			<map>
-				<name set="facet">genreCategory</name>
+				<name set="term">acquisitionDate</name>
+			</map>
+			</index>
+		<index>
+			<title lang="da">Målgruppe (enkeltord)</title>
+			<title lang="en">Audience (term)</title>
+			<map>
+				<name set="term">audience</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Filial</title>
-			<title lang="en">Library branch</title>
+			<title lang="da">Voksen- eller børnemateriale (enkeltord)</title>
+			<title lang="en">Adult or childrens materials (term)</title>
 			<map>
-				<name set="facet">branch</name>
+				<name set="term">category</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Afdeling</title>
-			<title lang="en">Department</title>
+			<title lang="da">Ophav (enkeltord)</title>
+			<title lang="en">Creator (term)</title>
 			<map>
-				<name set="facet">department</name>
+				<name set="term">creator</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Ophavsfacet</title>
-			<title lang="en">Creator facet</title>
+			<title lang="da">Fritekst (enkeltord)</title>
+			<title lang="en">Default (term)</title>
 			<map>
-				<name set="facet">creator</name>
+				<name set="term">default</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Materialetypefacet</title>
-			<title lang="en">Type facet</title>
+			<title lang="da">Beskrivelse (enkeltord)</title>
+			<title lang="en">Description (term)</title>
 			<map>
-				<name set="facet">type</name>
+				<name set="term">description</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Emnefacet</title>
-			<title lang="en">Subject facet</title>
+			<title lang="da">Genre (enkeltord)</title>
+			<title lang="en">Genre (term)</title>
 			<map>
-				<name set="facet">subject</name>
+				<name set="term">genre</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Udgivelsesårsfacet</title>
-			<title lang="en">Date facet</title>
+			<title lang="da">Sprog (enkeltord)</title>
+			<title lang="en">Language (term)</title>
 			<map>
-				<name set="facet">date</name>
+				<name set="term">language</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Sprogfacet</title>
-			<title lang="en">Language facet</title>
+			<title lang="da">Litterær form (enkeltord)</title>
+			<title lang="en">Literary Form (term)</title>
 			<map>
-				<name set="facet">language</name>
+				<name set="term">literaryForm</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Geografisk facet</title>
-			<title lang="en">Geographic facet</title>
+			<title lang="da">Nationalitet film (enkeltord)</title>
+			<title lang="en">Nationality movies (term)</title>
 			<map>
-				<name set="facet">geographic</name>
+				<name set="term">nationality</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Periodefacet</title>
-			<title lang="en">Period facet</title>
+			<title lang="da">Hovedsprog (enkeltord)</title>
+			<title lang="en">Primary language (term)</title>
 			<map>
-				<name set="facet">period</name>
+				<name set="term">primaryLanguage</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Formfacet</title>
-			<title lang="en">Form facet</title>
+			<title lang="da">Anmeldt ophav (enkeltord)</title>
+			<title lang="en">Reviewed creator (term)</title>
 			<map>
-				<name set="facet">form</name>
+				<name set="term">reviewedCreator</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Skønlitterære emneordsfacet</title>
-			<title lang="en">Fiction subject facet</title>
+			<title lang="da">Anmeldt id (enkeltord)</title>
+			<title lang="en">Reviewed identifier (term)</title>
 			<map>
-				<name set="facet">fiction</name>
+				<name set="term">reviewedIdentifier</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Faglitterære emneordsfacet</title>
-			<title lang="en">Non-fiction subject facet</title>
+			<title lang="da">Anmeldt forlag (enkeltord)</title>
+			<title lang="en">Reviewed publisher (term)</title>
 			<map>
-				<name set="facet">nonFiction</name>
+				<name set="term">reviewedPublisher</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">Musikemneordsfacet</title>
-			<title lang="en">Music subject facet</title>
+			<title lang="da">Anmeldt titel (enkeltord)</title>
+			<title lang="en">Reviewed title (term)</title>
 			<map>
-				<name set="facet">music</name>
+				<name set="term">reviewedTitle</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">DK5-facet</title>
-			<title lang="en">DK5 facet</title>
+			<title lang="da">Anmelder (enkeltord)</title>
+			<title lang="en">Reviewer (term)</title>
 			<map>
-				<name set="facet">dk5</name>
+				<name set="term">reviewer</name>
 			</map>
 		</index>
 		<index>
-			<title lang="da">acSource-facet</title>
-			<title lang="en">acSource facet</title>
+			<title lang="da">Emne (enkeltord) - pt kun anmeldelser</title>
+			<title lang="en">Subject (term) - at the moment only reviews</title>
 			<map>
-				<name set="facet">acsource</name>
+				<name set="term">subject</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Materialetype (enkeltord)</title>
+			<title lang="en">Material type (term)</title>
+			<map>
+				<name set="term">type</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Overordnet materialekategori (enkeltord)</title>
+			<title lang="en">Type category (term)</title>
+			<map>
+				<name set="term">typeCategory</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Værktype (enkeltord)</title>
+			<title lang="en">Work type (term)</title>
+			<map>
+				<name set="term">workType</name>
 			</map>
 		</index>
 	</indexInfo>
 	<configInfo>
-		<supports type="danBooleanModifier">og</supports>
-		<supports type="danBooleanModifier">eller</supports>
-		<supports type="danBooleanModifier">ikke</supports>
-		<supports type="engBooleanModifier">and</supports>
-		<supports type="engBooleanModifier">or</supports>
-		<supports type="engBooleanModifier">not</supports>
+		<supports type="danBooleanModifier">OG</supports>
+		<supports type="danBooleanModifier">ELLER</supports>
+		<supports type="danBooleanModifier">IKKE</supports>
+		<supports type="engBooleanModifier">AND</supports>
+		<supports type="engBooleanModifier">OR</supports>
+		<supports type="engBooleanModifier">NOT</supports>
 		<supports type="relation">&gt;=</supports>
 		<supports type="relation">&gt;</supports>
 		<supports type="relation">&lt;=</supports>
 		<supports type="relation">&lt;</supports>
 		<supports type="relation">=</supports>
-		<supports type="relation">adj</supports>
+		<supports type="relation">ADJ</supports>
 		<supports type="maskingCharacter">?</supports>
 		<supports type="maskingCharacter">*</supports>
+		<supports type="booleanChar">(</supports>
+		<supports type="booleanChar">)</supports>
 	</configInfo>
 </explain>
