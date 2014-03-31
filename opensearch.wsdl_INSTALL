@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:types="http://oss.dbc.dk/ns/opensearch" xmlns:osw="http://oss.dbc.dk/ns/opensearch_wsdl"  xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://oss.dbc.dk/ns/opensearch_wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:types="http://oss.dbc.dk/ns/opensearch" xmlns:osw="http://oss.dbc.dk/ns/opensearch_wsdl"  xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://oss.dbc.dk/ns/opensearch_wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 <wsdl:documentation>This file is part of Open Library System.
 Copyright © 2009, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
@@ -13,60 +13,60 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:import namespace="http://oss.dbc.dk/ns/opensearch" schemaLocation="opensearch.xsd"/>
 		</xs:schema>
 	</wsdl:types>
-	<wsdl:message name="searchRequest">
+	<wsdl:message name="searchInputMessage">
 		<wsdl:part name="parameters" element="types:searchRequest"/>
 	</wsdl:message>
-	<wsdl:message name="searchResponse">
+	<wsdl:message name="searchOutputMessage">
 		<wsdl:part name="parameters" element="types:searchResponse"/>
 	</wsdl:message>
-	<wsdl:message name="getObjectRequest">
+	<wsdl:message name="getObjectInputMessage">
 		<wsdl:part name="parameters" element="types:getObjectRequest"/>
 	</wsdl:message>
-	<wsdl:message name="getObjectResponse">
+	<wsdl:message name="getObjectOutputMessage">
 		<wsdl:part name="parameters" element="types:searchResponse"/>
 	</wsdl:message>
 	<wsdl:portType name="osSearchServicePortType">
-		<wsdl:operation name="search">
-			<wsdl:input message="osw:searchRequest"/>
-			<wsdl:output message="osw:searchResponse"/>
+		<wsdl:operation name="searchOperation">
+			<wsdl:input message="osw:searchInputMessage"/>
+			<wsdl:output message="osw:searchOutputMessage"/>
 		</wsdl:operation>
 	</wsdl:portType>
 	<wsdl:portType name="getObjectServicePortType">
-		<wsdl:operation name="getObject">
-			<wsdl:input message="osw:getObjectRequest"/>
-			<wsdl:output message="osw:getObjectResponse"/>
+		<wsdl:operation name="getObjectOperation">
+			<wsdl:input message="osw:getObjectInputMessage"/>
+			<wsdl:output message="osw:getObjectOutputMessage"/>
 		</wsdl:operation>
 	</wsdl:portType>
 	<wsdl:binding name="osSearchServiceSoapBinding" type="osw:osSearchServicePortType">
 		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
-		<wsdl:operation name="search">
-			<soap:operation soapAction="http://opensearch.addi.dk"/>
-			<wsdl:input name="searchRequest">
+		<wsdl:operation name="searchOperation">
+			<soap:operation soapAction="http://opensearch.addi.dk/3.1"/>
+			<wsdl:input>
 				<soap:body use="literal"/>
 			</wsdl:input>
-			<wsdl:output name="searchResponse">
+			<wsdl:output>
 				<soap:body use="literal"/>
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
 	<wsdl:binding name="getObjectServiceSoapBinding" type="osw:getObjectServicePortType">
 		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
-		<wsdl:operation name="getObject">
-			<soap:operation soapAction="http://opensearch.addi.dk"/>
-			<wsdl:input name="getObjectRequest">
+		<wsdl:operation name="getObjectOperation">
+			<soap:operation soapAction="http://opensearch.addi.dk/3.1"/>
+			<wsdl:input>
 				<soap:body use="literal"/>
 			</wsdl:input>
-			<wsdl:output name="getObjectResponse">
+			<wsdl:output>
 				<soap:body use="literal"/>
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
 	<wsdl:service name="osService">
 		<wsdl:port name="osSearchService" binding="osw:osSearchServiceSoapBinding">
-			<soap:address location="http://opensearch.addi.dk/3.0/"/>
+			<soap:address location="http://opensearch.addi.dk/3.1/"/>
 		</wsdl:port>
 		<wsdl:port name="getObjectService" binding="osw:getObjectServiceSoapBinding">
-			<soap:address location="http://opensearch.addi.dk/3.0/"/>
+			<soap:address location="http://opensearch.addi.dk/3.1/"/>
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
