@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" targetNamespace="http://oss.dbc.dk/ns/osstypes" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:annotation>
-		<xs:documentation xml:lang="en">
+    <xs:annotation>
+        <xs:documentation xml:lang="en">
       XML Schema for the oss namespace used with DKABM.
     </xs:documentation>
-	</xs:annotation>
-	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
-	<xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_os.xsd"/>
-	<xs:complexType name="pgvaerk">
-		<xs:simpleContent>
-			<xs:restriction base="dc:SimpleLiteral">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="bog"/>
-						<xs:enumeration value="film"/>
-						<xs:enumeration value="mobil"/>
-						<xs:enumeration value="musik"/>
-						<xs:enumeration value="spil"/>
-						<xs:enumeration value="web"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:restriction>
-		</xs:simpleContent>
-	</xs:complexType>
-	<xs:complexType name="sort">
-		<xs:simpleContent>
-			<xs:restriction base="dc:SimpleLiteral">
-				<xs:simpleType>
-					<xs:restriction base="xs:string"/>
-				</xs:simpleType>
-			</xs:restriction>
-		</xs:simpleContent>
-	</xs:complexType>
-	<xs:complexType name="type">
-		<xs:simpleContent>
-			<xs:restriction base="dc:SimpleLiteral">
-				<xs:simpleType>
-					<xs:restriction base="xs:string"/>
-				</xs:simpleType>
-			</xs:restriction>
-		</xs:simpleContent>
-	</xs:complexType>
+    </xs:annotation>
+    <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
+    <xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms_os.xsd"/>
+    <xs:complexType name="pgvaerk">
+        <xs:simpleContent>
+            <xs:restriction base="dc:SimpleLiteral">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="bog"/>
+                        <xs:enumeration value="film"/>
+                        <xs:enumeration value="mobil"/>
+                        <xs:enumeration value="musik"/>
+                        <xs:enumeration value="spil"/>
+                        <xs:enumeration value="web"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="sort">
+        <xs:simpleContent>
+            <xs:restriction base="dc:SimpleLiteral">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string"/>
+                </xs:simpleType>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="type">
+        <xs:simpleContent>
+            <xs:restriction base="dc:SimpleLiteral">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string"/>
+                </xs:simpleType>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
 </xs:schema>
