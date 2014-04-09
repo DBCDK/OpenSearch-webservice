@@ -222,7 +222,8 @@ class openSearch extends webServiceServer {
       }
     }
 
-    verbose::log(TRACE, 'CQL to EDISMAX: ' . $param->query->_value . ' -> ' . $solr_query['edismax']);
+    verbose::log(STAT, 'CQL to EDISMAX: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query['edismax'], TRUE)));
+    verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
 
     $debug_query = $this->xs_boolean($param->queryDebug->_value);
 
@@ -282,10 +283,10 @@ class openSearch extends webServiceServer {
                                $this->config->get_value('cache_expire', 'setup'));
       if (empty($_GET['skipCache'])) {
         if ($work_cache_struct = $this->cache->get($key_work_struct)) {
-          verbose::log(STAT, 'Cache hit, lines: ' . count($work_cache_struct));
+          verbose::log(TRACE, 'Cache hit, lines: ' . count($work_cache_struct));
         }
         else {
-          verbose::log(STAT, 'Cache miss');
+          verbose::log(TRACE, 'Cache miss');
         }
       }
 
@@ -556,7 +557,7 @@ class openSearch extends webServiceServer {
     else {
       $this->watch->stop('Solr 3');
       if ($n = self::get_num_found($solr_arr)) {
-        verbose::log(STAT, 'Modify hitcount from: ' . $numFound . ' to ' . $n);
+        verbose::log(TRACE, 'Modify hitcount from: ' . $numFound . ' to ' . $n);
         $numFound = $n;
       }
       $facets = self::parse_for_facets($solr_arr);
@@ -1415,7 +1416,7 @@ class openSearch extends webServiceServer {
    */
   private function get_fedora($uri, $fpid, &$rec, $mandatory=TRUE) {
     $record_uri =  sprintf($uri, $fpid);
-    verbose::log(STAT, 'get_fedora: ' . $record_uri);
+    verbose::log(TRACE, 'get_fedora: ' . $record_uri);
     if (DEBUG_ON) echo 'Fetch record: ' . $record_uri . "\n";
     if ($this->cache && ($rec = $this->cache->get($record_uri))) {
       $this->number_of_fedora_cached++;
@@ -1439,7 +1440,7 @@ class openSearch extends webServiceServer {
       }
       if ($this->cache) $this->cache->set($record_uri, $rec);
     }
-    // else verbose::log(STAT, 'Fedora cache hit for ' . $fpid);
+    // else verbose::log(TRACE, 'Fedora cache hit for ' . $fpid);
     return;
   }
 
