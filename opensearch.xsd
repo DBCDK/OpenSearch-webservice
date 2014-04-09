@@ -680,7 +680,8 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="facet.sheetMusic"/>
 			<xs:enumeration value="facet.subject"/>
 			<xs:enumeration value="facet.type"/>
-			
+			<xs:enumeration value="facet.branch"/>
+			<xs:enumeration value="facet.department"/>			
 		</xs:restriction>
 	</xs:simpleType>
     <xs:simpleType name="fieldNameType">
