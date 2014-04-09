@@ -1449,6 +1449,20 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
+			<title lang="da">Filial (facet)</title>
+			<title lang="en">Library branch (facet)</title>
+			<map>
+				<name set="facet">branch</name>
+			</map>
+		</index>
+	    <index>
+			<title lang="da">Afdeling (facet)</title>
+			<title lang="en">Library department (facet)</title>
+			<map>
+				<name set="facet">department</name>
+			</map>
+		</index>
+		<index>
 			<title lang="da">Målgruppe (frase)</title>
 			<title lang="en">Audience (phrase)</title>
 			<map>
