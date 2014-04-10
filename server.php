@@ -548,7 +548,7 @@ class openSearch extends webServiceServer {
       }
     }
     $this->watch->start('Solr 3');
-    //if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, '(' . $filter_q . ')+AND+unit.isPrimaryObject:true', '', $debug_query, $solr_arr)) {
+    $solr_query['edismax']['fq'][] = 'unit.isPrimaryObject:true';   // need some discussion to decide for or against this line
     if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, $filter_q, '', $debug_query, $solr_arr)) {
       $this->watch->stop('Solr 3');
       $error = $err;
@@ -677,6 +677,7 @@ class openSearch extends webServiceServer {
               '?wt=phps' .
               '&q=' . urlencode($chk_query['edismax']) .
               '&fq=' . $filter_q .
+              '&fq=unit.isPrimaryObject:true' .          // need some discussion to decide for or against this line
               '&start=0' .
               '&rows=50000' .
               '&defType=edismax' .
@@ -904,6 +905,7 @@ class openSearch extends webServiceServer {
           }
         }
       }
+      $q['fq'][] = 'unit.isPrimaryObject:true';      // need some discussion to decide for or against this line
       $solr_url = self::create_solr_url($q, 0, 999999, $filter_q);
       list($solr_host, $solr_parm) = explode('?', $solr_url['url'], 2);
       $solr_parm .= '&fl=rec.collectionIdentifier,unit.isPrimaryObject,unit.id,sort.complexKey' . $add_fl;
