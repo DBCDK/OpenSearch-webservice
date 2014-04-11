@@ -388,7 +388,9 @@ class openSearch extends webServiceServer {
     define('MAX_QUERY_ELEMENTS', 950);
     if ($numFound && $use_work_collection && $step_value) {
       $add_queries = self::make_add_queries($work_ids);
-      $solr_2_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, $param->query->_value, self::xs_boolean($param->allObjects->_value), $filter_q);
+      $this->watch->start('Solr_filt');
+      $solr_2_arr = self::do_add_queries($add_queries, $param->query->_value, self::xs_boolean($param->allObjects->_value), $filter_q);
+      $this->watch->stop('Solr_filt');
       if (is_scalar($solr_2_arr)) {
         $error = 'Internal problem: Cannot decode Solr re-search';
         return $ret_error;
@@ -535,7 +537,10 @@ class openSearch extends webServiceServer {
         self::format_records($collections);
       }
       if ($this->format['found_solr_format']) {
-        self::format_solr($collections, $solr_2_arr, $work_ids, $fpid_sort_keys);
+        $this->watch->start('Solr_disp');
+        $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), $filter_q);
+        $this->watch->stop('Solr_disp');
+        self::format_solr($collections, $display_solr_arr, $work_ids, $fpid_sort_keys);
       }
       self::remove_unselected_formats($collections);
     }
@@ -547,15 +552,16 @@ class openSearch extends webServiceServer {
         $this->collapsing_field = $nfcf;
       }
     }
-    $this->watch->start('Solr 3');
-    $solr_query['edismax']['fq'][] = 'unit.isPrimaryObject:true';   // need some discussion to decide for or against this line
+    $this->watch->start('Solr_hits');
+    // obsolete - handled by collaps-settings above   
+    // $solr_query['edismax']['fq'][] = 'unit.isPrimaryObject:true';   // need some discussion to decide for or against this line
     if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, $filter_q, '', $debug_query, $solr_arr)) {
-      $this->watch->stop('Solr 3');
+      $this->watch->stop('Solr_hits');
       $error = $err;
       return $ret_error;
     }
     else {
-      $this->watch->stop('Solr 3');
+      $this->watch->stop('Solr_hits');
       if ($n = self::get_num_found($solr_arr)) {
         verbose::log(TRACE, 'Modify hitcount from: ' . $numFound . ' to ' . $n);
         $numFound = $n;
@@ -677,7 +683,7 @@ class openSearch extends webServiceServer {
               '?wt=phps' .
               '&q=' . urlencode($chk_query['edismax']) .
               '&fq=' . $filter_q .
-              '&fq=unit.isPrimaryObject:true' .          // need some discussion to decide for or against this line
+              // if briefDisplay data must be fetched from primaryObject '&fq=unit.isPrimaryObject:true' . 
               '&start=0' .
               '&rows=50000' .
               '&defType=edismax' .
@@ -752,23 +758,6 @@ class openSearch extends webServiceServer {
       self::format_records($collections);
     }
     if ($this->format['found_solr_format']) {
-/*
-      foreach ($this->format as $f) {
-        if ($f['is_solr_format']) {
-          $add_fl .= ',' . $f['format_name'];
-        }
-      }
-      $chk_query = $this->cql2solr->parse('unit.id=(' . implode($id_array, ' ' . OR_OP . ' ') . ')');
-      $solr_q = $this->repository['solr'] .
-                '?wt=phps' .
-                '&q=' . urlencode($chk_query['edismax']) .
-                '&start=0' .
-                '&rows=50000' .
-                '&defType=edismax' .
-                '&fl=unit.id' . $add_fl;
-      $solr_result = $this->curl->get($solr_q);
-      $solr_2_arr[] = unserialize($solr_result);
-*/
       self::format_solr($collections, $solr_2_arr, $work_ids);
     }
     self::remove_unselected_formats($collections);
@@ -873,10 +862,20 @@ class openSearch extends webServiceServer {
     return $add_queries;
   }
 
+  private function do_add_queries_and_fetch_solr_data_fields($add_queries, $query, $all_objects, $filter_q) {
+    if ($this->format['found_solr_format']) {
+      foreach ($this->format as $f) {
+        if ($f['is_solr_format']) {
+          $add_fl .= ',' . $f['format_name'];
+        }
+      }
+    }
+    return self::do_add_queries($add_queries, $query, $all_objects, $filter_q, $add_fl);
+  }
   /** \brief Create solr array with records valid for the search-profile and parameters. If needed fetch data for display as well
    *
    */
-  private function do_add_queries_and_fetch_solr_data_fields($add_queries, $query, $all_objects, $filter_q) {
+  private function do_add_queries($add_queries, $query, $all_objects, $filter_q, $add_field_list='') {
     foreach ($add_queries as $add_idx => $add_query) {
       if ($this->separate_field_query_style) {
           $add_q =  '(' . $add_query . ')';
@@ -898,17 +897,9 @@ class openSearch extends webServiceServer {
         return $ret_error;
       }
       $q = $chk_query['edismax'];
-      if ($this->format['found_solr_format']) {
-        foreach ($this->format as $f) {
-          if ($f['is_solr_format']) {
-            $add_fl .= ',' . $f['format_name'];
-          }
-        }
-      }
-      $q['fq'][] = 'unit.isPrimaryObject:true';      // need some discussion to decide for or against this line
       $solr_url = self::create_solr_url($q, 0, 999999, $filter_q);
       list($solr_host, $solr_parm) = explode('?', $solr_url['url'], 2);
-      $solr_parm .= '&fl=rec.collectionIdentifier,unit.isPrimaryObject,unit.id,sort.complexKey' . $add_fl;
+      $solr_parm .= '&fl=rec.collectionIdentifier,unit.isPrimaryObject,unit.id,sort.complexKey' . $add_field_list;
       verbose::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $post_query) . '&debugQuery=on');
       if (DEBUG_ON) {
         echo 'post_array: ' . $$solr_url['url'] . PHP_EOL;
@@ -916,17 +907,15 @@ class openSearch extends webServiceServer {
 
       $this->curl->set_post($solr_parm, 0); // use post here because query can be very long
       $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'), 0);
-      $this->watch->start('Solr 2');
       $solr_result = $this->curl->get($solr_host, 0);
-      $this->watch->stop('Solr 2');
 // remember to clear POST 
       $this->curl->set_option(CURLOPT_POST, 0, 0);
-      if (!($solr_2_arr[$add_idx] = unserialize($solr_result))) {
+      if (!($solr_arr[$add_idx] = unserialize($solr_result))) {
         verbose::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
         return 'Internal problem: Cannot decode Solr re-search';
       }
     }
-    return $solr_2_arr;
+    return $solr_arr;
   }
 
   /** \brief Sets this->repository from user parameter or defaults to ini-file setup
