@@ -32,6 +32,12 @@ You should have received a copy of the GNU Affero General Public License along w
 		<set identifier="http://oss.dbc.dk/ns/unit" name="unit"/>
 		<index>
 			<title lang="da">Internt register</title>
+			<map>
+				<name set="unit" filter="1">isPrimaryObject</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Internt register</title>
 			<map hidden="1">
 				<name set="cql">allIndexes</name>
 			</map>
