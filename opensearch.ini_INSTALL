@@ -60,6 +60,7 @@ xmlns[dcterms] = http://purl.org/dc/terms/
 xmlns[ac] = http://biblstandard.dk/ac/namespace/
 xmlns[dkdcplus] = http://biblstandard.dk/abm/namespace/dkdcplus/
 xmlns[kml] = http://www.opengis.net/kml/2.2
+xmlns[mx] = http://www.loc.gov/MARC21/slim
 xmlns[marcx] = info:lc/xmlns/marcxchange-v1
 xmlns[docbook] = http://docbook.org/ns/docbook
 xmlns[oso] = http://oss.dbc.dk/ns/opensearchobjects
@@ -103,6 +104,10 @@ fedora[get_datastreams] = %s/datastreams?format=xml
 
 repository[@REPOSITORY_NAME@][solr] = @SOLR@
 repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
+
+; repository for Universal Search - settings are found i [universal_search_settings] section
+; repository[worldCat][universal] = universal_search_settings
+
 
 ; memcache
 cache_host = localhost
@@ -276,6 +281,16 @@ verbose = @VERBOSE_LEVEL@
 
 ; format for automatic timer dump %s is the soap-action used
 dump_timer = opensearch(%s)
+
+[universal_search_settings]
+target = @WORLDCAT_ZTARGET@
+database = @WORLDCAT_ZTARGET_DATABASE@
+authentication = @WORLDCAT_ZTARGET_AUTHENTICATION@
+;proxy = @WORLDCAT_ZTARGET_PROXY@
+syntax = @WORLDCAT_ZTARGET_SYNTAX@
+element = @WORLDCAT_ZTARGET_ELEMENT@
+rpn = @attr 6=1 @attr 4=2 @attr 3=3 @attr 2=3 @attr BIB1 1=1016 %s
+timeout = 30
 
 [format]
 ; if ws_open_format_uri is not defined (or blank) in the [setup] section, openformat functionality
