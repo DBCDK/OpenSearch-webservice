@@ -130,29 +130,55 @@ class openSearch extends webServiceServer {
     
     if ($unsupported) return $ret_error;
 
+    $ret_error->searchResponse->_value->error->_value = &$error;
+    $start = $param->start->_value;
+    $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
+    if (empty($start) && $step_value) {
+      $start = 1;
+    }
+
+    if ($us_settings = $this->repository['universal']) {
+      require_once 'OLS_class_lib/universal_search_class.php';
+      $this->watch->start('UniSea');
+      $universal = new UniversalSearch($this->config->get_section($us_settings), $this->xmlns['mx']);
+      $collections = $universal->search($param->query->_value, $start, $step_value);
+      $this->watch->stop('UniSea');
+      if (is_scalar($collections)) {
+        $error = $collections;
+        return $ret_error;
+      }
+      if (is_array($collections)) {
+        self::format_records($collections);
+      }
+      $result = &$ret->searchResponse->_value->result->_value;
+      $result->hitCount->_value = $universal->get_hits();
+      $result->collectionCount->_value = count($collections);
+      $result->more->_value = (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false');
+      $result->searchResult = &$collections;
+      $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
+      $result->statInfo->_value->trackingId->_value = $this->tracking_id;
+      //var_dump($result); die();
+      return $ret;
+    }
+
+
     /**
     *  Approach
     *  a) Do the solr search and fetch enough unit-ids in result
     *  b) Fetch a unit-ids work-object unless the record has been found
     *     in an earlier handled work-objects
     *  c) Collect unit-ids in this work-object
-    *  d) repeat b. and c. until the request number of objects is found
-    *  e) if allObject is not set, do a new search combined the users search
+    *  d) repeat b. and c. until the requested number of objects is found
+    *  e) if allObject is not set, do a new search combining the users search
     *     with an or'ed list of the unit-ids in the active objects and
     *     remove the unit-ids not found in the result
-    *  f) Read full records fom fedora for objects in result
+    *  f) Read full records from fedora for objects in result or fetch display-fields
+    *     from solr, depending on the selected format
     *
     *  if $use_work_collection is FALSE skip b) to e)
     */
 
-    $ret_error->searchResponse->_value->error->_value = &$error;
-
     $this->watch->start('Solr');
-    $start = $param->start->_value;
-    if (empty($start) && $step_value) {
-      $start = 1;
-    }
-    $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
     $use_work_collection |= $sort_types[$sort[0]] == 'random';
     $key_work_struct = md5($param->query->_value . $this->repository_name . $this->filter_agency .
                               $use_work_collection .  implode('', $sort) . $rank . $boost_str . $this->config->get_inifile_hash());
@@ -678,10 +704,10 @@ class openSearch extends webServiceServer {
       $id_array[] = $fpid->_value;
     }
     $this->cql2solr = new SolrQuery($this->cql_file, $this->config);
-    $chk_query = $this->cql2solr->parse('rec.id=(' . implode($id_array, ' ' . OR_OP . ' ') . ')');
+    $chk_query = $this->cql2solr->parse('rec.id=(' . implode(' or ', $id_array) . ')');
     $solr_q = $this->repository['solr'] .
               '?wt=phps' .
-              '&q=' . urlencode($chk_query['edismax']) .
+              '&q=' . urlencode(implode(' and ', $chk_query['edismax'])) .
               '&fq=' . $filter_q .
               // if briefDisplay data must be fetched from primaryObject '&fq=unit.isPrimaryObject:true' . 
               '&start=0' .
@@ -1296,6 +1322,7 @@ class openSearch extends webServiceServer {
           }
           else {
             $struct = key($fr_obj->formatResponse->_value);
+            // if ($struct == 'error') ... 
             foreach ($collections as $idx => &$c) {
               $c->_value->formattedCollection->_value->{$struct} = $fr_obj->formatResponse->_value->{$struct}[$idx];
             }
