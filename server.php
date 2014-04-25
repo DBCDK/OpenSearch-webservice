@@ -46,7 +46,6 @@ class openSearch extends webServiceServer {
   protected $valid_relation = array(); 
   protected $valid_source = array(); 
   protected $rank_frequence_debug;
-  protected $cql_file = 'opensearch_cql.xml';
 
 
   public function __construct() {
@@ -64,9 +63,6 @@ class openSearch extends webServiceServer {
     define(MAX_OBJECTS_IN_WORK, 100);
     define('AND_OP', 'AND');
     define('OR_OP', 'OR');
-
-    if ($cf = $this->config->get_value('cql_file', 'setup'))
-      $this->cql_file = $cf;
   }
 
   /** \brief Entry search: Handles the request and set up the response
@@ -186,7 +182,7 @@ class openSearch extends webServiceServer {
     if ($param->queryLanguage->_value) {
       $this->query_language = $param->queryLanguage->_value;
     }
-    $this->cql2solr = new SolrQuery($this->cql_file, $this->config, $this->query_language);
+    $this->cql2solr = new SolrQuery($this->repository['cql_file'], $this->config, $this->query_language);
     $solr_query = $this->cql2solr->parse($param->query->_value);
     if ($solr_query['error']) {
       foreach (array('no' => '|: ', 'description' => '', 'details' => ' (|)', 'pos' => ' at pos ') as $tag => $txt) {
@@ -703,7 +699,7 @@ class openSearch extends webServiceServer {
     foreach ($fpids as $fpid_number => $fpid) {
       $id_array[] = $fpid->_value;
     }
-    $this->cql2solr = new SolrQuery($this->cql_file, $this->config);
+    $this->cql2solr = new SolrQuery($this->repository['cql_file'], $this->config);
     $chk_query = $this->cql2solr->parse('rec.id=(' . implode(' or ', $id_array) . ')');
     $solr_q = $this->repository['solr'] .
               '?wt=phps' .
@@ -750,7 +746,7 @@ class openSearch extends webServiceServer {
         if (self::xs_boolean($param->includeHoldingsCount->_value)) {
           self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
           list($dummy, $dummy) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
-          $this->cql2solr = new SolrQuery($this->cql_file, $this->config);
+          $this->cql2solr = new SolrQuery($this->repository['cql_file'], $this->config);
           $no_of_holdings = self::get_holdings($fpid->_value);
         }
       }
@@ -812,13 +808,12 @@ class openSearch extends webServiceServer {
    *   http://wiki.apache.org/solr/LukeRequestHandler
    */
   protected function diffCqlFileWithSolr() {
-    $repos = $this->config->get_value('repository', 'setup');
-    if (!$rep = $_REQUEST['repository']) {
-      $rep = $this->config->get_value('default_repository', 'setup');
+    if ($error = self::set_repositories($_REQUEST['repository'])) {
+      die('Error setting repository: ' . $error);
     }
-    $luke_url = $repos[$rep]['solr'];
+    $luke_url = $this->repository['solr'];
     if (empty($luke_url)) {
-      die('Cannot find url to solr for repository: ' . $rep);
+      die('Cannot find url to solr for repository');
     }
     $luke = $this->config->get_value('luke', 'setup');
     foreach ($luke as $from => $to) {
@@ -830,7 +825,7 @@ class openSearch extends webServiceServer {
     }
     $luke_fields = &$luke_result->fields;
     $dom = new DomDocument();
-    $dom->load($this->cql_file) || die('Cannot read cql_file: ' . $this->cql_file);
+    $dom->load($this->repository['cql_file']) || die('Cannot read cql_file: ' . $this->repository['cql_file']);
 
     foreach ($dom->getElementsByTagName('indexInfo') as $info_item) {
       foreach ($info_item->getElementsByTagName('index') as $index_item) {
@@ -848,10 +843,10 @@ class openSearch extends webServiceServer {
       }
     }
 
-    echo '<html><body><h1>Found in ' . $this->cql_file . ' but not in Solr</h1>';
+    echo '<html><body><h1>Found in ' . $this->repository['cql_file'] . ' but not in Solr</h1>';
     foreach ($cql_regs as $cr)
       echo $cr . '</br>';
-    echo '</br><h1>Found in Solr but not in ' . $this->cql_file . '</h1>';
+    echo '</br><h1>Found in Solr but not in ' . $this->repository['cql_file'] . '</h1>';
     foreach ($luke_fields as $lf => $obj)
       echo $lf . '</br>';
     
@@ -949,16 +944,16 @@ class openSearch extends webServiceServer {
    */
   private function set_repositories($repository) {
     $repositories = $this->config->get_value('repository', 'setup');
-    if (!$fedora = $this->config->get_value('fedora', 'setup')) {
-      $fedora = array();
-    }
     if (!$this->repository_name = $repository) {
       $this->repository_name = $this->config->get_value('default_repository', 'setup');
     }
     if ($this->repository = $repositories[$this->repository_name]) {
-      foreach ($fedora as $key => $url_par) {
-        if (empty($this->repository['fedora_' . $key])) {
-          $this->repository['fedora_' . $key] = $this->repository['fedora'] . $url_par;
+      foreach ($repositories['defaults'] as $key => $url_par) {
+        if (empty($this->repository[$key])) {
+          if (substr($key, 0, 7) == 'fedora_') {
+            $this->repository[$key] = $this->repository['fedora'];
+          }
+          $this->repository[$key] .= $url_par;
         }
       }
     }

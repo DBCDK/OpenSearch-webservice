@@ -75,37 +75,39 @@ xmldir = ./xml
 ; set missing_record to handle inkonsistency between solr and fedora
 missing_record = <?xml version='1.0' encoding='UTF-8'?><ting:container xmlns:ting='http://www.dbc.dk/ting' xmlns:dkabm='http://biblstandard.dk/abm/namespace/dkabm/' xmlns:dc='http://purl.org/dc/elements/1.1/'><dkabm:record><dc:title>Cannot read record: %s</dc:title></dkabm:record></ting:container>
 
-
-; cql file - xml file containing useable registers and cql operators. Defaults to opensearch_cql.xml
-cql_file = opensearch_cql.xml
-
 ; default repository
 default_repository = @REPOSITORY_NAME@
 
-; define fedora parameters for get_raw, get_rels_hierarchy, get_rels_addi, get_object_profile and get_datastream
-; - get_raw: parameters to get raw record from fedora - commonData stream
-; - get_rels_hierarchy: parameters to get work-/unit-structure relations from fedora - RELS-SYS stream
-; - get_rels_addi: parameters to get addi relation datastream - RELS-EXT stream
-; - get_object_profile: parameters to get object state/profile from fedora - if not set, deleted records will be returned
-; - get_datastreams: parameters to get datastreams for an object
-fedora[get_raw] = %s/datastreams/commonData/content
-fedora[get_rels_hierarchy] = %s/datastreams/RELS-SYS/content
-fedora[get_rels_addi] = %s/datastreams/RELS-EXT/content
-fedora[get_object_profile] = %s?format=xml
-fedora[get_datastreams] = %s/datastreams?format=xml
+; define repository[defaults] parameters for:
+; - fedora_get_raw: parameters to get raw record from fedora - commonData stream
+; - fedora_get_rels_hierarchy: parameters to get work-/unit-structure relations from fedora - RELS-SYS stream
+; - fedora_get_rels_addi: parameters to get addi relation datastream - RELS-EXT stream
+; - fedora_get_object_profile: parameters to get object state/profile from fedora - if not set, deleted records will be returned
+; - fedora_get_datastreams: parameters to get datastreams for an object
+
+repository[defaults][fedora_get_raw] = %s/datastreams/commonData/content
+repository[defaults][fedora_get_rels_hierarchy] = %s/datastreams/RELS-SYS/content
+repository[defaults][fedora_get_rels_addi] = %s/datastreams/RELS-EXT/content
+repository[defaults][fedora_get_object_profile] = %s?format=xml
+repository[defaults][fedora_get_datastreams] = %s/datastreams?format=xml
+
+; cql file - xml file containing useable registers and cql operators.
+repository[defaults][cql_file] = opensearch_cql.xml
 
 ; url to solr and fedorainterface
 ; - solr: url to solr-server
 ; - fedora: url to fedora
-; The fedora structure above, will set the repository parameters appending each function to "fedora_" giving
-; fedora_get_raw, fedora_get_rels... Remember to end the fedora uri with a slash
-; If one or more of these does not follow the "normal" parameter, they can be set directly below like
+; The fedora_* lines in the repository[defaults] structure above, will set identical repository 
+; parameters appending the defaults setting to the fedora uri below
+; Remember to end the fedora uri below with a slash
+; If one or more of the parameters for a repository does not follow the "normal" structure, 
+; they can be set directly below like
 ; repository[my_repository][fedora_get_datastreams] = special/%s/parameter?format=...
 
 repository[@REPOSITORY_NAME@][solr] = @SOLR@
 repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 
-; repository for Universal Search - settings are found i [universal_search_settings] section
+; repository for Universal Search - settings are found in [universal_search_settings] section
 ; repository[worldCat][universal] = universal_search_settings
 
 
