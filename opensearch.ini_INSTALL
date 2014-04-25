@@ -143,6 +143,7 @@ open_format[bibliotekdkWorkDisplay][format] = bibliotekdkWorkDisplay
 open_format[briefWorkDisplay][format] = briefWorkDisplay
 open_format[refWorks][format] = refWorks
 open_format[ris][format] = ris
+open_format[marc21ToDm2][format] = marc21ToDm2
 
 ; formats supported by solr-indexes. Comma separated list of solr tags
 ; fedora.identifier will take the id of the manifestation from the fedora object
