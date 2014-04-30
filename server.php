@@ -517,6 +517,7 @@ class openSearch extends webServiceServer {
                                     $fedora_addi_relation,
                                     $param->relationData->_value,
                                     $fpid,
+                                    NULL, // no primary Pid
                                     NULL, // no $filter_agency on search - bad performance
                                     $no_of_holdings,
                                     $explain);
@@ -703,13 +704,13 @@ class openSearch extends webServiceServer {
     $chk_query = $this->cql2solr->parse('rec.id=(' . implode(' or ', $id_array) . ')');
     $solr_q = $this->repository['solr'] .
               '?wt=phps' .
-              '&q=' . urlencode(implode(' and ', $chk_query['edismax'])) .
+              '&q=' . urlencode(implode(' and ', $chk_query['edismax']['q'])) .
               '&fq=' . $filter_q .
               // if briefDisplay data must be fetched from primaryObject '&fq=unit.isPrimaryObject:true' . 
               '&start=0' .
               '&rows=50000' .
               '&defType=edismax' .
-              '&fl=rec.collectionIdentifier,fedoraPid,rec.id,unit.id' . $add_fl;
+              '&fl=rec.collectionIdentifier,fedoraPid,rec.id,unit.id,unit.isPrimaryObject' . $add_fl;
     $solr_result = $this->curl->get($solr_q);
     $solr_2_arr[] = unserialize($solr_result);
 
@@ -718,14 +719,25 @@ class openSearch extends webServiceServer {
         foreach ($s_2_a['response']['docs'] as $fdoc) {
           $p_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
           if ($p_id == $fpid->_value) {
+            $is_primary =  self::scalar_or_first_elem($fdoc['unit.isPrimaryObject']);
             $collection_identifier =  self::scalar_or_first_elem($fdoc['rec.collectionIdentifier']);
             break 2;
           }
         }
       }
+      if (is_primary == 'true') {
+        $primary_pid = $p_id;
+        unset($unit_id);
+      }
+      else {
+        self::get_fedora_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
+        $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
+        self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
+        $primary_pid = self::fetch_primary_bib_object($unit_rels_hierarchy);
+      }
       $data_stream = self::set_data_stream_name($collection_identifier);
 //var_dump($filter_q);
-//var_dump($solr_2_arr);
+//var_dump($solr_2_arr); 
 //var_dump($collection_identifier);
 //var_dump($data_stream); die();
       
@@ -738,14 +750,16 @@ class openSearch extends webServiceServer {
       elseif ($param->relationData->_value || 
           $this->format['found_solr_format'] || 
           self::xs_boolean($param->includeHoldingsCount->_value)) {
-        self::get_fedora_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
-        $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
+        if (empty($unit_id)) {
+          self::get_fedora_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
+          $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
+        }
         if ($param->relationData->_value) {
           self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
         }
         if (self::xs_boolean($param->includeHoldingsCount->_value)) {
-          self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
-          list($dummy, $dummy) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
+          //self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
+          //list($dummy, $dummy) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
           $this->cql2solr = new SolrQuery($this->repository['cql_file'], $this->config);
           $no_of_holdings = self::get_holdings($fpid->_value);
         }
@@ -766,6 +780,7 @@ class openSearch extends webServiceServer {
                                     $fedora_addi_relation,
                                     $param->relationData->_value,
                                     $fpid->_value,
+                                    $primary_pid,
                                     $this->filter_agency,
                                     $no_of_holdings);
       }
@@ -1845,7 +1860,7 @@ class openSearch extends webServiceServer {
    * @param $filter          - agency filter
    * @param $debug_info      -
    */
-  private function parse_fedora_object(&$fedora_obj, $fedora_addi_obj, $rels_type, $rec_id, $filter, $holdings_count, $debug_info='') {
+  private function parse_fedora_object(&$fedora_obj, $fedora_addi_obj, $rels_type, $rec_id, $primary_id, $filter, $holdings_count, $debug_info='') {
     static $fedora_dom;
     if (empty($fedora_dom)) {
       $fedora_dom = new DomDocument();
@@ -1865,6 +1880,9 @@ class openSearch extends webServiceServer {
 
     $ret = $rec;
     $ret->identifier->_value = $rec_id;
+    if ($primary_id) {
+      $ret->primaryObjectIdentifier->_value = $primary_id;
+    }
     $ret->creationDate->_value = self::get_creation_date($fedora_dom);
 // hack
     if (empty($ret->creationDate->_value) && (strpos($rec_id, 'tsart:') || strpos($rec_id, 'avis:'))) {
