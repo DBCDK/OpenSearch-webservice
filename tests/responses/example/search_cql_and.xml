@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://oss.dbc.dk/ns/opensearch">
+  <SOAP-ENV:Body>
+    <searchResponse>
+      <result>
+        <hitCount>0</hitCount>
+        <collectionCount>0</collectionCount>
+        <more>false</more>
+        <facetResult/>
+        <queryDebugResult>
+          <rawQueryString>anders and and</rawQueryString>
+          <queryString>anders and and</queryString>
+          <parsedQuery>(+(+DisjunctionMaxQuery((term.default:anders)) +DisjunctionMaxQuery((term.default:and))))/no_coord</parsedQuery>
+          <parsedQueryString>+(+(term.default:anders) +(term.default:and))</parsedQueryString>
+        </queryDebugResult>
+        <statInfo>
+          <fedoraRecordsCached>0</fedoraRecordsCached>
+          <fedoraRecordsRead>0</fedoraRecordsRead>
+          <time>0.175546</time>
+          <trackingId>os:2014-04-30T13:15:47:953902:18466</trackingId>
+        </statInfo>
+      </result>
+    </searchResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

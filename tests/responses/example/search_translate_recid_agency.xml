@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://oss.dbc.dk/ns/opensearch">
+  <SOAP-ENV:Body>
+    <searchResponse>
+      <result>
+        <hitCount>0</hitCount>
+        <collectionCount>0</collectionCount>
+        <more>false</more>
+        <facetResult/>
+        <queryDebugResult>
+          <rawQueryString>rec.id:870970\\-basis\\:29978891</rawQueryString>
+          <queryString>rec.id:870970\\-basis\\:29978891</queryString>
+          <parsedQuery>(+PhraseQuery(rec.id:"870970 basis 29978891"))/no_coord</parsedQuery>
+          <parsedQueryString>+rec.id:"870970 basis 29978891"</parsedQueryString>
+        </queryDebugResult>
+        <statInfo>
+          <fedoraRecordsCached>0</fedoraRecordsCached>
+          <fedoraRecordsRead>0</fedoraRecordsRead>
+          <time>0.185779</time>
+          <trackingId>os:2014-04-30T13:20:42:702559:18469</trackingId>
+        </statInfo>
+      </result>
+    </searchResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
