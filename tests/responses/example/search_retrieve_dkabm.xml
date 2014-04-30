@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://oss.dbc.dk/ns/opensearch">
+	<SOAP-ENV:Body>
+		<searchResponse>
+			<result>
+				<hitCount>4</hitCount>
+				<collectionCount>3</collectionCount>
+				<more>false</more>
+				<searchResult>
+					<collection>
+						<resultPosition>1</resultPosition>
+						<numberOfObjects>1</numberOfObjects>
+						<object>
+							<dkabm:record>
+								<ac:identifier>34497745|870971</ac:identifier>
+								<dc:identifier xsi:type="dcterms:URI">http://www.gamereactor.dk/magcover/dk/gamereactor_115.pdf</dc:identifier>
+								<ac:source>Tidsskriftsartikler</ac:source>
+								<dc:title>Blandt drager og dæmoner</dc:title>
+								<dc:title xsi:type="dkdcplus:full">Blandt drager og dæmoner : the Elder Scrolls V: Skyrim</dc:title>
+								<dc:creator>Viktor Eriksson</dc:creator>
+								<dc:creator xsi:type="oss:sort">Eriksson, Viktor</dc:creator>
+								<dc:subject xsi:type="dkdcplus:DK5">79.41</dc:subject>
+								<dc:subject xsi:type="dkdcplus:DBCF">Bethesda Softworks</dc:subject>
+								<dc:subject xsi:type="dkdcplus:DK5-Text">Computerspil</dc:subject>
+								<dc:subject xsi:type="dkdcplus:DBCF">Skyrim : the elder scrolls V</dc:subject>
+								<dc:subject xsi:type="dkdcplus:DBCF">computerspil</dc:subject>
+								<dc:subject xsi:type="dkdcplus:DBCF">rollespil</dc:subject>
+								<dcterms:audience>voksenmaterialer</dcterms:audience>
+								<dc:date>2011</dc:date>
+								<dc:type xsi:type="dkdcplus:BibDK-Type">Tidsskriftsartikel</dc:type>
+								<dcterms:extent>S. 22-27</dcterms:extent>
+								<dc:language xsi:type="dcterms:ISO639-2">dan</dc:language>
+								<dc:language>Dansk</dc:language>
+								<dcterms:isPartOf>Game reactor, Nr. 115 (2011)</dcterms:isPartOf>
+								<dcterms:isPartOf xsi:type="dkdcplus:ISSN">1603-6522</dcterms:isPartOf>
+							</dkabm:record>
+							<identifier>870971-tsart:34497745</identifier>
+							<creationDate>2011-02-14</creationDate>
+							<formatsAvailable>
+								<format>dkabm</format>
+								<format>marcxchange</format>
+							</formatsAvailable>
+						</object>
+					</collection>
+				</searchResult>
+				<searchResult>
+					<collection>
+						<resultPosition>2</resultPosition>
+						<numberOfObjects>1</numberOfObjects>
+						<object>
+							<dkabm:record>
+								<ac:identifier>45235394|870970</ac:identifier>
+								<dc:identifier xsi:type="dkdcplus:ISBN">9781908674036</dc:identifier>
+								<ac:source>Bibliotekskatalog</ac:source>
+								<dc:title>Elder scrolls V</dc:title>
+								<dc:title xsi:type="dkdcplus:full">Elder scrolls V : Skyrim official strategy guide</dc:title>
+								<dcterms:alternative>Skyrim official strategy guide</dcterms:alternative>
+								<dc:subject xsi:type="dkdcplus:DK5">79.41</dc:subject>
+								<dc:subject xsi:type="dkdcplus:DK5-Text">Computerspil</dc:subject>
+								<dc:subject xsi:type="dkdcplus:DBCO">computerspil</dc:subject>
+								<dc:subject xsi:type="dkdcplus:DBCO">rollespil</dc:subject>
+								<dc:subject xsi:type="dkdcplus:DBCO">vejledninger</dc:subject>
+								<dc:description>På omslaget: Covers Xbox 360, PlayStation 3, PC</dc:description>
+								<dcterms:audience>voksenmaterialer</dcterms:audience>
+								<dc:publisher>ZeniMax Europe</dc:publisher>
+								<dc:publisher>Bethesda Softworks</dc:publisher>
+								<dc:contributor xsi:type="dkdcplus:aut">David S. J. Hodgson</dc:contributor>
+								<dc:contributor xsi:type="dkdcplus:aut">Steve Stratton</dc:contributor>
+								<dc:date>2011</dc:date>
+								<dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
+								<dc:format>illustreret i farver, 1 kort</dc:format>
+								<dcterms:extent>655 sider</dcterms:extent>
+								<dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+								<dc:language>Engelsk</dc:language>
+							</dkabm:record>
+							<identifier>870970-basis:45235394</identifier>
+							<creationDate>2012-05-25</creationDate>
+							<formatsAvailable>
+								<format>dkabm</format>
+								<format>marcxchange</format>
+							</formatsAvailable>
+						</object>
+					</collection>
+				</searchResult>
+				<searchResult>
+					<collection>
+						<resultPosition>3</resultPosition>
+						<numberOfObjects>1</numberOfObjects>
+						<object>
+							<dkabm:record>
+								<ac:identifier>29069638|870970</ac:identifier>
+								<ac:source>Bibliotekskatalog</ac:source>
+								<dc:title>Skyrim</dc:title>
+								<dc:title xsi:type="dkdcplus:full">Skyrim</dc:title>
+								<dc:subject xsi:type="dkdcplus:DK5">79.41</dc:subject>
+								<dc:subject xsi:type="dkdcplus:DK5-Text">Computerspil</dc:subject>
+								<dc:subject xsi:type="dkdcplus:DBCO">computerspil</dc:subject>
+								<dc:subject xsi:type="dkdcplus:DBCO">rollespil</dc:subject>
+								<dc:subject xsi:type="dkdcplus:genre">rollespil</dc:subject>
+								<dcterms:abstract>Rollespil. Sagaen om det krigshærgede fantasy-kontinent Tamriel fortsætter. Der er gået flere hundrede år siden "Oblivion". Kolossale drager, som man troede var uddøde forlængst, er begyndt at sprede død og ødelæggelse. Som efterkommer af en gammel drageslægt, skal du opklare dragernes hemmelighed. Undervejs skal du nedkæmpe nogle af dragerne og lære deres særlige angreb. Den kolossale verden ligger åben for dine fødder. Du bestemmer selv hvordan eventyret skal udfolde sig, og hvordan det skal ende!</dcterms:abstract>
+								<dc:description>Titlen hentet fra dvd-rometiketten</dc:description>
+								<dc:description>Vejledning: Engelsk tekst med quickstart på dansk, norsk, svensk og finsk</dc:description>
+								<dcterms:audience xsi:type="dkdcplus:pegi">PEGI-mærkning: 18</dcterms:audience>
+								<dcterms:audience xsi:type="dkdcplus:age">Fra 16 år</dcterms:audience>
+								<dcterms:audience>voksenmaterialer</dcterms:audience>
+								<dc:publisher>ZeniMax Europe</dc:publisher>
+								<dc:date>2011</dc:date>
+								<dc:type xsi:type="dkdcplus:BibDK-Type">Xbox 360</dc:type>
+								<dc:format>1 dvd-rom, xbox 360, lyd, farve, 1 vejledning, 1 kort</dc:format>
+								<dc:format>Afspilningsudstyr Xbox 360</dc:format>
+								<dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+								<dc:language>Engelsk</dc:language>
+							</dkabm:record>
+							<identifier>870970-basis:29069638</identifier>
+							<creationDate>2011-11-14</creationDate>
+							<formatsAvailable>
+								<format>dkabm</format>
+								<format>marcxchange</format>
+							</formatsAvailable>
+						</object>
+					</collection>
+				</searchResult>
+				<facetResult/>
+				<queryDebugResult/>
+				<statInfo>
+					<fedoraRecordsCached>0</fedoraRecordsCached>
+					<fedoraRecordsRead>18</fedoraRecordsRead>
+					<time>0.39174</time>
+					<trackingId>os:2013-06-19T13:18:14:905202:7892</trackingId>
+				</statInfo>
+			</result>
+		</searchResponse>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
