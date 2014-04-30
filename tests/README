@@ -1,0 +1,16 @@
+search_webservice_tester.py is a test generator designed to test the opensearch web service.
+
+It conceptually works the following way:
+
+1. For each file found in the request folder, a matching file is identified
+   in the response folder. Files are matched by name, and the request
+   and response folders can contain subfolders.
+
+2. For each request/response pair a new unittest is generated.
+   The request is sent to the designated server and the returned
+   actual response is compared the expected response. If the
+   comparison produces a diff, the test fails.
+
+example of usage:
+
+    python search_webservice_tester.py --url http://lakiseks.dbc.dk/opensearch/ requests/ responses/
