@@ -110,6 +110,9 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 ; repository for Universal Search - settings are found in [universal_search_settings] section
 ; repository[worldCat][universal] = universal_search_settings
 
+; info to find available index for at solr repos
+; luke[from] = to will replace from with to in the solr-uri
+luke[select] = admin/luke?wt=json
 
 ; memcache
 cache_host = localhost
