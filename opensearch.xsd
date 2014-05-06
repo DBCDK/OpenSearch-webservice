@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" xmlns:ds="http://oss.dbc.dk/ns/display" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:ISO639-2="http://lcweb.loc.gov/standards/iso639-2/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:marcx="info:lc/xmlns/marcxchange-v1" xmlns:docbook="http://docbook.org/ns/docbook" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
 	<xs:annotation>
 		<xs:documentation xml:lang="en">Opensearch Service</xs:documentation>
 		<xs:documentation xml:lang="en">This XML Schema describes the data and structure of data of the Opensearch search service.</xs:documentation>
@@ -12,11 +12,15 @@ Open Library System is distributed in the hope that it will be useful, but WITHO
 
 You should have received a copy of the GNU Affero General Public License along with Open Library System.  If not, see http://www.gnu.org/licenses/</xs:documentation>
 	</xs:annotation>
-	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
-	<xs:import namespace="http://biblstandard.dk/abm/namespace/dkabm/" schemaLocation="dkabm.xsd"/>
-	<xs:import namespace="info:lc/xmlns/marcxchange-v1" schemaLocation="marcxchange-1-1.xsd"/>
-	<xs:import namespace="http://docbook.org/ns/docbook" schemaLocation="docbook.xsd"/>
-	<xs:import namespace="http://oss.dbc.dk/ns/display" schemaLocation="display.xsd"/>
+<!-- Include imports below if you need to validate responses against the schemas.
+     When/if generating code for the service, at least dkabm and doocbook can cause errors -->
+<!--
+    <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
+    <xs:import namespace="http://biblstandard.dk/abm/namespace/dkabm/" schemaLocation="dkabm.xsd"/>
+    <xs:import namespace="info:lc/xmlns/marcxchange-v1" schemaLocation="marcxchange-1-1.xsd"/>
+    <xs:import namespace="http://docbook.org/ns/docbook" schemaLocation="docbook.xsd"/>
+    <xs:import namespace="http://oss.dbc.dk/ns/display" schemaLocation="display.xsd"/>
+-->
 	<xs:element name="getObjectRequest">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Request for a specific object.</xs:documentation>
@@ -27,7 +31,6 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:profile" minOccurs="0"/>
 				<xs:element ref="os:identifier" maxOccurs="unbounded"/>
 				<xs:element ref="os:objectFormat"/>
-				<xs:element ref="os:allRelations" minOccurs="0"/>
 				<xs:element ref="os:authentication" minOccurs="0"/>
 				<xs:element ref="os:callback" minOccurs="0"/>
 				<xs:element ref="os:includeHoldingsCount" minOccurs="0"/>
@@ -45,7 +48,6 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="os:query"/>
-				<xs:element ref="os:queryFilter" minOccurs="0"/>
 				<xs:element ref="os:queryLanguage" minOccurs="0"/>
 				<xs:element ref="os:agency" minOccurs="0"/>
 				<xs:element ref="os:profile" minOccurs="0"/>
@@ -57,7 +59,6 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:includeHoldingsCount" minOccurs="0"/>
 				<xs:element ref="os:objectFormat" minOccurs="0"/>
 				<xs:element ref="os:outputType" minOccurs="0"/>
-				<xs:element ref="os:allRelations" minOccurs="0"/>
 				<xs:element ref="os:relationData" minOccurs="0"/>
 				<xs:element ref="os:repository" minOccurs="0"/>
 				<xs:element ref="os:source" minOccurs="0"/>
@@ -102,11 +103,6 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="allObjects" type="xs:boolean">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">If true, all objects in a collection will be returned, no matter if the objects are part of the search result. If false, only objects that are part of the search result will be returned.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="allRelations" type="xs:boolean">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Type of the relation from the list in relationTypeType.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="authentication">
@@ -254,7 +250,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:any processContents="skip"/>
+				<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -353,16 +349,10 @@ You should have received a copy of the GNU Affero General Public License along w
 		<xs:complexType>
 			<xs:sequence>
 				<xs:choice>
-					<xs:sequence>
-						<xs:element ref="dkabm:record"/>
-						<xs:element ref="marcx:collection" minOccurs="0"/>
-					</xs:sequence>
-					<xs:element ref="marcx:collection"/>
-					<xs:element ref="docbook:article"/>
+                    <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="os:error"/>
 				</xs:choice>
 				<xs:element ref="os:identifier"/>
-				<xs:element ref="os:primaryObjectidentifier"/>
 				<xs:element ref="os:creationDate" minOccurs="0"/>
 				<xs:element ref="os:holdingsCount" minOccurs="0"/>
 				<xs:element ref="os:lendingLibraries" minOccurs="0"/>
@@ -393,7 +383,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:any processContents="skip"/>
+				<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -405,11 +395,6 @@ You should have received a copy of the GNU Affero General Public License along w
 	<xs:element name="passwordAut" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="en">Password (for authentication purposes)</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="primaryObjectidentifier" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Unique identifier of the primary object.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="profile" type="xs:string">
@@ -437,14 +422,9 @@ You should have received a copy of the GNU Affero General Public License along w
 				<xs:element ref="os:queryString"/>
 				<xs:element ref="os:parsedQuery"/>
 				<xs:element ref="os:parsedQueryString"/>
-				<xs:element ref="os:rankFrequency"/>
+				<xs:element ref="os:rankFrequency" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
-	</xs:element>
-	<xs:element name="queryFilter" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The filter part of the query specified in CQL.</xs:documentation>
-		</xs:annotation>
 	</xs:element>
 	<xs:element name="queryLanguage" type="os:queryLanguageType">
 		<xs:annotation>
@@ -686,8 +666,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="facet.sheetMusic"/>
 			<xs:enumeration value="facet.subject"/>
 			<xs:enumeration value="facet.type"/>
-			<xs:enumeration value="facet.branch"/>
-			<xs:enumeration value="facet.department"/>			
+			
 		</xs:restriction>
 	</xs:simpleType>
     <xs:simpleType name="fieldNameType">
@@ -713,7 +692,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:documentation xml:lang="en">The languages you can choose from.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="cqldan"/>
+			<xs:enumeration value="cql"/>
 			<xs:enumeration value="cqleng"/>
 			<xs:enumeration value="bestMatch"/>
 		</xs:restriction>
@@ -735,7 +714,6 @@ You should have received a copy of the GNU Affero General Public License along w
 			<xs:enumeration value="dkabm"/>
 			<xs:enumeration value="docbook"/>
 			<xs:enumeration value="marcxchange"/>
-			<xs:enumeration value="marc21ToDm2"/>
 			<xs:enumeration value="bibliotekdkWorkDisplay"/>
 			<xs:enumeration value="briefDisplayHtml"/>
 			<xs:enumeration value="fullDisplayHtml"/>
