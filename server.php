@@ -412,7 +412,11 @@ class openSearch extends webServiceServer {
       $add_queries = self::make_add_queries($work_ids);
       $this->watch->start('Solr_filt');
       $solr_2_arr = self::do_add_queries($add_queries, $param->query->_value, self::xs_boolean($param->allObjects->_value), $filter_q);
+// fetch display here to get sort-keys for primary objects
       $this->watch->stop('Solr_filt');
+      $this->watch->start('Solr_disp');
+      $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), $filter_q);
+      $this->watch->stop('Solr_disp');
       if (is_scalar($solr_2_arr)) {
         $error = 'Internal problem: Cannot decode Solr re-search';
         return $ret_error;
@@ -423,11 +427,19 @@ class openSearch extends webServiceServer {
           foreach ($w_list as $w) {
             foreach ($solr_2_arr as $s_2_a) {
               foreach ($s_2_a['response']['docs'] as $fdoc) {
-                $p_id =  self::scalar_or_first_elem($fdoc['unit.id']);
-                if ($p_id == $w) {
-                  $hit_fid_array[] = $w;
-                  $unit_sort_keys[$w] = $fdoc['sort.complexKey'] . '  ' . $p_id;
-                  $collection_identifier[$w] =  self::scalar_or_first_elem($fdoc['rec.collectionIdentifier']);
+                $u_id =  self::scalar_or_first_elem($fdoc['unit.id']);
+                if ($u_id == $w) {
+                  $hit_fid_array[$u_id] = $u_id;
+                  break 2;
+                }
+              }
+            }
+            foreach ($display_solr_arr as $d_s_a) {
+              foreach ($d_s_a['response']['docs'] as $fdoc) {
+                $u_id =  self::scalar_or_first_elem($fdoc['unit.id']);
+                if ($u_id == $w) {
+                  $unit_sort_keys[$u_id] = $fdoc['sort.complexKey'] . '  ' . $u_id;
+                  $collection_identifier[$u_id] =  self::scalar_or_first_elem($fdoc['rec.collectionIdentifier']);
                   break 2;
                 }
               }
@@ -561,7 +573,7 @@ class openSearch extends webServiceServer {
       }
       if ($this->format['found_solr_format']) {
         $this->watch->start('Solr_disp');
-        $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), $filter_q);
+        //$display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), $filter_q);
         $this->watch->stop('Solr_disp');
         self::format_solr($collections, $display_solr_arr, $work_ids, $fpid_sort_keys);
       }
