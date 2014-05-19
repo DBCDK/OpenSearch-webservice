@@ -1343,6 +1343,13 @@ You should have received a copy of the GNU Affero General Public License along w
             </map>
         </index>
 		<index>
+			<title lang="da">Fiktion (facet)</title>
+			<title lang="en">Fiction (facet)</title>
+			<map>
+				<name set="facet">fictionSubject</name>
+			</map>
+		</index>
+		<index>
 			<title lang="da">Form (facet)</title>
 			<title lang="en">Form (facet)</title>
 			<map>
@@ -1368,6 +1375,13 @@ You should have received a copy of the GNU Affero General Public License along w
 			<title lang="en">Genre category (facet)</title>
 			<map>
 				<name set="facet">genreCategory</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Geografi (facet)</title>
+			<title lang="en">Geographic (facet)</title>
+			<map>
+				<name set="facet">geographic</name>
 			</map>
 		</index>
 		<index>
@@ -1406,10 +1420,31 @@ You should have received a copy of the GNU Affero General Public License along w
             </map>
         </index>
         <index>
+            <title lang="da">Musik emne (facet)</title>
+            <title lang="en">Music subject (facet)</title>
+            <map>
+                <name set="facet">musicSubject</name>
+            </map>
+        </index>
+        <index>
             <title lang="da">Filmnationalitet (facet)</title>
             <title lang="en">Nationality of movie (facet)</title>
             <map>
                 <name set="facet">nationality</name>
+            </map>
+        </index>
+        <index>
+            <title lang="da">Fag emne (facet)</title>
+            <title lang="en">Non fiction subject (facet)</title>
+            <map>
+                <name set="facet">nonFictionSubject</name>
+            </map>
+        </index>
+		<index>
+            <title lang="da">Periode (facet)</title>
+            <title lang="en">Period (facet)</title>
+            <map>
+                <name set="facet">period</name>
             </map>
         </index>
 		<index>
@@ -1539,6 +1574,13 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
+			<title lang="da">Titel (frase)</title>
+			<title lang="en">Title (phrase)</title>
+			<map>
+				<name set="phrase">title</name>
+			</map>
+		</index>
+		<index>
 			<title lang="da">Titel fra serie (frase)</title>
 			<title lang="en">Title from series (phrase)</title>
 			<map>
@@ -1574,6 +1616,13 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
+			<title lang="da">AC source (enkeltord)</title>
+			<title lang="en">Ac source (term)</title>
+			<map>
+				<name set="term">acSource</name>
+			</map>
+		</index>
+		<index>
 			<title lang="da">Accessionsdato (enkeltord)</title>
 			<title lang="en">Acquisition date (term)</title>
 			<map>
@@ -1602,6 +1651,13 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
+			<title lang="da">Dato (enkeltord)</title>
+			<title lang="en">Date (term)</title>
+			<map>
+				<name set="term">date</name>
+			</map>
+		</index>
+		<index>
 			<title lang="da">Fritekst (enkeltord)</title>
 			<title lang="en">Default (term)</title>
 			<map>
@@ -1623,6 +1679,20 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
+			<title lang="da">Identifier (enkeltord)</title>
+			<title lang="en">Identifier (term)</title>
+			<map>
+				<name set="term">identifier</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">ISBN (enkeltord)</title>
+			<title lang="en">ISBN (term)</title>
+			<map>
+				<name set="term">isbn</name>
+			</map>
+		</index>
+		<index>
 			<title lang="da">Sprog (enkeltord)</title>
 			<title lang="en">Language (term)</title>
 			<map>
@@ -1641,6 +1711,20 @@ You should have received a copy of the GNU Affero General Public License along w
 			<title lang="en">Nationality movies (term)</title>
 			<map>
 				<name set="term">nationality</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Del af (enkeltord)</title>
+			<title lang="en">Part of (term)</title>
+			<map>
+				<name set="term">partOf</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Forlag (enkeltord)</title>
+			<title lang="en">Publisher (term)</title>
+			<map>
+				<name set="term">publisher</name>
 			</map>
 		</index>
 		<index>
@@ -1686,6 +1770,13 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
+			<title lang="da">Source (enkeltord)</title>
+			<title lang="en">Source (term)</title>
+			<map>
+				<name set="term">source</name>
+			</map>
+		</index>
+		<index>
 			<title lang="da">Emne (enkeltord) - pt kun anmeldelser</title>
 			<title lang="en">Subject (term) - at the moment only reviews</title>
 			<map>
@@ -1697,6 +1788,20 @@ You should have received a copy of the GNU Affero General Public License along w
 			<title lang="en">Material type (term)</title>
 			<map>
 				<name set="term" filter="1">type</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Titel (enkeltord)</title>
+			<title lang="en">Title (term)</title>
+			<map>
+				<name set="term">title</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Titel på nummer (enkeltord)</title>
+			<title lang="en">Track title (term)</title>
+			<map>
+				<name set="term">trackTitle</name>
 			</map>
 		</index>
 		<index>
