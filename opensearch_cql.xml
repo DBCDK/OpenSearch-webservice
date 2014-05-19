@@ -1441,17 +1441,17 @@ You should have received a copy of the GNU Affero General Public License along w
             </map>
         </index>
 		<index>
-            <title lang="da">Periode (facet)</title>
-            <title lang="en">Period (facet)</title>
-            <map>
-                <name set="facet">period</name>
-            </map>
-        </index>
-		<index>
             <title lang="da">Del af (facet)</title>
             <title lang="en">Part of (facet)</title>
             <map>
                 <name set="facet">partOf</name>
+            </map>
+        </index>
+		<index>
+            <title lang="da">Periode (facet)</title>
+            <title lang="en">Period (facet)</title>
+            <map>
+                <name set="facet">period</name>
             </map>
         </index>
         <index>
@@ -1616,8 +1616,8 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
-			<title lang="da">AC source (enkeltord)</title>
-			<title lang="en">Ac source (term)</title>
+			<title lang="da">Kilde (enkeltord)</title>
+			<title lang="en">Source (term)</title>
 			<map>
 				<name set="term">acSource</name>
 			</map>
@@ -1721,17 +1721,17 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
-			<title lang="da">Forlag (enkeltord)</title>
-			<title lang="en">Publisher (term)</title>
-			<map>
-				<name set="term">publisher</name>
-			</map>
-		</index>
-		<index>
 			<title lang="da">Hovedsprog (enkeltord)</title>
 			<title lang="en">Primary language (term)</title>
 			<map>
 				<name set="term">primaryLanguage</name>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Forlag (enkeltord)</title>
+			<title lang="en">Publisher (term)</title>
+			<map>
+				<name set="term">publisher</name>
 			</map>
 		</index>
 		<index>
