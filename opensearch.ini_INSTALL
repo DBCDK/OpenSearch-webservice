@@ -208,6 +208,18 @@ logfile = /tmp/opensearch.log
 ;   boost_value for rank_register
 ;
 
+; rank[rank_main_title][word_boost][dkcclterm.ht] = 2
+; rank[rank_main_title][word_boost][term.default] = 1
+; rank[rank_main_title][phrase_boost][dkcclterm.ht] = 8
+; rank[rank_main_title][tie] = 0.1
+
+; rank[rank_subject][word_boost][rankterm.subject] = 4
+; rank[rank_subject][word_boost][dkcclterm.ht] = 3
+; rank[rank_subject][word_boost][dkcclterm.ti] = 2
+; rank[rank_subject][word_boost][term.default] = 1
+; rank[rank_subject][phrase_boost][rankterm.subject] = 8
+; rank[rank_subject][tie] = 0.1
+
 rank[rank_verification][word_boost][rankterm.title] = 4
 rank[rank_verification][phrase_boost][rankphrase.title] = 8
 rank[rank_verification][word_boost][rankterm.creator] = 4
@@ -263,8 +275,8 @@ sort[date_descending] = sort.date desc
 sort[acquisitionDate_ascending] = sort.acquisitionDate asc
 sort[acquisitionDate_descending] = sort.acquisitionDate desc
 
-sort[work_type_ascending] = sort.work_type asc
-sort[work_type_descending] = sort.work_type desc
+sort[work_type_ascending] = sort.workType asc
+sort[work_type_descending] = sort.workType desc
 sort[record_owner_ascending] = sort.recordOwner asc
 sort[record_owner_descending] = sort.recordOwner desc
 sort[article_date_ascending] = sort.articleDate asc
