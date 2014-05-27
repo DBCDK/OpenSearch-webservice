@@ -177,7 +177,7 @@ class openSearch extends webServiceServer {
     $this->watch->start('Solr');
     $use_work_collection |= $sort_types[$sort[0]] == 'random';
     $key_work_struct = md5($param->query->_value . $this->repository_name . $this->filter_agency .
-                              $use_work_collection .  implode('', $sort) . $rank . $boost_str . $this->config->get_inifile_hash());
+                           $use_work_collection .  implode('', $sort) . $rank . $boost_str . $this->config->get_inifile_hash());
 
     if ($param->queryLanguage->_value) {
       $this->query_language = $param->queryLanguage->_value;
@@ -1824,13 +1824,11 @@ class openSearch extends webServiceServer {
    */
   private function parse_unit_for_object_ids($u_rel) {
     static $dom;
-    $res = array();
     if (empty($dom)) {
       $dom = new DomDocument();
     }
     $dom->preserveWhiteSpace = false;
     if (@ $dom->loadXML($u_rel)) {
-      $res = array();
       $hmof = $dom->getElementsByTagName('hasMemberOfUnit');
       $hpbo = $dom->getElementsByTagName('hasPrimaryBibObject');
       if ($hpbo->item(0))
@@ -1844,7 +1842,6 @@ class openSearch extends webServiceServer {
    */
   private function parse_work_for_object_ids($w_rel, $uid) {
     static $dom;
-    $res = array();
     if (empty($dom)) {
       $dom = new DomDocument();
     }
