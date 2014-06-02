@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License along w
 		<database/>
 	</serverInfo>
 	<metaInfo>
-	    <dateModified>02/17/2014</dateModified>
+	    <dateModified>2014-05-28</dateModified>
 	</metaInfo>
 	<indexInfo>
 	    <set identifier="info:srw/cql-context-set/1/cql-v1.1" name="cql"/>
@@ -1343,8 +1343,8 @@ You should have received a copy of the GNU Affero General Public License along w
             </map>
         </index>
 		<index>
-			<title lang="da">Fiktion (facet)</title>
-			<title lang="en">Fiction (facet)</title>
+			<title lang="da">Skønlitterært emne (facet)</title>
+			<title lang="en">Fiction subject (facet)</title>
 			<map>
 				<name set="facet">fictionSubject</name>
 			</map>
@@ -1378,8 +1378,8 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
-			<title lang="da">Geografi (facet)</title>
-			<title lang="en">Geographic (facet)</title>
+			<title lang="da">Geografisk emne (facet)</title>
+			<title lang="en">Geographic subject (facet)</title>
 			<map>
 				<name set="facet">geographic</name>
 			</map>
@@ -1448,8 +1448,8 @@ You should have received a copy of the GNU Affero General Public License along w
             </map>
         </index>
 		<index>
-            <title lang="da">Periode (facet)</title>
-            <title lang="en">Period (facet)</title>
+            <title lang="da">Periode som emne (facet)</title>
+            <title lang="en">Period as subject (facet)</title>
             <map>
                 <name set="facet">period</name>
             </map>
@@ -1616,8 +1616,8 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
-			<title lang="da">Kilde (enkeltord)</title>
-			<title lang="en">Source (term)</title>
+			<title lang="da">Oprindelse, originaltitel (enkeltord)</title>
+			<title lang="en">Source, original title (term)</title>
 			<map>
 				<name set="term">acSource</name>
 			</map>
@@ -1770,8 +1770,8 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
-			<title lang="da">Source (enkeltord)</title>
-			<title lang="en">Source (term)</title>
+			<title lang="da">Oprindelse, originaltitel (enkeltord)</title>
+			<title lang="en">Source, original title (term)</title>
 			<map>
 				<name set="term">source</name>
 			</map>
@@ -1798,7 +1798,7 @@ You should have received a copy of the GNU Affero General Public License along w
 			</map>
 		</index>
 		<index>
-			<title lang="da">Titel på nummer (enkeltord)</title>
+			<title lang="da">Titel på musiknummer (enkeltord)</title>
 			<title lang="en">Track title (term)</title>
 			<map>
 				<name set="term">trackTitle</name>
