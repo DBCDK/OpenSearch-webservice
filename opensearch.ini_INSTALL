@@ -107,8 +107,18 @@ repository[defaults][cql_file] = opensearch_cql.xml
 repository[@REPOSITORY_NAME@][solr] = @SOLR@
 repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 
+; Universal Search:
 ; repository for Universal Search - settings are found in [universal_search_settings] section
+; Using "universal" as repository parameter, will trigger the use of Universal Search instead of normal scheme
 ; repository[worldCat][universal] = universal_search_settings
+
+; Raw record repositories
+; repository for Raw repository, an postgress base indexed by solr
+; Using "postgress" as repository parameter, will trigger the use of solr/postgress instead of normal scheme
+;repository[rawrecords][solr] = http://mysolr.dk/solr-version/select
+;repository[rawrecords][postgress] = host=mypghost.dk port=5432 dbname=my_db user=myuser password=my_password connect_timeout=1
+;repository[rawrecords][cql_file] = rawrecord_cql.xml
+
 
 ; info to find available index for at solr repos
 ; luke[from] = to will replace from with to in the solr-uri

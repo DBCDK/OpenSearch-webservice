@@ -132,6 +132,11 @@ class openSearch extends webServiceServer {
     if (empty($start) && $step_value) {
       $start = 1;
     }
+    if ($param->queryLanguage->_value) {
+      $this->query_language = $param->queryLanguage->_value;
+    }
+    $debug_query = $this->xs_boolean($param->queryDebug->_value);
+
 
     if ($us_settings = $this->repository['universal']) {
       require_once 'OLS_class_lib/universal_search_class.php';
@@ -153,10 +158,55 @@ class openSearch extends webServiceServer {
       $result->searchResult = &$collections;
       $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
       $result->statInfo->_value->trackingId->_value = $this->tracking_id;
-      //var_dump($result); die();
       return $ret;
     }
 
+    if ($us_settings = $this->repository['postgress']) {
+      $this->watch->start('postgress');
+      $this->cql2solr = new SolrQuery($this->repository['cql_file'], $this->config, $this->query_language);
+      $solr_query = $this->cql2solr->parse($param->query->_value);
+      if ($solr_query['error']) {
+        $error = self::cql2solr_error_to_string($solr_query['error']);
+        return $ret_error;
+      }
+      verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
+      $q = implode(' and ', $solr_query['edismax']['q']);
+      $filter = '';
+      foreach ($solr_query['edismax']['fq'] as $fq) {
+        $filter .= '&fq=' . rawurlencode($fq);
+      }
+      $solr_urls[0]['url'] = $this->repository['solr'] .
+                    '?q=' . urlencode($q) .
+                    '&fq=' . $filter .
+                    '&start=' . ($start - 1).  
+                    '&rows=' . $step_value .  
+                    '&defType=edismax&wt=phps&fl=' . ($debug_query ? '&debugQuery=on' : '');
+      if ($err = self::do_solr($solr_urls, $solr_arr)) {
+        $error = $err;
+        return $ret_error;
+      }
+      $collections = self::get_records_from_postgress($solr_arr['response']);
+      $this->watch->stop('postgress');
+      if (is_scalar($collections)) {
+        $error = $collections;
+        return $ret_error;
+      }
+      $result = &$ret->searchResponse->_value->result->_value;
+      $result->hitCount->_value = self::get_num_found($solr_arr);
+      $result->collectionCount->_value = count($collections);
+      $result->more->_value = (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false');
+      $result->searchResult = &$collections;
+      $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
+      $result->statInfo->_value->trackingId->_value = $this->tracking_id;
+      if ($debug_query) {
+        $debug_result->rawQueryString->_value = $solr_arr['debug']['rawquerystring'];
+        $debug_result->queryString->_value = $solr_arr['debug']['querystring'];
+        $debug_result->parsedQuery->_value = $solr_arr['debug']['parsedquery'];
+        $debug_result->parsedQueryString->_value = $solr_arr['debug']['parsedquery_toString'];
+        $result->queryDebugResult->_value = $debug_result;
+      }
+      return $ret;
+    }
 
     /**
     *  Approach
@@ -179,18 +229,10 @@ class openSearch extends webServiceServer {
     $key_work_struct = md5($param->query->_value . $this->repository_name . $this->filter_agency .
                            $use_work_collection .  implode('', $sort) . $rank . $boost_str . $this->config->get_inifile_hash());
 
-    if ($param->queryLanguage->_value) {
-      $this->query_language = $param->queryLanguage->_value;
-    }
     $this->cql2solr = new SolrQuery($this->repository['cql_file'], $this->config, $this->query_language);
     $solr_query = $this->cql2solr->parse($param->query->_value);
     if ($solr_query['error']) {
-      foreach (array('no' => '|: ', 'description' => '', 'details' => ' (|)', 'pos' => ' at pos ') as $tag => $txt) {
-        list($pre, $post) = explode('|', $txt);
-        if ($solr_query['error'][0][$tag]) {
-          $error .= $pre . $solr_query['error'][0][$tag]. $post;
-        }
-      }
+      $error = self::cql2solr_error_to_string($solr_query['error']);
       return $ret_error;
     }
     if (!count($solr_query['operands'])) {
@@ -246,8 +288,6 @@ class openSearch extends webServiceServer {
 
     verbose::log(STAT, 'CQL to EDISMAX: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query['edismax'], TRUE)));
     verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
-
-    $debug_query = $this->xs_boolean($param->queryDebug->_value);
 
     // do the query
     if ($sort[0] == 'random') {
@@ -881,6 +921,62 @@ class openSearch extends webServiceServer {
   }
 
   /*******************************************************************************/
+
+  /** \brief Reads records from Raw Record Database
+   *   
+   * @param $solr_response array   Response from a solr search in php object
+   * 
+   * return mixed  array of collections or error string
+   */
+  private function get_records_from_postgress($solr_response) {
+    require_once 'OLS_class_lib/pg_database_class.php';
+    $dom = new DomDocument();
+    $ret = array();
+    try {
+      $pg = new pg_database($this->repository['postgress']);
+      $pg->open();
+      $rec_pos = $solr_response['start'];
+      foreach ($solr_response['docs'] as $solr_doc) {
+        if (empty($solr_doc['001a']) || empty($solr_doc['001b'])) {
+          verbose::log(FATAL, 'SOLR error: cannot find field 001a or 001b');
+          @ $dom->loadXml('<?xml version="1.0" encoding="UTF-8"?' . '><marcx:record format="danMARC2" type="Bibliographic" xmlns:marcx="info:lc/xmlns/marcxchange-v1"><marcx:datafield tag="245" ind1="0" ind2="0"><marcx:subfield code="a">ERROR: Cannot read record from repository: ' . $this->repository_name . '</marcx:subfield></marcx:datafield></marcx:record>');
+        }
+        else {
+          $query = 'SELECT content FROM records WHERE id = \'' . $solr_doc['001a'] . '\' AND library = ' . $solr_doc['001b'];
+          $pg->set_query($query);
+          $pg->execute();
+          $row = $pg->get_row();
+          @ $dom->loadXml(base64_decode($row['content']));
+        }
+        $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
+        $rec_pos++;
+        $ret[$rec_pos]->_value->collection->_value->resultPosition->_value = $rec_pos;
+        $ret[$rec_pos]->_value->collection->_value->numberOfObjects->_value = 1;
+        $ret[$rec_pos]->_value->collection->_value->object[]->_value = $marc_obj;
+      }
+      $pg->close();
+    }
+    catch (Exception $e) {
+      verbose::log(FATAL, 'Database error: ' . str_replace("\n", '', $e->getMessage()));
+      return 'Error fatching records from postgress in repository: ' . $this->repository_name;
+    }
+    return $ret;
+  }
+
+  /** \brief Change cql_error to string
+   *
+   * $param $solr_error array
+   */
+  private function cql2solr_error_to_string($solr_error) {
+    $str = '';
+    foreach (array('no' => '|: ', 'description' => '', 'details' => ' (|)', 'pos' => ' at pos ') as $tag => $txt) {
+      list($pre, $post) = explode('|', $txt);
+      if ($solr_error[0][$tag]) {
+        $str .= $pre . $solr_error[0][$tag]. $post;
+      }
+    }
+    return $str;
+  }
 
   /** \brief split into multiple solr-searches each containing less than MAX_QUERY_ELEMENTS elements
    *

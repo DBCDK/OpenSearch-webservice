@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="explain.xsl"?>
+<explain xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://explain.z3950.org/dtd/2.0/" xsi:schemaLocation="http://explain.z3950.org/dtd/2.0/ http://explain.z3950.org/dtd/zeerex-2.0.xsd">
+	<!-- This file is part of Open Library System.
+Copyright © 2012, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+
+Open Library System is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+Open Library System is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with Open Library System.  If not, see http://www.gnu.org/licenses-->
+	<serverInfo>
+		<host/>
+		<port/>
+		<database/>
+	</serverInfo>
+	<metaInfo>
+	    <dateModified>2014-05-28</dateModified>
+	</metaInfo>
+	<indexInfo>
+	    <set identifier="info:srw/cql-context-set/1/cql-v1.1" name="cql"/>
+		<set identifier="http://oss.dbc.dk/ns/display" name="display"/>
+		<set identifier="http://oss.dbc.dk/ns/dkcclphrase" name="dkcclphrase"/>
+		<set identifier="http://oss.dbc.dk/ns/dkcclterm" name="dkcclterm"/>
+		<set identifier="http://oss.dbc.dk/ns/facet" name="facet"/>
+		<set identifier="http://oss.dbc.dk/ns/phrase" name="phrase"/>
+		<set identifier="http://oss.dbc.dk/ns/rankphrase" name="rankphrase"/>
+		<set identifier="http://oss.dbc.dk/ns/rankterm" name="rankterm"/>
+		<set identifier="info:srw/cql-context-set/2/rec-1.1" name="rec"/>
+		<set identifier="http://oss.dbc.dk/ns/rankterm" name="sort"/>
+		<set identifier="http://oss.dbc.dk/ns/term" name="term"/>
+		<set identifier="http://oss.dbc.dk/ns/unit" name="unit"/>
+        <set identifier="http://oss.dbc.dk/ns/rawrepo" name="rr"/>
+		<index>
+			<title lang="da">Internt register</title>
+			<map hidden="1">
+				<name set="cql">allIndexes</name>
+			</map>
+		</index>
+		<index>
+			<title lang="en"></title>
+			<title lang="da"></title>
+			<map>
+				<name set="">001a</name>
+				<alias>001a</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en"></title>
+			<title lang="da"></title>
+			<map>
+				<name set="">001b</name>
+				<alias>001b</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en"></title>
+			<title lang="da"></title>
+			<map>
+				<name set="">002a</name>
+				<alias>002a</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en"></title>
+			<title lang="da"></title>
+			<map>
+				<name set="">021ab</name>
+				<alias>021ab</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en"></title>
+			<title lang="da"></title>
+			<map>
+				<name set="">022a</name>
+				<alias>022a</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en"></title>
+			<title lang="da"></title>
+			<map>
+				<name set="">created</name>
+				<alias>created</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en"></title>
+			<title lang="da"></title>
+			<map>
+				<name set="">id</name>
+				<alias>id</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="en"></title>
+			<title lang="da"></title>
+			<map>
+				<name set="">modified</name>
+				<alias>modified</alias>
+			</map>
+		</index>
+		<index>
+			<title lang="da">Fritekst (enkeltord)</title>
+			<title lang="en">Default (term)</title>
+			<map>
+				<name set="">default</name>
+			</map>
+		</index>
+	</indexInfo>
+	<configInfo>
+		<supports type="engBooleanModifier">AND</supports>
+		<supports type="engBooleanModifier">OR</supports>
+		<supports type="engBooleanModifier">NOT</supports>
+		<supports type="relation">&gt;=</supports>
+		<supports type="relation">&gt;</supports>
+		<supports type="relation">&lt;=</supports>
+		<supports type="relation">&lt;</supports>
+		<supports type="relation">=</supports>
+		<supports type="relation">ADJ</supports>
+		<supports type="maskingCharacter">?</supports>
+		<supports type="maskingCharacter">*</supports>
+		<supports type="booleanChar">(</supports>
+		<supports type="booleanChar">)</supports>
+	</configInfo>
+</explain>
