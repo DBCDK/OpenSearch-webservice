@@ -107,7 +107,7 @@ repository[defaults][cql_file] = opensearch_cql.xml
 repository[@REPOSITORY_NAME@][solr] = @SOLR@
 repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 
-; Universal Search:
+; Universal Search - sofar still for test only:
 ; repository for Universal Search - settings are found in [universal_search_settings] section
 ; Using "universal" as repository parameter, will trigger the use of Universal Search instead of normal scheme
 ; repository[worldCat][universal] = universal_search_settings
@@ -118,6 +118,10 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 ;repository[rawrecords][solr] = http://mysolr.dk/solr-version/select
 ;repository[rawrecords][postgress] = host=mypghost.dk port=5432 dbname=my_db user=myuser password=my_password connect_timeout=1
 ;repository[rawrecords][cql_file] = rawrecord_cql.xml
+
+repository[@RAW_RECORD_REPOSITORY_NAME@][solr] = @RAW_RECORD_SOLR@
+repository[@RAW_RECORD_REPOSITORY_NAME@][fedora] = @RAW_RECORD_POSTGRESS_CREDENTIALS@
+repository[@RAW_RECORD_REPOSITORY_NAME@][cql_file] = rawrecord_cql.xml
 
 
 ; info to find available index for at solr repos
@@ -231,17 +235,17 @@ logfile = /tmp/opensearch.log
 ; rank[rank_subject][tie] = 0.1
 
 rank[rank_verification][word_boost][rankterm.title] = 4
-rank[rank_verification][phrase_boost][rankphrase.title] = 8
+rank[rank_verification][phrase_boost][rankterm.title] = 8
 rank[rank_verification][word_boost][rankterm.creator] = 4
-rank[rank_verification][phrase_boost][rankphrase.creator] = 6
+rank[rank_verification][phrase_boost][rankterm.creator] = 6
 rank[rank_verification][word_boost][cql.allIndexes] = 1
-rank[rank_verification][phrase_boost][cql.allIndexes] = 1
+rank[rank_verification][phrase_boost][cql.allIndexes] = 2
 rank[rank_verification][tie] = 0.1
 
 rank[rank_subject][word_boost][rankterm.subject] = 5
-rank[rank_subject][phrase_boost][rankphrase.subject] = 10
+rank[rank_subject][phrase_boost][rankterm.subject] = 10
 rank[rank_subject][word_boost][rankterm.title] = 3
-rank[rank_subject][phrase_boost][rankphrase.title] = 6
+rank[rank_subject][phrase_boost][rankterm.title] = 6
 rank[rank_subject][word_boost][rankterm.description] = 2
 rank[rank_subject][phrase_boost][rankterm.description] = 3
 rank[rank_subject][word_boost][cql.allIndexes] = 1
@@ -249,25 +253,25 @@ rank[rank_subject][phrase_boost][cql.allIndexes] = 1
 rank[rank_subject][tie] = 0.1
 
 rank[rank_title][word_boost][dkcclterm.ti] = 4
-rank[rank_title][phrase_boost][dkcclphrase.lti] = 8
+rank[rank_title][phrase_boost][dkcclterm.ti] = 8
 rank[rank_title][word_boost][term.default] = 1
-rank[rank_title][phrase_boost][term.default] = 1
+rank[rank_title][phrase_boost][term.default] = 2
 rank[rank_title][tie] = 0.1
 
 rank[rank_creator][word_boost][dkcclterm.fo] = 4
-rank[rank_creator][phrase_boost][dkcclphrase.lfo] = 8
+rank[rank_creator][phrase_boost][dkcclterm.fo] = 8
 rank[rank_creator][word_boost][term.default] = 1
-rank[rank_creator][phrase_boost][term.default] = 1
+rank[rank_creator][phrase_boost][term.default] = 2
 rank[rank_creator][tie] = 0.1
 
 rank[rank_general][word_boost][dkcclterm.ti] = 3
-rank[rank_general][phrase_boost][dkcclphrase.lti] = 6
+rank[rank_general][phrase_boost][dkcclterm.lti] = 6
 rank[rank_general][word_boost][dkcclterm.fo] = 4
-rank[rank_general][phrase_boost][dkcclphrase.lfo] = 8
+rank[rank_general][phrase_boost][dkcclterm.lfo] = 8
 rank[rank_general][word_boost][dkcclterm.em] = 2
-rank[rank_general][phrase_boost][dkcclphrase.lem] = 3
+rank[rank_general][phrase_boost][dkcclterm.em] = 3
 rank[rank_general][word_boost][term.default] = 1
-rank[rank_general][phrase_boost][term.default] = 1
+rank[rank_general][phrase_boost][term.default] = 2
 rank[rank_general][tie] = 0.1
 
 rank[rank_none][word_boost][term.default] = 0.1
