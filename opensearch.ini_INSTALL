@@ -120,7 +120,7 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 ;repository[rawrecords][cql_file] = rawrecord_cql.xml
 
 repository[@RAW_RECORD_REPOSITORY_NAME@][solr] = @RAW_RECORD_SOLR@
-repository[@RAW_RECORD_REPOSITORY_NAME@][fedora] = @RAW_RECORD_POSTGRESS_CREDENTIALS@
+repository[@RAW_RECORD_REPOSITORY_NAME@][postgress] = @RAW_RECORD_POSTGRESS_CREDENTIALS@
 repository[@RAW_RECORD_REPOSITORY_NAME@][cql_file] = rawrecord_cql.xml
 
 
