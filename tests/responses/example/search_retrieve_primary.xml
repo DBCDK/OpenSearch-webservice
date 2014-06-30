@@ -1,56 +1,120 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://oss.dbc.dk/ns/opensearch">
-    <SOAP-ENV:Body>
-        <searchResponse>
-            <result>
-                <hitCount>10</hitCount>
-                <collectionCount>1</collectionCount>
-                <more>true</more>
-                <searchResult>
-                    <collection>
-                        <resultPosition>1</resultPosition>
-                        <numberOfObjects>1</numberOfObjects>
-                        <object>
-                            <dkabm:record>
-                                <ac:identifier>44082985|870970</ac:identifier>
-                                <dc:identifier xsi:type="dkdcplus:ISBN">0-330-44011-X</dc:identifier>
-                                <ac:source>Bibliotekskatalog</ac:source>
-                                <dc:title>No country for old men</dc:title>
-                                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                                <dc:subject>fiction</dc:subject>
-                                <dc:subject>narkotikahandel</dc:subject>
-                                <dc:subject>spændingsroman</dc:subject>
-                                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                                <dkdcplus:version>Paperback</dkdcplus:version>
-                                <dc:publisher>Picador</dc:publisher>
-                                <dc:date>2005</dc:date>
-                                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                                <dcterms:extent>309 sider</dcterms:extent>
-                                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                                <dc:language>Engelsk</dc:language>
-                            </dkabm:record>
-                            <identifier>870970-basis:44082985</identifier>
-                            <creationDate>2007-03-19</creationDate>
-                            <formatsAvailable>
-                                <format>dkabm</format>
-                                <format>marcxchange</format>
-                            </formatsAvailable>
-                        </object>
-                    </collection>
-                </searchResult>
-                <facetResult/>
-                <queryDebugResult/>
-                <statInfo>
-                    <fedoraRecordsCached>0</fedoraRecordsCached>
-                    <fedoraRecordsRead>11</fedoraRecordsRead>
-                    <time>0.413563</time>
-                    <trackingId>os:2013-08-16T14:49:55:918612:1887</trackingId>
-                </statInfo>
-            </result>
-        </searchResponse>
-    </SOAP-ENV:Body>
+  <SOAP-ENV:Body>
+    <searchResponse>
+      <result>
+        <hitCount>10</hitCount>
+        <collectionCount>1</collectionCount>
+        <more>true</more>
+        <searchResult>
+          <collection>
+            <resultPosition>1</resultPosition>
+            <numberOfObjects>4</numberOfObjects>
+            <object>
+              <dkabm:record>
+                <ac:identifier>44082985|870970</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">0-330-44011-X</dc:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>No country for old men</dc:title>
+                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
+                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
+                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
+                <dc:subject>fiction</dc:subject>
+                <dc:subject>narkotikahandel</dc:subject>
+                <dc:subject>spændingsroman</dc:subject>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dkdcplus:version>Paperback</dkdcplus:version>
+                <dc:publisher>Picador</dc:publisher>
+                <dc:date>2005</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
+                <dcterms:extent>309 sider</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
+              </dkabm:record>
+              <identifier>870970-basis:44082985</identifier>
+              <creationDate>2007-03-19</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+            </object>
+            <object>
+              <dkabm:record>
+                <ac:identifier>44319454|870970</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9780330454537</dc:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>No country for old men</dc:title>
+                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
+                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
+                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
+                <dcterms:abstract>På en jagttur i det sydlige Texas finder Llewelyn Moss et par biler, fyldt med døde mænd, og en taske fyldt med kontanter. Den tidligere Vietnam-veteran, beslutter sig for at beholde pengene, men det skulle han måske ikke have gjort. Snart har han gangsterne og politiet i hælene, og en blodig jagt går i gang</dcterms:abstract>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dkdcplus:version>Picador film tie-in</dkdcplus:version>
+                <dc:publisher>Picador</dc:publisher>
+                <dc:date>2005</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
+                <dcterms:extent>309 sider</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
+              </dkabm:record>
+              <identifier>870970-basis:44319454</identifier>
+              <creationDate>2008-03-03</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+            </object>
+            <object>
+              <dkabm:record>
+                <ac:identifier>43917129|870970</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">1-84632-357-6</dc:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>No country for old men</dc:title>
+                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
+                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
+                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">gangstere</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">narkotika</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">spændende bøger</dc:subject>
+                <dcterms:abstract>På en jagttur i det sydlige Texas finder Llewelyn Moss et par biler, fyldt med døde mænd, og en taske fyldt med kontanter. Den tidligere Vietnam-veteran, beslutter sig for at beholde pengene, men det skulle han måske ikke have gjort. Snart har han gangsterne og politiet i hælene, og en blodig jagt går i gang</dcterms:abstract>
+                <dc:description>På omslaget: Unabridged books on disc</dc:description>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dc:publisher>Clipper Audio</dc:publisher>
+                <dc:publisher>Howes</dc:publisher>
+                <dc:contributor>Tom Stechschulte</dc:contributor>
+                <dc:date>2006</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Lydbog (cd)</dc:type>
+                <dc:format>7 cd'ere i 1 mappe</dc:format>
+                <dcterms:extent>ca. 7 t., 30 min</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
+                <dcterms:spatial xsi:type="dkdcplus:DBCS">USA</dcterms:spatial>
+                <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
+              </dkabm:record>
+              <identifier>870970-basis:43917129</identifier>
+              <creationDate>2006-07-20</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+            </object>
+          </collection>
+        </searchResult>
+        <facetResult/>
+        <queryDebugResult/>
+        <statInfo>
+          <fedoraRecordsCached>0</fedoraRecordsCached>
+          <fedoraRecordsRead>11</fedoraRecordsRead>
+          <time>0.420626</time>
+          <trackingId>os:2014-06-27T11:22:56:145205:13006</trackingId>
+        </statInfo>
+      </result>
+    </searchResponse>
+  </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
