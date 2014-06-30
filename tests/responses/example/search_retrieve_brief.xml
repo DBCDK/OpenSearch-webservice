@@ -3,7 +3,7 @@
   <SOAP-ENV:Body>
     <searchResponse>
       <result>
-        <hitCount>4</hitCount>
+        <hitCount>14</hitCount>
         <collectionCount>3</collectionCount>
         <more>false</more>
         <searchResult>
