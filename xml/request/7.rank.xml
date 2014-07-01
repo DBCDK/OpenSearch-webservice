@@ -7,7 +7,7 @@
       <ns1:profile>test</ns1:profile>
       <ns1:start>1</ns1:start>
       <ns1:stepValue>10</ns1:stepValue>
-      <ns1:rank>rank_general</ns1:rank>
+      <ns1:sort>rank_general</ns1:sort>
     </ns1:searchRequest>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
