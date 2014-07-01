@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:os="http://oss.dbc.dk/ns/opensearch" targetNamespace="http://oss.dbc.dk/ns/opensearch" elementFormDefault="qualified">
-	<xs:annotation>
-		<xs:documentation xml:lang="en">Opensearch Service</xs:documentation>
-		<xs:documentation xml:lang="en">This XML Schema describes the data and structure of data of the Opensearch search service.</xs:documentation>
-		<xs:documentation xml:lang="en">This file is part of Open Library System.
+  <xs:annotation>
+    <xs:documentation xml:lang="en">Opensearch Service</xs:documentation>
+    <xs:documentation xml:lang="en">This XML Schema describes the data and structure of data of the Opensearch search service.</xs:documentation>
+    <xs:documentation xml:lang="en">This file is part of Open Library System.
 Copyright © 2009, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
 Open Library System is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -11,7 +11,7 @@ Open Library System is free software: you can redistribute it and/or modify it u
 Open Library System is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License along with Open Library System.  If not, see http://www.gnu.org/licenses/</xs:documentation>
-	</xs:annotation>
+  </xs:annotation>
 <!-- Include imports below if you need to validate responses against the schemas.
      When/if generating code for the service, at least dkabm and doocbook can cause errors -->
 <!--
@@ -21,654 +21,658 @@ You should have received a copy of the GNU Affero General Public License along w
     <xs:import namespace="http://docbook.org/ns/docbook" schemaLocation="docbook.xsd"/>
     <xs:import namespace="http://oss.dbc.dk/ns/display" schemaLocation="display.xsd"/>
 -->
-	<xs:element name="getObjectRequest">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Request for a specific object.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:agency" minOccurs="0"/>
-				<xs:element ref="os:profile" minOccurs="0"/>
-				<xs:element ref="os:identifier" maxOccurs="unbounded"/>
-				<xs:element ref="os:objectFormat"/>
-				<xs:element ref="os:authentication" minOccurs="0"/>
-				<xs:element ref="os:callback" minOccurs="0"/>
-				<xs:element ref="os:includeHoldingsCount" minOccurs="0"/>
-				<xs:element ref="os:outputType" minOccurs="0"/>
-				<xs:element ref="os:relationData" minOccurs="0"/>
-				<xs:element ref="os:repository" minOccurs="0"/>
-				<xs:element ref="os:trackingId" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="searchRequest">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Request for searching Open Search.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:query"/>
-				<xs:element ref="os:queryLanguage" minOccurs="0"/>
-				<xs:element ref="os:agency" minOccurs="0"/>
-				<xs:element ref="os:profile" minOccurs="0"/>
-				<xs:element ref="os:allObjects" minOccurs="0"/>
-				<xs:element ref="os:authentication" minOccurs="0"/>
-				<xs:element ref="os:callback" minOccurs="0"/>
-				<xs:element ref="os:collectionType" minOccurs="0"/>
-				<xs:element ref="os:facets" minOccurs="0"/>
-				<xs:element ref="os:includeHoldingsCount" minOccurs="0"/>
-				<xs:element ref="os:objectFormat" minOccurs="0"/>
-				<xs:element ref="os:outputType" minOccurs="0"/>
-				<xs:element ref="os:relationData" minOccurs="0"/>
-				<xs:element ref="os:repository" minOccurs="0"/>
-				<xs:element ref="os:source" minOccurs="0"/>
-				<xs:element ref="os:start" minOccurs="0"/>
-				<xs:element ref="os:stepValue" minOccurs="0"/>
-			    <xs:choice>
-				    <xs:element ref="os:rank" minOccurs="0"/>
-				    <xs:element ref="os:userDefinedRanking" minOccurs="0"/>
-				    <xs:element ref="os:sort" minOccurs="0" maxOccurs="unbounded"/>
-			    </xs:choice>
-				<xs:element ref="os:queryDebug" minOccurs="0"/>
-				<xs:element ref="os:trackingId" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="searchResponse">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The service response.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:choice>
-				<xs:element ref="os:result"/>
-				<xs:element ref="os:error"/>
-			</xs:choice>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="access" type="os:accessType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">How to access the linked to resource (e.g. if it is free or not)</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="accessType" type="os:accessTypeType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Whether the access is to e.g. streaming or download</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="agency" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Identifier of the agency using this service</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="allObjects" type="xs:boolean">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">If true, all objects in a collection will be returned, no matter if the objects are part of the search result. If false, only objects that are part of the search result will be returned.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="authentication">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Parameters used for authentication purposes</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:groupIdAut"/>
-				<xs:element ref="os:passwordAut"/>
-				<xs:element ref="os:userIdAut"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="boostField">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Specification of a specific field used in user defined boost.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:fieldName"/>
-				<xs:element ref="os:fieldValue"/>
-				<xs:element ref="os:weight"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="callback" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">If outputType=json.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="collection">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">A collection in a search result will consist of one or more objects returned by the service, based on collectionType requested.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:resultPosition"/>
-				<xs:element ref="os:numberOfObjects"/>
-				<xs:element ref="os:object" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="collectionCount" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Number of collections returned in the search result.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="collectionType" type="os:collectionTypeType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">E.g presented as single manifestations or as collections of works.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="creationDate" type="xs:date">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The creation date of the original record or the object.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="error" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Message returned by the service, if an error occurs.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="facet">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Name of the facet that you want returned by the service.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:facetName"/>
-				<xs:element ref="os:facetTerm" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="facetName" type="os:facetType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Name of the index that is used for the facet returned by the service. It has to be one of the names listed i facetType.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="facetResult">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Part of the search response.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:facet" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="facets">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Part of the search request.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:numberOfTerms" minOccurs="0"/>
-				<xs:element ref="os:facetName" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="facetTerm">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">A specific term in a facet in the search result.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:frequence"/>
-				<xs:element ref="os:term"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="fedoraRecordsCached" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Number of records found in cache</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="fedoraRecordsRead" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Number of records read from fedora</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="fieldName" type="os:fieldNameType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Name of field used in user defined ranking.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="fieldType" type="os:fieldTypeType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Type of field used in user defined ranking.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="fieldValue" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Specific field value for ranking, e.g. 'bog' (used in ranking of dc.type='bog')</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="format" type="os:objectFormatType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The format that you want the service to return.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="formattedCollection">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The collection formatted by Open Format.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="formatsAvailable">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The format that you want the service to return.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:format" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="frequence" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Frequency of a specific facet term in the search result.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="groupIdAut" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Identifier of the group (most often a library number) the user belongs to (for authentication purposes)</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="hitCount" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Number of objects in the search result.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="holdingsCount" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Approximate number of libraries that owns one ore more copies of the manifeatation.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="identifier" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Unique identifier of an object.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="includeHoldingsCount" type="xs:boolean">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Whether to include holdings count if available (only on national level). Default is false.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="includeMarcXchange" type="xs:boolean">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Whether to include marcXchange record if available. Default is false.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="lendingLibraries" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Number of libraries that will lend the material.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="linkCollectionIdentifier" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Name of collection containing the link</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="linkObject">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Description of a link (online access).</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:accessType" minOccurs="0"/>
-				<xs:element ref="os:access" minOccurs="0"/>
-				<xs:element ref="os:linkTo"/>
-				<xs:element ref="os:linkCollectionIdentifier" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="linkTo" type="os:linkToType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">What the link point so, e.g. a website.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="more" type="xs:boolean">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Indicates whether the search result has more hits or the client has reached the end of the result.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="numberOfObjects" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Number of objects in a collection in a search result.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="numberOfTerms" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The number of terms that you want to be returned by the service in the facet requested. Used in the search request.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="object">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Representation of a digital object in the OpenSearch repository. An object might for example be a bibliographic record or a full text document. One of the formats that can be returned from the service.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice>
+  <xs:element name="getObjectRequest">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Request for a specific object.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:agency" minOccurs="0"/>
+        <xs:element ref="os:profile" minOccurs="0"/>
+        <xs:element ref="os:identifier" maxOccurs="unbounded"/>
+        <xs:element ref="os:objectFormat"/>
+        <xs:element ref="os:authentication" minOccurs="0"/>
+        <xs:element ref="os:callback" minOccurs="0"/>
+        <xs:element ref="os:includeHoldingsCount" minOccurs="0"/>
+        <xs:element ref="os:outputType" minOccurs="0"/>
+        <xs:element ref="os:relationData" minOccurs="0"/>
+        <xs:element ref="os:repository" minOccurs="0"/>
+        <xs:element ref="os:trackingId" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="searchRequest">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Request for searching Open Search.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:query"/>
+        <xs:element ref="os:queryLanguage" minOccurs="0"/>
+        <xs:element ref="os:agency" minOccurs="0"/>
+        <xs:element ref="os:profile" minOccurs="0"/>
+        <xs:element ref="os:allObjects" minOccurs="0"/>
+        <xs:element ref="os:authentication" minOccurs="0"/>
+        <xs:element ref="os:callback" minOccurs="0"/>
+        <xs:element ref="os:collectionType" minOccurs="0"/>
+        <xs:element ref="os:facets" minOccurs="0"/>
+        <xs:element ref="os:includeHoldingsCount" minOccurs="0"/>
+        <xs:element ref="os:objectFormat" minOccurs="0"/>
+        <xs:element ref="os:outputType" minOccurs="0"/>
+        <xs:element ref="os:relationData" minOccurs="0"/>
+        <xs:element ref="os:repository" minOccurs="0"/>
+        <xs:element ref="os:source" minOccurs="0"/>
+        <xs:element ref="os:start" minOccurs="0"/>
+        <xs:element ref="os:stepValue" minOccurs="0"/>
+          <xs:choice>
+            <xs:element ref="os:userDefinedRanking" minOccurs="0"/>
+            <xs:element ref="os:sort" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:choice>
+        <xs:element ref="os:queryDebug" minOccurs="0"/>
+        <xs:element ref="os:trackingId" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="searchResponse">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The service response.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="os:result"/>
+        <xs:element ref="os:error"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="access" type="os:accessType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">How to access the linked to resource (e.g. if it is free or not)</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="accessType" type="os:accessTypeType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Whether the access is to e.g. streaming or download</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="agency" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Identifier of the agency using this service</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="allObjects" type="xs:boolean">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">If true, all objects in a collection will be returned, no matter if the objects are part of the search result. If false, only objects that are part of the search result will be returned.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="authentication">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Parameters used for authentication purposes</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:groupIdAut"/>
+        <xs:element ref="os:passwordAut"/>
+        <xs:element ref="os:userIdAut"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="callback" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">If outputType=json.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="collection">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">A collection in a search result will consist of one or more objects returned by the service, based on collectionType requested.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:resultPosition"/>
+        <xs:element ref="os:numberOfObjects"/>
+        <xs:element ref="os:object" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="collectionCount" type="xs:int">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Number of collections returned in the search result.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="collectionType" type="os:collectionTypeType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">E.g presented as single manifestations or as collections of works.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="creationDate" type="xs:date">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The creation date of the original record or the object.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="error" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Message returned by the service, if an error occurs.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="facet">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Name of the facet that you want returned by the service.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:facetName"/>
+        <xs:element ref="os:facetTerm" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="facetName" type="os:facetType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Name of the index that is used for the facet returned by the service. It has to be one of the names listed i facetType.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="facetResult">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Part of the search response.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:facet" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="facets">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Part of the search request.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:numberOfTerms" minOccurs="0"/>
+        <xs:element ref="os:facetName" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="facetTerm">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">A specific term in a facet in the search result.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:frequence"/>
+        <xs:element ref="os:term"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fedoraRecordsCached" type="xs:int">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Number of records found in cache</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="fedoraRecordsRead" type="xs:int">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Number of records read from fedora</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="fieldName" type="os:fieldNameType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Name of field used in user defined ranking.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="fieldType" type="os:fieldTypeType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Type of field used in user defined ranking.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="fieldValue" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Specific field value for ranking, e.g. 'bog' (used in ranking of dc.type='bog')</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="format" type="os:objectFormatType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The format that you want the service to return.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="formattedCollection">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The collection formatted by Open Format.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="formatsAvailable">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The format that you want the service to return.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:format" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="frequence" type="xs:int">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Frequency of a specific facet term in the search result.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="groupIdAut" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Identifier of the group (most often a library number) the user belongs to (for authentication purposes)</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="hitCount" type="xs:int">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Number of objects in the search result.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="holdingsCount" type="xs:int">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Approximate number of libraries that owns one ore more copies of the manifeatation.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="identifier" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Unique identifier of an object.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="includeHoldingsCount" type="xs:boolean">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Whether to include holdings count if available (only on national level). Default is false.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="includeMarcXchange" type="xs:boolean">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Whether to include marcXchange record if available. Default is false.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="lendingLibraries" type="xs:int">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Number of libraries that will lend the material.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="linkCollectionIdentifier" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Name of collection containing the link</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="linkObject">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Description of a link (online access).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:accessType" minOccurs="0"/>
+        <xs:element ref="os:access" minOccurs="0"/>
+        <xs:element ref="os:linkTo"/>
+        <xs:element ref="os:linkCollectionIdentifier" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="linkTo" type="os:linkToType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">What the link point so, e.g. a website.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="more" type="xs:boolean">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Indicates whether the search result has more hits or the client has reached the end of the result.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="numberOfObjects" type="xs:int">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Number of objects in a collection in a search result.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="numberOfTerms" type="xs:int">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The number of terms that you want to be returned by the service in the facet requested. Used in the search request.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="object">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Representation of a digital object in the OpenSearch repository. An object might for example be a bibliographic record or a full text document. One of the formats that can be returned from the service.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice>
                     <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-					<xs:element ref="os:error"/>
-				</xs:choice>
-				<xs:element ref="os:identifier"/>
-				<xs:element ref="os:creationDate" minOccurs="0"/>
-				<xs:element ref="os:holdingsCount" minOccurs="0"/>
-				<xs:element ref="os:lendingLibraries" minOccurs="0"/>
-				<xs:element ref="os:relations" minOccurs="0"/>
-				<xs:element ref="os:formatsAvailable"/>
-				<xs:element ref="os:queryResultExplanation" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="objectFormat" type="os:objectFormatType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Here you can specify the sort order of the search result. Choose from the list in sortType.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="outputType" type="os:outputTypeType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">E.g. xml, json or php.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="parsedQuery" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The parsed version of the query sent to the search engine. Used for query debugging.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="rankFrequency">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The frequency of each searches made by rank_frequency</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="parsedQueryString" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The parsed version of the query string sent to the search engine. Used for query debugging.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="passwordAut" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Password (for authentication purposes)</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="profile" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The profile of sources to be searched.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="query" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The query language of this service is CQL, and the specific implementation of CQL in this service is described in the opensearch_cql.xml file.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="queryDebug" type="xs:boolean">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Use this paramter if you want to see how the service backend is handling your query. This is especially useful for debugging user defined ranking and boost.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="queryDebugResult">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Use this paramter if you want to see how the service backend is handling your query. This is especially useful for debugging user defined ranking and boost.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:rawQueryString"/>
-				<xs:element ref="os:queryString"/>
-				<xs:element ref="os:parsedQuery"/>
-				<xs:element ref="os:parsedQueryString"/>
-				<xs:element ref="os:rankFrequency" minOccurs="0"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="queryLanguage" type="os:queryLanguageType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Here you can specify the language of the user.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="queryResultExplanation" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Description of the result from the search engine. Used for query debugging.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="queryString" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The query sent to the search engine. Used for query debugging.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="rank" type="os:rankType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Here you can specify the rank order of the search result. Choose from the list in rankType.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="rankField">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Specifying fields to rank by and the corresponding weights</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:fieldName"/>
-				<xs:element ref="os:fieldType"/>
-				<xs:element ref="os:weight"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="rankUsed" type="os:rankType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The actual ranking used</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="rawQueryString" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The raw query sent to the search engine. Used for query debugging.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="relation">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">A specific relation on an object.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:relationType"/>
-				<xs:element ref="os:relationUri" minOccurs="0"/>
-				<xs:choice>
-					<xs:element ref="os:linkObject"/>
-					<xs:element ref="os:relationObject"/>
-				</xs:choice>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="relationData" type="os:relationDataType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Type of the relation from the list in relationTypeType.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="relations">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">If an object has relations, they will be present here.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:relation" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="relationObject">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The related object.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:object"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="relationType" type="os:relationTypeType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Type of the relation from the list in relationTypeType.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="relationUri" type="xs:anyURI">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">URI of the relation.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="repository" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Repository to search. Only need to be specified if different from default</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="result">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The search result from the service including collections, objects and relations.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:hitCount"/>
-				<xs:element ref="os:collectionCount"/>
-				<xs:element ref="os:more"/>
-				<xs:element ref="os:rankUsed" minOccurs="0"/>
-				<xs:element ref="os:searchResult" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="os:facetResult" minOccurs="0"/>
-				<xs:element ref="os:queryDebugResult" minOccurs="0"/>
-				<xs:element ref="os:statInfo"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="resultPosition" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The position of the collection in the search result.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="searchResult">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The result returned by the service. Might include both search result and facet result.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice>
-					<xs:element ref="os:collection" maxOccurs="unbounded"/>
-					<xs:element ref="os:formattedCollection" maxOccurs="unbounded"/>
-				</xs:choice>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="sort" type="os:sortType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Here you can specify the sort order of the search result. Choose from the list in sortType.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="source" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The source of objects. Use this if you want to restrict your search to a specific source in the repository.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="start" type="xs:positiveInteger">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The number of the first collection you want the service to return.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="statInfo">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Info about the internal ressource usage.</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:fedoraRecordsCached"/>
-				<xs:element ref="os:fedoraRecordsRead"/>
-				<xs:element ref="os:time"/>
-				<xs:element ref="os:trackingId"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="stepValue" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The number of collections you want the service to return, counted from the value in start.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="term" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Facet term.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="tieValue" type="xs:decimal">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">How much the final score of the query will be influenced by the scores of the lower scoring fields compared to the highest scoring field.</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="time" type="xs:decimal">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Number of seconds used in the service</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="userDefinedRanking">
-		<xs:annotation>
-			<xs:documentation xml:lang="en"></xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="os:tieValue"/>
-				<xs:element ref="os:rankField" minOccurs="1" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="userIdAut" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">User identifier (for authentication purposes)</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:element name="weight" type="xs:int">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">...</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:simpleType name="accessType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="free"/>
-			<xs:enumeration value="openurl"/>
-			<xs:enumeration value="onsite"/>
-			<xs:enumeration value="remote"/>
-			<xs:enumeration value="uni-c"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="accessTypeType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="download"/>
-			<xs:enumeration value="rest"/>
-			<xs:enumeration value="streaming"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="collectionTypeType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The types of collections that the service can return.</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="manifestation"/>
-			<xs:enumeration value="work"/>
-			<xs:enumeration value="work-1"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="facetType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The facet types that can be returned by the service.</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="facet.acSource"/>
-			<xs:enumeration value="facet.category"/>
-			<xs:enumeration value="facet.creator"/>
-			<xs:enumeration value="facet.date"/>
-			<xs:enumeration value="facet.language"/>
-			<xs:enumeration value="facet.sheetMusic"/>
-			<xs:enumeration value="facet.subject"/>
-			<xs:enumeration value="facet.type"/>
-			
-		</xs:restriction>
-	</xs:simpleType>
+          <xs:element ref="os:error"/>
+        </xs:choice>
+        <xs:element ref="os:identifier"/>
+        <xs:element ref="os:creationDate" minOccurs="0"/>
+        <xs:element ref="os:holdingsCount" minOccurs="0"/>
+        <xs:element ref="os:lendingLibraries" minOccurs="0"/>
+        <xs:element ref="os:relations" minOccurs="0"/>
+        <xs:element ref="os:formatsAvailable"/>
+        <xs:element ref="os:queryResultExplanation" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="objectFormat" type="os:objectFormatType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Here you can specify the sort order of the search result. Choose from the list in sortType.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="outputType" type="os:outputTypeType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">E.g. xml, json or php.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="parsedQuery" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The parsed version of the query sent to the search engine. Used for query debugging.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="rankFrequency">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The frequency of each searches made by rank_frequency</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="parsedQueryString" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The parsed version of the query string sent to the search engine. Used for query debugging.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="passwordAut" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Password (for authentication purposes)</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="profile" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The profile of sources to be searched.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="query" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The query language of this service is CQL, and the specific implementation of CQL in this service is described in the opensearch_cql.xml file.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="queryDebug" type="xs:boolean">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Use this paramter if you want to see how the service backend is handling your query. This is especially useful for debugging user defined ranking and boost.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="queryDebugResult">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Use this paramter if you want to see how the service backend is handling your query. This is especially useful for debugging user defined ranking and boost.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:rawQueryString"/>
+        <xs:element ref="os:queryString"/>
+        <xs:element ref="os:parsedQuery"/>
+        <xs:element ref="os:parsedQueryString"/>
+        <xs:element ref="os:rankFrequency" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="queryLanguage" type="os:queryLanguageType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Here you can specify the language of the user.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="queryResultExplanation" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Description of the result from the search engine. Used for query debugging.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="queryString" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The query sent to the search engine. Used for query debugging.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="rankField">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Specifying fields to rank by and the corresponding weights</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:fieldName"/>
+        <xs:element ref="os:fieldType"/>
+        <xs:element ref="os:weight"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sortUsed" type="os:sortType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The actual sorting/ranking used</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="rawQueryString" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The raw query sent to the search engine. Used for query debugging.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="relation">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">A specific relation on an object.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:relationType"/>
+        <xs:element ref="os:relationUri" minOccurs="0"/>
+        <xs:choice>
+          <xs:element ref="os:linkObject"/>
+          <xs:element ref="os:relationObject"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="relationData" type="os:relationDataType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Type of the relation from the list in relationTypeType.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="relations">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">If an object has relations, they will be present here.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:relation" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="relationObject">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The related object.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:object"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="relationType" type="os:relationTypeType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Type of the relation from the list in relationTypeType.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="relationUri" type="xs:anyURI">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">URI of the relation.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="repository" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Repository to search. Only need to be specified if different from default</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="result">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The search result from the service including collections, objects and relations.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:hitCount"/>
+        <xs:element ref="os:collectionCount"/>
+        <xs:element ref="os:more"/>
+        <xs:element ref="os:sortUsed" minOccurs="0"/>
+        <xs:element ref="os:searchResult" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="os:facetResult" minOccurs="0"/>
+        <xs:element ref="os:queryDebugResult" minOccurs="0"/>
+        <xs:element ref="os:statInfo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="resultPosition" type="xs:int">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The position of the collection in the search result.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="searchResult">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The result returned by the service. Might include both search result and facet result.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice>
+          <xs:element ref="os:collection" maxOccurs="unbounded"/>
+          <xs:element ref="os:formattedCollection" maxOccurs="unbounded"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sort" type="os:sortType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Here you can specify the sort or rank order of the search result. Choose from the list in sortType.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="source" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The source of objects. Use this if you want to restrict your search to a specific source in the repository.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="start" type="xs:positiveInteger">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The number of the first collection you want the service to return.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="statInfo">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Info about the internal ressource usage.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:fedoraRecordsCached"/>
+        <xs:element ref="os:fedoraRecordsRead"/>
+        <xs:element ref="os:time"/>
+        <xs:element ref="os:trackingId"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="stepValue" type="xs:int">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The number of collections you want the service to return, counted from the value in start.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="term" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Facet term.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="tieValue" type="xs:decimal">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">How much the final score of the query will be influenced by the scores of the lower scoring fields compared to the highest scoring field.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="time" type="xs:decimal">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Number of seconds used in the service</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="userDefinedRanking">
+    <xs:annotation>
+      <xs:documentation xml:lang="en"></xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:tieValue"/>
+        <xs:element ref="os:rankField" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="userIdAut" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">User identifier (for authentication purposes)</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="weight" type="xs:int">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">...</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:simpleType name="accessType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="free"/>
+      <xs:enumeration value="openurl"/>
+      <xs:enumeration value="onsite"/>
+      <xs:enumeration value="remote"/>
+      <xs:enumeration value="uni-c"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="accessTypeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="download"/>
+      <xs:enumeration value="rest"/>
+      <xs:enumeration value="streaming"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="collectionTypeType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The types of collections that the service can return.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="manifestation"/>
+      <xs:enumeration value="work"/>
+      <xs:enumeration value="work-1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="facetType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The facet types that can be returned by the service.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="facet.access"/>
+      <xs:enumeration value="facet.acSource"/>
+      <xs:enumeration value="facet.audience"/>
+      <xs:enumeration value="facet.audienceCategory"/>
+      <xs:enumeration value="facet.branch"/>
+      <xs:enumeration value="facet.category"/>
+      <xs:enumeration value="facet.creator"/>
+      <xs:enumeration value="facet.date"/>
+      <xs:enumeration value="facet.department"/>
+      <xs:enumeration value="facet.dk5"/>
+      <xs:enumeration value="facet.fictionSubject"/>
+      <xs:enumeration value="facet.form"/>
+      <xs:enumeration value="facet.gamePlatform"/>
+      <xs:enumeration value="facet.genre"/>
+      <xs:enumeration value="facet.genreCategory"/>
+      <xs:enumeration value="facet.geographic"/>
+      <xs:enumeration value="facet.language"/>
+      <xs:enumeration value="facet.level"/>
+      <xs:enumeration value="facet.let"/>
+      <xs:enumeration value="facet.literaryForm"/>
+      <xs:enumeration value="facet.lix"/>
+      <xs:enumeration value="facet.musicSubject"/>
+      <xs:enumeration value="facet.nationality"/>
+      <xs:enumeration value="facet.nonFictionSubject"/>
+      <xs:enumeration value="facet.partOf"/>
+      <xs:enumeration value="facet.period"/>
+      <xs:enumeration value="facet.primaryCreator"/>
+      <xs:enumeration value="facet.sheetMusic"/>
+      <xs:enumeration value="facet.subject"/>
+      <xs:enumeration value="facet.titleSeries"/>
+      <xs:enumeration value="facet.type"/>
+    </xs:restriction>
+  </xs:simpleType>
     <xs:simpleType name="fieldNameType">
         <xs:annotation>
             <xs:documentation xml:lang="en">...</xs:documentation>
@@ -687,120 +691,115 @@ You should have received a copy of the GNU Affero General Public License along w
             <xs:enumeration value="word"/>
         </xs:restriction>
     </xs:simpleType>
-	<xs:simpleType name="queryLanguageType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The languages you can choose from.</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="cql"/>
-			<xs:enumeration value="cqleng"/>
-			<xs:enumeration value="bestMatch"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="linkToType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="file"/>
-			<xs:enumeration value="linkresolver"/>
-			<xs:enumeration value="webservice"/>
-			<xs:enumeration value="website"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="objectFormatType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The object formats that you can choose from to be returned by the service.</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="briefWorkDisplay"/>
-			<xs:enumeration value="dkabm"/>
-			<xs:enumeration value="docbook"/>
-			<xs:enumeration value="marc21ToDm2"/>
-			<xs:enumeration value="marcxchange"/>
-			<xs:enumeration value="bibliotekdkWorkDisplay"/>
-			<xs:enumeration value="briefDisplayHtml"/>
-			<xs:enumeration value="fullDisplayHtml"/>
-			<xs:enumeration value="workDisplayHtml"/>
-			<xs:enumeration value="briefDisplay"/>
-			<xs:enumeration value="fullDisplay"/>
-			<xs:enumeration value="refWorks"/>
-			<xs:enumeration value="ris"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="outputTypeType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The types of output that can be returned by the service.</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="xml"/>
-			<xs:enumeration value="json"/>
-			<xs:enumeration value="php"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="relationDataType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The types of relations that the service can return.</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="type"/>
-			<xs:enumeration value="uri"/>
-			<xs:enumeration value="full"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="rankType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The rank orders you can choose from.</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="rank_frequency"/>
-			<xs:enumeration value="rank_creator"/>
-			<xs:enumeration value="rank_general"/>
-			<xs:enumeration value="rank_none"/>
-			<xs:enumeration value="rank_title"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="relationTypeType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The types of relations that the service can return.</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="dbcbib:hasTrack"/>
-			<xs:enumeration value="dbcbib:isPartOfAlbum"/>
-			<xs:enumeration value="dbcbib:isPartOfManifestation"/>
-			<xs:enumeration value="dbcaddi:hasReview"/>
-			<xs:enumeration value="dbcaddi:isReviewOf"/>
-			<xs:enumeration value="dbcaddi:hasAnalysis"/>
-			<xs:enumeration value="dbcaddi:isAnalysisOf"/>
-			<xs:enumeration value="dbcaddi:hasSoundClip"/>
-			<xs:enumeration value="dbcaddi:hasCreatorDescription"/>
-			<xs:enumeration value="dbcaddi:hasCreatorHomePage"/>
-			<xs:enumeration value="dbcaddi:hasOnlineAccess"/>
-			<xs:enumeration value="dbcaddi:hasOpenUrl"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="sortType">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">The sort orders you can choose from.</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="title_ascending"/>
-			<xs:enumeration value="title_descending"/>
-			<xs:enumeration value="creator_ascending"/>
-			<xs:enumeration value="creator_descending"/>
-			<xs:enumeration value="date_ascending"/>
-			<xs:enumeration value="date_descending"/>
-			<xs:enumeration value="acquisitionDate_ascending"/>
-			<xs:enumeration value="acquisitionDate_descending"/>
-			<xs:enumeration value="work_type_ascending"/>
-			<xs:enumeration value="work_type_descending"/>
-			<xs:enumeration value="record_owner_ascending"/>
-			<xs:enumeration value="record_owner_descending"/>
-			<xs:enumeration value="article_date_ascending"/>
-			<xs:enumeration value="article_date_descending"/>
-			<xs:enumeration value="random"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:element name="trackingId" type="xs:string">
-		<xs:annotation>
-			<xs:documentation xml:lang="en">Unique id to track this request</xs:documentation>
-		</xs:annotation>
-	</xs:element>
+  <xs:simpleType name="queryLanguageType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The languages you can choose from.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="bestMatch"/>
+      <xs:enumeration value="cql"/>
+      <xs:enumeration value="cqleng"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="linkToType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="file"/>
+      <xs:enumeration value="linkresolver"/>
+      <xs:enumeration value="webservice"/>
+      <xs:enumeration value="website"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="objectFormatType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The object formats that you can choose from to be returned by the service.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="bibliotekdkWorkDisplay"/>
+      <xs:enumeration value="briefDisplay"/>
+      <xs:enumeration value="briefDisplayHtml"/>
+      <xs:enumeration value="briefWorkDisplay"/>
+      <xs:enumeration value="dkabm"/>
+      <xs:enumeration value="docbook"/>
+      <xs:enumeration value="fullDisplayHtml"/>
+      <xs:enumeration value="fullDisplay"/>
+      <xs:enumeration value="marc21ToDm2"/>
+      <xs:enumeration value="marcxchange"/>
+      <xs:enumeration value="refWorks"/>
+      <xs:enumeration value="ris"/>
+      <xs:enumeration value="workDisplayHtml"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="outputTypeType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The types of output that can be returned by the service.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="json"/>
+      <xs:enumeration value="php"/>
+      <xs:enumeration value="xml"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="relationDataType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The types of relations that the service can return.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="full"/>
+      <xs:enumeration value="type"/>
+      <xs:enumeration value="uri"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="relationTypeType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The types of relations that the service can return.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="dbcaddi:hasAnalysis"/>
+      <xs:enumeration value="dbcaddi:hasCreatorDescription"/>
+      <xs:enumeration value="dbcaddi:hasCreatorHomePage"/>
+      <xs:enumeration value="dbcaddi:hasOnlineAccess"/>
+      <xs:enumeration value="dbcaddi:hasOpenUrl"/>
+      <xs:enumeration value="dbcaddi:hasReview"/>
+      <xs:enumeration value="dbcaddi:hasSoundClip"/>
+      <xs:enumeration value="dbcaddi:isAnalysisOf"/>
+      <xs:enumeration value="dbcaddi:isReviewOf"/>
+      <xs:enumeration value="dbcbib:hasTrack"/>
+      <xs:enumeration value="dbcbib:isPartOfAlbum"/>
+      <xs:enumeration value="dbcbib:isPartOfManifestation"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="sortType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The rank/sort orders you can choose from.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="acquisitionDate_ascending"/>
+      <xs:enumeration value="acquisitionDate_descending"/>
+      <xs:enumeration value="article_date_ascending"/>
+      <xs:enumeration value="article_date_descending"/>
+      <xs:enumeration value="creator_ascending"/>
+      <xs:enumeration value="creator_descending"/>
+      <xs:enumeration value="date_ascending"/>
+      <xs:enumeration value="date_descending"/>
+      <xs:enumeration value="random"/>
+      <xs:enumeration value="rank_creator"/>
+      <xs:enumeration value="rank_frequency"/>
+      <xs:enumeration value="rank_general"/>
+      <xs:enumeration value="rank_main_title"/>
+      <xs:enumeration value="rank_none"/>
+      <xs:enumeration value="rank_subject"/>
+      <xs:enumeration value="rank_title"/>
+      <xs:enumeration value="record_owner_ascending"/>
+      <xs:enumeration value="record_owner_descending"/>
+      <xs:enumeration value="title_ascending"/>
+      <xs:enumeration value="title_descending"/>
+      <xs:enumeration value="work_type_ascending"/>
+      <xs:enumeration value="work_type_descending"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="trackingId" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Unique id to track this request</xs:documentation>
+    </xs:annotation>
+  </xs:element>
 </xs:schema>
