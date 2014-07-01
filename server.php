@@ -665,7 +665,7 @@ class openSearch extends webServiceServer {
     $result->collectionCount->_value = count($collections);
     $result->more->_value = ($more ? 'true' : 'false');
     if (isset($rank)) {
-      $result->rankUsed->_value = $rank;
+      $result->sortUsed->_value = $rank;
     }
     $result->searchResult = $collections;
     $result->facetResult->_value = $facets;
@@ -937,12 +937,12 @@ class openSearch extends webServiceServer {
       $pg->open();
       $rec_pos = $solr_response['start'];
       foreach ($solr_response['docs'] as $solr_doc) {
-        if (empty($solr_doc['001a']) || empty($solr_doc['001b'])) {
-          verbose::log(FATAL, 'SOLR error: cannot find field 001a or 001b');
+        if (empty($solr_doc['marc.001a']) || empty($solr_doc['marc.001b'])) {
+          verbose::log(FATAL, 'SOLR error: cannot find field marc.001a or marc.001b');
           @ $dom->loadXml('<?xml version="1.0" encoding="UTF-8"?' . '><marcx:record format="danMARC2" type="Bibliographic" xmlns:marcx="info:lc/xmlns/marcxchange-v1"><marcx:datafield tag="245" ind1="0" ind2="0"><marcx:subfield code="a">ERROR: Cannot read record from repository: ' . $this->repository_name . '</marcx:subfield></marcx:datafield></marcx:record>');
         }
         else {
-          $query = 'SELECT content FROM records WHERE id = \'' . $solr_doc['001a'] . '\' AND library = ' . $solr_doc['001b'];
+          $query = 'SELECT content FROM records WHERE id = \'' . $solr_doc['marc.001a'][0] . '\' AND library = ' . $solr_doc['marc.001b'];
           $pg->set_query($query);
           $pg->execute();
           $row = $pg->get_row();
