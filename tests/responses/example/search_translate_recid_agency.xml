@@ -8,8 +8,8 @@
         <more>false</more>
         <facetResult/>
         <queryDebugResult>
-          <rawQueryString>rec.id:870970\\-basis\\:29978891</rawQueryString>
-          <queryString>rec.id:870970\\-basis\\:29978891</queryString>
+          <rawQueryString>rec.id:870970\-basis\:29978891</rawQueryString>
+          <queryString>rec.id:870970\-basis\:29978891</queryString>
           <parsedQuery>(+PhraseQuery(rec.id:"870970 basis 29978891"))/no_coord</parsedQuery>
           <parsedQueryString>+rec.id:"870970 basis 29978891"</parsedQueryString>
         </queryDebugResult>
