@@ -213,13 +213,18 @@ logfile = /tmp/opensearch.log
 ;logfile = syslog://LOG_LOCAL0
 
 ; sorting & ranking
+; sorting and rakings are defined in the structure below
+;
+; sort[<sort_name>] = <sort-field> <asc || desc>
+;
 ; rank[<rank_name>][<rank_parameter>][<rank_register>] = boost_value
 ;   rank_name is the sort-name that will trigger this ranking
 ;   rank_parameter, "word_boost", "phrase_boost" or "tie"
 ;   - must specify at least one word_boost and/or phrase_boost and just one tie
 ;   - boosts must be placed in descending boost order
-;   rank_register name of register to rank towards
-;   boost_value for rank_register
+;   rank_register name of register to use for ranking
+;   boost_value (integer) for rank_register
+;   tie_value (decimal) 1.0 or lower
 ;
 
 ; rank[rank_main_title][word_boost][dkcclterm.ht] = 2
