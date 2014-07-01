@@ -8,7 +8,7 @@
 			<head>
 				<title>CQL indexes</title>
 				<style type="text/css">
-					td {font-family: verdana; font-size: 10; padding: 0px 4px 0px 4px;}
+					td {font-family: verdana; font-size: 10; padding: 0px 4px 0px 4px; vertical-align:top}
 					ol {font-family: verdana; font-size: 10}
 					ul {font-family: verdana; font-size: 12}
 					div {font-family: verdana; font-size: 12}
@@ -17,8 +17,8 @@
 			</head>
 			<body>
 				<h1>CQL Indexes</h1>
-				<div>This list is manually updated. Last updated february 17, 2014</div>
-				<div>Denne liste opdateres manuelt. Senest opdateret 17. februar 2014</div>
+				<div>This list is manually updated. Last updated <xsl:value-of select="/exp:explain/exp:metaInfo/exp:dateModified"/></div>
+				<div>Denne liste opdateres manuelt. Senest opdateret <xsl:value-of select="/exp:explain/exp:metaInfo/exp:dateModified"/></div>
 				<br/>
 				<table border="1" cellspacing="0">
 					<tr>
@@ -33,6 +33,12 @@
 						</td>
 						<td>
 							<b>Filter</b>
+						</td>
+						<td>
+							<b>Alias</b>
+						</td>
+						<td>
+							<b>Alias slop</b>
 						</td>
 						<td>
 							<b>English description</b>
@@ -57,6 +63,18 @@
 								<xsl:value-of select="exp:map/exp:name/@filter"/>
 							</td>
 							<td>
+								<xsl:for-each select="exp:map/exp:alias">
+								  <xsl:value-of select="current()"/>
+                  <br/>
+					      </xsl:for-each>
+							</td>
+							<td>
+								<xsl:for-each select="exp:map/exp:alias">
+								  <xsl:value-of select="current()/@slop"/>
+                  <br/>
+					      </xsl:for-each>
+							</td>
+							<td>
 								<xsl:value-of select="exp:title[@lang='en']"/>
 							</td>
 							<td>
@@ -66,49 +84,7 @@
 					  </xsl:if>
 					</xsl:for-each>
 				</table>
-                <br />
-				<div>Aliases (short forms)</div>
-                <br />
-				<table border="1" cellspacing="0">
-					<tr>
-						<td>
-							<b>Namespace</b>
-						</td>
-						<td>
-							<b>Name</b>
-						</td>
-						<td>
-							<b>Slop</b>
-						</td>
-						<td>
-							<b>Alias namespace</b>
-						</td>
-						<td>
-							<b>Alias name</b>
-						</td>
-					</tr>
-					<xsl:for-each select="/exp:explain/exp:indexInfo/exp:index/exp:map">
-					  <xsl:if test="exp:alias">
-						<tr>
-							<td>
-								<xsl:value-of select="exp:alias/@set"/>
-							</td>
-							<td>
-								<xsl:value-of select="exp:alias"/>
-							</td>
-							<td>
-								<xsl:value-of select="exp:alias/@slop"/>
-							</td>
-							<td>
-								<xsl:value-of select="exp:name/@set"/>
-							</td>
-							<td>
-								<xsl:value-of select="exp:name"/>
-							</td>
-						</tr>
-					  </xsl:if>
-					</xsl:for-each>
-				</table>
+        <br />
 			</body>
 		</html>
 	</xsl:template>
