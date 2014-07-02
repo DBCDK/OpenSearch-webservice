@@ -115,15 +115,15 @@ class openSearch extends webServiceServer {
     }
     $use_work_collection = ($param->collectionType->_value <> 'manifestation');
 
-    if ($unsupported = self::parse_for_ranking($param, $rank, $rank_types)) {
-      return $ret_error;
-    }
-    if ($unsupported = self::parse_for_sorting($param, $sort, $sort_types)) {
-      return $ret_error;
+    $sort = array();
+    if (!self::parse_for_ranking($param, $rank, $rank_types)) {
+      if ($unsupported = self::parse_for_sorting($param, $sort, $sort_types)) {
+        return $ret_error;
+      }
     }
 
     $this->format = self::set_format($param->objectFormat, $this->config->get_value('open_format', 'setup'), $this->config->get_value('solr_format', 'setup'));
-    
+
     if ($unsupported) return $ret_error;
 
     $ret_error->searchResponse->_value->error->_value = &$error;
@@ -664,9 +664,7 @@ class openSearch extends webServiceServer {
     $result->hitCount->_value = $numFound;
     $result->collectionCount->_value = count($collections);
     $result->more->_value = ($more ? 'true' : 'false');
-    if (isset($rank)) {
-      $result->sortUsed->_value = $rank;
-    }
+    self::set_sortUsed($result, $rank, $sort);
     $result->searchResult = $collections;
     $result->facetResult->_value = $facets;
     $result->queryDebugResult->_value = $debug_result;
@@ -870,6 +868,20 @@ class openSearch extends webServiceServer {
   }
 
   /*******************************************************************************/
+
+  /** \brief sets sortUsed i rank or sort is used
+   * 
+   */
+  private function set_sortUsed(&$ret, $rank, $sort) {
+    if (isset($rank)) {
+      $ret->sortUsed->_value = $rank;
+    }
+    elseif (!empty($sort)) {
+      foreach ($sort as $s) {
+        $ret->sortUsed[]->_value = $s;
+      }
+    }
+  }
 
   /** \brief Compares registers in cql_file with solr, using the luke request handler:
    *   http://wiki.apache.org/solr/LukeRequestHandler
@@ -1105,38 +1117,59 @@ class openSearch extends webServiceServer {
 
   /** \brief parse input for rank parameters
    *
+   * @param $param object       The request
+   * @param $rank string        Name of rank used by request
+   * @param $rank_types array   Settings for the given rank
+   * 
+   * return boolean  True if a ranking is found
    */
   private function parse_for_ranking($param, &$rank, &$rank_types) {
-    if (($rr = $param->userDefinedRanking) || ($rr = $param->userDefinedBoost->_value->userDefinedRanking)) {
+    if ($rr = $param->userDefinedRanking) {
       $rank = 'rank';
       $rank_user['tie'] = $rr->_value->tieValue->_value;
-
-      if (is_array($rr->_value->rankField)) {
-        foreach ($rr->_value->rankField as $rf) {
-          $boost_type = ($rf->_value->fieldType->_value == 'word' ? 'word_boost' : 'phrase_boost');
-          $rank_user[$boost_type][$rf->_value->fieldName->_value] = $rf->_value->weight->_value;
-          $rank .= '_' . $boost_type . '-' . $rf->_value->fieldName->_value . '-' . $rf->_value->weight->_value;
-        }
+      $rfs = (is_array($rr->_value->rankField) ? $rr->_value->rankField : array($rr->_value->rankField));
+      foreach ($rfs as $rf) {
+        $boost_type = ($rf->_value->fieldType->_value == 'word' ? 'word_boost' : 'phrase_boost');
+        $rank_user[$boost_type][$rf->_value->fieldName->_value] = $rf->_value->weight->_value;
+        $rank .= '_' . $boost_type . '-' . $rf->_value->fieldName->_value . '-' . $rf->_value->weight->_value;
       }
-      else {
-        $boost_type = ($rr->_value->rankField->_value->fieldType->_value == 'word' ? 'word_boost' : 'phrase_boost');
-        $rank_user[$boost_type][$rr->_value->rankField->_value->fieldName->_value] = $rr->_value->rankField->_value->weight->_value;
-        $rank .= '_' . $boost_type . '-' . $rr->_value->rankField->_value->fieldName->_value . '-' . $rr->_value->rankField->_value->weight->_value;
-      }
-      // make sure anyIndexes will be part of the dismax-search
-      if (empty($rank_user['word_boost']['cql.anyIndexes'])) $rank_user['word_boost']['cql.anyIndexes'] = 1;
-      if (empty($rank_user['phrase_boost']['cql.anyIndexes'])) $rank_user['phrase_boost']['cql.anyIndexes'] = 1;
       $rank_types[$rank] = $rank_user;
     }
-    elseif (($rank = $param->rank->_value) || ($rank = $param->userDefinedBoost->_value->rank->_value)) {
+    elseif (is_scalar($param->sort->_value)) {
       $rank_types = $this->config->get_value('rank', 'setup');
+      if ($rank_types[$param->sort->_value]) {
+        $rank = $param->sort->_value;
+      }
     }
-    elseif (($boost_str = self::boostUrl($param->userDefinedBoost->_value->boostField)) && empty($rank)) {
-      $rank_types = $this->config->get_value('rank', 'setup');
-      $rank = 'rank_none';
+    return !empty($rank);
+  }
+
+  /** \brief parse input for sort parameters
+   *
+   * @param $param object       The request
+   * @param $sort string        Name of sort used by request
+   * @param $sort_types array   Settings for the given sort
+   * 
+   * return none  Modifies $sort and $sort_types
+   */
+  private function parse_for_sorting($param, &$sort, &$sort_types) {
+    if (!is_array($sort)) {
+      $sort = array();
     }
-    if ($rank && !isset($rank_types[$rank])) {
-      return 'Error: Unknown rank: ' . $rank;
+    if ($param->sort) {
+      $random = FALSE;
+      $sorts = (is_array($param->sort) ? $param->sort : array($param->sort));
+      $sort_types = $this->config->get_value('sort', 'setup');
+      foreach ($sorts as $s) {
+        if (!isset($sort_types[$s->_value])) {
+          return 'Error: Unknown sort: ' . $s->_value;
+        }
+        $random = $random || ($s->_value == 'random');
+        if ($random && count($sort)) {
+          return 'Error: Random sorting can only be used alone';
+        }
+        $sort[] = $s->_value;
+      }
     }
   }
 
@@ -1161,33 +1194,10 @@ class openSearch extends webServiceServer {
 
   }
 
-  /** \brief parse input for sort parameters
+  /** \brief Validate sort and rank
    *
    */
-  private function parse_for_sorting($param, &$sort, &$sort_types) {
-    if (!is_array($sort)) {
-      $sort = array();
-    }
-    if ($param->sort) {
-      $random = FALSE;
-      if (is_array($param->sort)) {
-        $sorts = &$param->sort;
-      }
-      else {
-        $sorts[] = $param->sort;
-      }
-      $sort_types = $this->config->get_value('sort', 'setup');
-      foreach ($sorts as $s) {
-        if (!isset($sort_types[$s->_value])) {
-          return 'Error: Unknown sort: ' . $s->_value;
-        }
-        $random = $random || ($s->_value == 'random');
-        if ($random && count($sort)) {
-          return 'Error: Random sorting can only be used alone';
-        }
-        $sort[] = $s->_value;
-      }
-    }
+  private function validate_rank_sort($param, $rank, $sort) {
   }
 
   /** \brief Encapsules how to get the data from the first element
