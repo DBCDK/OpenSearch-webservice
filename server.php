@@ -191,6 +191,7 @@ class openSearch extends webServiceServer {
         $error = $collections;
         return $ret_error;
       }
+      self::filter_marcxchange_records($collections, '^[a-z]');
       $result = &$ret->searchResponse->_value->result->_value;
       $result->hitCount->_value = self::get_num_found($solr_arr);
       $result->collectionCount->_value = count($collections);
@@ -964,7 +965,8 @@ class openSearch extends webServiceServer {
         $rec_pos++;
         $ret[$rec_pos]->_value->collection->_value->resultPosition->_value = $rec_pos;
         $ret[$rec_pos]->_value->collection->_value->numberOfObjects->_value = 1;
-        $ret[$rec_pos]->_value->collection->_value->object[]->_value = $marc_obj;
+        $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_value = $marc_obj;
+        $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_namespace = $this->xmlns['marcx'];
       }
       $pg->close();
     }
@@ -1491,7 +1493,25 @@ class openSearch extends webServiceServer {
     $this->watch->stop('format');
   }
 
-  /** \brief Remove not asked for format from result
+  /** \brief Remove private or internal fields from the marxchange record
+   *
+   */
+  private function filter_marcxchange_records(&$collections, $filter) {
+    foreach ($collections as $idx => &$c) {
+      foreach ($c->_value->collection->_value->object as &$o) {
+        if ($o->_value->collection) {
+          @ $mrec = &$o->_value->collection->_value->record->_value;
+          foreach ($mrec->datafield as $idf => &$df) {
+            if (preg_match('/' . $filter . '/', $df->_attributes->tag->_value)) {
+              unset($mrec->datafield[$idf]);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /** \brief Remove not asked for formats from result
    *
    */
   private function remove_unselected_formats(&$collections) {
