@@ -352,8 +352,8 @@ curl_timeout = @FORMAT_CURL_TIMEOUT@
 
 ; cache setting for the format part
 ; - cache_host: name of cache server, use localhost in caching is done locally
-; - cache_port: port for cachng host
-; - cache_expire: number of seconds before a cahed entry will expire
+; - cache_port: port for caching host
+; - cache_expire: number of seconds before a cached entry will expire
 ;cache_host = localhost
 ;cache_port = 11211
 ;cache_expire = 600
