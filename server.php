@@ -1175,11 +1175,29 @@ class openSearch extends webServiceServer {
     }
   }
 
-  /** \brief 
+  /** \brief Selects a ranking scheme depending on some register frequency lookups
+   *
+   * @param $solr_query array - the parsed user query
+   * @param $guesses array - registers to get frequence for
+   * @param $user_filter string - filter query as set by users profile
+   *
+   * $return string - the ranking scheme with highest number of hits
    *
    */
-  private function guess_rank($solr_query, $guesses, $filter) {
-    $freqs = self::get_register_freqency($solr_query['edismax'], array_keys($guesses), $filter);
+  private function guess_rank($solr_query, $guesses, $user_filter) {
+    $guess_filter = array();
+    if ($freq_filter = $this->config->get_value('frequency_filter', 'setup')) {
+      foreach ($freq_filter as $f) {
+        if ($f == 'user_profile_filter') {
+          $guess_filter[] = $user_filter;
+        }
+        else {
+          $guess_filter[] = rawurlencode($f);
+        }
+      }
+    }
+    
+    $freqs = self::get_register_freqency($solr_query['edismax'], array_keys($guesses), $guess_filter);
     $max = -1;
     $idx = 0;
     foreach ($guesses as $reg => $rank) {
@@ -1825,15 +1843,21 @@ class openSearch extends webServiceServer {
 
   /** \brief fetch hit count for each register in a given list
    *
+   * @param $eq array - the edismax part of the parsed user query
+   * @param $guesses array - registers to get frequence for
+   * @param $filters array - filter query/queries
+   *
+   * $return array - hitcount for each register
    */
-  private function get_register_freqency($eq, $registers, $filter) {
+  private function get_register_freqency($eq, $registers, $filters) {
     $q = implode(' and ', $eq['q']);
+    $filter = implode('&fq=', $filters);
     foreach ($eq['fq'] as $fq) {
       $filter .= '&fq=' . rawurlencode($fq);
     }
     foreach ($registers as $reg_name => $reg_value) {
       $solr_urls[]['url'] = $this->repository['solr'] .  
-                            '?q=' . $reg_value . ':(' . urlencode($q) .  ')&fq=' . $filter .  '&start=1&rows=0&wt=phps';
+                            '?q=' . $reg_value . '%3A(' . urlencode($q) .  ')&fq=' . $filter .  '&start=1&rows=0&wt=phps';
       $ret[$reg_name] = 0;
     }
     $err = self::do_solr($solr_urls, $solr_arr);
