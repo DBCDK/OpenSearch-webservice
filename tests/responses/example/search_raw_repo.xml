@@ -66,18 +66,6 @@
                   <marcx:subfield code="a">Huynh</marcx:subfield>
                   <marcx:subfield code="h">Pascal</marcx:subfield>
                 </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">hs (3 bind. "Beihefte" katalogiseres i selvstændige indførsler)</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="s10" ind1="0" ind2="0">
-                  <marcx:subfield code="a">DBC</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="z99" ind1="0" ind2="0">
-                  <marcx:subfield code="a">hs</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="n55" ind1="0" ind2="0">
-                  <marcx:subfield code="a">20050301</marcx:subfield>
-                </marcx:datafield>
               </marcx:record>
               </marcx:collection>
             </object>
@@ -111,18 +99,6 @@
                 <marcx:datafield tag="245" ind1="0" ind2="0">
                   <marcx:subfield code="n">4</marcx:subfield>
                   <marcx:subfield code="o">Sikkerhedskultur</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">tb</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="s10" ind1="0" ind2="0">
-                  <marcx:subfield code="a">DBC</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="z99" ind1="0" ind2="0">
-                  <marcx:subfield code="a">tb</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="n55" ind1="0" ind2="0">
-                  <marcx:subfield code="a">20050301</marcx:subfield>
                 </marcx:datafield>
               </marcx:record>
               </marcx:collection>
@@ -204,21 +180,6 @@
                   <marcx:subfield code="u">http://www.arbejdsulykker.dk/pdf/met_3_1_2.pdf</marcx:subfield>
                   <marcx:subfield code="z">Kræver læseprogrammet Acrobat Reader</marcx:subfield>
                 </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">tb</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">rettet i forb. med tilf. af 008w</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="s10" ind1="0" ind2="0">
-                  <marcx:subfield code="a">DBC</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="z99" ind1="0" ind2="0">
-                  <marcx:subfield code="a">masseret</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="n55" ind1="0" ind2="0">
-                  <marcx:subfield code="a">20050301</marcx:subfield>
-                </marcx:datafield>
                 <marcx:datafield tag="900" ind1="0" ind2="0">
                   <marcx:subfield code="0"/>
                   <marcx:subfield code="a">Páll M. Ríkhardsson</marcx:subfield>
@@ -257,18 +218,6 @@
                 <marcx:datafield tag="245" ind1="0" ind2="0">
                   <marcx:subfield code="n">2</marcx:subfield>
                   <marcx:subfield code="o">Intern sikkerhedsdokumentation og -gennemgang</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">tb</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="s10" ind1="0" ind2="0">
-                  <marcx:subfield code="a">DBC</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="z99" ind1="0" ind2="0">
-                  <marcx:subfield code="a">tb</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="n55" ind1="0" ind2="0">
-                  <marcx:subfield code="a">20050301</marcx:subfield>
                 </marcx:datafield>
               </marcx:record>
               </marcx:collection>
@@ -332,21 +281,6 @@
                   <marcx:subfield code="z">Adgangsmåde: Internet</marcx:subfield>
                   <marcx:subfield code="u">http://www.arbejdsulykker.dk/pdf/met_2_1.pdf</marcx:subfield>
                   <marcx:subfield code="z">Kræver læseprogrammet Acrobat Reader</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">tb</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">rettet i forb. med tilf. af 008w</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="s10" ind1="0" ind2="0">
-                  <marcx:subfield code="a">DBC</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="z99" ind1="0" ind2="0">
-                  <marcx:subfield code="a">masseret</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="n55" ind1="0" ind2="0">
-                  <marcx:subfield code="a">20050301</marcx:subfield>
                 </marcx:datafield>
               </marcx:record>
               </marcx:collection>
@@ -433,21 +367,6 @@
                   <marcx:subfield code="a">Stiftelsen for industriell og teknisk forskning ved Norges tekniske høgskole</marcx:subfield>
                   <marcx:subfield code="z">710/1(a)</marcx:subfield>
                 </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">tb</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">rettet i forb. med tilf. af 008w</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="s10" ind1="0" ind2="0">
-                  <marcx:subfield code="a">DBC</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="z99" ind1="0" ind2="0">
-                  <marcx:subfield code="a">masseret</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="n55" ind1="0" ind2="0">
-                  <marcx:subfield code="a">20050301</marcx:subfield>
-                </marcx:datafield>
                 <marcx:datafield tag="900" ind1="0" ind2="0">
                   <marcx:subfield code="0"/>
                   <marcx:subfield code="a">Engene Røyset</marcx:subfield>
@@ -524,21 +443,6 @@
                   <marcx:subfield code="g">A/S</marcx:subfield>
                   <marcx:subfield code="z">710/3</marcx:subfield>
                 </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">tb</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">rettet i forb. med tilf. af 008w</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="s10" ind1="0" ind2="0">
-                  <marcx:subfield code="a">DBC</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="z99" ind1="0" ind2="0">
-                  <marcx:subfield code="a">masseret</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="n55" ind1="0" ind2="0">
-                  <marcx:subfield code="a">20050301</marcx:subfield>
-                </marcx:datafield>
                 <marcx:datafield tag="900" ind1="0" ind2="0">
                   <marcx:subfield code="0"/>
                   <marcx:subfield code="a">Jensen</marcx:subfield>
@@ -578,18 +482,6 @@
                 <marcx:datafield tag="245" ind1="0" ind2="0">
                   <marcx:subfield code="n">3</marcx:subfield>
                   <marcx:subfield code="o">Økonomisk vurdering af sikkerhed</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">tb</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="s10" ind1="0" ind2="0">
-                  <marcx:subfield code="a">DBC</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="z99" ind1="0" ind2="0">
-                  <marcx:subfield code="a">tb</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="n55" ind1="0" ind2="0">
-                  <marcx:subfield code="a">20050301</marcx:subfield>
                 </marcx:datafield>
               </marcx:record>
               </marcx:collection>
@@ -659,21 +551,6 @@
                   <marcx:subfield code="z">Adgangsmåde: Internet</marcx:subfield>
                   <marcx:subfield code="u">http://www.arbejdsulykker.dk/pdf/met_4_1.pdf</marcx:subfield>
                   <marcx:subfield code="z">Kræver læseprogrammet Acrobat Reader</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">tb</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">rettet i forb. med tilf. af 008w</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="s10" ind1="0" ind2="0">
-                  <marcx:subfield code="a">DBC</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="z99" ind1="0" ind2="0">
-                  <marcx:subfield code="a">masseret</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="n55" ind1="0" ind2="0">
-                  <marcx:subfield code="a">20050301</marcx:subfield>
                 </marcx:datafield>
                 <marcx:datafield tag="900" ind1="0" ind2="0">
                   <marcx:subfield code="0"/>
@@ -756,21 +633,6 @@
                 <marcx:datafield tag="910" ind1="0" ind2="0">
                   <marcx:subfield code="a">DTU</marcx:subfield>
                   <marcx:subfield code="z">710(a)</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">tb</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="d08" ind1="0" ind2="0">
-                  <marcx:subfield code="a">rettet i forb. med tilf. af 008w</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="s10" ind1="0" ind2="0">
-                  <marcx:subfield code="a">DBC</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="z99" ind1="0" ind2="0">
-                  <marcx:subfield code="a">masseret</marcx:subfield>
-                </marcx:datafield>
-                <marcx:datafield tag="n55" ind1="0" ind2="0">
-                  <marcx:subfield code="a">20050301</marcx:subfield>
                 </marcx:datafield>
               </marcx:record>
               </marcx:collection>
