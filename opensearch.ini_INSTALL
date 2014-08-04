@@ -303,6 +303,10 @@ sort[article_date_descending] = sort.articleDate desc
 
 sort[random] = random
 
+; filter for rank_frequency
+frequency_filter[] = user_profile_filter
+frequency_filter[] = term.date:[1940 TO *]
+
 
 ; set verboselevel
 ;   WARNING - simple warnings
