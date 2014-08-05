@@ -1188,7 +1188,7 @@ class openSearch extends webServiceServer {
     $guess_filter = array();
     if ($freq_filter = $this->config->get_value('frequency_filter', 'setup')) {
       foreach ($freq_filter as $f) {
-        if ($f == 'user_profile_filter') {
+        if ($f == 'user_profile') {
           $guess_filter[] = $user_filter;
         }
         else {
@@ -1913,6 +1913,10 @@ class openSearch extends webServiceServer {
     }
     elseif (!$solr_arr = unserialize($solr_results)) {
       return 'Internal problem: Cannot decode Solr result';
+    }
+    elseif ($err = $solr_arr['error']) {
+      verbose::log(FATAL, 'Solr result in error: (' . $err['code'] . ') ' . $err['msg']);
+      return 'Internal problem: Solr result contains error';
     }
   }
 
