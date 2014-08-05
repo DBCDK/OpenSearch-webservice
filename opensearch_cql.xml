@@ -111,7 +111,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">BCM classification</title>
       <title lang="da">BCM klassifikation</title>
       <map>
         <name set="dkcclphrase">bcm</name>
@@ -119,7 +119,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">DB classification</title>
       <title lang="da">DB klassifikation</title>
       <map>
         <name set="dkcclphrase">dbk</name>
@@ -127,7 +127,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">Dewey classification</title>
       <title lang="da">Dewey klassifikation</title>
       <map>
         <name set="dkcclphrase">ddc</name>
@@ -135,7 +135,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">AGROVOC subject</title>
       <title lang="da">AGROVOC emneord</title>
       <map>
         <name set="dkcclphrase">lac</name>
@@ -143,7 +143,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">NAL subject</title>
       <title lang="da">NAL emneord</title>
       <map>
         <name set="dkcclphrase">lag</name>
@@ -167,7 +167,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">LCC classification</title>
       <title lang="da">LCC klassifikation</title>
       <map>
         <name set="dkcclphrase">lcc</name>
@@ -207,7 +207,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">DK5 classification</title>
       <title lang="da">DK5 klassifikation</title>
       <map>
         <name set="dkcclphrase">ldk</name>
@@ -439,7 +439,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">Series title</title>
       <title lang="da">serietitel</title>
       <map>
         <name set="dkcclphrase">lse</name>
@@ -463,7 +463,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">Title</title>
       <title lang="da">Titel</title>
       <map>
         <name set="dkcclphrase">lti</name>
@@ -519,7 +519,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">NAL classification</title>
       <title lang="da">NAL klassifikation</title>
       <map>
         <name set="dkcclphrase">nal</name>
@@ -527,7 +527,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">NLM classification</title>
       <title lang="da">NLM klassifikation</title>
       <map>
         <name set="dkcclphrase">nlm</name>
@@ -1151,7 +1151,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">Series title</title>
       <title lang="da">Serietitel</title>
       <map>
         <name set="dkcclterm">se</name>
@@ -1207,7 +1207,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
-      <title lang="en"/>
+      <title lang="en">Title</title>
       <title lang="da">Titel</title>
       <map>
         <name set="dkcclterm">ti</name>
