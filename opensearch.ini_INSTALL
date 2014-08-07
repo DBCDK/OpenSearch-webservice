@@ -304,7 +304,9 @@ sort[article_date_descending] = sort.articleDate desc
 sort[random] = random
 
 ; filter for rank_frequency
-frequency_filter[] = user_profile_filter
+; defines a filter used when term frequencies are found 
+; - "user_profile" will use the filter provided by the user specified search profile
+frequency_filter[] = user_profile
 frequency_filter[] = term.date:[1940 TO *]
 
 
