@@ -163,7 +163,7 @@ class openSearch extends webServiceServer {
 
     if ($us_settings = $this->repository['postgress']) {
       $this->watch->start('postgress');
-      $this->cql2solr = new SolrQuery($this->repository['cql_file'], $this->config, $this->query_language);
+      $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language);
       $solr_query = $this->cql2solr->parse($param->query->_value);
       if ($solr_query['error']) {
         $error = self::cql2solr_error_to_string($solr_query['error']);
@@ -230,7 +230,7 @@ class openSearch extends webServiceServer {
     $key_work_struct = md5($param->query->_value . $this->repository_name . $this->filter_agency .
                            $use_work_collection .  implode('', $sort) . $rank . $boost_str . $this->config->get_inifile_hash());
 
-    $this->cql2solr = new SolrQuery($this->repository['cql_file'], $this->config, $this->query_language);
+    $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language);
     $solr_query = $this->cql2solr->parse($param->query->_value);
     if ($solr_query['error']) {
       $error = self::cql2solr_error_to_string($solr_query['error']);
@@ -751,7 +751,7 @@ class openSearch extends webServiceServer {
     foreach ($fpids as $fpid_number => $fpid) {
       $id_array[] = $fpid->_value;
     }
-    $this->cql2solr = new SolrQuery($this->repository['cql_file'], $this->config);
+    $this->cql2solr = new SolrQuery($this->repository, $this->config);
     $chk_query = $this->cql2solr->parse('rec.id=(' . implode(' or ', $id_array) . ')');
     $solr_q = $this->repository['solr'] .
               '?wt=phps' .
@@ -811,7 +811,7 @@ class openSearch extends webServiceServer {
         if (self::xs_boolean($param->includeHoldingsCount->_value)) {
           //self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
           //list($dummy, $dummy) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
-          $this->cql2solr = new SolrQuery($this->repository['cql_file'], $this->config);
+          $this->cql2solr = new SolrQuery($this->repository, $this->config);
           $no_of_holdings = self::get_holdings($fpid->_value);
         }
       }
