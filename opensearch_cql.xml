@@ -30,6 +30,7 @@ You should have received a copy of the GNU Affero General Public License along w
     <set identifier="http://oss.dbc.dk/ns/rankterm" name="sort"/>
     <set identifier="http://oss.dbc.dk/ns/term" name="term"/>
     <set identifier="http://oss.dbc.dk/ns/unit" name="unit"/>
+    <set identifier="http://oss.dbc.dk/ns/holdingsItem" name="holdingsitem"/>
     <index>
       <title lang="da">Internt register</title>
       <map>
@@ -1816,6 +1817,56 @@ You should have received a copy of the GNU Affero General Public License along w
       <title lang="en">Work type (term)</title>
       <map>
         <name set="term" filter="1">workType</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Materiale accessionDate (beholdning)</title>
+      <title lang="en"></title>
+      <map>
+        <name set="holdingsitem" searchHandler="holding" filter="1">accessionDate</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Bibliotekskode (beholdning)</title>
+      <title lang="en"></title>
+      <map>
+        <name set="holdingsitem" searchHandler="holding" filter="1">agencyId</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Materiale branch/filial (beholdning)</title>
+      <title lang="en"></title>
+      <map>
+        <name set="holdingsitem" searchHandler="holding" filter="1">branch</name>
+        <alias>branch</alias>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Materiale department/afdeling (beholdning)</title>
+      <title lang="en"></title>
+      <map>
+        <name set="holdingsitem" searchHandler="holding" filter="1">department</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Materiale item id (beholdning)</title>
+      <title lang="en"></title>
+      <map>
+        <name set="holdingsitem" searchHandler="holding" filter="1">itemId</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Materiale location/underafdeling (beholdning)</title>
+      <title lang="en"></title>
+      <map>
+        <name set="holdingsitem" searchHandler="holding" filter="1">location</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Materiale Status (beholdning)</title>
+      <title lang="en"></title>
+      <map>
+        <name set="holdingsitem" searchHandler="holding" filter="0">status</name>
       </map>
     </index>
   </indexInfo>
