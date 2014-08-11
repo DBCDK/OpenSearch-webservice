@@ -748,13 +748,43 @@ class openSearch extends webServiceServer {
         }
       }
     }
+    if ($us_settings = $this->repository['postgress']) {
+      foreach ($fpids as $fpid_number => $fpid) {
+        list($owner_collection, $id) = explode(':', $fpid->_value);
+        list($owner, $coll) = explode('-', $owner_collection);
+        $docs['docs'][] = array('marc.001a' => array(0 => $id), 'marc.001b' => $owner);
+      }
+      $collections = self::get_records_from_postgress($docs);
+      //var_dump($collections); die();
+      if (is_scalar($collections)) {
+        $error = $collections;
+        return $ret_error;
+      }
+      self::filter_marcxchange_records($collections, '^[a-z]');
+      $result = &$ret->searchResponse->_value->result->_value;
+      $result->hitCount->_value = count($fpids);
+      $result->collectionCount->_value = count($collections);
+      $result->more->_value = 'false';
+      $result->searchResult = &$collections;
+      $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
+      $result->statInfo->_value->trackingId->_value = $this->tracking_id;
+      if ($debug_query) {
+        $debug_result->rawQueryString->_value = $solr_arr['debug']['rawquerystring'];
+        $debug_result->queryString->_value = $solr_arr['debug']['querystring'];
+        $debug_result->parsedQuery->_value = $solr_arr['debug']['parsedquery'];
+        $debug_result->parsedQueryString->_value = $solr_arr['debug']['parsedquery_toString'];
+        $result->queryDebugResult->_value = $debug_result;
+      }
+      return $ret;
+
+    }
     foreach ($fpids as $fpid_number => $fpid) {
       $id_array[] = $fpid->_value;
     }
     $this->cql2solr = new SolrQuery($this->repository, $this->config);
     $chk_query = $this->cql2solr->parse('rec.id=(' . implode(' or ', $id_array) . ')');
-    $solr_q = $this->repository['solr'] .
-              '?wt=phps' .
+        $solr_q = $this->repository['solr'] .
+        '?wt=phps' .
               '&q=' . urlencode(implode(' and ', $chk_query['edismax']['q'])) .
               '&fq=' . $filter_q .
               // if briefDisplay data must be fetched from primaryObject '&fq=unit.isPrimaryObject:true' . 
