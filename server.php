@@ -161,7 +161,7 @@ class openSearch extends webServiceServer {
       return $ret;
     }
 
-    if ($us_settings = $this->repository['postgress']) {
+    if ($pg_repos = $this->repository['postgress']) {
       $this->watch->start('postgress');
       $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language);
       $solr_query = $this->cql2solr->parse($param->query->_value);
@@ -185,7 +185,7 @@ class openSearch extends webServiceServer {
         $error = $err;
         return $ret_error;
       }
-      $collections = self::get_records_from_postgress($solr_arr['response']);
+      $collections = self::get_records_from_postgress($pg_repos, $solr_arr['response']);
       $this->watch->stop('postgress');
       if (is_scalar($collections)) {
         $error = $collections;
@@ -748,13 +748,13 @@ class openSearch extends webServiceServer {
         }
       }
     }
-    if ($us_settings = $this->repository['postgress']) {
+    if ($pg_repos = $this->repository['postgress']) {
       foreach ($fpids as $fpid_number => $fpid) {
         list($owner_collection, $id) = explode(':', $fpid->_value);
         list($owner, $coll) = explode('-', $owner_collection);
         $docs['docs'][] = array('marc.001a' => array(0 => $id), 'marc.001b' => $owner);
       }
-      $collections = self::get_records_from_postgress($docs);
+      $collections = self::get_records_from_postgress($pg_repos, $docs);
       //var_dump($collections); die();
       if (is_scalar($collections)) {
         $error = $collections;
@@ -971,12 +971,12 @@ class openSearch extends webServiceServer {
    * 
    * return mixed  array of collections or error string
    */
-  private function get_records_from_postgress($solr_response) {
+  private function get_records_from_postgress($pg_db, $solr_response) {
     require_once 'OLS_class_lib/pg_database_class.php';
     $dom = new DomDocument();
     $ret = array();
     try {
-      $pg = new pg_database($this->repository['postgress']);
+      $pg = new pg_database($pg_db);
       $pg->open();
       $rec_pos = $solr_response['start'];
       foreach ($solr_response['docs'] as $solr_doc) {
