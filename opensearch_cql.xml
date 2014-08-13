@@ -1866,7 +1866,7 @@ You should have received a copy of the GNU Affero General Public License along w
       <title lang="da">Materiale Status (beholdning)</title>
       <title lang="en"></title>
       <map>
-        <name set="holdingsitem" searchHandler="holding" filter="0">status</name>
+        <name set="holdingsitem" searchHandler="holding" filter="1">status</name>
       </map>
     </index>
   </indexInfo>
