@@ -227,17 +227,17 @@ logfile = /tmp/opensearch.log
 ;   tie_value (decimal) 1.0 or lower
 ;
 
-; rank[rank_main_title][word_boost][dkcclterm.ht] = 2
-; rank[rank_main_title][word_boost][term.default] = 1
-; rank[rank_main_title][phrase_boost][dkcclterm.ht] = 8
-; rank[rank_main_title][tie] = 0.1
+rank[rank_main_title][word_boost][dkcclterm.ht] = 2
+rank[rank_main_title][word_boost][term.default] = 1
+rank[rank_main_title][phrase_boost][dkcclterm.ht] = 8
+rank[rank_main_title][tie] = 0.1
 
-; rank[rank_subject][word_boost][rankterm.subject] = 4
-; rank[rank_subject][word_boost][dkcclterm.ht] = 3
-; rank[rank_subject][word_boost][dkcclterm.ti] = 2
-; rank[rank_subject][word_boost][term.default] = 1
-; rank[rank_subject][phrase_boost][rankterm.subject] = 8
-; rank[rank_subject][tie] = 0.1
+rank[rank_subject][word_boost][rankterm.subject] = 4
+rank[rank_subject][word_boost][dkcclterm.ht] = 3
+rank[rank_subject][word_boost][dkcclterm.ti] = 2
+rank[rank_subject][word_boost][term.default] = 1
+rank[rank_subject][phrase_boost][rankterm.subject] = 8
+rank[rank_subject][tie] = 0.1
 
 rank[rank_verification][word_boost][rankterm.title] = 4
 rank[rank_verification][phrase_boost][rankterm.title] = 8
