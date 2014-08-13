@@ -456,16 +456,18 @@ action[getObject][] = trackingId
 ; __var__ will be replace by the corresponding ini-file setting - if it exists
 ; __var.section__ will be replace by the corresponding ini-file setting from section [section]
 ; this will only work if the user from in_house_domain - see above
-;showinfo[] = <pre>
-;showinfo[] = version:            __version.setup__
-;showinfo[] = logfile:            __logfile.setup__
-;showinfo[] = verbose:            __verbose__
-;showinfo[] = agency:             __open_agency__
-;showinfo[] = holdings:           __holdings_db__
-;showinfo[] = aaa_credentials:    __aaa_credentials__
-;showinfo[] = default_repository: __default_repository__
-;showinfo[] = repository:         __repository__
-;showinfo[] = </pre>
+showinfo[] = <pre>
+showinfo[] = version:            __version.setup__
+showinfo[] = logfile:            __logfile.setup__
+showinfo[] = verbose:            __verbose__
+showinfo[] = agency:             __open_agency__
+showinfo[] = holdings:           __holdings_db__
+showinfo[] = aaa_credentials:    __aaa_credentials__
+showinfo[] = default_repository: __default_repository__
+showinfo[] = repository:         __repository__
+showinfo[] = rank:               __rank__
+showinfo[] = sort:               __sort__
+showinfo[] = </pre>
 
 [howru]
 test[] = search&query=danmark&stepValue=1
