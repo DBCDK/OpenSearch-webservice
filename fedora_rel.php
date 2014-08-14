@@ -36,11 +36,11 @@ function rels_to_html($rels) {
   $html = '';
   foreach ($rels as $type => $rel) {
     $html .= '<a class="butt" href="javascript:flip_div(\'' . $type . '\')">' . $type . ' (' . count($rel) . ')</a><br /><br />' .
-             '<div id="' . $type . '" style="display:none" onClick="flip_div(\'' . $type . '\')">' . PHP_EOL;
+             '<div id="' . $type . '" style="display:none" onClick="flip_div(\'' . $type . '\')"><table>' . PHP_EOL;
     foreach ($rel as $pid) {
-      $html .= $pid . '<br />' . PHP_EOL;
+      $html .= '<tr><td>' . str_replace('(', '</td><td>(', $pid) . '</td></tr>' . PHP_EOL;
     }
-    $html .= '<br/></div>' . PHP_EOL;
+    $html .= '</table><br/></div>' . PHP_EOL;
   }
   return $html;
 }
