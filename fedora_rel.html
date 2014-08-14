@@ -1,0 +1,62 @@
+<html>
+<head>
+  <title>Find fedora relationer og tilhørende poster</title>
+  <style>
+    .left {text-align:right; padding-right:0.4em}
+    .label {font-weight: bold; font-size:110%; padding-bottom:0.6em; padding-right:0.4em}
+    .box {border-style: solid; border-width:1px; border-color:#CCCCCC; margin:0.5em; padding:0.5em; }
+    form {margin:0; display:inline}
+    input {padding-left: 3px; margin:2px; text-align:left}
+    p {margin:0; padding:0.3em}
+    a {color:black; text-decoration:none}
+    a.under {color:black; text-decoration:underline}
+    .butt {height: 15px; font: 0.8em verdana, arial, helvetiva, sans-serif; font-weight:bold; color:#FFFFFF; border-style: solid; border-width:2px; border-color:#FFFFFF; background-color:#277480; padding-left:1em; padding-right:1em; padding-top:0.1em; padding-bottom:0.2em; text-decoration:none; white-space:nowrap;}
+    th {font-weight: bold; font-size:150%; padding-right:0.5em}
+    td {vertical-align:top; padding-left:0.3em;}
+    tr.even {background-color:EEEEEE}
+    td.nobreak {white-space:nowrap}
+    hr {height: 0px; margin: 1em;}
+  </style>
+  <script language="javascript">
+    function flip_div(id) {
+      if (document.getElementById(id).style.display != "block")
+        document.getElementById(id).style.display = "block";
+      else
+        document.getElementById(id).style.display = "none";
+    }
+  </script>
+</head>
+<body>
+  <form name="f" method="get">
+    <input name="action" value="" type="hidden"/>
+    <table>
+      <tr>
+        <td>
+          <span class="label">FedoraUrl:</span>
+        </td>
+        <td>
+          <select name="fedoraurl">
+          __FEDORA_URL_OPTIONS__
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="label">Pid:</span>
+        </td>
+        <td>
+          <input name="pid" value="__PID__" type="text" size="20"/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <br />
+          <a class="butt" onClick="document.f.action.value = 'findrec'; document.f.submit()" href="javascript:void(0);">Find posten</a>
+        </td>
+      </tr>
+    </table>
+  </form>
+  <hr>
+  __CONTENT__
+</body>
+</html>
