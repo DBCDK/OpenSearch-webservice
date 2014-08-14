@@ -27,7 +27,9 @@ You should have received a copy of the GNU Affero General Public License along w
     <set identifier="http://oss.dbc.dk/ns/rankphrase" name="rankphrase"/>
     <set identifier="http://oss.dbc.dk/ns/rankterm" name="rankterm"/>
     <set identifier="info:srw/cql-context-set/2/rec-1.1" name="rec"/>
-    <set identifier="http://oss.dbc.dk/ns/rankterm" name="sort"/>
+    <set identifier="http://oss.dbc.dk/ns/scanphrase" name="scanphrase"/>
+    <set identifier="http://oss.dbc.dk/ns/scanterm" name="scanterm"/>
+    <set identifier="http://oss.dbc.dk/ns/sort" name="sort"/>
     <set identifier="http://oss.dbc.dk/ns/term" name="term"/>
     <set identifier="http://oss.dbc.dk/ns/unit" name="unit"/>
     <set identifier="http://oss.dbc.dk/ns/holdingsItem" name="holdingsitem"/>
@@ -1607,6 +1609,90 @@ You should have received a copy of the GNU Affero General Public License along w
       <title lang="en">Identifier (record/object)</title>
       <map>
         <name set="rec">id</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Medophav</title>
+      <title lang="en">Contributor</title>
+      <map>
+        <name set="scanphrase">contributor</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Ophav</title>
+      <title lang="en">Creator</title>
+      <map>
+        <name set="scanphrase">creator</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Hovedtitel</title>
+      <title lang="en">Main title</title>
+      <map>
+        <name set="scanphrase">mainTitle</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Del af</title>
+      <title lang="en">Part of</title>
+      <map>
+        <name set="scanphrase">partOf</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Emne</title>
+      <title lang="en">Subject</title>
+      <map>
+        <name set="scanphrase">subject</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Titel</title>
+      <title lang="en">Title</title>
+      <map>
+        <name set="scanphrase">title</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Medophav</title>
+      <title lang="en">Contributor</title>
+      <map>
+        <name set="scanterm">contributor</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Ophav</title>
+      <title lang="en">Creator</title>
+      <map>
+        <name set="scanterm">creator</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Hovedtitel</title>
+      <title lang="en">Main title</title>
+      <map>
+        <name set="scanterm">mainTitle</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Del af</title>
+      <title lang="en">Part of</title>
+      <map>
+        <name set="scanterm">partOf</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Emne</title>
+      <title lang="en">Subject</title>
+      <map>
+        <name set="scanterm">subject</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Titel</title>
+      <title lang="en">Title</title>
+      <map>
+        <name set="scanterm">title</name>
       </map>
     </index>
     <index>
