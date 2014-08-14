@@ -287,10 +287,10 @@ sort[title_ascending] = sort.title asc
 sort[title_descending] = sort.title desc
 sort[creator_ascending] = sort.creator asc
 sort[creator_descending] = sort.creator desc
-sort[date_ascending] = sort.date asc
-sort[date_descending] = sort.date desc
-;sort[date_ascending] = map(sort.date,0,0,9999) asc
-;sort[date_descending] = map(sort.date,2050,999999,0) desc
+;sort[date_ascending] = sort.date asc
+;sort[date_descending] = sort.date desc
+sort[date_ascending] = map(sort.date,0,0,9999) asc
+sort[date_descending] = map(sort.date,2050,999999,0) desc
 sort[acquisitionDate_ascending] = sort.acquisitionDate asc
 sort[acquisitionDate_descending] = sort.acquisitionDate desc
 
