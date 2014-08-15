@@ -36,7 +36,7 @@ function rels_to_html($rels) {
   $html = '';
   foreach ($rels as $type => $rel) {
     $html .= '<a class="butt" href="javascript:flip_div(\'' . $type . '\')">' . $type . ' (' . count($rel) . ')</a><br /><br />' .
-             '<div id="' . $type . '" style="display:none" onClick="flip_div(\'' . $type . '\')"><table>' . PHP_EOL;
+             '<div id="' . $type . '" style="display:none"><table>' . PHP_EOL;
     foreach ($rel as $pid) {
       $html .= '<tr><td>' . str_replace('(', '</td><td>(', $pid) . '</td></tr>' . PHP_EOL;
     }
