@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License along w
     <database/>
   </serverInfo>
   <metaInfo>
-    <dateModified>2014-05-28</dateModified>
+    <dateModified>2014-08-18</dateModified>
   </metaInfo>
   <indexInfo>
     <set identifier="info:srw/cql-context-set/1/cql-v1.1" name="cql"/>
@@ -1626,6 +1626,13 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
+      <title lang="da">Hovedophav</title>
+      <title lang="en">Main creator</title>
+      <map>
+        <name set="scanphrase">mainCreator</name>
+      </map>
+    </index>
+    <index>
       <title lang="da">Hovedtitel</title>
       <title lang="en">Main title</title>
       <map>
@@ -1665,6 +1672,13 @@ You should have received a copy of the GNU Affero General Public License along w
       <title lang="en">Creator</title>
       <map>
         <name set="scanterm">creator</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Hovedophav</title>
+      <title lang="en">Main creator</title>
+      <map>
+        <name set="scanterm">mainCreator</name>
       </map>
     </index>
     <index>
