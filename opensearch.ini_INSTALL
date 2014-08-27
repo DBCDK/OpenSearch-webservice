@@ -7,31 +7,38 @@
 ;service_http_error = HTTP/1.1 410 Gone
 ;service_http_error = HTTP/1.0 503 Service Unavailable
 
+; ==============
 ;version
 ; Note that the version is used as part of the cache key, so do not run 2 versions of the service with identical
 ; version name, unless you specificly want them to share cache
 version = 3.1
 
+; ==============
 ; wsdl for service
 wsdl = opensearch.wsdl
 
+; ==============
 ; in_house_domain may use ?ShowInfo and use create_sample form
 in_house_domain = @MY_DOMAIN@
 
 ; set to TRUE to expose the create_sample form
-;show_samples = 1
+; show_samples = 1
+; show_samples_ip_list = 127.0.0.1
 
+; ==============
 ; validate
 ;validate[soap_request] = soap.xsd
 ;validate[request] = opensearch.xsd
 ;validate[response] = opensearch.xsd
 
+; ==============
 ; soapActions and their corresponding request structure
 ; Can be found in the wsdl but is stated here for convenience
 soapAction[search] = searchRequest
 soapAction[getObject] = getObjectRequest
 
 
+; ==============
 ; url_override
 ; url_override[url_command] = functionToCall
 ; if start of request equals url_command and functionToCall exists, it will be called
@@ -45,6 +52,7 @@ url_override[RegressionTest] = RegressionTest
 ; diffCqlFileWithSolr - use &repository= in url if set
 url_override[diffCqlFileWithSolr] = diffCqlFileWithSolr
 
+; ==============
 ; prefixes and namespaces
 default_namespace_prefix = os
 xmlns[os] = http://oss.dbc.dk/ns/opensearch
@@ -69,12 +77,16 @@ xmlns[dbcaddi] = http://oss.dbc.dk/rdf/dbcaddi#
 
 
 
+; ==============
 ; path to xml-examples
 xmldir = ./xml
 
-; set missing_record to handle inkonsistency between solr and fedora
+; ==============
+; set missing_record to handle inconsistency between solr and fedora
 missing_record = <?xml version='1.0' encoding='UTF-8'?><ting:container xmlns:ting='http://www.dbc.dk/ting' xmlns:dkabm='http://biblstandard.dk/abm/namespace/dkabm/' xmlns:dc='http://purl.org/dc/elements/1.1/'><dkabm:record><dc:title>Cannot read record: %s</dc:title></dkabm:record></ting:container>
 
+; ==============
+; repository setup
 ; default repository
 default_repository = @REPOSITORY_NAME@
 
@@ -128,30 +140,52 @@ repository[@RAW_RECORD_REPOSITORY_NAME@][cql_file] = rawrecord_cql.xml
 ; luke[from] = to will replace from with to in the solr-uri
 luke[select] = admin/luke?wt=json
 
+; ==============
 ; memcache
 cache_host = localhost
 cache_port = 11211
 cache_expire = 600
 
+; ==============
 ; memcache search profile - defaults to cache_host, cache_port, cache_expire if not defined
 agency_cache_host = localhost
 agency_cache_port = 11211
 agency_cache_expire = 60
 
+
+; ==============
 ; search profile service end point
+; ex:
 ; agency_search_profile =  http://some.openagency/?action=openSearchProfile&agencyId=%s&profileVersion=%s
+;
 agency_search_profile = @AGENCY_SEARCH_PROFILE@
-; 
-; agency_types = http://some.openagency/?action=findLibrary&libraryType=Forskningsbibliotek&outputType=json
-; agency_types = http://some.openagency/?action=findLibrary&libraryType=Alle&outputType=json
+
+
+; ==============
+; find Library service end point
+; ex:
+;   agency_types = http://some.openagency/?action=findLibrary&libraryType=Forskningsbibliotek&outputType=json
+  ; agency_types = http://some.openagency/?action=findLibrary&libraryType=Alle&outputType=json
+;
 agency_types = @AGENCY_TYPES@
 
+
+; ==============
 ; holding db - return number of items in stock and number of items available for lending
+; ex: 
+;   holdings_db = http://myServer.dbc.dk:9080/holdingsdb/availability?pid=%s
+;   holdings_db = http://myServer.dbc.dk:8080/holdings-service/getAllAvailability?pid=%s
+;
 holdings_db = @HOLDINGS_DB@
 
+
+; ==============
 ; open format - address to openFormat service
 ; Use ws_open_format_uri if you want to run openFormat (php) on a different server than this one
 ; otherwise set ws_open_format_uri to space and define the [format] section below thereby including openformat directly in opensearch
+; ex:
+;   ws_open_format_uri = http://openformat.addi.dk/0.2/
+;
 ws_open_format_uri = @OPEN_FORMAT@
 
 ; formats supported by openFormat and possible name mapping
@@ -162,12 +196,14 @@ open_format[refWorks][format] = refWorks
 open_format[ris][format] = ris
 open_format[marc21ToDm2][format] = marc21ToDm2
 
+; ==============
 ; formats supported by solr-indexes. Comma separated list of solr tags
 ; fedora.identifier will take the id of the manifestation from the fedora object
 ;solr_format[briefDisplay][format] = display.accessType,display.creator,fedoraPid,rec.id,fedora.identifier,display.language,display.partOf,display.title,display.titleFull,display.type,display.workType
 solr_format[briefDisplay][format] = display.accessType,display.creator,fedoraPid,fedora.identifier,display.language,display.partOf,display.title,display.titleFull,display.dependentTitle,display.type,display.workType,display.multiVolumeType
 solr_format[score][format] = score
 
+; ==============
 ; if solr's field collapsing should be used, define the collapsing field here
 ; performs poorly on large sets
 ; if collapsing_field is set, the 2 num_found_collaps* are ignored
@@ -178,6 +214,7 @@ solr_format[score][format] = score
 num_found_collaps_limit = 500
 num_found_collapsing_field = fedoraPid
 
+; ==============
 ; default search_profile setting
 agency_fallback = @AGENCY_FALLBACK@
 profile_fallback = @AGENCY_PROFILE_FALLBACK@
@@ -187,31 +224,53 @@ profile_fallback = @AGENCY_PROFILE_FALLBACK@
 relation_group_source_tab[dbcbib:isPartOfManifestation][Forskningsbibliotek][katalog] = 870970-forsk
 
 
+; ==============
 ; phrase indexes
 phrase_index[] = facet
 phrase_index[] = phrase
 phrase_index[] = dkcclphrase
 
+; ==============
 ; maximum number of identical relationnames returned
 max_identical_relation_names = 20
 
+; ==============
 ; scan objects for these formats
 scan_format_table[dkabm:record] = dkabm
 scan_format_table[marcx:collection] = marcxchange
 scan_format_table[docbook:article] = docbook
 scan_format_table[oso:object] = opensearchobject
 
+; ==============
 ; number of second to wait for a solr reply
 solr_timeout = 30
 
+; ==============
 ; Max number of collection returned
 max_collections = 50
 
+; ==============
 ; logfile for verbose output
 logfile = /tmp/opensearch.log
 ; logging to syslog is defined like:
 ;logfile = syslog://LOG_LOCAL0
 
+; set verboselevel
+;   WARNING - simple warnings
+;   ERROR   - errors in response
+;   FATAL   - major errors
+;   STAT    - Statístical logging
+;   TIMER   - timer logging
+;   TRACE   - program trace
+;   DEBUG   - debugging info
+;   Z3959   - calls to z3950 services
+;   OCI     - oracle
+verbose = @VERBOSE_LEVEL@
+
+; format for automatic timer dump %s is the soap-action used
+dump_timer = opensearch(%s)
+
+; ==============
 ; sorting & ranking
 ; sorting and rakings are defined in the structure below
 ;
@@ -310,20 +369,8 @@ frequency_filter[] = user_profile
 frequency_filter[] = term.date:[1940 TO *]
 
 
-; set verboselevel
-;   WARNING - simple warnings
-;   ERROR   - errors in response
-;   FATAL   - major errors
-;   STAT    - Statístical logging
-;   TIMER   - timer logging
-;   TRACE   - program trace
-;   DEBUG   - debugging info
-;   Z3959   - calls to z3950 services
-;   OCI     - oracle
-verbose = @VERBOSE_LEVEL@
 
-; format for automatic timer dump %s is the soap-action used
-dump_timer = opensearch(%s)
+
 
 [universal_search_settings]
 target = @WORLDCAT_ZTARGET@
@@ -334,6 +381,8 @@ syntax = @WORLDCAT_ZTARGET_SYNTAX@
 element = @WORLDCAT_ZTARGET_ELEMENT@
 rpn = @attr 6=1 @attr 4=2 @attr 3=3 @attr 2=3 @attr BIB1 1=1016 %s
 timeout = 30
+
+
 
 [format]
 ; if ws_open_format_uri is not defined (or blank) in the [setup] section, openformat functionality
