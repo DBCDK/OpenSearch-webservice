@@ -449,7 +449,7 @@ class openSearch extends webServiceServer {
     if (DEBUG_ON) echo 'work_ids: ' . print_r($work_ids, TRUE) . "\n";
 
     define('MAX_QUERY_ELEMENTS', 950);
-    if ($numFound && $use_work_collection && $step_value) {
+    if ($work_ids && $numFound && $use_work_collection && $step_value) {
       $add_queries = self::make_add_queries($work_ids);
       $this->watch->start('Solr_filt');
       $solr_2_arr = self::do_add_queries($add_queries, $param->query->_value, self::xs_boolean($param->allObjects->_value), $filter_q);
