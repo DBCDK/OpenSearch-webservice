@@ -191,7 +191,7 @@ class openSearch extends webServiceServer {
         $error = $collections;
         return $ret_error;
       }
-      self::filter_marcxchange_records($collections, '^[a-z]');
+      self::filter_marcxchange_records($collections, $this->repository['filter']['marcxchange']);
       $result = &$ret->searchResponse->_value->result->_value;
       $result->hitCount->_value = self::get_num_found($solr_arr);
       $result->collectionCount->_value = count($collections);
@@ -760,7 +760,8 @@ class openSearch extends webServiceServer {
         $error = $collections;
         return $ret_error;
       }
-      self::filter_marcxchange_records($collections, '^[a-z]');
+      self::filter_marcxchange_records($collections, $this->repository['filter']['marcxchange']);
+      //self::filter_marcxchange_records($collections, '^[a-z]');
       $result = &$ret->searchResponse->_value->result->_value;
       $result->hitCount->_value = count($fpids);
       $result->collectionCount->_value = count($collections);
@@ -1541,17 +1542,36 @@ class openSearch extends webServiceServer {
     $this->watch->stop('format');
   }
 
-  /** \brief Remove private or internal fields from the marxchange record
+  /** \brief Remove private or internal fields/subfields from the marcxchange record
    *
    */
-  private function filter_marcxchange_records(&$collections, $filter) {
-    foreach ($collections as $idx => &$c) {
-      foreach ($c->_value->collection->_value->object as &$o) {
-        if ($o->_value->collection) {
-          @ $mrec = &$o->_value->collection->_value->record->_value;
-          foreach ($mrec->datafield as $idf => &$df) {
-            if (preg_match('/' . $filter . '/', $df->_attributes->tag->_value)) {
-              unset($mrec->datafield[$idf]);
+  private function filter_marcxchange_records(&$collections, $filters) {
+    if (is_array($filters)) {
+      foreach ($collections as $idx => &$c) {
+        foreach ($c->_value->collection->_value->object as &$o) {
+          if ($o->_value->collection) {
+            @ $mrec = &$o->_value->collection->_value->record->_value;
+            foreach ($mrec->datafield as $idf => &$df) {
+              foreach ($filters as $filter) {
+                if ($filter['field'] && preg_match('/' . $filter['field'] . '/', $df->_attributes->tag->_value)) {
+                  unset($mrec->datafield[$idf]);
+                }
+                elseif ($filter['subfield']) {
+                  if (is_array($df->_value->subfield)) {
+                    foreach ($df->_value->subfield as $isf => &$sf) {
+                      if (preg_match('/' . $filter['subfield'] . '/', $sf->_attributes->code->_value)) {
+                        unset($mrec->datafield[$idf]->_value->subfield[$isf]);
+                      }
+                    }
+                    if (!count($df->_value->subfield)) {  // removed all subfield
+                      unset($mrec->datafield[$idf]);
+                    }
+                  }
+                  elseif (preg_match('/' . $filter['subfield'] . '/', $df->_value->subfield->_attributes->code->_value)) {
+                    unset($mrec->datafield[$idf]);
+                  }
+                }
+              }
             }
           }
         }
