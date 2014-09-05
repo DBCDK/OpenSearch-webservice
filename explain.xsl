@@ -31,6 +31,12 @@
         <h1>CQL Indexes</h1>
         <div>This list is manually updated. Last updated <xsl:value-of select="/exp:explain/exp:metaInfo/exp:dateModified"/></div>
         <div>Denne liste opdateres manuelt. Senest opdateret <xsl:value-of select="/exp:explain/exp:metaInfo/exp:dateModified"/></div>
+        <br />
+        <div><b>Namespace</b> and <b>Index</b> defines the name of the index, like dkcclterm.fo</div>
+        <div><b>Slop</b> is used when search for more words in the same word-register, like dkcclterm.fo="more than one word" and defines the maximum distance the words may have. If no slop is defined, the default 9999 is used, which will work almost like boolean AND</div>
+        <div><b>Filter</b> defines the use of filterQuery for the index</div>
+        <div><b>Alias</b> defines alias'es for the index. There are no limit to the number of alias'es, as long as they are unique</div>
+        <div><b>Alias slop</b> sets the slop for the alias, this can be different from the index slop</div>
         <br/>
         <table border="1" cellspacing="0">
           <xsl:copy-of select="$header" />
