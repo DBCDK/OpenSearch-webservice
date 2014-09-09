@@ -668,7 +668,9 @@ class openSearch extends webServiceServer {
     self::set_sortUsed($result, $rank, $sort);
     $result->searchResult = $collections;
     $result->facetResult->_value = $facets;
-    $result->queryDebugResult->_value = $debug_result;
+    if ($debug_query && $debug_result) {
+      $result->queryDebugResult->_value = $debug_result;
+    }
     $result->statInfo->_value->fedoraRecordsCached->_value = $this->number_of_fedora_cached;
     $result->statInfo->_value->fedoraRecordsRead->_value = $this->number_of_fedora_calls;
     $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
