@@ -27,6 +27,8 @@ in_house_domain = @MY_DOMAIN@
 
 ; ==============
 ; validate
+; Validation of response requires you to include the xsd's for dkabm, docbook, in opensearch.xsd
+;
 ;validate[soap_request] = soap.xsd
 ;validate[request] = opensearch.xsd
 ;validate[response] = opensearch.xsd
