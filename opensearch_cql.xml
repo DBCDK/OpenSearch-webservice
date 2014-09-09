@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License along w
     <database/>
   </serverInfo>
   <metaInfo>
-    <dateModified>2014-08-18</dateModified>
+    <dateModified>2014-09-09</dateModified>
   </metaInfo>
   <indexInfo>
     <set identifier="info:srw/cql-context-set/1/cql-v1.1" name="cql"/>
@@ -63,6 +63,12 @@ You should have received a copy of the GNU Affero General Public License along w
       <title lang="da">Display register</title>
       <map hidden="1">
         <name set="display">accessType</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Display register</title>
+      <map hidden="1">
+        <name set="display">coverUrl</name>
       </map>
     </index>
     <index>
