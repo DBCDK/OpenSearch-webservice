@@ -2098,7 +2098,9 @@ class openSearch extends webServiceServer {
     if ($primary_id) {
       $ret->primaryObjectIdentifier->_value = $primary_id;
     }
-    $ret->creationDate->_value = self::get_creation_date($fedora_dom);
+    if ($cd = self::get_creation_date($fedora_dom)) {
+      $ret->creationDate->_value = $cd;
+    }
 // hack
     if (empty($ret->creationDate->_value) && (strpos($rec_id, 'tsart:') || strpos($rec_id, 'avis:'))) {
       unset($holdings_count);
@@ -2148,7 +2150,8 @@ class openSearch extends webServiceServer {
       $form_table = $this->config->get_value('scan_format_table', 'setup');
     }
 
-    if ($p = &$dom->getElementsByTagName('container')->item(0)) {
+    if (($p = &$dom->getElementsByTagName('container')->item(0)) ||
+        ($p = &$dom->getElementsByTagName('localData')->item(0))) {
       foreach ($p->childNodes as $tag) {
         if ($x = &$form_table[$tag->tagName])
           $ret->format[]->_value = $x;
@@ -2277,7 +2280,9 @@ class openSearch extends webServiceServer {
                 $rel_obj = &$relation->relationObject->_value->object->_value;
                 $rel_obj = self::extract_record($rels_dom, $tag->nodeValue);
                 $rel_obj->identifier->_value = $rel_uri;
-                $rel_obj->creationDate->_value = self::get_creation_date($rels_dom);
+                if ($cd = self::get_creation_date($rels_dom)) {
+                  $rel_obj->creationDate->_value = $cd;
+                }
                 self::get_relations_from_commonData_stream($ext_relations, $rel_uri, $rels_type);
                 if ($ext_relations) {
                   $rel_obj->relations->_value = $ext_relations;
