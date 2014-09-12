@@ -1491,6 +1491,7 @@ class openSearch extends webServiceServer {
           $this->curl->set_post($f_xml);
           $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
           $f_result = $this->curl->get($open_format_uri);
+          $this->curl->set_option(CURLOPT_POST, 0, 0);
           //$fr_obj = unserialize($f_result);
           $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['of']);
   // need to restore correct namespace
