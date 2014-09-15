@@ -133,17 +133,30 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 ;repository[rawrecords][postgress] = host=mypghost.dk port=5432 dbname=my_db user=myuser password=my_password connect_timeout=1
 ;repository[rawrecords][cql_file] = rawrecord_cql.xml
 ;
-; Filtering fields and/or subfield i marcxchange records kan be done by defining a filter mask for all fields and/or subfields
+; Filtering in marcxchange records kan be done by defining a filter mask (regular expression) for all fields and/or subfields
+; 
+; Filtering fields:
 ; remove all fields that do not start with a-z like
-;repository[rawrecords][filter][marcxchange][][field] = ^[a-z]
-; remove all & subfields like
-;repository[rawrecords][filter][marcxchange][][subfield] = [&]
+;repository[rawrecords][filter][marcxchange][field] = ^[a-z]
+; Filtering subfields:
+; remove all & subfields like, the second parameter is the regex specifying the tag(s)
+;repository[rawrecords][filter][marcxchange][subfield][100] = &
+; remove all & subfields in all numeric fields
+;repository[rrepo][filter][marcxchange][subfield]['[0-9]{3}'] = &
+; or in all 3 character field
+;repository[rrepo][filter][marcxchange][subfield]['^...$'] = &
+; or in all fields (if some are not 3 characters)
+;repository[rrepo][filter][marcxchange][subfield]['.*'] = &
+; or remove subfields a and b in all field 7XX
+;repository[rrepo][filter][marcxchange][subfield]['^7..$'] = [ab]
+
+
 
 repository[@RAW_RECORD_REPOSITORY_NAME@][solr] = @RAW_RECORD_SOLR@
 repository[@RAW_RECORD_REPOSITORY_NAME@][postgress] = @RAW_RECORD_POSTGRESS_CREDENTIALS@
 repository[@RAW_RECORD_REPOSITORY_NAME@][cql_file] = rawrecord_cql.xml
-repository[@RAW_RECORD_REPOSITORY_NAME@][filter][marcxchange][][field] = ^[a-z]
-;repository[@RAW_RECORD_REPOSITORY_NAME@][filter][marcxchange][][subfield] = [&]
+repository[@RAW_RECORD_REPOSITORY_NAME@][filter][marcxchange][field] = ^[a-z]
+;repository[@RAW_RECORD_REPOSITORY_NAME@][filter][marcxchange][subfield]['^...$'] = [&]
 
 
 ; info to find available index for at solr repos
