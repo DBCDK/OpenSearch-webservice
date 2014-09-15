@@ -150,13 +150,11 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 ; or remove subfields a and b in all field 7XX
 ;repository[rrepo][filter][marcxchange][subfield]['^7..$'] = [ab]
 
-
-
 repository[@RAW_RECORD_REPOSITORY_NAME@][solr] = @RAW_RECORD_SOLR@
 repository[@RAW_RECORD_REPOSITORY_NAME@][postgress] = @RAW_RECORD_POSTGRESS_CREDENTIALS@
 repository[@RAW_RECORD_REPOSITORY_NAME@][cql_file] = rawrecord_cql.xml
 repository[@RAW_RECORD_REPOSITORY_NAME@][filter][marcxchange][field] = ^[a-z]
-;repository[@RAW_RECORD_REPOSITORY_NAME@][filter][marcxchange][subfield]['^...$'] = [&]
+repository[@RAW_RECORD_REPOSITORY_NAME@][filter][marcxchange][subfield]['^...$'] = [&]
 
 
 ; info to find available index for at solr repos
