@@ -619,6 +619,9 @@ class openSearch extends webServiceServer {
         self::format_solr($collections, $display_solr_arr, $work_ids, $fpid_sort_keys);
       }
       self::remove_unselected_formats($collections);
+      if ($this->format['marcxchange']['user_selected']) {
+        self::filter_marcxchange_records($collections, $this->repository['filter']['marcxchange']);
+      }
     }
 
 // try to get a better hitCount by looking for primaryObjects only 
@@ -886,6 +889,9 @@ class openSearch extends webServiceServer {
       self::format_solr($collections, $solr_2_arr, $work_ids);
     }
     self::remove_unselected_formats($collections);
+    if ($this->format['marcxchange']['user_selected']) {
+      self::filter_marcxchange_records($collections, $this->repository['filter']['marcxchange']);
+    }
 
     $result = &$ret->searchResponse->_value->result->_value;
     $result->hitCount->_value = count($collections);
