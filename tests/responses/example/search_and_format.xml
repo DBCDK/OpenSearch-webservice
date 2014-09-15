@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:of="http://oss.dbc.dk/ns/openformat" xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://oss.dbc.dk/ns/opensearch">
+  <SOAP-ENV:Body>
+    <searchResponse>
+      <result>
+        <hitCount>11</hitCount>
+        <collectionCount>1</collectionCount>
+        <more>true</more>
+        <searchResult>
+          <collection>
+            <resultPosition>1</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <dkabm:record>
+                <ac:identifier>25873262|870970</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">0-330-44010-1</dc:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>No country for old men</dc:title>
+                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
+                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
+                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
+                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dc:publisher>Picador</dc:publisher>
+                <dc:date>2005</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
+                <dcterms:extent>309 sider</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
+              </dkabm:record>
+              <identifier>870970-basis:25873262</identifier>
+              <creationDate>2005-08-25</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+            </object>
+          </collection>
+          <formattedCollection>
+            <of:workDisplay>
+              <of:manifestation>
+                <of:work>
+                  <of:title>
+                    <of:titleFull of:htmlClass="titleMain">No country for old men</of:titleFull>
+                    <of:titleSpecific>No country for old men</of:titleSpecific>
+                  </of:title>
+                  <of:creators>
+                    <of:creator of:className="link">
+                      <of:searchCode of:phrase="phrase.creator">"Cormac McCarthy"</of:searchCode>
+                      <of:display>Cormac McCarthy</of:display>
+                    </of:creator>
+                  </of:creators>
+                  <of:description>
+                    <of:language>
+                      <of:languageElement>Engelsk</of:languageElement>
+                    </of:language>
+                    <of:abstract>
+                      <of:abstractElement>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</of:abstractElement>
+                    </of:abstract>
+                    <of:aboutAuthor>
+                      <of:aboutAuthorElement of:className="link">
+                        <of:searchCode of:phrase="phrase.subject">"Cormac McCarthy"</of:searchCode>
+                        <of:display>Cormac McCarthy</of:display>
+                      </of:aboutAuthorElement>
+                    </of:aboutAuthor>
+                  </of:description>
+                </of:work>
+                <of:adminData>
+                  <of:pid>870970-basis:25873262</of:pid>
+                  <of:messageCategory>0</of:messageCategory>
+                  <of:requestButton>true</of:requestButton>
+                  <of:typeGroup>literature</of:typeGroup>
+                  <of:orsOrderMaterialType>monograph</of:orsOrderMaterialType>
+                  <of:specifyArticleData>false</of:specifyArticleData>
+                </of:adminData>
+                <of:main>
+                  <of:details>
+                    <of:abstract>
+                      <of:abstractElement>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</of:abstractElement>
+                    </of:abstract>
+                    <of:format of:punctuation=" ; ">309 sider</of:format>
+                    <of:shelf>
+                      <of:shelfClassification of:className="link">
+                        <of:searchCode of:word="dkcclterm.dk">83.8</of:searchCode>
+                        <of:display>83.8</of:display>
+                      </of:shelfClassification>
+                    </of:shelf>
+                    <of:originals>Originaludgave: 2005</of:originals>
+                    <of:identifiersISBN>
+                      <of:identifier>0-330-44010-1</of:identifier>
+                    </of:identifiersISBN>
+                    <of:language>
+                      <of:languageElement>Engelsk</of:languageElement>
+                    </of:language>
+                  </of:details>
+                  <of:publicationDetails>
+                    <of:publisher of:punctuation=", ">Picador</of:publisher>
+                    <of:publicationYear>2005</of:publicationYear>
+                  </of:publicationDetails>
+                  <of:type of:punctuation=" + ">Bog</of:type>
+                </of:main>
+              </of:manifestation>
+            </of:workDisplay>
+          </formattedCollection>
+        </searchResult>
+        <facetResult/>
+        <statInfo>
+          <fedoraRecordsCached>0</fedoraRecordsCached>
+          <fedoraRecordsRead>5</fedoraRecordsRead>
+          <time>0.312962</time>
+          <trackingId>os:2014-09-15T09:42:33:028576:23801</trackingId>
+        </statInfo>
+      </result>
+    </searchResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
