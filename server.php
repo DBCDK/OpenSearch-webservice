@@ -799,6 +799,7 @@ class openSearch extends webServiceServer {
     $solr_2_arr[] = unserialize($solr_result);
 
     foreach ($fpids as $fpid_number => $fpid) {
+      $collection_identifier = $is_primary = '';
       foreach ($solr_2_arr as $s_2_a) {
         foreach ($s_2_a['response']['docs'] as $fdoc) {
           $p_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
@@ -818,6 +819,9 @@ class openSearch extends webServiceServer {
         $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
         $primary_pid = self::fetch_primary_bib_object($unit_rels_hierarchy);
+        // The record will always be the primary object
+        // Someday we have to get local streams, so collection_identifier har to be set to
+        // $agency . '-katalog' if such a data-stream exist in the object
       }
       $data_stream = self::set_data_stream_name($collection_identifier);
 //var_dump($filter_q);
