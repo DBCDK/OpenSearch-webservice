@@ -18,6 +18,8 @@ You should have received a copy of the GNU Affero General Public License along w
     <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
     <xs:import namespace="http://biblstandard.dk/abm/namespace/dkabm/" schemaLocation="dkabm.xsd"/>
     <xs:import namespace="info:lc/xmlns/marcxchange-v1" schemaLocation="marcxchange-1-1.xsd"/>
+-->
+<!--
     <xs:import namespace="http://docbook.org/ns/docbook" schemaLocation="docbook.xsd"/>
     <xs:import namespace="http://oss.dbc.dk/ns/display" schemaLocation="display.xsd"/>
 -->

@@ -1621,6 +1621,7 @@ class openSearch extends webServiceServer {
   }
 
   /** \brief Remove not asked for formats from result
+   * @param $collections (array)
    *
    */
   private function remove_unselected_formats(&$collections) {
@@ -1635,6 +1636,7 @@ class openSearch extends webServiceServer {
   }
 
   /** \brief Check whether an object i deleted or not
+   * @param $fpid (string)
    *
    */
   private function deleted_object($fpid) {
