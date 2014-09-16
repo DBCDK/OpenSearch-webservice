@@ -1555,74 +1555,41 @@ class openSearch extends webServiceServer {
     $this->watch->stop('format');
   }
 
-  /** \brief Remove private or internal fields from the marcxchange record
-   * Controled by the repository filter structure set in the services ini-file
+  /** \brief Remove private/internal subfields from the marcxchange record
+   * If all subfields in a field are removed, the field is removed as well
+   * Controlled by the repository filter structure set in the services ini-file
    * @param $collections (array)
-   * @param $field_filters (array) 
+   * @param $filters (array) 
    *
    */
-  private function filter_marcexchange_field(&$collections, $field_filter) {
-    foreach ($collections as $idx => &$c) {
-      foreach ($c->_value->collection->_value->object as &$o) {
-        if ($o->_value->collection) {
-          @ $mrec = &$o->_value->collection->_value->record->_value;
-          foreach ($mrec->datafield as $idf => &$df) {
-            if (preg_match('/' . $field_filter . '/', $df->_attributes->tag->_value)) {
-              unset($mrec->datafield[$idf]);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  /** \brief Remove private or internal subfields from the marcxchange record
-   * Controled by the repository filter structure set in the services ini-file
-   * @param $collections (array)
-   * @param $subfield_filters (array) 
-   *
-   */
-  private function filter_marcexchange_subfield(&$collections, $subfield_filters) {
-    foreach ($collections as $idx => &$c) {
-      foreach ($c->_value->collection->_value->object as &$o) {
-        if ($o->_value->collection) {
-          @ $mrec = &$o->_value->collection->_value->record->_value;
-          foreach ($mrec->datafield as $idf => &$df) {
-            foreach ($subfield_filters as $tag => $filter) {
-              if (preg_match('/' . $tag . '/', $df->_attributes->tag->_value)) {
-                if (is_array($df->_value->subfield)) {
-                  foreach ($df->_value->subfield as $isf => &$sf) {
-                    if (preg_match('/' . $filter . '/', $sf->_attributes->code->_value)) {
-                      unset($mrec->datafield[$idf]->_value->subfield[$isf]);
+  private function filter_marcxchange_records(&$collections, $filters) {
+    if (is_array($filters)) {
+      foreach ($collections as $idx => &$c) {
+        foreach ($c->_value->collection->_value->object as &$o) {
+          if ($o->_value->collection) {
+            @ $mrec = &$o->_value->collection->_value->record->_value;
+            foreach ($mrec->datafield as $idf => &$df) {
+              foreach ($filters as $tag => $filter) {
+                if (preg_match('/' . $tag . '/', $df->_attributes->tag->_value)) {
+                  if (is_array($df->_value->subfield)) {
+                    foreach ($df->_value->subfield as $isf => &$sf) {
+                      if (preg_match('/' . $filter . '/', $sf->_attributes->code->_value)) {
+                        unset($mrec->datafield[$idf]->_value->subfield[$isf]);
+                      }
+                    }
+                    if (!count($df->_value->subfield)) {  // removed all subfield
+                      unset($mrec->datafield[$idf]);
                     }
                   }
-                  if (!count($df->_value->subfield)) {  // removed all subfield
+                  elseif (preg_match('/' . $filter . '/', $df->_value->subfield->_attributes->code->_value)) {
                     unset($mrec->datafield[$idf]);
                   }
-                }
-                elseif (preg_match('/' . $filter . '/', $df->_value->subfield->_attributes->code->_value)) {
-                  unset($mrec->datafield[$idf]);
                 }
               }
             }
           }
         }
       }
-    }
-  }
-
-  /** \brief Remove private or internal fields/subfields from the marcxchange record
-   * Controled by the repository filter structure set in the services ini-file
-   * @param $collections (array)
-   * @param $filters (array) 
-   *
-   */
-  private function filter_marcxchange_records(&$collections, $filters) {
-    if ($filters['field']) {
-      self::filter_marcexchange_field($collections, $filters['field']);
-    }
-    if (is_array($filters['subfield'])) {
-      self::filter_marcexchange_subfield($collections, $filters['subfield']);
     }
   }
 
