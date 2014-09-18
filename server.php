@@ -244,8 +244,11 @@ class openSearch extends webServiceServer {
 
     //var_dump($solr_query); die();
     if (is_array($solr_query['edismax']['ranking'])) {
-      if (!$rank = $rank_types['rank_cql'][reset($solr_query['edismax']['ranking'])]) {
-        $rank = $rank_types['rank_cql']['default'];
+      if (!$rank_cql = $rank_types['rank_cql'][reset($solr_query['edismax']['ranking'])]) {
+        $rank_cql = $rank_types['rank_cql']['default'];
+      }
+      if ($rank_cql) {
+        $rank = $rank_cql;
       }
     }
     if ($this->query_language == 'bestMatch') {
