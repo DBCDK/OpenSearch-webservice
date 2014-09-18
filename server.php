@@ -116,6 +116,7 @@ class openSearch extends webServiceServer {
     $use_work_collection = ($param->collectionType->_value <> 'manifestation');
 
     $sort = array();
+    $rank_types = $this->config->get_value('rank', 'setup');
     if (!self::parse_for_ranking($param, $rank, $rank_types)) {
       if ($unsupported = self::parse_for_sorting($param, $sort, $sort_types)) {
         return $ret_error;
@@ -200,11 +201,7 @@ class openSearch extends webServiceServer {
       $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
       $result->statInfo->_value->trackingId->_value = $this->tracking_id;
       if ($debug_query) {
-        $debug_result->rawQueryString->_value = $solr_arr['debug']['rawquerystring'];
-        $debug_result->queryString->_value = $solr_arr['debug']['querystring'];
-        $debug_result->parsedQuery->_value = $solr_arr['debug']['parsedquery'];
-        $debug_result->parsedQueryString->_value = $solr_arr['debug']['parsedquery_toString'];
-        $result->queryDebugResult->_value = $debug_result;
+        $result->queryDebugResult->_value = self::set_debug_info($solr_arr['debug']);
       }
       return $ret;
     }
@@ -245,6 +242,12 @@ class openSearch extends webServiceServer {
       $filter_q = rawurlencode($this->filter_agency);
     }
 
+    //var_dump($solr_query); die();
+    if (is_array($solr_query['edismax']['ranking'])) {
+      if (!$rank = $rank_types['rank_cql'][reset($solr_query['edismax']['ranking'])]) {
+        $rank = $rank_types['rank_cql']['default'];
+      }
+    }
     if ($this->query_language == 'bestMatch') {
       $sort_q .= '&mm=1';
       $solr_query['edismax'] = $solr_query['best_match'];
@@ -311,16 +314,7 @@ class openSearch extends webServiceServer {
     if ($error) return $ret_error;
 
     if ($debug_query) {
-      if ($best_match_debug) {
-        $debug_result->bestMatch->_value = $best_match_debug;
-      }
-      $debug_result->rawQueryString->_value = $solr_arr['debug']['rawquerystring'];
-      $debug_result->queryString->_value = $solr_arr['debug']['querystring'];
-      $debug_result->parsedQuery->_value = $solr_arr['debug']['parsedquery'];
-      $debug_result->parsedQueryString->_value = $solr_arr['debug']['parsedquery_toString'];
-      if ($this->rank_frequence_debug) {
-        $debug_result->rankFrequency->_value = $this->rank_frequence_debug;
-      }
+      $debug_result = self::set_debug_info($solr_arr['debug'], $this->rank_frequence_debug, $best_match_debug);
     }
     //$facets = self::parse_for_facets($solr_arr);
 
@@ -1181,7 +1175,6 @@ class openSearch extends webServiceServer {
       $rank_types[$rank] = $rank_user;
     }
     elseif (is_scalar($param->sort->_value)) {
-      $rank_types = $this->config->get_value('rank', 'setup');
       if ($rank_types[$param->sort->_value]) {
         $rank = $param->sort->_value;
       }
@@ -2438,6 +2431,23 @@ class openSearch extends webServiceServer {
    */
   private function xs_boolean($str) {
     return (strtolower($str) == 'true' || $str == 1);
+  }
+
+  /** \brief Helper function to set debug info
+   *  
+   */
+  private function set_debug_info($solr_debug, $rank_freq_debug = '', $best_match_debug = '') {
+    $ret->rawQueryString->_value = $solr_debug['rawquerystring'];
+    $ret->queryString->_value = $solr_debug['querystring'];
+    $ret->parsedQuery->_value = $solr_debug['parsedquery'];
+    $ret->parsedQueryString->_value = $solr_debug['parsedquery_toString'];
+    if ($best_match_debug) {
+      $ret->bestMatch->_value = $best_match_debug;
+    }
+    if ($rank_freq_debug) {
+      $ret->rankFrequency->_value = $rank_freq_debug;
+    }
+    return $ret;
   }
 
 }
