@@ -306,6 +306,11 @@ dump_timer = opensearch(%s)
 ;   boost_value (integer) for rank_register
 ;   tie_value (decimal) 1.0 or lower
 ;
+; For information about ranking with the edismax search handler: 
+; http://wiki.apache.org/solr/ExtendedDisMax
+; - word_boost will go into the qf (query fields) parameter
+; - phrase_boost will go into the pf (phrase fields) parameter
+; - tie will go into the tie (tie breaker) parameter
 
 rank[rank_main_title][word_boost][dkcclterm.ht] = 2
 rank[rank_main_title][word_boost][term.default] = 1
@@ -363,6 +368,28 @@ rank[rank_none][word_boost][term.default] = 0.1
 rank[rank_none][phrase_boost][term.default] = 0.1
 rank[rank_none][tie] = 1
 
+; Special ranking rank_frequency
+; specifies which registers used to search for frequency
+; the highest hit count will select the rank method to use
+; 
+; rank[rank_frequency][an existing register] = rank_method_1
+; rank[rank_frequency][a second existing register] = rank_method_2
+; rank[rank_frequency][a third existing register] = rank_method_3
+;
+rank[rank_frequency][dkcclterm.ti] = rank_title
+rank[rank_frequency][dkcclterm.fo] = rank_creator
+rank[rank_frequency][dkcclterm.em] = rank_subject
+
+; Special ranking rank_cql
+; Specifies which rank method to use when the relation modifier 'relevant' is used in a cql search
+; dkcclterm.ti =/relevant "some words" will use the rank_title method above
+;
+rank[rank_cql][default] = rank_general
+rank[rank_cql][dkcclterm.ti] = rank_title
+rank[rank_cql][dkcclterm.fo] = rank_creator
+rank[rank_cql][dkcclterm.em] = rank_subject
+
+; sorts
 sort[title_ascending] = sort.title asc
 sort[title_descending] = sort.title desc
 sort[creator_ascending] = sort.creator asc
