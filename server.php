@@ -631,7 +631,7 @@ class openSearch extends webServiceServer {
     $this->watch->start('Solr_hits');
     // obsolete - handled by collaps-settings above   
     // $solr_query['edismax']['fq'][] = 'unit.isPrimaryObject:true';   // need some discussion to decide for or against this line
-    if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, $filter_q, '', $debug_query, $solr_arr)) {
+    if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', $rank_q, $facet_q, $filter_q, '', $debug_query, $solr_arr)) {
       $this->watch->stop('Solr_hits');
       $error = $err;
       return $ret_error;
