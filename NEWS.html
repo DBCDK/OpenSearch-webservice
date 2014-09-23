@@ -1,8 +1,12 @@
 <pre>
 3.1
 ===
+Information about the records status is returned for search and getObject. For search it should allways 
+  be active - US 1429: Oplysning om status på en post/datastrøm når man bruger getObject
+xsd: added recordStatus (active/delete) to the object structure. 
+If the agency has a record of its own, this is selected instead of the primaryBibObject or the commenData stream for
+  7xxxxx libraries - US 1427: Udlevering af et biblioteks egen post fra enhedsklynge
 xsd: facetMinCount - defaults to 0
-US 1427: Udlevering af et biblioteks egen post fra enhedsklynge
 xsd: facetSort can contain count (default) or index
 ini: rank structure added rank[rank_cql] to handle the relation modifier 'relevant'
 cq: handlign relation modifier 'relevant', allowing 'ti any/relevant "some words"' and 'ti=/relevant "some words"'
