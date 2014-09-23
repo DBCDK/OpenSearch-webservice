@@ -824,11 +824,14 @@ class openSearch extends webServiceServer {
         $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
         $primary_pid = self::fetch_primary_bib_object($unit_rels_hierarchy);
+        $sources = self::fetch_valid_sources_from_stream($primary_pid);
+        if (in_array($this->agency_catalog_source, $sources)) {
+          $data_stream = 'localData.' . $this->agency_catalog_source;
+        }
         // The record will always be the primary object
         // Someday we have to get local streams, so collection_identifier har to be set to
         // $agency . '-katalog' if such a data-stream exist in the object
       }
-      $data_stream = self::set_data_stream_name($collection_identifier);
 //var_dump($filter_q);
 //var_dump($solr_2_arr); 
 //var_dump($collection_identifier);
@@ -1616,7 +1619,7 @@ class openSearch extends webServiceServer {
    * @param $fpid (string)
    *
    */
-  private function deleted_object($fpid) {
+  private function deleted_object($fpid, $datastream_id = 'commonData') {
     static $dom;
     $state = '';
     if ($obj_url = $this->repository['fedora_get_object_profile']) {
@@ -2131,6 +2134,9 @@ class openSearch extends webServiceServer {
     if ($primary_id) {
       $ret->primaryObjectIdentifier->_value = $primary_id;
     }
+    if ($rs = self::get_record_status($fedora_dom)) {
+      $ret->recordStatus->_value = $rs;
+    }
     if ($cd = self::get_creation_date($fedora_dom)) {
       $ret->creationDate->_value = $cd;
     }
@@ -2165,7 +2171,16 @@ class openSearch extends webServiceServer {
     return $solr_arr['response']['numFound'];
   }
 
-  /** \brief Check rec for available formats
+  /** \brief extract creation date from fedora obj
+   *
+   */
+  private function get_record_status(&$dom) {
+    if ($p = &$dom->getElementsByTagName('adminData')->item(0)) {
+      return $p->getElementsByTagName('recordStatus')->item(0)->nodeValue;
+    }
+  }
+
+  /** \brief extract creation date from fedora obj
    *
    */
   private function get_creation_date(&$dom) {
