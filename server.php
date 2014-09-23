@@ -284,20 +284,22 @@ class openSearch extends webServiceServer {
 
     $rows = ($start + $step_value + 100) * 2;
     if ($param->facets->_value->facetName) {
-      $facet_q .= '&facet=true&facet.limit=' . $param->facets->_value->numberOfTerms->_value;
-      if ($facet_sort = $param->facets->_value->facetSort->_value) {
+      $pfacets = &$param->facets->_value;
+      $facet_min = 1;
+      if (isset($pfacets->facetMinCount->_value)) {
+        $facet_min = $pfacets->facetMinCount->_value;
+      }
+      $facet_q .= '&facet=true&facet.limit=' . $pfacets->numberOfTerms->_value .  '&facet.mincount=' . $facet_min;
+      if ($facet_sort = $pfacets->facetSort->_value) {
         $facet_q .= '&facet.sort=' . $facet_sort;
       }
-      if ($facet_min = $param->facets->_value->facetMinCount->_value) {
-        $facet_q .= '&facet.mincount=' . $facet_min;
-      }
-      if (is_array($param->facets->_value->facetName)) {
-        foreach ($param->facets->_value->facetName as $facet_name) {
+      if (is_array($pfacets->facetName)) {
+        foreach ($pfacets->facetName as $facet_name) {
           $facet_q .= '&facet.field=' . $facet_name->_value;
         }
       }
-      elseif (is_scalar($param->facets->_value->facetName->_value)) {
-        $facet_q .= '&facet.field=' . $param->facets->_value->facetName->_value;
+      elseif (is_scalar($pfacets->facetName->_value)) {
+        $facet_q .= '&facet.field=' . $pfacets->facetName->_value;
       }
     }
 
