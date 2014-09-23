@@ -166,6 +166,11 @@ You should have received a copy of the GNU Affero General Public License along w
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="facetMinCount" type="xs:positiveInteger">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Minimum count to include in the facets.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:element name="facetName" type="os:facetType">
     <xs:annotation>
       <xs:documentation xml:lang="en">Name of the index that is used for the facet returned by the service. It has to be one of the names listed i facetType.</xs:documentation>
@@ -189,6 +194,7 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:sequence>
         <xs:element ref="os:numberOfTerms" minOccurs="0"/>
         <xs:element ref="os:facetSort" minOccurs="0"/>
+        <xs:element ref="os:facetMinCount" minOccurs="0"/>
         <xs:element ref="os:facetName" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>

@@ -288,6 +288,9 @@ class openSearch extends webServiceServer {
       if ($facet_sort = $param->facets->_value->facetSort->_value) {
         $facet_q .= '&facet.sort=' . $facet_sort;
       }
+      if ($facet_min = $param->facets->_value->facetMinCount->_value) {
+        $facet_q .= '&facet.mincount=' . $facet_min;
+      }
       if (is_array($param->facets->_value->facetName)) {
         foreach ($param->facets->_value->facetName as $facet_name) {
           $facet_q .= '&facet.field=' . $facet_name->_value;
@@ -2433,7 +2436,7 @@ class openSearch extends webServiceServer {
       foreach ($solr_arr['facet_counts']['facet_fields'] as $facet_name => $facet_field) {
         $facet->facetName->_value = $facet_name;
         foreach ($facet_field as $term => $freq) {
-          if ($term && $freq) {
+          if (isset($term) && isset($freq)) {
             $o->frequence->_value = $freq;
             $o->term->_value = $term;
             $facet->facetTerm[]->_value = $o;
