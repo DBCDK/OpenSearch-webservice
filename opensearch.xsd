@@ -354,6 +354,8 @@ You should have received a copy of the GNU Affero General Public License along w
           <xs:element ref="os:error"/>
         </xs:choice>
         <xs:element ref="os:identifier"/>
+        <xs:element ref="os:primaryObjectIdentifier" minOccurs="0"/>
+        <xs:element ref="os:recordStatus" minOccurs="0"/>
         <xs:element ref="os:creationDate" minOccurs="0"/>
         <xs:element ref="os:holdingsCount" minOccurs="0"/>
         <xs:element ref="os:lendingLibraries" minOccurs="0"/>
@@ -376,6 +378,11 @@ You should have received a copy of the GNU Affero General Public License along w
   <xs:element name="parsedQuery" type="xs:string">
     <xs:annotation>
       <xs:documentation xml:lang="en">The parsed version of the query sent to the search engine. Used for query debugging.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="primaryObjectIdentifier" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Unique identifier of the primary bibliographic object.</xs:documentation>
     </xs:annotation>
   </xs:element>
   <xs:element name="rankFrequency">
@@ -462,6 +469,11 @@ You should have received a copy of the GNU Affero General Public License along w
   <xs:element name="rawQueryString" type="xs:string">
     <xs:annotation>
       <xs:documentation xml:lang="en">The raw query sent to the search engine. Used for query debugging.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="recordStatus" type="os:recordStatusType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The status of the returned record. active/delete.</xs:documentation>
     </xs:annotation>
   </xs:element>
   <xs:element name="relation">
@@ -747,6 +759,15 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:enumeration value="refWorks"/>
       <xs:enumeration value="ris"/>
       <xs:enumeration value="workDisplayHtml"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="recordStatusType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">the status of a given record.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="active"/>
+      <xs:enumeration value="delete"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="outputTypeType">
