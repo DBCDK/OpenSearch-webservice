@@ -7,6 +7,7 @@
       <ns1:profile>test</ns1:profile>
       <ns1:facets>
         <ns1:numberOfTerms>10</ns1:numberOfTerms>
+        <ns1:facetSort>count</ns1:facetSort>
         <ns1:facetName>facet.creator</ns1:facetName>
         <ns1:facetName>facet.type</ns1:facetName>
       </ns1:facets>
