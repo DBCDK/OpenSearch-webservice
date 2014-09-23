@@ -38,6 +38,7 @@ class openSearch extends webServiceServer {
   protected $query_language = 'cqleng'; 
   protected $number_of_fedora_calls = 0;
   protected $number_of_fedora_cached = 0;
+  protected $agency_catalog_source = '';
   protected $filter_agency = '';
   protected $format = '';
   protected $which_rec_id = '';
@@ -137,6 +138,7 @@ class openSearch extends webServiceServer {
       $this->query_language = $param->queryLanguage->_value;
     }
     $debug_query = $this->xs_boolean($param->queryDebug->_value);
+    $this->agency_catalog_source = $param->agency->_value . '-katalog';
 
 
     if ($us_settings = $this->repository['universal']) {
@@ -283,6 +285,9 @@ class openSearch extends webServiceServer {
     $rows = ($start + $step_value + 100) * 2;
     if ($param->facets->_value->facetName) {
       $facet_q .= '&facet=true&facet.limit=' . $param->facets->_value->numberOfTerms->_value;
+      if ($facet_sort = $param->facets->_value->facetSort->_value) {
+        $facet_q .= '&facet.sort=' . $facet_sort;
+      }
       if (is_array($param->facets->_value->facetName)) {
         foreach ($param->facets->_value->facetName as $facet_name) {
           $facet_q .= '&facet.field=' . $facet_name->_value;
@@ -644,8 +649,6 @@ class openSearch extends webServiceServer {
       }
       $facets = self::parse_for_facets($solr_arr);
     }
-/*
-*/
 
 //var_dump($solr_2_arr);
 //var_dump($work_cache_struct);
@@ -675,10 +678,6 @@ class openSearch extends webServiceServer {
     $result->statInfo->_value->fedoraRecordsRead->_value = $this->number_of_fedora_calls;
     $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
     $result->statInfo->_value->trackingId->_value = $this->tracking_id;
-
-
-    //print_r($collections[0]);
-    //exit;
 
     return $ret;
   }
@@ -730,6 +729,7 @@ class openSearch extends webServiceServer {
       $filter_q = rawurlencode($this->filter_agency);
     }
 
+    $this->agency_catalog_source = $agency . '-katalog';
     $this->format = self::set_format($param->objectFormat, 
                                $this->config->get_value('open_format', 'setup'), 
                                $this->config->get_value('solr_format', 'setup'));
@@ -910,8 +910,11 @@ class openSearch extends webServiceServer {
 
   /*******************************************************************************/
 
-  /** \brief sets sortUsed i rank or sort is used
+  /** \brief sets sortUsed if rank or sort is used
    * 
+   * $param $ret (object)
+   * $param $rank (string) 
+   * $param $sort (string) 
    */
   private function set_sortUsed(&$ret, $rank, $sort) {
     if (isset($rank)) {
@@ -2035,33 +2038,48 @@ class openSearch extends webServiceServer {
     return $arr[0];
   }
 
-  /** \brief Parse a work relation and return array of ids
+  /** \brief Parse a unit object and return the id of the users object ($this->agency_catalog_source)
+   *         or the id of the primaryBibObject
    *
+   * @param $u_rel (string) xml of the unit object
+   * @return (array) of object_id and number of members in the unit
    */
   private function parse_unit_for_object_ids($u_rel) {
     static $dom;
     if (empty($dom)) {
       $dom = new DomDocument();
+      $dom->preserveWhiteSpace = false;
     }
-    $dom->preserveWhiteSpace = false;
+    $oid = $length = FALSE;
     if (@ $dom->loadXML($u_rel)) {
-      $hmof = $dom->getElementsByTagName('hasMemberOfUnit');
       $hpbo = $dom->getElementsByTagName('hasPrimaryBibObject');
-      if ($hpbo->item(0))
-        return(array($hpbo->item(0)->nodeValue, $hmof->length));
-      return array(FALSE, FALSE);
+      if ($hpbo->item(0)) {
+        $oid = $hpbo->item(0)->nodeValue;
+      }
+      $hmou = $dom->getElementsByTagName('hasMemberOfUnit');
+      $length = $hmou->length;
+      foreach ($hmou as $mou) {
+        if ($this->agency_catalog_source == self::record_source_from_pid($mou->nodeValue)) {
+          $oid = $mou->nodeValue;
+          break;
+        }
+      }
     }
+    return(array($oid, $length));
   }
 
   /** \brief Parse a work relation and return array of ids
    *
+   * @param $w_rel (string) xml of the work object
+   * @param $uid (string) id of the unit pointing to the work object
+   * @return (array) of id's found in the work object. The first element is always set to $uid
    */
   private function parse_work_for_object_ids($w_rel, $uid) {
     static $dom;
     if (empty($dom)) {
       $dom = new DomDocument();
+      $dom->preserveWhiteSpace = false;
     }
-    $dom->preserveWhiteSpace = false;
     if (@ $dom->loadXML($w_rel)) {
       $res = array();
       $res[] = $uid;
