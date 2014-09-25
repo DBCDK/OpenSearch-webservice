@@ -673,7 +673,7 @@ class openSearch extends webServiceServer {
     $result->hitCount->_value = $numFound;
     $result->collectionCount->_value = count($collections);
     $result->more->_value = ($more ? 'true' : 'false');
-    self::set_sortUsed($result, $rank, $sort);
+    self::set_sortUsed($result, $rank, $sort, $sort_types);
     $result->searchResult = $collections;
     $result->facetResult->_value = $facets;
     if ($debug_query && $debug_result) {
@@ -923,14 +923,20 @@ class openSearch extends webServiceServer {
    * $param $ret (object)
    * $param $rank (string) 
    * $param $sort (string) 
+   * $param $sort_types (array) 
    */
-  private function set_sortUsed(&$ret, $rank, $sort) {
+  private function set_sortUsed(&$ret, $rank, $sort, $sort_types) {
     if (isset($rank)) {
       $ret->sortUsed->_value = $rank;
     }
     elseif (!empty($sort)) {
-      foreach ($sort as $s) {
-        $ret->sortUsed[]->_value = $s;
+      if ($key = array_search($sort, $sort_types)) {
+        $ret->sortUsed->_value = $key;
+      }
+      else {
+        foreach ($sort as $s) {
+          $ret->sortUsed[]->_value = $s;
+        }
       }
     }
   }
@@ -1006,7 +1012,7 @@ class openSearch extends webServiceServer {
           @ $dom->loadXml('<?xml version="1.0" encoding="UTF-8"?' . '><marcx:record format="danMARC2" type="Bibliographic" xmlns:marcx="info:lc/xmlns/marcxchange-v1"><marcx:datafield tag="245" ind1="0" ind2="0"><marcx:subfield code="a">ERROR: Cannot read record from repository: ' . $this->repository_name . '</marcx:subfield></marcx:datafield></marcx:record>');
         }
         else {
-          $query = 'SELECT content FROM records WHERE id = \'' . $solr_doc['marc.001a'][0] . '\' AND library = ' . $solr_doc['marc.001b'];
+          $query = 'SELECT content FROM records WHERE bibliographicrecordid = \'' . $solr_doc['marc.001a'][0] . '\' AND agencyid = ' . $solr_doc['marc.001b'];
           $pg->set_query($query);
           $pg->execute();
           $row = $pg->get_row();
@@ -1198,9 +1204,9 @@ class openSearch extends webServiceServer {
 
   /** \brief parse input for sort parameters
    *
-   * @param $param object       The request
-   * @param $sort string        Name of sort used by request
-   * @param $sort_types array   Settings for the given sort
+   * @param $param (object)       The request
+   * @param $sort (string)        Name of sort used by request
+   * @param $sort_types (array)   Settings for the given sort
    * 
    * return none  Modifies $sort and $sort_types
    */
@@ -1220,18 +1226,28 @@ class openSearch extends webServiceServer {
         if ($random && count($sort)) {
           return 'Error: Random sorting can only be used alone';
         }
-        $sort[] = $s->_value;
+        if (is_array($sort_types[$s->_value])) {
+          foreach ($sort_types[$s->_value] as $item) {
+            if (!isset($sort_types[$item])) {
+              return 'Error in service setup: ' . $item . ' specified in ' . $s->_value . ' is not defined';
+            }
+            $sort[] = $item;
+          }
+        }
+        else {
+          $sort[] = $s->_value;
+        }
       }
     }
   }
 
   /** \brief Selects a ranking scheme depending on some register frequency lookups
    *
-   * @param $solr_query array - the parsed user query
-   * @param $guesses array - registers to get frequence for
-   * @param $user_filter string - filter query as set by users profile
+   * @param $solr_query (array) - the parsed user query
+   * @param $guesses (array) - registers to get frequence for
+   * @param $user_filter (string) - filter query as set by users profile
    *
-   * $return string - the ranking scheme with highest number of hits
+   * @return string - the ranking scheme with highest number of hits
    *
    */
   private function guess_rank($solr_query, $guesses, $user_filter) {
