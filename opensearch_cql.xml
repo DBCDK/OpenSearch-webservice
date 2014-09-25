@@ -1751,6 +1751,20 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
+      <title lang="da">Målgruppe - "egnet for" og PEGI mærkninger (enkeltord)</title>
+      <title lang="en">Audience - recommended (term)</title>
+      <map>
+        <name set="term">audienceRecommended</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Målgruppe - Medierådets mærkninger (enkeltord)</title>
+      <title lang="en">Audience - restricted (term)</title>
+      <map>
+        <name set="term">audienceRestricted</name>
+      </map>
+    </index>
+    <index>
       <title lang="da">Voksen- eller børnemateriale (enkeltord)</title>
       <title lang="en">Adult or childrens materials (term)</title>
       <map>
