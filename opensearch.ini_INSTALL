@@ -422,9 +422,11 @@ sort[solr_article_date_descending] = sort.articleDate desc
 
 ; sortgroups using sorts - allows you to create "grouped"-sorts, combining existing sorts
 ; like:
-; sort[<group_sort_name>][] = <sort-name-1>
-; sort[<group_sort_name>][] = <sort-name-2>
-; where sort-name-1 and sort-name-2 must be defined above as "simple" sorts
+; sort[<group_sort_name>][] = <sort_name_1>
+; sort[<group_sort_name>][] = <sort_name_2>
+; where sort_name_1 and sort_name_2 must be defined above as "simple" sorts
+; Both the <group_sort_name> and <sort_name_1> are available for the users, so there is no
+; necessity to make a group with only one line
 ;
 sort[acquisitionDate_ascending][] = solr_acquisitionDate_ascending
 sort[acquisitionDate_descending][] = solr_acquisitionDate_descending
