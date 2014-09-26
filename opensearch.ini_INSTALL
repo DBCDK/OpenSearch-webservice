@@ -139,8 +139,10 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 ; 
 ; Remove all fields that do not start with a-z like
 ;repository[my_repository][filter][marcxchange]['^[a-z]'] = .
+;
 ; Remove all & subfields like, the second parameter is the regex specifying the tag(s)
 ;repository[my_repository][filter][marcxchange][100] = &
+;
 ; Remove all & subfields in all numeric fields
 ;repository[my_repository][filter][marcxchange]['[0-9]{3}'] = &
 ; or in all 3 character field
@@ -295,7 +297,15 @@ dump_timer = opensearch(%s)
 ; sorting & ranking
 ; sorting and rakings are defined in the structure below
 ;
+; Define each simple sort as
 ; sort[<sort_name>] = <sort-field> <asc || desc>
+;
+; And make groups (if needed) as:
+; sort[<group_sort_name-1>][] = <sort-name-1>
+; sort[<group_sort_name-1>][] = <sort-name-2>
+; sort[<group_sort_name-2>][] = <sort-name-2>
+; sort[<group_sort_name-2>][] = <sort-name-3>
+; sort[<group_sort_name-2>][] = <sort-name-1>
 ;
 ; rank[<rank_name>][<rank_parameter>][<rank_register>] = boost_value
 ;   rank_name is the sort-name that will trigger this ranking
@@ -389,26 +399,68 @@ rank[rank_cql][dkcclterm.ti] = rank_title
 rank[rank_cql][dkcclterm.fo] = rank_creator
 rank[rank_cql][dkcclterm.em] = rank_subject
 
-; sorts
-sort[title_ascending] = sort.title asc
-sort[title_descending] = sort.title desc
-sort[creator_ascending] = sort.creator asc
-sort[creator_descending] = sort.creator desc
-;sort[date_ascending] = sort.date asc
-;sort[date_descending] = sort.date desc
-sort[date_ascending] = map(sort.date,0,0,9999) asc
-sort[date_descending] = map(sort.date,2050,999999,0) desc
-sort[acquisitionDate_ascending] = sort.acquisitionDate asc
-sort[acquisitionDate_descending] = sort.acquisitionDate desc
-
-sort[work_type_ascending] = sort.workType asc
-sort[work_type_descending] = sort.workType desc
-sort[record_owner_ascending] = sort.recordOwner asc
-sort[record_owner_descending] = sort.recordOwner desc
-sort[article_date_ascending] = sort.articleDate asc
-sort[article_date_descending] = sort.articleDate desc
-
+; Special random sort, which cannot be used in combination with other sorts or be a part of a sortgroup
+; Used by client to create carousels for new books, music, ...
 sort[random] = random
+
+; sorts
+sort[solr_title_ascending] = sort.title asc
+sort[solr_title_descending] = sort.title desc
+sort[solr_creator_ascending] = sort.creator asc
+sort[solr_creator_descending] = sort.creator desc
+sort[solr_date_ascending] = map(sort.date,0,0,9999) asc
+sort[solr_date_descending] = map(sort.date,2050,999999,0) desc
+sort[solr_acquisitionDate_ascending] = sort.acquisitionDate asc
+sort[solr_acquisitionDate_descending] = sort.acquisitionDate desc
+
+sort[solr_work_type_ascending] = sort.workType asc
+sort[solr_work_type_descending] = sort.workType desc
+sort[solr_record_owner_ascending] = sort.recordOwner asc
+sort[solr_record_owner_descending] = sort.recordOwner desc
+sort[solr_article_date_ascending] = sort.articleDate asc
+sort[solr_article_date_descending] = sort.articleDate desc
+
+; sortgroups using sorts - allows you to create "grouped"-sorts, combining existing sorts
+; like:
+; sort[<group_sort_name>][] = <sort-name-1>
+; sort[<group_sort_name>][] = <sort-name-2>
+; where sort-name-1 and sort-name-2 must be defined above as "simple" sorts
+;
+sort[acquisitionDate_ascending][] = solr_acquisitionDate_ascending
+sort[acquisitionDate_descending][] = solr_acquisitionDate_descending
+
+sort[article_date_ascending][] = solr_article_date_ascending
+sort[article_date_descending][] = solr_article_date_descending
+
+sort[creator_ascending][] = solr_creator_ascending
+sort[creator_ascending][] = solr_date_descending
+sort[creator_ascending][] = solr_title_ascending
+
+sort[creator_descending][] = solr_creator_ascending
+sort[creator_descending][] = solr_date_descending
+sort[creator_descending][] = solr_title_ascending
+
+sort[date_ascending][] = solr_work_type_ascending
+sort[date_ascending][] = solr_record_owner_ascending
+sort[date_ascending][] = solr_article_date_ascending
+
+sort[date_descending][] = solr_work_type_ascending
+sort[date_descending][] = solr_record_owner_ascending
+sort[date_descending][] = solr_article_date_descending
+
+sort[record_owner_ascending][] = solr_record_owner_ascending
+sort[record_owner_descending][] = solr_record_owner_descending
+
+sort[title_ascending][] = solr_title_ascending
+sort[title_ascending][] = solr_date_descending
+sort[title_ascending][] = solr_creator_ascending
+
+sort[title_descending][] = solr_title_descending
+sort[title_descending][] = solr_date_descending
+sort[title_descending][] = solr_creator_ascending
+
+sort[work_type_ascending][] = solr_work_type_ascending
+sort[work_type_descending][] = solr_work_type_descending
 
 ; --------------
 ; filter for rank_frequency
