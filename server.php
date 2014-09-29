@@ -1499,7 +1499,7 @@ class openSearch extends webServiceServer {
                       }
                       else {
                         if (is_array($solr_doc[$format_tag])) {
-                          if (FALSE) {
+                          if (TRUE) {
                             $mani->_value->$tag_value->_namespace = $solr_display_ns;
                             $mani->_value->$tag_value->_value = self::normalize_chars($solr_doc[$format_tag][0]);
                           }
