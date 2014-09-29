@@ -1499,7 +1499,7 @@ class openSearch extends webServiceServer {
                       }
                       else {
                         if (is_array($solr_doc[$format_tag])) {
-                          if (TRUE) {
+                          if (FALSE) {
                             $mani->_value->$tag_value->_namespace = $solr_display_ns;
                             $mani->_value->$tag_value->_value = self::normalize_chars($solr_doc[$format_tag][0]);
                           }
@@ -1526,7 +1526,7 @@ class openSearch extends webServiceServer {
             if ($mani) {   // should contain data, but for some odd reason it can be empty. Some bug in the solr-indexes?
               $mani->_namespace = $solr_display_ns;
               $sort_key = $fpid_sort_keys[$fpid] . sprintf('%04d', $mani_no);
-		      $manifestation->manifestation[$sort_key] = $mani;
+              $manifestation->manifestation[$sort_key] = $mani;
             }
             unset($mani);
           }
@@ -1708,7 +1708,11 @@ class openSearch extends webServiceServer {
    * @retval mixed - error or NULL
    */
   private function get_fedora_raw($fpid, &$fedora_xml, $datastream_id = 'commonData') {
-    return self::get_fedora(str_replace('commonData', $datastream_id, $this->repository['fedora_get_raw']), $fpid, $fedora_xml);
+    $uri = $this->repository['fedora_get_raw'];
+    if ($datastream_id && ($datastream_id <> 'commonData')) {
+      $uri = str_replace('commonData', $datastream_id, $uri);
+    }
+    return self::get_fedora($uri, $fpid, $fedora_xml);
   }
 
   /** \brief Fetch a rels_addi record from fedora
