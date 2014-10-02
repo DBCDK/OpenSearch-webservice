@@ -360,7 +360,7 @@ You should have received a copy of the GNU Affero General Public License along w
         <xs:element ref="os:holdingsCount" minOccurs="0"/>
         <xs:element ref="os:lendingLibraries" minOccurs="0"/>
         <xs:element ref="os:relations" minOccurs="0"/>
-        <xs:element ref="os:formatsAvailable"/>
+        <xs:element ref="os:formatsAvailable" minOccurs="0"/>
         <xs:element ref="os:queryResultExplanation" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
