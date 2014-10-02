@@ -2284,7 +2284,9 @@ class openSearch extends webServiceServer {
       $ret->lendingLibraries->_value = $holdings_count['lend'];
     }
     if ($relations) $ret->relations->_value = $relations;
-    $ret->formatsAvailable->_value = self::scan_for_formats($fedora_dom);
+    if ($fa = self::scan_for_formats($fedora_dom)) {
+      $ret->formatsAvailable->_value = $fa;
+    }
     if ($debug_info) $ret->queryResultExplanation->_value = $debug_info;
     //if (DEBUG_ON) var_dump($ret);
 
@@ -2484,7 +2486,9 @@ class openSearch extends webServiceServer {
                   $rel_obj->relations->_value = $ext_relations;
                   unset($ext_relations);
                 }
-                $rel_obj->formatsAvailable->_value = self::scan_for_formats($rels_dom);
+                if ($fa = self::scan_for_formats($rels_dom)) {
+                  $rel_obj->formatsAvailable->_value = $fa;
+                }
               }
               if ($rels_type == 'type' || $relation->relationUri->_value) {
                 $relations->relation[]->_value = $relation;
