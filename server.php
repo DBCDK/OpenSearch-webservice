@@ -1795,9 +1795,11 @@ class openSearch extends webServiceServer {
    */
   private function set_solr_filter($profile) {
     $ret = '';
-    foreach ($profile as $p) {
-      if (self::xs_boolean($p['sourceSearchable'])) {
-        $ret .= ($ret ? ' OR ' : '') . 'rec.collectionIdentifier:' . $p['sourceIdentifier'];
+    if (is_array($profile)) {
+      foreach ($profile as $p) {
+        if (self::xs_boolean($p['sourceSearchable'])) {
+          $ret .= ($ret ? ' OR ' : '') . 'rec.collectionIdentifier:' . $p['sourceIdentifier'];
+        }
       }
     }
     return $ret;
