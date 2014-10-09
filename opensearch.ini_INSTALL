@@ -11,7 +11,7 @@
 ;version
 ; Note that the version is used as part of the cache key, so do not run 2 versions of the service with identical
 ; version name, unless you specificly want them to share cache
-version = 3.1
+version = 3.2
 
 ; --------------
 ; wsdl for service
