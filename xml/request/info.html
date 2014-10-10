@@ -3,8 +3,7 @@ Parameters:
   <li>search
     <ul>
       <li>query:</li> <a href="opensearch_cql.xml">cql</a>-query, <a href="http://zing.z3950.org/cql/intro.html">A Gentle Introduction to cql</a>
-      <li>queryFilter:</li> for the filter part of the query
-      <li>queryLanguage:</li> cqldan, cqleng or bestMatch - defaults to cqleng
+      <li>queryLanguage:</li> cqleng or bestMatch - defaults to cqleng
       <li>agency:</li> 
       <li>profile:</li> Name of search profile
       <li>allObjects:</li> returns all objects in a collection
@@ -20,8 +19,9 @@ Parameters:
       <li>source:</li> source of data (currently not supported)
       <li>start:</li> First record counting from 1
       <li>stepValue:</li> number of records
-      <li>sort:</li> acquisitionDate_ascending, acquisitionDate_descending, article_date_ascending, article_date_descending, creator_ascending, creator_descending, date_ascending, date_descending, random, rank_creator, rank_frequency, rank_general, rank_main_title, rank_none, rank_subject, rank_title, record_owner_ascending, record_owner_descending, title_ascending, title_descending, work_type_ascending, work_type_descending
       <li>userDefinedRanking:</li> 
+      <li>sort:</li> acquisitionDate_ascending, acquisitionDate_descending, article_date_ascending, article_date_descending, creator_ascending, creator_descending, date_ascending, date_descending, random, rank_creator, rank_frequency, rank_general, rank_main_title, rank_none, rank_subject, rank_title, record_owner_ascending, record_owner_descending, title_ascending, title_descending, work_type_ascending, work_type_descending
+      <li>userDefinedBoost:</li> 
       <li>queryDebug:</li> boolean for including debug-info in reply
       <li>trackingId:</li> for debugging purposes
     </ul>
