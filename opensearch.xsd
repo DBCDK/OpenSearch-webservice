@@ -70,6 +70,7 @@ You should have received a copy of the GNU Affero General Public License along w
             <xs:element ref="os:userDefinedRanking" minOccurs="0"/>
             <xs:element ref="os:sort" minOccurs="0" maxOccurs="unbounded"/>
           </xs:choice>
+        <xs:element ref="os:userDefinedBoost" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="os:queryDebug" minOccurs="0"/>
         <xs:element ref="os:trackingId" minOccurs="0"/>
       </xs:sequence>
@@ -613,6 +614,18 @@ You should have received a copy of the GNU Affero General Public License along w
     <xs:annotation>
       <xs:documentation xml:lang="en">Number of seconds used in the service</xs:documentation>
     </xs:annotation>
+  </xs:element>
+  <xs:element name="userDefinedBoost">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Specification of a specific field used in user defined boost.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:fieldName"/>
+        <xs:element ref="os:fieldValue"/>
+        <xs:element ref="os:weight"/>
+      </xs:sequence>
+    </xs:complexType>
   </xs:element>
   <xs:element name="userDefinedRanking">
     <xs:annotation>
