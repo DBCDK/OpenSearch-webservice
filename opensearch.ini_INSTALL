@@ -11,7 +11,7 @@
 ;version
 ; Note that the version is used as part of the cache key, so do not run 2 versions of the service with identical
 ; version name, unless you specificly want them to share cache
-version = 3.2
+version = 3.3
 
 ; --------------
 ; wsdl for service
@@ -121,10 +121,35 @@ repository[defaults][cql_file] = opensearch_cql.xml
 repository[@REPOSITORY_NAME@][solr] = @SOLR@
 repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 
-; Universal Search - sofar still for test only:
-; repository for Universal Search - settings are found in [universal_search_settings] section
-; Using "universal" as repository parameter, will trigger the use of Universal Search instead of normal scheme
-; repository[worldCat][universal] = universal_search_settings
+; collection query filter
+; Filtering on the collectionIdentifiers specified by the search profile
+; Records in 870976-anmeld has to be more than 6 months old
+; The search profile is kept in solr's filter cache, so the /DAY is needed to make it cachable
+repository[@REPOSITORY_NAME@][collection_query]['870976-anmeld'] = rec.createdDate:[* TO NOW-6MONTHS/DAY]
+
+; Filtering in marcxchange records kan be done by defining a filter mask
+; with regular expression matching owner, fields and subfields
+; owner is matched against the record source (collectionIndentifier)
+; repository[my_repository][filter][owner][marcxchange]['regexp matching field(s)'] = regexp matching subfield(s)
+; 
+; Remove all fields that starts with a-z like
+;repository[my_repository][filter][owner][marcxchange]['^[a-z]'] = .
+;
+; Remove all & subfields in field 100 like, the second parameter is the regex specifying the tag(s)
+;repository[my_repository][filter][owner][marcxchange][100] = &
+;
+; Remove all & subfields in all 3 digit numeric fields
+;repository[my_repository][filter][owner][marcxchange]['[0-9]{3}'] = &
+; or in all 3 character field
+;repository[my_repository][filter][owner][marcxchange]['^...$'] = &
+; or in all fields (if some are not 3 characters)
+;repository[my_repository][filter][owner][marcxchange]['.*'] = &
+; or remove subfields a and b in all field 7XX
+;repository[my_repository][filter][owner][marcxchange]['^7..$'] = [ab]
+;
+
+; filter 559 subfield i from collectionIdentier 870976-anmeld
+repository[@REPOSITORY_NAME@][filter]['870976-anmeld'][marcxchange]['^559'] = i
 
 ; Raw record repositories
 ; repository for Raw repository, an postgress base indexed by solr
@@ -133,31 +158,17 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 ;repository[rawrecords][postgress] = host=mypghost.dk port=5432 dbname=my_db user=myuser password=my_password connect_timeout=1
 ;repository[rawrecords][cql_file] = rawrecord_cql.xml
 ;
-; Filtering in marcxchange records kan be done by defining a filter mask
-; with regular expression matching fields and subfields
-; repository[my_repository][filter][marcxchange]['regexp matching field(s)'] = regexp matching subfield(s)
-; 
-; Remove all fields that do not start with a-z like
-;repository[my_repository][filter][marcxchange]['^[a-z]'] = .
-;
-; Remove all & subfields like, the second parameter is the regex specifying the tag(s)
-;repository[my_repository][filter][marcxchange][100] = &
-;
-; Remove all & subfields in all numeric fields
-;repository[my_repository][filter][marcxchange]['[0-9]{3}'] = &
-; or in all 3 character field
-;repository[my_repository][filter][marcxchange]['^...$'] = &
-; or in all fields (if some are not 3 characters)
-;repository[my_repository][filter][marcxchange]['.*'] = &
-; or remove subfields a and b in all field 7XX
-;repository[my_repository][filter][marcxchange]['^7..$'] = [ab]
 
 repository[@RAW_RECORD_REPOSITORY_NAME@][solr] = @RAW_RECORD_SOLR@
 repository[@RAW_RECORD_REPOSITORY_NAME@][postgress] = @RAW_RECORD_POSTGRESS_CREDENTIALS@
 repository[@RAW_RECORD_REPOSITORY_NAME@][cql_file] = rawrecord_cql.xml
-repository[@RAW_RECORD_REPOSITORY_NAME@][filter][marcxchange]['^[a-z]'] = .
-repository[@RAW_RECORD_REPOSITORY_NAME@][filter][marcxchange]['^...$'] = [&]
+repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^[a-z]'] = .
+repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^...$'] = [&]
 
+; Universal Search - sofar still for test only:
+; repository for Universal Search - settings are found in [universal_search_settings] section
+; Using "universal" as repository parameter, will trigger the use of Universal Search instead of normal scheme
+; repository[worldCat][universal] = universal_search_settings
 
 ; info to find available index for at solr repos
 ; luke[from] = to will replace from with to in the solr-uri
@@ -242,6 +253,7 @@ num_found_collapsing_field = fedoraPid
 agency_fallback = @AGENCY_FALLBACK@
 profile_fallback = @AGENCY_PROFILE_FALLBACK@
 
+; --------------
 ; relation_group_source_tab
 ; ...[relation][agency type][collection name] = mapped source
 relation_group_source_tab[dbcbib:isPartOfManifestation][Forskningsbibliotek][katalog] = 870970-forsk
@@ -382,6 +394,41 @@ rank[rank_none][tie] = 1
 ; specifies which registers used to search for frequency
 ; the highest hit count will select the rank method to use
 ; 
+; setting default values for weight, filter, agancy and profile
+; default weight. Each hit count is multiplied by the weight
+rank_frequency[weight] = 1
+; default filter for the search. Specified as a valid edismax solr search
+; - to limit to the most representation record. Could be the newest only like
+rank_frequency[filter] = term.date:[1940 TO *]
+; default search profile to use. 
+; - if set to "user_profile" the user specified profile is used, and agency is not needed
+; - otherwise profile and agency together defines the search profile to be used
+;rank_frequency[profile] = frequency
+;rank_frequency[agency] = 190101
+;
+rank_frequency[profile] = user_profile
+;
+; Foreach group register and scheme must be defined. 
+; - (ranking) scheme must be defined in rank above and register must be a searchable register
+; grouping is done by first parameter and contains at least
+; rank_frequence[my_group][register] = some.register
+; rank_frequence[my_group][scheme] = some.rank_defined_above
+; Foreach group weight, filter, agency and profile can be defined or inherited from the defaults above
+; rank_frequence[my_group][weight] = some.integer
+; rank_frequence[my_group][filter] = some.solr.edismax.search
+; rank_frequence[my_group][agency] = library.number
+; rank_frequence[my_group][profile] = search.profile.defined.for.library.number
+; 
+rank_frequency[title][register] = dkcclterm.ti
+rank_frequency[title][scheme] = rank_title
+rank_frequency[creator][register] = dkcclterm.fo
+rank_frequency[creator][scheme] = rank_creator
+rank_frequency[creator][weight] = 2
+rank_frequency[subject][register] = dkcclterm.em
+rank_frequency[subject][scheme] = rank_subject
+rank_frequency[subject][weight] = 3
+
+
 ; rank[rank_frequency][an existing register] = rank_method_1
 ; rank[rank_frequency][a second existing register] = rank_method_2
 ; rank[rank_frequency][a third existing register] = rank_method_3

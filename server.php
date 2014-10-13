@@ -123,6 +123,7 @@ class openSearch extends webServiceServer {
         return $ret_error;
       }
     }
+    $boost_q = self::boostUrl($param->userDefinedBoost);
 
     $this->format = self::set_format($param->objectFormat, $this->config->get_value('open_format', 'setup'), $this->config->get_value('solr_format', 'setup'));
 
@@ -194,7 +195,6 @@ class openSearch extends webServiceServer {
         $error = $collections;
         return $ret_error;
       }
-      self::filter_marcxchange_records($collections, $this->repository['filter']['marcxchange']);
       $result = &$ret->searchResponse->_value->result->_value;
       $result->hitCount->_value = self::get_num_found($solr_arr);
       $result->collectionCount->_value = count($collections);
@@ -227,7 +227,7 @@ class openSearch extends webServiceServer {
     $this->watch->start('Solr');
     $use_work_collection |= $sort_types[$sort[0]] == 'random';
     $key_work_struct = md5($param->query->_value . $this->repository_name . $this->filter_agency .
-                           $use_work_collection .  implode('', $sort) . $rank . $boost_str . $this->config->get_inifile_hash());
+                           $use_work_collection .  implode('', $sort) . $rank . $boost_q . $this->config->get_inifile_hash());
 
     $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language);
     $solr_query = $this->cql2solr->parse($param->query->_value);
@@ -268,7 +268,7 @@ class openSearch extends webServiceServer {
       $sort_q = '&sort=' . implode(',', $ss);
     }
     if ($rank == 'rank_frequency') {
-      if ($new_rank = self::guess_rank($solr_query, $rank_types[$rank], $filter_q)) {
+      if ($new_rank = self::guess_rank($solr_query, $rank_types, $filter_q)) {
         $rank = $new_rank;
       }
       else {
@@ -315,7 +315,7 @@ class openSearch extends webServiceServer {
       }
     }
     else {
-      if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_str, $debug_query, $solr_arr))
+      if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr))
         $error = $err;
       else {
         self::extract_unit_id_from_solr($solr_arr, $search_ids);
@@ -371,7 +371,7 @@ class openSearch extends webServiceServer {
           $this->watch->start('Solr_add');
           verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']);
           $rows *= 2;
-          if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_str, $debug_query, $solr_arr)) {
+          if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr)) {
             $error = $err;
             return $ret_error;
           }
@@ -626,9 +626,6 @@ class openSearch extends webServiceServer {
         self::format_solr($collections, $display_solr_arr, $work_ids, $fpid_sort_keys);
       }
       self::remove_unselected_formats($collections);
-      if ($this->format['marcxchange']['user_selected']) {
-        self::filter_marcxchange_records($collections, $this->repository['filter']['marcxchange']);
-      }
     }
 
 // try to get a better hitCount by looking for primaryObjects only 
@@ -767,8 +764,6 @@ class openSearch extends webServiceServer {
         $error = $collections;
         return $ret_error;
       }
-      self::filter_marcxchange_records($collections, $this->repository['filter']['marcxchange']);
-      //self::filter_marcxchange_records($collections, '^[a-z]');
       $result = &$ret->searchResponse->_value->result->_value;
       $result->hitCount->_value = count($fpids);
       $result->collectionCount->_value = count($collections);
@@ -894,9 +889,6 @@ class openSearch extends webServiceServer {
       self::format_solr($collections, $solr_2_arr, $work_ids);
     }
     self::remove_unselected_formats($collections);
-    if ($this->format['marcxchange']['user_selected']) {
-      self::filter_marcxchange_records($collections, $this->repository['filter']['marcxchange']);
-    }
 
     $result = &$ret->searchResponse->_value->result->_value;
     $result->hitCount->_value = count($collections);
@@ -1021,6 +1013,7 @@ class openSearch extends webServiceServer {
           @ $dom->loadXml(base64_decode($row['content']));
         }
         $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
+        self::filter_marcxchange($solr_doc['marc.001b'], $marc_obj, $this->repository['filter']);
         $rec_pos++;
         $ret[$rec_pos]->_value->collection->_value->resultPosition->_value = $rec_pos;
         $ret[$rec_pos]->_value->collection->_value->numberOfObjects->_value = 1;
@@ -1267,40 +1260,70 @@ class openSearch extends webServiceServer {
   /** \brief Selects a ranking scheme depending on some register frequency lookups
    *
    * @param array $solr_query - the parsed user query
-   * @param array $guesses - registers to get frequence for
+   * @param array $ranks - list of defined rankings
    * @param string $user_filter - filter query as set by users profile
    *
    * @retval string - the ranking scheme with highest number of hits
    *
    */
-  private function guess_rank($solr_query, $guesses, $user_filter) {
-    $guess_filter = array();
-    if ($freq_filter = $this->config->get_value('frequency_filter', 'setup')) {
-      foreach ($freq_filter as $f) {
-        if ($f == 'user_profile') {
-          $guess_filter[] = $user_filter;
-        }
-        else {
-          $guess_filter[] = rawurlencode($f);
-        }
-      }
-    }
-    
-    $freqs = self::get_register_freqency($solr_query['edismax'], array_keys($guesses), $guess_filter);
+  private function guess_rank($solr_query, $ranks, $user_filter) {
+    $guess = self::set_guesses($ranks, $user_filter);
+    $freqs = self::get_register_freqency($solr_query['edismax'], $guess);
     $max = -1;
-    $idx = 0;
-    foreach ($guesses as $reg => $rank) {
-      $this->rank_frequence_debug->$reg->_value = $freqs[$idx];
-      $debug_str .= $rank . '(' . $freqs[$idx] . ') ';
-      if ($freqs[$idx] > $max) {
-        $ret = $rank;
-        $max = $freqs[$idx];
+    foreach ($guess as $idx => $g) {
+      $freq = $freqs[$idx] * $g['weight'];
+      $this->rank_frequence_debug->$g['register']->_value = $freq . ' (' . $freqs[$idx] . '*' . $g['weight'] . ')';
+      $debug_str .= $g['scheme'] . ': ' . $freq . ' (' . $freqs[$idx] . '*' . $g['weight'] . ') ';
+      if ($freq > $max) {
+        $ret = $g['scheme'];
+        $max = $freq;
       }
-      $idx++;
     }
-    verbose::log(DEBUG, 'Rank frequency: ' . $ret . ' from: ' . $debug_str);
+    verbose::log(DEBUG, 'Rank frequency set to ' . $ret . '. ' . $debug_str);
     return $ret;
 
+  }
+
+  /** \brief Set the guess-structure for the registers to search
+   *
+   * @param array $ranks - list of defined rankings
+   * @param string $user_filter - filter query as set by users profile
+   *
+   * @retval array - list of registers to search and the ranking to use
+   *
+   */
+  private function set_guesses($ranks, $user_filter) {
+    static $filters = array();
+    $guess = array();
+    $settings = $this->config->get_value('rank_frequency', 'setup');
+    foreach ($settings as $r_idx => $setting) {
+      if ($setting['register'] && $ranks[$setting['scheme']]) {
+        foreach (array('agency', 'register', 'scheme', 'weight', 'filter', 'profile') as $par) {
+          $guess[$r_idx][$par] = self::get_val_or_default($settings, $r_idx, $par);
+        }
+      }
+    }
+    $filters['user_profile'] = $user_filter;
+    foreach ($guess as $idx => $g) {
+      if (empty($filters[$g['profile']])) {
+        if (! $filters[$g['profile']] = self::set_solr_filter(self::fetch_profile_from_agency($g['agency'], $g['profile']))) {
+          $filters[$g['profile']] = $user_filter;
+        }
+      }
+      $guess[$idx]['filter'] = array(rawurlencode($g['filter']), $filters[$g['profile']]);
+    }
+    return $guess;
+  }
+
+  /** \brief return specific value if set, otherwise the default
+   *
+   * @param array $struct - the structure to inspect
+   * @param string $r_idx - the specific index
+   * @param string $par - the parameter to return
+   * @retval string 
+   */
+  private function get_val_or_default($struct, $r_idx, $par) {
+    return $struct[$r_idx][$par] ? $struct[$r_idx][$par] : $struct[$par];
   }
 
   /** \brief Encapsules how to get the data from the first element
@@ -1629,32 +1652,29 @@ class openSearch extends webServiceServer {
    * If all subfields in a field are removed, the field is removed as well
    * Controlled by the repository filter structure set in the services ini-file
    *
-   * @param array $collections- the structure is modified
-   * @param array $filters
+   * @param array $record_source- the source of the record, owner or collectionIdentifier
+   * @param array $collection- the structure is modified
+   * @param array $filter_settings - from the reposotory
    */
-  private function filter_marcxchange_records(&$collections, $filters) {
-    if (is_array($filters)) {
-      foreach ($collections as $idx => &$c) {
-        foreach ($c->_value->collection->_value->object as &$o) {
-          if ($o->_value->collection) {
-            @ $mrec = &$o->_value->collection->_value->record->_value;
-            foreach ($mrec->datafield as $idf => &$df) {
-              foreach ($filters as $tag => $filter) {
-                if (preg_match('/' . $tag . '/', $df->_attributes->tag->_value)) {
-                  if (is_array($df->_value->subfield)) {
-                    foreach ($df->_value->subfield as $isf => &$sf) {
-                      if (preg_match('/' . $filter . '/', $sf->_attributes->code->_value)) {
-                        unset($mrec->datafield[$idf]->_value->subfield[$isf]);
-                      }
-                    }
-                    if (!count($df->_value->subfield)) {  // removed all subfield
-                      unset($mrec->datafield[$idf]);
-                    }
-                  }
-                  elseif (preg_match('/' . $filter . '/', $df->_value->subfield->_attributes->code->_value)) {
-                    unset($mrec->datafield[$idf]);
+  private function filter_marcxchange($record_source, &$collection, $filter_settings) {
+    foreach ($filter_settings as $rs_idx => $filters) {
+      if (($marc_filters = $filters['marcxchange']) && preg_match('/' . $rs_idx . '/', $record_source)) {
+        @ $mrec = &$collection->record->_value;
+        foreach ($mrec->datafield as $idf => &$df) {
+          foreach ($marc_filters as $tag => $filter) {
+            if (preg_match('/' . $tag . '/', $df->_attributes->tag->_value)) {
+              if (is_array($df->_value->subfield)) {
+                foreach ($df->_value->subfield as $isf => &$sf) {
+                  if (preg_match('/' . $filter . '/', $sf->_attributes->code->_value)) {
+                    unset($mrec->datafield[$idf]->_value->subfield[$isf]);
                   }
                 }
+                if (!count($df->_value->subfield)) {  // removed all subfield
+                  unset($mrec->datafield[$idf]);
+                }
+              }
+              elseif (preg_match('/' . $filter . '/', $df->_value->subfield->_attributes->code->_value)) {
+                unset($mrec->datafield[$idf]);
               }
             }
           }
@@ -1794,15 +1814,21 @@ class openSearch extends webServiceServer {
    * @retval string - the SOLR filter query that represent the profile
    */
   private function set_solr_filter($profile) {
-    $ret = '';
+    $collection_query = $this->repository['collection_query'];
+    $ret = array();
     if (is_array($profile)) {
       foreach ($profile as $p) {
         if (self::xs_boolean($p['sourceSearchable'])) {
-          $ret .= ($ret ? ' OR ' : '') . 'rec.collectionIdentifier:' . $p['sourceIdentifier'];
+          if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
+            $ret[] = '(rec.collectionIdentifier:' . $p['sourceIdentifier'] . ' AND ' . $filter_query . ')';
+          }
+          else {
+            $ret[] = 'rec.collectionIdentifier:' . $p['sourceIdentifier'];
+          }
         }
       }
     }
-    return $ret;
+    return implode(' OR ', $ret);
   }
 
   /** \brief Check an external relation against the search_profile
@@ -1968,10 +1994,13 @@ class openSearch extends webServiceServer {
    * @retval mixed - profile (array) or FALSE
    */
   private function fetch_profile_from_agency($agency, $profile_name) {
+    static $profiles;
     require_once 'OLS_class_lib/search_profile_class.php';
     $cache = self::get_agency_cache_info();
-    $profiles = new search_profiles($this->config->get_value('agency_search_profile', 'setup'), 
-                                    $cache['host'], $cache['port'], $cache['expire']);
+    if (empty($profiles)) {
+      $profiles = new search_profiles($this->config->get_value('agency_search_profile', 'setup'), 
+                                      $cache['host'], $cache['port'], $cache['expire']);
+    }
     $profile = $profiles->get_profile($agency, $profile_name, $this->search_profile_version);
     if (is_array($profile)) {
       return $profile;
@@ -2036,26 +2065,25 @@ class openSearch extends webServiceServer {
   /** \brief fetch hit count for each register in a given list
    *
    * @param array $eq - the edismax part of the parsed user query
-   * @param array $guesses - registers to get frequence for
-   * @param array $filters - filter query/queries
+   * @param array $guess - registers, filters, ... to get frequence for
    *
    * @reval array - hitcount for each register
    */
-  private function get_register_freqency($eq, $registers, $filters) {
-    $q = implode(' and ', $eq['q']);
-    $filter = implode('&fq=', $filters);
+  private function get_register_freqency($eq, $guess) {
+    $q = implode(' OR ', $eq['q']);
     foreach ($eq['fq'] as $fq) {
       $filter .= '&fq=' . rawurlencode($fq);
     }
-    foreach ($registers as $reg_name => $reg_value) {
+    foreach ($guess as $idx => $g) {
+      $filter = implode('&fq=', $g['filter']);
       $solr_urls[]['url'] = $this->repository['solr'] .  
-                            '?q=' . $reg_value . '%3A(' . urlencode($q) .  ')&fq=' . $filter .  '&start=1&rows=0&wt=phps';
-      $ret[$reg_name] = 0;
+                            '?q=' . $g['register'] . '%3A(' . urlencode($q) .  ')&fq=' . $filter .  '&start=1&rows=0&wt=phps';
+      $ret[$idx] = 0;
     }
     $err = self::do_solr($solr_urls, $solr_arr);
     $n = 0;
-    foreach ($registers as $reg_name => $reg_value) {
-      $ret[$reg_name] = self::get_num_response($solr_arr[$n++]);
+    foreach ($guess as $idx => $g) {
+      $ret[$idx] = self::get_num_response($solr_arr[$n++]);
     }
     return $ret;
   }
@@ -2524,6 +2552,7 @@ class openSearch extends webServiceServer {
    * @retval object - the bibliographic object(s)
    */
   private function extract_record(&$dom, $rec_id) {
+    $record_source = self::record_source_from_pid($rec_id);
     foreach ($this->format as $format_name => $format_arr) {
       switch ($format_name) {
         case 'dkabm':
@@ -2562,6 +2591,9 @@ class openSearch extends webServiceServer {
             $ret->collection->_value = $this->xmlconvert->xml2obj($record->item(0), $this->xmlns['marcx']);
             //$ret->collection->_namespace = $record->item(0)->lookupNamespaceURI('collection');
             $ret->collection->_namespace = $this->xmlns['marcx'];
+          }
+          if (is_array($this->repository['filter'])) {
+            self::filter_marcxchange($record_source, $ret->collection->_value, $this->repository['filter']);
           }
           break;
   
