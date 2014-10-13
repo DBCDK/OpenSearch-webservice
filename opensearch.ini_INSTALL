@@ -98,6 +98,10 @@ default_repository = @REPOSITORY_NAME@
 ; - fedora_get_rels_addi: parameters to get addi relation datastream - RELS-EXT stream
 ; - fedora_get_object_profile: parameters to get object state/profile from fedora - if not set, deleted records will be returned
 ; - fedora_get_datastreams: parameters to get datastreams for an object
+; - collection_query - Filtering on the collectionIdentifiers specified by the search profile
+; - collection_alias - Alias' for collections for filtering to work differently for records with imore thanh one collectionIdentifier
+; - filter - Filtering on the collectionIdentifiers specified by the search profile
+; Defaults starting with fedora_ will be prefixed by the fedora url set below, the rest is normal defaults
 
 repository[defaults][fedora_get_raw] = %s/datastreams/commonData/content
 repository[defaults][fedora_get_rels_hierarchy] = %s/datastreams/RELS-SYS/content
@@ -126,6 +130,12 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 ; Records in 870976-anmeld has to be more than 6 months old
 ; The search profile is kept in solr's filter cache, so the /DAY is needed to make it cachable
 repository[@REPOSITORY_NAME@][collection_query]['870976-anmeld'] = rec.createdDate:[* TO NOW-6MONTHS/DAY]
+
+; collection_alias
+; Alias' for collections for filtering to work differently for records with imore thanh one collectionIdentifier
+; repository[my_repository][collection_alias]['the.collectionIdentifier.used.in.the.record.id'] = the.alias
+; Sofar only one of these is needed
+repository[@REPOSITORY_NAME@][collection_alias]['870976-anmeld'] = 870976-allanmeld
 
 ; Filtering in marcxchange records kan be done by defining a filter mask
 ; with regular expression matching owner, fields and subfields
@@ -257,7 +267,6 @@ profile_fallback = @AGENCY_PROFILE_FALLBACK@
 ; relation_group_source_tab
 ; ...[relation][agency type][collection name] = mapped source
 relation_group_source_tab[dbcbib:isPartOfManifestation][Forskningsbibliotek][katalog] = 870970-forsk
-
 
 ; --------------
 ; phrase indexes

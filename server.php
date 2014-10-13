@@ -1161,10 +1161,7 @@ class openSearch extends webServiceServer {
     if ($this->repository = $repositories[$this->repository_name]) {
       foreach ($repositories['defaults'] as $key => $url_par) {
         if (empty($this->repository[$key])) {
-          if (substr($key, 0, 7) == 'fedora_') {
-            $this->repository[$key] = $this->repository['fedora'];
-          }
-          $this->repository[$key] .= $url_par;
+          $this->repository[$key] = (substr($key, 0, 7) == 'fedora_') ? $this->repository['fedora'] . $url_par : $url_par;
         }
       }
     }
@@ -1834,14 +1831,14 @@ class openSearch extends webServiceServer {
   }
 
   /** \brief Set list of collection alias' depending on the user search profile
-   * - in ini file: collection_alias['870876-allanmeld'] = '870976-anmeld';
+   * - in repository: ['collection_alias']['870876-anmeld'] = '870976-allanmeld';
    * 
    * @param array $profile - the users search profile
    * @retval array - collection alias'
    */
   private function set_collection_alias($profile) {
     $collection_alias = array();
-    $alias = $this->config->get_value('collection_alias', 'setup');
+    $alias = is_array($this->repository['collection_alias']) ? array_flip($this->repository['collection_alias']) : array();
     foreach ($profile as $p) {
       if (self::xs_boolean($p['sourceSearchable'])) {
         $si = $p['sourceIdentifier'];
