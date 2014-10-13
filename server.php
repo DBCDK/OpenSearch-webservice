@@ -47,6 +47,7 @@ class openSearch extends webServiceServer {
   protected $valid_relation = array(); 
   protected $valid_source = array(); 
   protected $rank_frequence_debug;
+  protected $collection_alias = array();
 
 
   public function __construct() {
@@ -1810,13 +1811,14 @@ class openSearch extends webServiceServer {
 
   /** \brief Build Solr filter_query parm
    *
-   * @param array $profile - 
+   * @param array $profile - the users search profile
    * @retval string - the SOLR filter query that represent the profile
    */
   private function set_solr_filter($profile) {
     $collection_query = $this->repository['collection_query'];
     $ret = array();
     if (is_array($profile)) {
+      $this->collection_alias = self::set_collection_alias($profile);
       foreach ($profile as $p) {
         if (self::xs_boolean($p['sourceSearchable'])) {
           if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
@@ -1830,6 +1832,30 @@ class openSearch extends webServiceServer {
     }
     return implode(' OR ', $ret);
   }
+
+  /** \brief Set list of collection alias' depending on the user search profile
+   * - in ini file: collection_alias['870876-allanmeld'] = '870976-anmeld';
+   * 
+   * @param array $profile - the users search profile
+   * @retval array - collection alias'
+   */
+  private function set_collection_alias($profile) {
+    $collection_alias = array();
+    $alias = $this->config->get_value('collection_alias', 'setup');
+    foreach ($profile as $p) {
+      if (self::xs_boolean($p['sourceSearchable'])) {
+        $si = $p['sourceIdentifier'];
+        if (empty($alias[$si])) {
+          $collection_alias[$si] = $si;
+        }
+        elseif (empty($collection_alias[$alias[$si]])) {
+          $collection_alias[$alias[$si]] = $si;
+        }
+      }
+    }
+    return $collection_alias;
+  }
+
 
   /** \brief Check an external relation against the search_profile
    *
@@ -2553,6 +2579,9 @@ class openSearch extends webServiceServer {
    */
   private function extract_record(&$dom, $rec_id) {
     $record_source = self::record_source_from_pid($rec_id);
+    if ($alias = $this->collection_alias[$record_source]) {
+      $record_source = $alias;
+    }
     foreach ($this->format as $format_name => $format_arr) {
       switch ($format_name) {
         case 'dkabm':
