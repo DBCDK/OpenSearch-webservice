@@ -102,6 +102,8 @@ default_repository = @REPOSITORY_NAME@
 ; - collection_alias - Alias' for collections for filtering to work differently for records with imore thanh one collectionIdentifier
 ; - filter - Filtering on the collectionIdentifiers specified by the search profile
 ; Defaults starting with fedora_ will be prefixed by the fedora url set below, the rest is normal defaults
+; All default settings will be set in each repository, unless a repository specifically has defined the setting
+; The user can specify the repository to use in the request and override the default_repository setting
 
 repository[defaults][fedora_get_raw] = %s/datastreams/commonData/content
 repository[defaults][fedora_get_rels_hierarchy] = %s/datastreams/RELS-SYS/content
