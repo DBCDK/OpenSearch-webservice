@@ -132,7 +132,7 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 repository[@REPOSITORY_NAME@][collection_query]['870976-anmeld'] = rec.createdDate:[* TO NOW-6MONTHS/DAY]
 
 ; collection_alias
-; Alias' for collections for filtering to work differently for records with imore thanh one collectionIdentifier
+; Alias' for collections for filtering to work differently for records with more than one collectionIdentifier
 ; repository[my_repository][collection_alias]['the.collectionIdentifier.used.in.the.record.id'] = the.alias
 ; Sofar only one of these is needed
 repository[@REPOSITORY_NAME@][collection_alias]['870976-anmeld'] = 870976-allanmeld
