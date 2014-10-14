@@ -40,16 +40,16 @@
           </collection>
           <formattedCollection>
             <of:workDisplay>
-              <of:manifestation>
+              <of:manifestation of:schemaType="Book">
                 <of:work>
                   <of:title>
-                    <of:titleFull of:htmlClass="titleMain">No country for old men</of:titleFull>
+                    <of:titleFull of:htmlClass="titleMain" of:schema="name">No country for old men</of:titleFull>
                     <of:titleSpecific>No country for old men</of:titleSpecific>
                   </of:title>
                   <of:creators>
                     <of:creator of:className="link">
                       <of:searchCode of:phrase="phrase.creator">"Cormac McCarthy"</of:searchCode>
-                      <of:display>Cormac McCarthy</of:display>
+                      <of:display of:schema="creator">Cormac McCarthy</of:display>
                     </of:creator>
                   </of:creators>
                   <of:description>
@@ -80,7 +80,7 @@
                     <of:abstract>
                       <of:abstractElement>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</of:abstractElement>
                     </of:abstract>
-                    <of:format of:punctuation=" ; ">309 sider</of:format>
+                    <of:format of:punctuation=" ; " of:schema="numberOfPages">309 sider</of:format>
                     <of:shelf>
                       <of:shelfClassification of:className="link">
                         <of:searchCode of:word="dkcclterm.dk">83.8</of:searchCode>
@@ -88,7 +88,7 @@
                       </of:shelfClassification>
                     </of:shelf>
                     <of:originals>Originaludgave: 2005</of:originals>
-                    <of:identifiersISBN>
+                    <of:identifiersISBN of:schema="isbn">
                       <of:identifier>0-330-44010-1</of:identifier>
                     </of:identifiersISBN>
                     <of:language>
@@ -96,8 +96,8 @@
                     </of:language>
                   </of:details>
                   <of:publicationDetails>
-                    <of:publisher of:punctuation=", ">Picador</of:publisher>
-                    <of:publicationYear>2005</of:publicationYear>
+                    <of:publisher of:punctuation=", " of:schema="publisher">Picador</of:publisher>
+                    <of:publicationYear of:schema="datePublished">2005</of:publicationYear>
                   </of:publicationDetails>
                   <of:type of:punctuation=" + ">Bog</of:type>
                 </of:main>
@@ -109,8 +109,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>5</fedoraRecordsRead>
-          <time>0.312962</time>
-          <trackingId>os:2014-09-15T09:42:33:028576:23801</trackingId>
+          <time>0.334473</time>
+          <trackingId>os:2014-10-14T09:04:13:165341:2058</trackingId>
         </statInfo>
       </result>
     </searchResponse>
