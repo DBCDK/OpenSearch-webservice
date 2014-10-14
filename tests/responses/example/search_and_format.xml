@@ -88,8 +88,8 @@
                       </of:shelfClassification>
                     </of:shelf>
                     <of:originals>Originaludgave: 2005</of:originals>
-                    <of:identifiersISBN of:schema="isbn">
-                      <of:identifier>0-330-44010-1</of:identifier>
+                    <of:identifiersISBN>
+                      <of:identifier of:schema="isbn">0-330-44010-1</of:identifier>
                     </of:identifiersISBN>
                     <of:language>
                       <of:languageElement>Engelsk</of:languageElement>
