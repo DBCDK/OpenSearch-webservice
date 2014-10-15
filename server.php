@@ -382,7 +382,7 @@ class openSearch extends webServiceServer {
           }
           $this->watch->stop('Solr_add');
         }
-        if (TRUE) {
+        if (FALSE) {
           self::get_fedora_rels_hierarchy($uid, $unit_result);
           $unit_id = self::parse_rels_for_unit_id($unit_result);
           if (DEBUG_ON) echo 'UR: ' . $uid . ' -> ' . $unit_id . "\n";
