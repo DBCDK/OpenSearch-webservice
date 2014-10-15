@@ -388,9 +388,9 @@ rank[rank_creator][phrase_boost][term.default] = 2
 rank[rank_creator][tie] = 0.1
 
 rank[rank_general][word_boost][dkcclterm.ti] = 3
-rank[rank_general][phrase_boost][dkcclterm.lti] = 6
+rank[rank_general][phrase_boost][dkcclterm.ti] = 6
 rank[rank_general][word_boost][dkcclterm.fo] = 4
-rank[rank_general][phrase_boost][dkcclterm.lfo] = 8
+rank[rank_general][phrase_boost][dkcclterm.fo] = 8
 rank[rank_general][word_boost][dkcclterm.em] = 2
 rank[rank_general][phrase_boost][dkcclterm.em] = 3
 rank[rank_general][word_boost][term.default] = 1
