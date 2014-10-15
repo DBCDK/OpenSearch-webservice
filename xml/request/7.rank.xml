@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch">
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:open="http://oss.dbc.dk/ns/opensearch">
   <SOAP-ENV:Body>
-    <ns1:searchRequest>
-      <ns1:query>angora</ns1:query>
-      <ns1:agency>100200</ns1:agency>
-      <ns1:profile>test</ns1:profile>
-      <ns1:start>1</ns1:start>
-      <ns1:stepValue>10</ns1:stepValue>
-      <ns1:sort>rank_general</ns1:sort>
-    </ns1:searchRequest>
+    <open:searchRequest>
+      <open:query>angora</open:query>
+      <open:agency>100200</open:agency>
+      <open:profile>test</open:profile>
+      <open:start>1</open:start>
+      <open:stepValue>10</open:stepValue>
+      <open:sort>rank_general</open:sort>
+      <open:queryDebug>1</open:queryDebug>    
+    </open:searchRequest>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
