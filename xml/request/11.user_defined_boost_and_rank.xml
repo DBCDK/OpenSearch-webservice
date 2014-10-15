@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch"><SOAP-ENV:Body>
-<ns1:searchRequest>
-    <ns1:query>angora</ns1:query>
-    <ns1:agency>100200</ns1:agency>
-    <ns1:profile>test</ns1:profile>
-    <ns1:collectionType>manifestation</ns1:collectionType>
-    <ns1:start>1</ns1:start>
-    <ns1:stepValue>10</ns1:stepValue>    
-    <ns1:userDefinedRanking>
-        <ns1:tieValue>0.1</ns1:tieValue>
-        <ns1:rankField>
-          <ns1:fieldName>dkcclterm.ti</ns1:fieldName>
-          <ns1:fieldType>word</ns1:fieldType>
-          <ns1:weight>4</ns1:weight>
-        </ns1:rankField>
-        <ns1:rankField>
-          <ns1:fieldName>dkcclterm.ti</ns1:fieldName>
-          <ns1:fieldType>phrase</ns1:fieldType>
-          <ns1:weight>8</ns1:weight>
-        </ns1:rankField>
-    </ns1:userDefinedRanking>
-    <ns1:userDefinedBoost>
-        <ns1:fieldName>term.workType</ns1:fieldName>
-        <ns1:fieldValue>literature</ns1:fieldValue>
-        <ns1:weight>20</ns1:weight>
-    </ns1:userDefinedBoost>    
-</ns1:searchRequest>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:open="http://oss.dbc.dk/ns/opensearch"><SOAP-ENV:Body>
+<open:searchRequest>
+    <open:query>angora</open:query>
+    <open:agency>100200</open:agency>
+    <open:profile>test</open:profile>
+    <open:collectionType>manifestation</open:collectionType>
+    <open:start>1</open:start>
+    <open:stepValue>10</open:stepValue>    
+    <open:userDefinedRanking>
+        <open:tieValue>0.1</open:tieValue>
+        <open:rankField>
+          <open:fieldName>dkcclterm.ti</open:fieldName>
+          <open:fieldType>word</open:fieldType>
+          <open:weight>4</open:weight>
+        </open:rankField>
+        <open:rankField>
+          <open:fieldName>dkcclterm.ti</open:fieldName>
+          <open:fieldType>phrase</open:fieldType>
+          <open:weight>8</open:weight>
+        </open:rankField>
+    </open:userDefinedRanking>
+    <open:userDefinedBoost>
+        <open:fieldName>term.workType</open:fieldName>
+        <open:fieldValue>literature</open:fieldValue>
+        <open:weight>20</open:weight>
+    </open:userDefinedBoost>    
+    <open:queryDebug>1</open:queryDebug>    
+</open:searchRequest>
 </SOAP-ENV:Body></SOAP-ENV:Envelope>
