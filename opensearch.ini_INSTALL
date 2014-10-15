@@ -401,11 +401,14 @@ rank[rank_none][word_boost][term.default] = 0.1
 rank[rank_none][phrase_boost][term.default] = 0.1
 rank[rank_none][tie] = 1
 
+; to allow rank_frequency
+rank[rank_frequency] = rank_frequency
+
 ; Special ranking rank_frequency
 ; specifies which registers used to search for frequency
 ; the highest hit count will select the rank method to use
 ; 
-; setting default values for weight, filter, agancy and profile
+; setting default values for weight, filter, agency and profile
 ; default weight. Each hit count is multiplied by the weight
 rank_frequency[weight] = 1
 ; default filter for the search. Specified as a valid edismax solr search
@@ -424,7 +427,7 @@ rank_frequency[profile] = user_profile
 ; grouping is done by first parameter and contains at least
 ; rank_frequence[my_group][register] = some.register
 ; rank_frequence[my_group][scheme] = some.rank_defined_above
-; Foreach group weight, filter, agency and profile can be defined or inherited from the defaults above
+; Foreach group weight, filter, agency and profile can be set or inherited from the defaults above
 ; rank_frequence[my_group][weight] = some.integer
 ; rank_frequence[my_group][filter] = some.solr.edismax.search
 ; rank_frequence[my_group][agency] = library.number
