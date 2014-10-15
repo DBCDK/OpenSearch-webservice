@@ -175,7 +175,7 @@ class openSearch extends webServiceServer {
         return $ret_error;
       }
       verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
-      $q = implode(' and ', $solr_query['edismax']['q']);
+      $q = implode(' AND ', $solr_query['edismax']['q']);
       $filter = '';
       foreach ($solr_query['edismax']['fq'] as $fq) {
         $filter .= '&fq=' . rawurlencode($fq);
@@ -789,7 +789,7 @@ class openSearch extends webServiceServer {
     $chk_query = $this->cql2solr->parse('rec.id=(' . implode(' or ', $id_array) . ')');
         $solr_q = $this->repository['solr'] .
         '?wt=phps' .
-              '&q=' . urlencode(implode(' and ', $chk_query['edismax']['q'])) .
+              '&q=' . urlencode(implode(' AND ', $chk_query['edismax']['q'])) .
               '&fq=' . $filter_q .
               // if briefDisplay data must be fetched from primaryObject '&fq=unit.isPrimaryObject:true' . 
               '&start=0' .
@@ -2129,7 +2129,7 @@ class openSearch extends webServiceServer {
     if ($collapsing) {
       $collaps_pars = '&group=true&group.ngroups=true&group.facet=true&group.field=' . $collapsing;
     }
-    $q = implode(' and ', $eq['q']);
+    $q = implode(' AND ', $eq['q']);
     foreach ($eq['fq'] as $fq) {
       $filter .= '&fq=' . rawurlencode($fq);
     }
