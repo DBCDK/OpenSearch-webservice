@@ -6,29 +6,14 @@
         <hitCount>10</hitCount>
         <collectionCount>1</collectionCount>
         <more>true</more>
+        <sortUsed>acquisitionDate_ascending</sortUsed>
         <searchResult>
           <collection>
             <resultPosition>1</resultPosition>
-            <numberOfObjects>3</numberOfObjects>
+            <numberOfObjects>1</numberOfObjects>
             <object>
-              <identifier>870970-basis:44082985</identifier>
-              <creationDate>2007-03-19</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-            </object>
-            <object>
-              <identifier>870970-basis:44319454</identifier>
-              <creationDate>2008-03-03</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-            </object>
-            <object>
-              <identifier>870970-basis:43917129</identifier>
-              <creationDate>2006-07-20</creationDate>
+              <identifier>870970-basis:25873262</identifier>
+              <creationDate>2005-08-25</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
@@ -40,32 +25,12 @@
               <manifestation>
                 <accessType>physical</accessType>
                 <creator>Cormac McCarthy</creator>
-                <fedoraPid>870970-basis:44082985</fedoraPid>
-                <identifier>870970-basis:44082985</identifier>
+                <fedoraPid>870970-basis:25873262</fedoraPid>
+                <identifier>870970-basis:25873262</identifier>
                 <language>Engelsk</language>
                 <title>No country for old men</title>
                 <type>Bog</type>
                 <workType>book</workType>
-              </manifestation>
-              <manifestation>
-                <accessType>physical</accessType>
-                <creator>Cormac McCarthy</creator>
-                <fedoraPid>870970-basis:44319454</fedoraPid>
-                <identifier>870970-basis:44319454</identifier>
-                <language>Engelsk</language>
-                <title>No country for old men</title>
-                <type>Bog</type>
-                <workType>book</workType>
-              </manifestation>
-              <manifestation>
-                <accessType>physical</accessType>
-                <creator>Cormac McCarthy</creator>
-                <fedoraPid>870970-basis:43917129</fedoraPid>
-                <identifier>870970-basis:43917129</identifier>
-                <language>Engelsk</language>
-                <title>No country for old men</title>
-                <type>Lydbog (cd)</type>
-                <workType>audiobook</workType>
               </manifestation>
             </briefDisplay>
           </formattedCollection>
@@ -73,9 +38,9 @@
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>11</fedoraRecordsRead>
-          <time>0.401346</time>
-          <trackingId>os:2014-06-27T12:11:19:135849:13001</trackingId>
+          <fedoraRecordsRead>5</fedoraRecordsRead>
+          <time>0.350542</time>
+          <trackingId>os:2014-10-16T11:29:39:492052:2061</trackingId>
         </statInfo>
       </result>
     </searchResponse>
