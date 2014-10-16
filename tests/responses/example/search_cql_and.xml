@@ -8,8 +8,8 @@
         <more>false</more>
         <facetResult/>
         <queryDebugResult>
-          <rawQueryString>anders and and</rawQueryString>
-          <queryString>anders and and</queryString>
+          <rawQueryString>anders AND and</rawQueryString>
+          <queryString>anders AND and</queryString>
           <parsedQuery>(+(+DisjunctionMaxQuery((term.default:anders)) +DisjunctionMaxQuery((term.default:and))))/no_coord</parsedQuery>
           <parsedQueryString>+(+(term.default:anders) +(term.default:and))</parsedQueryString>
         </queryDebugResult>
