@@ -4,16 +4,18 @@
     <searchResponse>
       <result>
         <hitCount>4</hitCount>
-        <collectionCount>4</collectionCount>
+        <collectionCount>3</collectionCount>
         <more>false</more>
         <searchResult>
           <collection>
             <resultPosition>1</resultPosition>
             <numberOfObjects>1</numberOfObjects>
             <object>
-              <identifier/>
+              <identifier>870971-tsart:34497745</identifier>
+              <creationDate>2011-02-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
+                <format>marcxchange</format>
               </formatsAvailable>
             </object>
           </collection>
@@ -23,7 +25,7 @@
                 <accessType>online</accessType>
                 <creator>Viktor Eriksson</creator>
                 <fedoraPid>870971-tsart:34497745</fedoraPid>
-                <identifier/>
+                <identifier>870971-tsart:34497745</identifier>
                 <language>Dansk</language>
                 <partOf>Game reactor, Nr. 115 (2011)</partOf>
                 <title>Blandt drager og dæmoner</title>
@@ -38,9 +40,11 @@
             <resultPosition>2</resultPosition>
             <numberOfObjects>1</numberOfObjects>
             <object>
-              <identifier/>
+              <identifier>870970-basis:45235394</identifier>
+              <creationDate>2012-05-25</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
+                <format>marcxchange</format>
               </formatsAvailable>
             </object>
           </collection>
@@ -49,7 +53,7 @@
               <manifestation>
                 <accessType>physical</accessType>
                 <fedoraPid>870970-basis:45235394</fedoraPid>
-                <identifier/>
+                <identifier>870970-basis:45235394</identifier>
                 <language>Engelsk</language>
                 <title>Elder scrolls V</title>
                 <type>Bog</type>
@@ -61,35 +65,21 @@
         <searchResult>
           <collection>
             <resultPosition>3</resultPosition>
-            <numberOfObjects>1</numberOfObjects>
+            <numberOfObjects>2</numberOfObjects>
             <object>
-              <identifier/>
+              <identifier>870970-basis:29069654</identifier>
+              <creationDate>2011-11-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
+                <format>marcxchange</format>
               </formatsAvailable>
             </object>
-          </collection>
-          <formattedCollection>
-            <briefDisplay>
-              <manifestation>
-                <accessType>physical</accessType>
-                <fedoraPid>870970-basis:29069638</fedoraPid>
-                <identifier/>
-                <title>Skyrim</title>
-                <type>Xbox 360</type>
-                <workType>game</workType>
-              </manifestation>
-            </briefDisplay>
-          </formattedCollection>
-        </searchResult>
-        <searchResult>
-          <collection>
-            <resultPosition>4</resultPosition>
-            <numberOfObjects>1</numberOfObjects>
             <object>
-              <identifier/>
+              <identifier>870970-basis:29069638</identifier>
+              <creationDate>2011-11-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
+                <format>marcxchange</format>
               </formatsAvailable>
             </object>
           </collection>
@@ -98,9 +88,17 @@
               <manifestation>
                 <accessType>physical</accessType>
                 <fedoraPid>870970-basis:29069654</fedoraPid>
-                <identifier/>
+                <identifier>870970-basis:29069654</identifier>
                 <title>Skyrim</title>
                 <type>Playstation 3</type>
+                <workType>game</workType>
+              </manifestation>
+              <manifestation>
+                <accessType>physical</accessType>
+                <fedoraPid>870970-basis:29069638</fedoraPid>
+                <identifier>870970-basis:29069638</identifier>
+                <title>Skyrim</title>
+                <type>Xbox 360</type>
                 <workType>game</workType>
               </manifestation>
             </briefDisplay>
@@ -109,9 +107,9 @@
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>16</fedoraRecordsRead>
-          <time>0.507051</time>
-          <trackingId>os:2014-10-16T10:08:05:819349:2061</trackingId>
+          <fedoraRecordsRead>18</fedoraRecordsRead>
+          <time>0.573538</time>
+          <trackingId>os:2014-10-16T10:41:38:356796:2056</trackingId>
         </statInfo>
       </result>
     </searchResponse>
