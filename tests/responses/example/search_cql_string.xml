@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://oss.dbc.dk/ns/opensearch">
+  <SOAP-ENV:Body>
+    <searchResponse>
+      <result>
+        <hitCount>0</hitCount>
+        <collectionCount>0</collectionCount>
+        <more>false</more>
+        <facetResult/>
+        <statInfo>
+          <fedoraRecordsCached>0</fedoraRecordsCached>
+          <fedoraRecordsRead>0</fedoraRecordsRead>
+          <time>0.268429</time>
+          <trackingId>os:2014-10-16T11:21:17:782979:2058</trackingId>
+        </statInfo>
+      </result>
+    </searchResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
