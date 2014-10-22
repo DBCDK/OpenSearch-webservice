@@ -29,8 +29,8 @@ You should have received a copy of the GNU Affero General Public License along w
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="os:agency" minOccurs="0"/>
-        <xs:element ref="os:profile" minOccurs="0"/>
+        <xs:element ref="os:agency"/>
+        <xs:element ref="os:profile"/>
         <xs:element ref="os:identifier" maxOccurs="unbounded"/>
         <xs:element ref="os:objectFormat"/>
         <xs:element ref="os:authentication" minOccurs="0"/>
@@ -43,6 +43,20 @@ You should have received a copy of the GNU Affero General Public License along w
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="infoRequest">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Get info about the setup and fields.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:agency"/>
+        <xs:element ref="os:profile"/>
+        <xs:element ref="os:callback" minOccurs="0"/>
+        <xs:element ref="os:outputType" minOccurs="0"/>
+        <xs:element ref="os:trackingId" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="searchRequest">
     <xs:annotation>
       <xs:documentation xml:lang="en">Request for searching Open Search.</xs:documentation>
@@ -51,8 +65,8 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:sequence>
         <xs:element ref="os:query"/>
         <xs:element ref="os:queryLanguage" minOccurs="0"/>
-        <xs:element ref="os:agency" minOccurs="0"/>
-        <xs:element ref="os:profile" minOccurs="0"/>
+        <xs:element ref="os:agency"/>
+        <xs:element ref="os:profile"/>
         <xs:element ref="os:allObjects" minOccurs="0"/>
         <xs:element ref="os:authentication" minOccurs="0"/>
         <xs:element ref="os:callback" minOccurs="0"/>
@@ -73,6 +87,22 @@ You should have received a copy of the GNU Affero General Public License along w
         <xs:element ref="os:userDefinedBoost" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="os:queryDebug" minOccurs="0"/>
         <xs:element ref="os:trackingId" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="infoResponse">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Information about the service setup.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:infoGenerel"/>
+        <xs:element ref="os:infoRepositories"/>
+        <xs:element ref="os:infoCqlIndexDocs"/>
+        <xs:element ref="os:infoObjectFormats"/>
+        <xs:element ref="os:infoSearchProfile"/>
+        <xs:element ref="os:infoSorts"/>
+        <xs:element ref="os:infoNameSpaces"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -141,14 +171,46 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:documentation xml:lang="en">Number of collections returned in the search result.</xs:documentation>
     </xs:annotation>
   </xs:element>
+  <xs:element name="collectionIdentifier" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The internal identifier for the collection.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="collectionName" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Name of collection as seen in VIP.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:element name="collectionType" type="os:collectionTypeType">
     <xs:annotation>
       <xs:documentation xml:lang="en">E.g presented as single manifestations or as collections of works.</xs:documentation>
     </xs:annotation>
   </xs:element>
+  <xs:element name="cqlIndex">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">One index definition document.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:indexName"/>
+        <xs:element ref="os:indexSlop" minOccurs="0"/>
+        <xs:element ref="os:indexAlias" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="cqlIndexDoc" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Name of xml index definition document.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:element name="creationDate" type="xs:date">
     <xs:annotation>
       <xs:documentation xml:lang="en">The creation date of the original record or the object.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="defaultRepository" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Name of default repository.</xs:documentation>
     </xs:annotation>
   </xs:element>
   <xs:element name="error" type="xs:string">
@@ -226,10 +288,21 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:documentation xml:lang="en">Number of records read from fedora</xs:documentation>
     </xs:annotation>
   </xs:element>
-  <xs:element name="fieldName" type="os:fieldNameType">
+  <xs:element name="fieldName" type="xs:string">
     <xs:annotation>
       <xs:documentation xml:lang="en">Name of field used in user defined ranking.</xs:documentation>
     </xs:annotation>
+  </xs:element>
+  <xs:element name="fieldNameAndWeight">
+    <xs:annotation>
+      <xs:documentation xml:lang="en"></xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:fieldName"/>
+        <xs:element ref="os:weight"/>
+      </xs:sequence>
+    </xs:complexType>
   </xs:element>
   <xs:element name="fieldType" type="os:fieldTypeType">
     <xs:annotation>
@@ -301,6 +374,141 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:documentation xml:lang="en">Whether to include marcXchange record if available. Default is false.</xs:documentation>
     </xs:annotation>
   </xs:element>
+  <xs:element name="indexAlias">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">One index alias definition document.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:indexName"/>
+        <xs:element ref="os:indexSlop" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="infoCqlIndexDocs">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Information about index definitions</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:infoCqlIndexDoc" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="infoCqlIndexDoc">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Information about index definitions</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:cqlIndexDoc"/>
+        <xs:element ref="os:cqlIndex" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="infoGenerel">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Generel info.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:defaultRepository"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="infoObjectFormats">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Information about available objectFormats</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:objectFormat" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="infoRepositories">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Information about available repositories</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:infoRepository" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="infoRepository">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Information about one repository</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:repository"/>
+        <xs:element ref="os:cqlIndexDoc" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="infoSearchProfile">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Information about actual search profile</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:searchCollection" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="os:relationTypes" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="infoSorts">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Information about available sort and ranking methods</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:infoSort" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="infoSort">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Specifying fields to rank by and the corresponding weights</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:sort"/>
+        <xs:element ref="os:internalType"/>
+        <xs:choice>
+          <xs:element ref="os:rankDetails"/>
+          <xs:element ref="os:sortDetails"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="infoNameSpaces">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Information about used namespaces</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:infoNameSpace" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="infoNameSpace">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Namespace prefix and uri</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:prefix"/>
+        <xs:element ref="os:uri"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="internalType" type="os:internalTypeType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Information about type of sort</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:element name="lendingLibraries" type="xs:int">
     <xs:annotation>
       <xs:documentation xml:lang="en">Number of libraries that will lend the material.</xs:documentation>
@@ -334,6 +542,16 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:documentation xml:lang="en">Indicates whether the search result has more hits or the client has reached the end of the result.</xs:documentation>
     </xs:annotation>
   </xs:element>
+  <xs:element name="prefix" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Prefix.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="uri" type="xs:anyURI">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">URI.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:element name="numberOfObjects" type="xs:int">
     <xs:annotation>
       <xs:documentation xml:lang="en">Number of objects in a collection in a search result.</xs:documentation>
@@ -351,7 +569,7 @@ You should have received a copy of the GNU Affero General Public License along w
     <xs:complexType>
       <xs:sequence>
         <xs:choice>
-                    <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+           <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element ref="os:error"/>
         </xs:choice>
         <xs:element ref="os:identifier"/>
@@ -368,7 +586,7 @@ You should have received a copy of the GNU Affero General Public License along w
   </xs:element>
   <xs:element name="objectFormat" type="os:objectFormatType">
     <xs:annotation>
-      <xs:documentation xml:lang="en">Here you can specify the sort order of the search result. Choose from the list in sortType.</xs:documentation>
+      <xs:documentation xml:lang="en">Here you can specify the sort order of the search result.</xs:documentation>
     </xs:annotation>
   </xs:element>
   <xs:element name="outputType" type="os:outputTypeType">
@@ -405,6 +623,16 @@ You should have received a copy of the GNU Affero General Public License along w
     <xs:annotation>
       <xs:documentation xml:lang="en">Password (for authentication purposes)</xs:documentation>
     </xs:annotation>
+  </xs:element>
+  <xs:element name="phrase">
+    <xs:annotation>
+      <xs:documentation xml:lang="en"></xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:fieldNameAndWeight" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
   </xs:element>
   <xs:element name="profile" type="xs:string">
     <xs:annotation>
@@ -450,6 +678,17 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:documentation xml:lang="en">The query sent to the search engine. Used for query debugging.</xs:documentation>
     </xs:annotation>
   </xs:element>
+  <xs:element name="rankDetails">
+    <xs:annotation>
+      <xs:documentation xml:lang="en"></xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:word" minOccurs="0"/>
+        <xs:element ref="os:phrase" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="rankField">
     <xs:annotation>
       <xs:documentation xml:lang="en">Specifying fields to rank by and the corresponding weights</xs:documentation>
@@ -459,6 +698,28 @@ You should have received a copy of the GNU Affero General Public License along w
         <xs:element ref="os:fieldName"/>
         <xs:element ref="os:fieldType"/>
         <xs:element ref="os:weight"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="searchCollection">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">One search collection</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:collectionName"/>
+        <xs:element ref="os:collectionIdentifier"/>
+        <xs:element ref="os:relationType" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sortDetails">
+    <xs:annotation>
+      <xs:documentation xml:lang="en"></xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:sort" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -522,6 +783,21 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:documentation xml:lang="en">Type of the relation from the list in relationTypeType.</xs:documentation>
     </xs:annotation>
   </xs:element>
+  <xs:element name="relationTypes">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">List of relationType.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:relationType" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="relationData" type="os:relationDataType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Type of the relation from the list in relationTypeType.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:element name="relationUri" type="xs:anyURI">
     <xs:annotation>
       <xs:documentation xml:lang="en">URI of the relation.</xs:documentation>
@@ -569,7 +845,7 @@ You should have received a copy of the GNU Affero General Public License along w
   </xs:element>
   <xs:element name="sort" type="os:sortType">
     <xs:annotation>
-      <xs:documentation xml:lang="en">Here you can specify the sort or rank order of the search result. Choose from the list in sortType.</xs:documentation>
+      <xs:documentation xml:lang="en">Here you can specify the sort or rank order of the search result.</xs:documentation>
     </xs:annotation>
   </xs:element>
   <xs:element name="source" type="xs:string">
@@ -643,10 +919,20 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:documentation xml:lang="en">User identifier (for authentication purposes)</xs:documentation>
     </xs:annotation>
   </xs:element>
-  <xs:element name="weight" type="xs:int">
+  <xs:element name="weight" type="xs:float">
     <xs:annotation>
       <xs:documentation xml:lang="en">...</xs:documentation>
     </xs:annotation>
+  </xs:element>
+  <xs:element name="word">
+    <xs:annotation>
+      <xs:documentation xml:lang="en"></xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:fieldNameAndWeight" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
   </xs:element>
   <xs:simpleType name="accessType">
     <xs:restriction base="xs:string">
@@ -682,51 +968,10 @@ You should have received a copy of the GNU Affero General Public License along w
   </xs:simpleType>
   <xs:simpleType name="facetType">
     <xs:annotation>
-      <xs:documentation xml:lang="en">The facet types that can be returned by the service.</xs:documentation>
+      <xs:documentation xml:lang="en">Available facets can be found in infoCqlIndexDocs in infoResponse.</xs:documentation>
     </xs:annotation>
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="facet.access"/>
-      <xs:enumeration value="facet.acSource"/>
-      <xs:enumeration value="facet.audience"/>
-      <xs:enumeration value="facet.audienceCategory"/>
-      <xs:enumeration value="facet.branch"/>
-      <xs:enumeration value="facet.category"/>
-      <xs:enumeration value="facet.creator"/>
-      <xs:enumeration value="facet.date"/>
-      <xs:enumeration value="facet.department"/>
-      <xs:enumeration value="facet.dk5"/>
-      <xs:enumeration value="facet.fictionSubject"/>
-      <xs:enumeration value="facet.form"/>
-      <xs:enumeration value="facet.gamePlatform"/>
-      <xs:enumeration value="facet.genre"/>
-      <xs:enumeration value="facet.genreCategory"/>
-      <xs:enumeration value="facet.geographic"/>
-      <xs:enumeration value="facet.language"/>
-      <xs:enumeration value="facet.level"/>
-      <xs:enumeration value="facet.let"/>
-      <xs:enumeration value="facet.literaryForm"/>
-      <xs:enumeration value="facet.lix"/>
-      <xs:enumeration value="facet.musicSubject"/>
-      <xs:enumeration value="facet.nationality"/>
-      <xs:enumeration value="facet.nonFictionSubject"/>
-      <xs:enumeration value="facet.partOf"/>
-      <xs:enumeration value="facet.period"/>
-      <xs:enumeration value="facet.primaryCreator"/>
-      <xs:enumeration value="facet.sheetMusic"/>
-      <xs:enumeration value="facet.subject"/>
-      <xs:enumeration value="facet.titleSeries"/>
-      <xs:enumeration value="facet.type"/>
-    </xs:restriction>
+    <xs:restriction base="xs:string"/>
   </xs:simpleType>
-    <xs:simpleType name="fieldNameType">
-        <xs:annotation>
-            <xs:documentation xml:lang="en">...</xs:documentation>
-        </xs:annotation>
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="dc.title"/>
-            <xs:enumeration value="cql.anyIndexes"/>
-        </xs:restriction>
-    </xs:simpleType>
     <xs:simpleType name="fieldTypeType">
         <xs:annotation>
             <xs:documentation xml:lang="en">Ranking field as phrase or word.</xs:documentation>
@@ -746,6 +991,17 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:enumeration value="cqleng"/>
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="internalTypeType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Types of intern sort/rank.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="basicSort"/>
+      <xs:enumeration value="complexSort"/>
+      <xs:enumeration value="random"/>
+      <xs:enumeration value="rank"/>
+    </xs:restriction>
+  </xs:simpleType>
   <xs:simpleType name="linkToType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="file"/>
@@ -758,21 +1014,7 @@ You should have received a copy of the GNU Affero General Public License along w
     <xs:annotation>
       <xs:documentation xml:lang="en">The object formats that you can choose from to be returned by the service.</xs:documentation>
     </xs:annotation>
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="bibliotekdkWorkDisplay"/>
-      <xs:enumeration value="briefDisplay"/>
-      <xs:enumeration value="briefDisplayHtml"/>
-      <xs:enumeration value="briefWorkDisplay"/>
-      <xs:enumeration value="dkabm"/>
-      <xs:enumeration value="docbook"/>
-      <xs:enumeration value="fullDisplayHtml"/>
-      <xs:enumeration value="fullDisplay"/>
-      <xs:enumeration value="marc21ToDm2"/>
-      <xs:enumeration value="marcxchange"/>
-      <xs:enumeration value="refWorks"/>
-      <xs:enumeration value="ris"/>
-      <xs:enumeration value="workDisplayHtml"/>
-    </xs:restriction>
+    <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="recordStatusType">
     <xs:annotation>
@@ -805,51 +1047,15 @@ You should have received a copy of the GNU Affero General Public License along w
   </xs:simpleType>
   <xs:simpleType name="relationTypeType">
     <xs:annotation>
-      <xs:documentation xml:lang="en">The types of relations that the service can return.</xs:documentation>
+      <xs:documentation xml:lang="en">Available relations can be found in infoSearchProfile in infoResponse.</xs:documentation>
     </xs:annotation>
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="dbcaddi:hasAnalysis"/>
-      <xs:enumeration value="dbcaddi:hasCreatorDescription"/>
-      <xs:enumeration value="dbcaddi:hasCreatorHomePage"/>
-      <xs:enumeration value="dbcaddi:hasOnlineAccess"/>
-      <xs:enumeration value="dbcaddi:hasOpenUrl"/>
-      <xs:enumeration value="dbcaddi:hasReview"/>
-      <xs:enumeration value="dbcaddi:hasSoundClip"/>
-      <xs:enumeration value="dbcaddi:isAnalysisOf"/>
-      <xs:enumeration value="dbcaddi:isReviewOf"/>
-      <xs:enumeration value="dbcbib:hasTrack"/>
-      <xs:enumeration value="dbcbib:isPartOfAlbum"/>
-      <xs:enumeration value="dbcbib:isPartOfManifestation"/>
-    </xs:restriction>
+    <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:simpleType name="sortType">
     <xs:annotation>
-      <xs:documentation xml:lang="en">The rank/sort orders you can choose from.</xs:documentation>
+      <xs:documentation xml:lang="en">Available sort can be found in infoSorts in infoResponse</xs:documentation>
     </xs:annotation>
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="acquisitionDate_ascending"/>
-      <xs:enumeration value="acquisitionDate_descending"/>
-      <xs:enumeration value="article_date_ascending"/>
-      <xs:enumeration value="article_date_descending"/>
-      <xs:enumeration value="creator_ascending"/>
-      <xs:enumeration value="creator_descending"/>
-      <xs:enumeration value="date_ascending"/>
-      <xs:enumeration value="date_descending"/>
-      <xs:enumeration value="random"/>
-      <xs:enumeration value="rank_creator"/>
-      <xs:enumeration value="rank_frequency"/>
-      <xs:enumeration value="rank_general"/>
-      <xs:enumeration value="rank_main_title"/>
-      <xs:enumeration value="rank_none"/>
-      <xs:enumeration value="rank_subject"/>
-      <xs:enumeration value="rank_title"/>
-      <xs:enumeration value="record_owner_ascending"/>
-      <xs:enumeration value="record_owner_descending"/>
-      <xs:enumeration value="title_ascending"/>
-      <xs:enumeration value="title_descending"/>
-      <xs:enumeration value="work_type_ascending"/>
-      <xs:enumeration value="work_type_descending"/>
-    </xs:restriction>
+    <xs:restriction base="xs:string"/>
   </xs:simpleType>
   <xs:element name="trackingId" type="xs:string">
     <xs:annotation>

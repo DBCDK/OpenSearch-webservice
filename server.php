@@ -909,7 +909,217 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
+  /** \brief Entry info: collect info
+  *
+  */
+  public function info($param) {
+    $result = &$ret->infoResponse->_value;
+    $result->infoGenerel->_value->defaultRepository->_value = $this->config->get_value('default_repository', 'setup');
+    $result->infoRepositories = self::get_repository_info();
+    $result->infoCqlIndexDocs = self::get_cql_index_info();
+    $result->infoObjectFormats = self::get_object_format_info();
+    $result->infoSearchProfile = self::get_search_profile_info($param->agency->_value, $param->profile->_value);
+    $result->infoSorts = self::get_sort_info();
+    $result->infoNameSpaces = self::get_namespace_info();
+    return $ret;
+  }
   /*******************************************************************************/
+
+  /** \brief Get information about search profile
+   * 
+   * @retval object 
+   */
+  private function get_search_profile_info($agency, $profile) {
+    $profile = self::fetch_profile_from_agency($agency, $profile);
+    foreach ($profile as $p) {
+      $coll->collectionName->_value = $p['sourceName'];
+      $coll->collectionIdentifier->_value = $p['sourceIdentifier'];
+      if ($p['relation'])
+      foreach ($p['relation'] as $relation) {
+        if ($r = $relation['rdfLabel']) {
+          $all_relations[$r] = $r;
+          $rels[]->_value = $r;
+        }
+        if ($r = $relation['rdfInverse']) {
+          $all_relations[$r] = $r;
+          $rels[]->_value = $r;
+        }
+      }
+      if ($rels) {
+        $coll->relationType = $rels;
+        unset($rels);
+      }
+      $ret->_value->searchCollection[]->_value = $coll;
+      if (is_array($all_relations)) {
+        ksort($all_relations);
+        foreach ($all_relations as $rel) {
+          $rels->relationType[]->_value = $rel;
+        }
+       $ret->_value->relationTypes->_value = $rels;
+       unset($rels);
+      }
+      unset($coll);
+    }
+    return $ret;
+  }
+
+  /** \brief Get informtation about object formats from config
+   * 
+   * @retval object 
+   */
+  private function get_object_format_info() {
+    foreach ($this->config->get_value('scan_format_table', 'setup') as $name => $value) {
+      $ret->_value->objectFormat[]->_value = $value;
+    }
+    foreach ($this->config->get_value('open_format', 'setup') as $name => $value) {
+      $ret->_value->objectFormat[]->_value = $name;
+    }
+    return $ret;
+  }
+
+  /** \brief Get informtation about repositories from config
+   * 
+   * @retval object 
+   */
+  private function get_repository_info() {
+    $repositories = $this->config->get_value('repository', 'setup');
+    foreach ($repositories as $name => $value) {
+      if ($name != 'defaults') {
+        $r->repository->_value = $name;
+        $r->cqlIndexDoc->_value = ($value['cql_file'] ? $value['cql_file'] : $repositories['defaults']['cql_file']);
+        $ret->_value->infoRepository[]->_value = $r;
+        unset($r);
+      }
+    }
+    return $ret;
+  }
+
+  /** \brief Get informtation about cql index files
+   * 
+   * @retval object 
+   */
+  private function get_cql_index_info() {
+    $repositories = $this->config->get_value('repository', 'setup');
+    foreach ($repositories as $name => $value) {
+      if ($v = $value['cql_file']) {
+        $cqls[$v] = $v;
+      }
+    }
+    $dom = new DomDocument();
+    foreach ($cqls as $cql) {
+      $idxdoc->cqlIndexDoc->_value = $cql;
+      if ($dom->load($cql)) {
+        foreach ($dom->getElementsByTagName('indexInfo') as $index_info) {
+          foreach ($index_info->getElementsByTagName('index') as $index) {
+            foreach ($index->getElementsByTagName('map') as $map) {
+              if ($map->getAttribute('hidden') !== '1') {
+                foreach ($map->getElementsByTagName('name') as $name) {
+                  $idx = self::set_name_and_slop($name);
+                }
+                foreach ($map->getElementsByTagName('alias') as $alias) {
+                  $idx->indexAlias[]->_value = self::set_name_and_slop($alias);
+                }
+                $idxdoc->cqlIndex[]->_value = $idx;
+                unset($idx);
+              }
+            }
+          }
+        }
+      }
+      $ret->_value->infoCqlIndexDoc[]->_value = $idxdoc;
+      unset($idxdoc);
+    }
+    return $ret;
+  }
+
+  /** \brief Get info fom dom node
+   * 
+   * @param domNode $node
+   * @retval object 
+   */
+  private function set_name_and_slop($node) {
+    $prefix = $node->getAttribute('set');
+    $reg->indexName->_value = $prefix . ($prefix ? '.' : '') . $node->nodeValue;
+    if ($slop = $node->getAttribute('slop')) {
+      $reg->indexSlop->_value = $slop;
+    }
+    return $reg;
+  }
+
+  /** \brief Get information about namespaces from config
+   * 
+   * @retval object 
+   */
+  private function get_namespace_info() {
+    foreach ($this->config->get_value('xmlns', 'setup') as $prefix => $namespace) {
+      $ns->prefix->_value = $prefix;
+      $ns->uri->_value = $namespace;
+      $nss->_value->infoNameSpace[]->_value = $ns;
+      unset($ns);
+    }
+    return $nss;
+  }
+
+  /** \brief Get information about sorting and ranking from config
+   * 
+   * @retval object 
+   */
+  private function get_sort_info() {
+    foreach ($this->config->get_value('rank', 'setup') as $name => $val) {
+      if ($help = self::collect_rank_boost($val['word_boost'])) {
+        $boost->word = $help;
+      }
+      if ($help = self::collect_rank_boost($val['phrase_boost'])) {
+        $boost->phrase = $help;
+      }
+      if ($boost) {
+        $rank->sort->_value = $name;
+        $rank->internalType->_value = 'rank';
+        $rank->rankDetails->_value->tie->_value = $val['tie'];
+        $rank->rankDetails->_value = $boost;
+        $ret->_value->infoSort[]->_value = $rank;
+        unset($boost);
+        unset($rank);
+      }
+    }
+    foreach ($this->config->get_value('sort', 'setup') as $name => $val) {
+        $sort->sort->_value = $name;
+        if (is_array($val)) {
+          $sort->internalType->_value = 'complexSort';
+          foreach ($val as $simpleSort) {
+            $simple[]->_value = $simpleSort;
+          }
+          $sortDetails->sort = $simple;
+          unset($simple);
+        }
+        else {
+          $sort->internalType->_value = ($val == 'random' ? 'random' : 'basicSort');
+          $sortDetails->sort->_value = $val;
+        }
+        $sort->sortDetails->_value = $sortDetails;
+        $ret->_value->infoSort[]->_value = $sort;
+        unset($sort);
+        unset($sortDetails);
+    }
+    return $ret;
+  }
+
+  /** \brief return one rank entry for the info operation
+   * 
+   * @param array $rank 
+   * @retval object 
+   */
+  private function collect_rank_boost($rank) {
+    if (is_array($rank)) {
+      foreach ($rank as $reg => $weight) {
+        $rw->fieldName->_value = $reg;
+        $rw->weight->_value = $weight;
+        $iaw->_value->fieldNameAndWeight[]->_value = $rw; 
+        unset($rw);
+      }
+    }
+    return $iaw;
+  }
 
   /** \brief sets sortUsed if rank or sort is used
    * 
@@ -963,12 +1173,14 @@ class openSearch extends webServiceServer {
       foreach ($info_item->getElementsByTagName('index') as $index_item) {
         if ($map_item = $index_item->getElementsByTagName('map')->item(0)) {
           if ($name_item = $map_item->getElementsByTagName('name')->item(0)) {
-            $full_name = $name_item->getAttribute('set').'.'.$name_item->nodeValue;
-            if ($luke_fields->$full_name) {
-              unset($luke_fields->$full_name);
-            } 
-            else {
-              $cql_regs[] = $full_name;
+            if (!$name_item->hasAttribute('searchHandler') && ($name_item->getAttribute('set') !== 'cql')) {
+              $full_name = $name_item->getAttribute('set').'.'.$name_item->nodeValue;
+              if ($luke_fields->$full_name) {
+                unset($luke_fields->$full_name);
+              } 
+              else {
+                $cql_regs[] = $full_name;
+              } 
             } 
           } 
         }
@@ -2617,9 +2829,9 @@ class openSearch extends webServiceServer {
             $ret->collection->_value = $this->xmlconvert->xml2obj($record->item(0), $this->xmlns['marcx']);
             //$ret->collection->_namespace = $record->item(0)->lookupNamespaceURI('collection');
             $ret->collection->_namespace = $this->xmlns['marcx'];
-          }
-          if (is_array($this->repository['filter'])) {
-            self::filter_marcxchange($record_source, $ret->collection->_value, $this->repository['filter']);
+            if (is_array($this->repository['filter'])) {
+              self::filter_marcxchange($record_source, $ret->collection->_value, $this->repository['filter']);
+            }
           }
           break;
   
