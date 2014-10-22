@@ -1611,6 +1611,160 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
+      <title lang="da">Til rankering (frase)</title>
+      <title lang="en">For ranking (phrase)</title>
+      <map hidden="1">
+        <name set="rankphrase">alternativeTitle</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (frase)</title>
+      <title lang="en">For ranking (phrase)</title>
+      <map hidden="1">
+        <name set="rankphrase">contributor</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (frase)</title>
+      <title lang="en">For ranking (phrase)</title>
+      <map hidden="1">
+        <name set="rankphrase">creator</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (frase)</title>
+      <title lang="en">For ranking (phrase)</title>
+      <map hidden="1">
+        <name set="rankphrase">description</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (frase)</title>
+      <title lang="en">For ranking (phrase)</title>
+      <map hidden="1">
+        <name set="rankphrase">partTitle</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (frase)</title>
+      <title lang="en">For ranking (phrase)</title>
+      <map hidden="1">
+        <name set="rankphrase">subject</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (frase)</title>
+      <title lang="en">For ranking (phrase)</title>
+      <map hidden="1">
+        <name set="rankphrase">title</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (term)</title>
+      <title lang="en">For ranking (term)</title>
+      <map hidden="1">
+        <name set="rankterm">alternativeTitle</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (term)</title>
+      <title lang="en">For ranking (term)</title>
+      <map hidden="1">
+        <name set="rankterm">contributor</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (term)</title>
+      <title lang="en">For ranking (term)</title>
+      <map hidden="1">
+        <name set="rankterm">creator</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (term)</title>
+      <title lang="en">For ranking (term)</title>
+      <map hidden="1">
+        <name set="rankterm">description</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (term)</title>
+      <title lang="en">For ranking (term)</title>
+      <map hidden="1">
+        <name set="rankterm">partTitle</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (term)</title>
+      <title lang="en">For ranking (term)</title>
+      <map hidden="1">
+        <name set="rankterm">subject</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til rankering (term)</title>
+      <title lang="en">For ranking (term)</title>
+      <map hidden="1">
+        <name set="rankterm">title</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til sortering</title>
+      <title lang="en">For sorting</title>
+      <map hidden="1">
+        <name set="sort">acquisitionDate</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til sortering</title>
+      <title lang="en">For sorting</title>
+      <map hidden="1">
+        <name set="sort">articleDate</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til sortering</title>
+      <title lang="en">For sorting</title>
+      <map hidden="1">
+        <name set="sort">complexKey</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til sortering</title>
+      <title lang="en">For sorting</title>
+      <map hidden="1">
+        <name set="sort">creator</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til sortering</title>
+      <title lang="en">For sorting</title>
+      <map hidden="1">
+        <name set="sort">date</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til sortering</title>
+      <title lang="en">For sorting</title>
+      <map hidden="1">
+        <name set="sort">recordOwner</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til sortering</title>
+      <title lang="en">For sorting</title>
+      <map hidden="1">
+        <name set="sort">title</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Til sortering</title>
+      <title lang="en">For sorting</title>
+      <map hidden="1">
+        <name set="sort">workType</name>
+      </map>
+    </index>
+    <index>
       <title lang="da">Materialetype (frase)</title>
       <title lang="en">Material type (phrase)</title>
       <map>
