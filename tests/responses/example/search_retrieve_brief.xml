@@ -11,35 +11,6 @@
             <resultPosition>1</resultPosition>
             <numberOfObjects>1</numberOfObjects>
             <object>
-              <identifier>870971-tsart:34497745</identifier>
-              <creationDate>2011-02-14</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-            </object>
-          </collection>
-          <formattedCollection>
-            <briefDisplay>
-              <manifestation>
-                <accessType>online</accessType>
-                <creator>Viktor Eriksson</creator>
-                <fedoraPid>870971-tsart:34497745</fedoraPid>
-                <identifier>870971-tsart:34497745</identifier>
-                <language>Dansk</language>
-                <partOf>Game reactor, Nr. 115 (2011)</partOf>
-                <title>Blandt drager og dæmoner</title>
-                <type>Tidsskriftsartikel</type>
-                <workType>article</workType>
-              </manifestation>
-            </briefDisplay>
-          </formattedCollection>
-        </searchResult>
-        <searchResult>
-          <collection>
-            <resultPosition>2</resultPosition>
-            <numberOfObjects>1</numberOfObjects>
-            <object>
               <identifier>870970-basis:45235394</identifier>
               <creationDate>2012-05-25</creationDate>
               <formatsAvailable>
@@ -56,8 +27,38 @@
                 <identifier>870970-basis:45235394</identifier>
                 <language>Engelsk</language>
                 <title>Elder scrolls V</title>
+                <titleFull>Elder scrolls V : Skyrim official strategy guide</titleFull>
                 <type>Bog</type>
                 <workType>book</workType>
+              </manifestation>
+            </briefDisplay>
+          </formattedCollection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>2</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <identifier>870971-tsart:34497745</identifier>
+              <creationDate>2011-02-14</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+            </object>
+          </collection>
+          <formattedCollection>
+            <briefDisplay>
+              <manifestation>
+                <accessType>online</accessType>
+                <fedoraPid>870971-tsart:34497745</fedoraPid>
+                <identifier>870971-tsart:34497745</identifier>
+                <language>Dansk</language>
+                <partOf>Game reactor, Nr. 115 (2011)</partOf>
+                <title>Blandt drager og dæmoner</title>
+                <titleFull>Blandt drager og dæmoner : the Elder Scrolls V: Skyrim</titleFull>
+                <type>Tidsskriftsartikel</type>
+                <workType>article</workType>
               </manifestation>
             </briefDisplay>
           </formattedCollection>
@@ -90,6 +91,7 @@
                 <fedoraPid>870970-basis:29069654</fedoraPid>
                 <identifier>870970-basis:29069654</identifier>
                 <title>Skyrim</title>
+                <titleFull>Skyrim</titleFull>
                 <type>Playstation 3</type>
                 <workType>game</workType>
               </manifestation>
@@ -98,6 +100,7 @@
                 <fedoraPid>870970-basis:29069638</fedoraPid>
                 <identifier>870970-basis:29069638</identifier>
                 <title>Skyrim</title>
+                <titleFull>Skyrim</titleFull>
                 <type>Xbox 360</type>
                 <workType>game</workType>
               </manifestation>
@@ -108,8 +111,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>18</fedoraRecordsRead>
-          <time>0.573538</time>
-          <trackingId>os:2014-10-16T10:41:38:356796:2056</trackingId>
+          <time>0.533049</time>
+          <trackingId>os:2014-10-27T16:57:18:827197:13437</trackingId>
         </statInfo>
       </result>
     </searchResponse>
