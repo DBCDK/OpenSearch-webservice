@@ -1130,7 +1130,9 @@ class openSearch extends webServiceServer {
    */
   private function set_sortUsed(&$ret, $rank, $sort, $sort_types) {
     if (isset($rank)) {
-      $ret->sortUsed->_value = $rank;
+      if (substr($rank, 0, 9) != 'user_rank') {
+        $ret->sortUsed->_value = $rank;
+      }
     }
     elseif (!empty($sort)) {
       if ($key = array_search($sort, $sort_types)) {
@@ -1411,7 +1413,7 @@ class openSearch extends webServiceServer {
    */
   private function parse_for_ranking($param, &$rank, &$rank_types) {
     if ($rr = $param->userDefinedRanking) {
-      $rank = 'rank';
+      $rank = 'user_rank';
       $rank_user['tie'] = $rr->_value->tieValue->_value;
       $rfs = (is_array($rr->_value->rankField) ? $rr->_value->rankField : array($rr->_value->rankField));
       foreach ($rfs as $rf) {
@@ -1864,7 +1866,7 @@ class openSearch extends webServiceServer {
    *
    * @param array $record_source- the source of the record, owner or collectionIdentifier
    * @param array $collection- the structure is modified
-   * @param array $filter_settings - from the reposotory
+   * @param array $filter_settings - from the repository
    */
   private function filter_marcxchange($record_source, &$collection, $filter_settings) {
     foreach ($filter_settings as $rs_idx => $filters) {
@@ -1886,6 +1888,27 @@ class openSearch extends webServiceServer {
               elseif (preg_match('/' . $filter . '/', $df->_value->subfield->_attributes->code->_value)) {
                 unset($mrec->datafield[$idf]);
               }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /** \ brief Remove private/internal sections from a docbook record
+   *
+   * @param array $record_source- the source of the record, owner or collectionIdentifier
+   * @param array $article- the structure is modified
+   * @param array $filter_settings - from the reposotory
+   */
+  private function filter_docbook($record_source, &$article, $filter_settings) {
+    foreach ($filter_settings as $rs_idx => $filters) {
+      if (($docbook_filters = $filters['docbook']) && preg_match('/' . $rs_idx . '/', $record_source)) {
+        foreach ($docbook_filters as $section_path => $match) {
+          list($part, $item) = explode('/', $section_path);
+          foreach ($article->$part as $idx => $section) {
+            if ($section->_value->$item->_value == $match) {
+              unset($article->{$part}[$idx]);
             }
           }
         }
@@ -2840,6 +2863,9 @@ class openSearch extends webServiceServer {
           if ($record->item(0)) {
             $ret->article->_value = $this->xmlconvert->xml2obj($record->item(0));
             $ret->article->_namespace = $record->item(0)->lookupNamespaceURI('docbook');
+            if (is_array($this->repository['filter'])) {
+              self::filter_docbook($record_source, $ret->article->_value, $this->repository['filter']);
+            }
             //print_r($ret); die();
           }
           break;
