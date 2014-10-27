@@ -6,7 +6,7 @@
         <hitCount>4</hitCount>
         <collectionCount>1</collectionCount>
         <more>false</more>
-        <sortUsed>rank_title</sortUsed>
+        <sortUsed>rank_subject</sortUsed>
         <searchResult>
           <collection>
             <resultPosition>1</resultPosition>
@@ -278,8 +278,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>14</fedoraRecordsRead>
-          <time>0.481004</time>
-          <trackingId>os:2014-10-16T12:13:26:257733:2056</trackingId>
+          <time>0.48244</time>
+          <trackingId>os:2014-10-27T16:57:17:983927:13436</trackingId>
         </statInfo>
       </result>
     </searchResponse>
