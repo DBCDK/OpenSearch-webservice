@@ -930,35 +930,36 @@ class openSearch extends webServiceServer {
    * @retval object 
    */
   private function get_search_profile_info($agency, $profile) {
-    $profile = self::fetch_profile_from_agency($agency, $profile);
-    foreach ($profile as $p) {
-      $coll->collectionName->_value = $p['sourceName'];
-      $coll->collectionIdentifier->_value = $p['sourceIdentifier'];
-      if ($p['relation'])
-      foreach ($p['relation'] as $relation) {
-        if ($r = $relation['rdfLabel']) {
-          $all_relations[$r] = $r;
-          $rels[]->_value = $r;
+    if ($s_profile = self::fetch_profile_from_agency($agency, $profile)) {
+      foreach ($s_profile as $p) {
+        $coll->collectionName->_value = $p['sourceName'];
+        $coll->collectionIdentifier->_value = $p['sourceIdentifier'];
+        if ($p['relation'])
+          foreach ($p['relation'] as $relation) {
+            if ($r = $relation['rdfLabel']) {
+              $all_relations[$r] = $r;
+              $rels[]->_value = $r;
+            }
+            if ($r = $relation['rdfInverse']) {
+              $all_relations[$r] = $r;
+              $rels[]->_value = $r;
+            }
+          }
+        if ($rels) {
+          $coll->relationType = $rels;
+          unset($rels);
         }
-        if ($r = $relation['rdfInverse']) {
-          $all_relations[$r] = $r;
-          $rels[]->_value = $r;
+        $ret->_value->searchCollection[]->_value = $coll;
+        if (is_array($all_relations)) {
+          ksort($all_relations);
+          foreach ($all_relations as $rel) {
+            $rels->relationType[]->_value = $rel;
+          }
+          $ret->_value->relationTypes->_value = $rels;
+          unset($rels);
         }
+        unset($coll);
       }
-      if ($rels) {
-        $coll->relationType = $rels;
-        unset($rels);
-      }
-      $ret->_value->searchCollection[]->_value = $coll;
-      if (is_array($all_relations)) {
-        ksort($all_relations);
-        foreach ($all_relations as $rel) {
-          $rels->relationType[]->_value = $rel;
-        }
-       $ret->_value->relationTypes->_value = $rels;
-       unset($rels);
-      }
-      unset($coll);
     }
     return $ret;
   }
