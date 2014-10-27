@@ -160,8 +160,11 @@ repository[@REPOSITORY_NAME@][collection_alias]['870976-anmeld'] = 870976-allanm
 ;repository[my_repository][filter][owner][marcxchange]['^7..$'] = [ab]
 ;
 
-; filter 559 subfield i from collectionIdentier 870976-anmeld
+; filter marcxchange tag 559 subfield i from collectionIdentier 870976-anmeld
 repository[@REPOSITORY_NAME@][filter]['870976-anmeld'][marcxchange]['^559'] = i
+; filter docbook section with title = "Til bibliotekaren" from collectionIdentier 870976-anmeld
+repository[@REPOSITORY_NAME@][filter]['870976-anmeld'][docbook]['section/title'] = Til bibliotekaren
+
 
 ; Raw record repositories
 ; repository for Raw repository, an postgress base indexed by solr
@@ -481,6 +484,11 @@ sort[solr_record_owner_descending] = sort.recordOwner desc
 sort[solr_article_date_ascending] = sort.articleDate asc
 sort[solr_article_date_descending] = sort.articleDate desc
 
+sort[solr_genre_category_ascending] = sort.genreCategory asc
+sort[solr_genre_category_descending] = sort.genreCategory desc
+sort[solr_dk5_ascending] = sort.dk5 asc
+sort[solr_dk5_descending] = sort.dk5 desc
+
 ; sortgroups using sorts - allows you to create "grouped"-sorts, combining existing sorts
 ; like:
 ; sort[<group_sort_name>][] = <sort_name_1>
@@ -521,6 +529,12 @@ sort[title_descending][] = solr_creator_ascending
 
 sort[work_type_ascending][] = solr_work_type_ascending
 sort[work_type_descending][] = solr_work_type_descending
+
+sort[genre_category_ascending][] = solr_genre_category_ascending
+sort[genre_category_descending][] = solr_genre_category_descending
+
+sort[dk5_ascending][] = solr_dk5_ascending
+sort[dk5_descending][] = solr_dk5_descending
 
 ; --------------
 ; filter for rank_frequency
@@ -680,6 +694,7 @@ showinfo[] = default_repository: __default_repository__
 showinfo[] = repository:         __repository__
 showinfo[] = rank:               __rank__
 showinfo[] = sort:               __sort__
+showinfo[] = rank_frequency:     __rank_frequency__
 showinfo[] = </pre>
 
 ; ==============
