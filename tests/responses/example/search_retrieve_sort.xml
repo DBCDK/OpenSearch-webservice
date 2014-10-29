@@ -27,11 +27,9 @@
                 <creator>Cormac McCarthy</creator>
                 <fedoraPid>870970-basis:25873262</fedoraPid>
                 <identifier>870970-basis:25873262</identifier>
-                <language>Engelsk</language>
                 <title>No country for old men</title>
                 <titleFull>No country for old men</titleFull>
                 <type>Bog</type>
-                <workType>book</workType>
               </manifestation>
             </briefDisplay>
           </formattedCollection>
@@ -40,8 +38,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>5</fedoraRecordsRead>
-          <time>0.372941</time>
-          <trackingId>os:2014-10-27T16:57:54:881213:1757</trackingId>
+          <time>5.397542</time>
+          <trackingId>os:2014-10-29T14:20:26:026928:1757</trackingId>
         </statInfo>
       </result>
     </searchResponse>

@@ -129,7 +129,7 @@
               </dkabm:record>
               <identifier>820010-katalog:3540389</identifier>
               <creationDate>2009-10-11</creationDate>
-              <holdingsCount>1</holdingsCount>
+              <holdingsCount>0</holdingsCount>
               <lendingLibraries>0</lendingLibraries>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -272,7 +272,7 @@
               </dkabm:record>
               <identifier>820010-katalog:3755325</identifier>
               <creationDate>2010-06-14</creationDate>
-              <holdingsCount>1</holdingsCount>
+              <holdingsCount>0</holdingsCount>
               <lendingLibraries>0</lendingLibraries>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -363,8 +363,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>19</fedoraRecordsRead>
-          <time>0.580189</time>
-          <trackingId>os:2014-06-27T11:28:18:903628:13002</trackingId>
+          <time>25.597437</time>
+          <trackingId>os:2014-10-29T14:18:56:838726:13433</trackingId>
         </statInfo>
       </result>
     </searchResponse>
