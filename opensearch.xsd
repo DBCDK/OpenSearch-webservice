@@ -31,7 +31,10 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:sequence>
         <xs:element ref="os:agency"/>
         <xs:element ref="os:profile"/>
-        <xs:element ref="os:identifier" maxOccurs="unbounded"/>
+        <xs:choice>
+            <xs:element ref="os:identifier" maxOccurs="unbounded"/>
+            <xs:element ref="os:localIdentifier" maxOccurs="unbounded"/>
+        </xs:choice>
         <xs:element ref="os:objectFormat" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="os:authentication" minOccurs="0"/>
         <xs:element ref="os:callback" minOccurs="0"/>
@@ -535,6 +538,11 @@ You should have received a copy of the GNU Affero General Public License along w
   <xs:element name="linkTo" type="os:linkToType">
     <xs:annotation>
       <xs:documentation xml:lang="en">What the link point so, e.g. a website.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="localIdentifier" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Local identifier of a bibliographic record - faust, isbn, ...</xs:documentation>
     </xs:annotation>
   </xs:element>
   <xs:element name="more" type="xs:boolean">
