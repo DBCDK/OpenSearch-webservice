@@ -304,7 +304,6 @@ class openSearch extends webServiceServer {
       }
     }
 
-    verbose::log(STAT, 'CQL to EDISMAX: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query['edismax'], TRUE)));
     verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
 
     // do the query
@@ -682,6 +681,11 @@ class openSearch extends webServiceServer {
     $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
     $result->statInfo->_value->trackingId->_value = $this->tracking_id;
 
+    verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
+                       ':: agency:' . $param->agency->_value . 
+                       ' profile:' . $param->profile->_value . 
+                       ' query:' . $param->query->_value . ' ' . $this->watch->dump());
+
     return $ret;
   }
 
@@ -906,6 +910,9 @@ class openSearch extends webServiceServer {
     //print_r($fedora_result);
     //print_r($objects);
     //print_r($ret); die();
+    verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
+                       ':: agency:' . $param->agency->_value . 
+                       ' profile:' . $param->profile->_value . ' ' . $this->watch->dump());
     return $ret;
   }
 
@@ -921,6 +928,9 @@ class openSearch extends webServiceServer {
     $result->infoSearchProfile = self::get_search_profile_info($param->agency->_value, $param->profile->_value);
     $result->infoSorts = self::get_sort_info();
     $result->infoNameSpaces = self::get_namespace_info();
+    verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
+                       ':: agency:' . $param->agency->_value . 
+                       ' profile:' . $param->profile->_value . ' ' . $this->watch->dump());
     return $ret;
   }
   /*******************************************************************************/
