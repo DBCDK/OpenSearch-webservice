@@ -11,7 +11,7 @@
 ;version
 ; Note that the version is used as part of the cache key, so do not run 2 versions of the service with identical
 ; version name, unless you specificly want them to share cache
-version = 3.3
+version = 4.0
 
 ; --------------
 ; wsdl for service
@@ -43,13 +43,13 @@ soapAction[getObject] = getObjectRequest
 ; --------------
 ; url_override
 ; url_override[url_command] = functionToCall
-; if start of request equals url_command and functionToCall exists, it will be called
+; if start of the request equals url_command and functionToCall exists, it will be called
 ; like: myservice.dk/myversion?url_command
 ; ShowInfo, Version, HowRU, RegressionTest are found in the abstract service
 ; if not specified, defaults to HowRU, ShowInfo and Version
+url_override[HowRU] = HowRU
 url_override[ShowInfo] = ShowInfo
 url_override[Version] = Version
-url_override[HowRU] = HowRU
 url_override[RegressionTest] = RegressionTest
 ; diffCqlFileWithSolr - use &repository= in url if set
 url_override[diffCqlFileWithSolr] = diffCqlFileWithSolr

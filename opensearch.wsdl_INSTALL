@@ -69,7 +69,7 @@
   </wsdl:binding>
   <wsdl:service name="OpensearchService">
     <wsdl:port name="OpensearchPort" binding="tns:OpensearchBinding">
-      <soap:address location="http://opensearch.addi.dk/3.3/"/>
+      <soap:address location="http://opensearch.addi.dk/4.0/"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
