@@ -48,7 +48,7 @@ class openSearch extends webServiceServer {
   protected $valid_source = array(); 
   protected $rank_frequence_debug;
   protected $collection_alias = array();
-  protected $agency_priority_list = array();
+  protected $agency_priority_list = array();  // prioritised list af agencies for the actual agency
 
 
   public function __construct() {
@@ -813,7 +813,8 @@ class openSearch extends webServiceServer {
     $solr_result = $this->curl->get($solr_q);
     $solr_2_arr[] = unserialize($solr_result);
 
-  // transform local ids to fedora pids
+  // transform the local ids to fedora pids
+  // the 870970-basis record source is prefered over the -katalog record source if for some odd reason they both exist
     foreach ($lids as $lid) {
       $best_pid->_value = $param->agency->_value . '-katalog:' . $lid->_value;
       foreach ($solr_2_arr as $s_2_a) {
@@ -955,7 +956,7 @@ class openSearch extends webServiceServer {
   }
   /*******************************************************************************/
 
-  /** \brief Get information about search profile
+  /** \brief Get information about search profile (info operation)
    * 
    * @retval object 
    */
@@ -994,7 +995,7 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  /** \brief Get informtation about object formats from config
+  /** \brief Get information about object formats from config (info operation)
    * 
    * @retval object 
    */
@@ -1008,7 +1009,7 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  /** \brief Get informtation about repositories from config
+  /** \brief Get information about repositories from config (info operation)
    * 
    * @retval object 
    */
@@ -1025,7 +1026,7 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  /** \brief Get informtation about cql index files
+  /** \brief Get information about cql index files (info operation)
    * 
    * @retval object 
    */
@@ -1063,7 +1064,7 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  /** \brief Get info fom dom node
+  /** \brief Get info from dom node (info operation)
    * 
    * @param domNode $node
    * @retval object 
@@ -1077,7 +1078,7 @@ class openSearch extends webServiceServer {
     return $reg;
   }
 
-  /** \brief Get information about namespaces from config
+  /** \brief Get information about namespaces from config (info operation)
    * 
    * @retval object 
    */
@@ -1091,7 +1092,7 @@ class openSearch extends webServiceServer {
     return $nss;
   }
 
-  /** \brief Get information about sorting and ranking from config
+  /** \brief Get information about sorting and ranking from config (info operation)
    * 
    * @retval object 
    */
@@ -1135,7 +1136,7 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  /** \brief return one rank entry for the info operation
+  /** \brief return one rank entry (info operation)
    * 
    * @param array $rank 
    * @retval object 
@@ -2541,15 +2542,15 @@ class openSearch extends webServiceServer {
     if (@ $dom->loadXML($u_rel)) {
       $hmou = $dom->getElementsByTagName('hasMemberOfUnit');
       $length = $hmou->length;
-      $min_pos = count($this->agency_priority_list);
+      $best_pos = count($this->agency_priority_list);
       foreach ($hmou as $mou) {
         $record_source = self::record_source_from_pid($mou->nodeValue);
         if (($record_source == '870970-basis') || isset($this->valid_source[$record_source])) {
           list($agency, $collection) = self::split_record_source($record_source);
           if (isset($this->agency_priority_list[$agency])) {
-            if ($this->agency_priority_list[$agency] < $min_pos) {
+            if ($this->agency_priority_list[$agency] < $best_pos) {
               $oid = $mou->nodeValue;
-              $min_pos = $this->agency_priority_list[$agency];
+              $best_pos = $this->agency_priority_list[$agency];
             }
           }
           elseif (!$oid) {
