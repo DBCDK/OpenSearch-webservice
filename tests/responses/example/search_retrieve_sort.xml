@@ -30,6 +30,7 @@
                 <title>No country for old men</title>
                 <titleFull>No country for old men</titleFull>
                 <type>Bog</type>
+                <workType>book</workType>
               </manifestation>
             </briefDisplay>
           </formattedCollection>
@@ -38,8 +39,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>5</fedoraRecordsRead>
-          <time>5.397542</time>
-          <trackingId>os:2014-10-29T14:20:26:026928:1757</trackingId>
+          <time>0.371316</time>
+          <trackingId>os:2014-11-06T11:16:01:313489:27777</trackingId>
         </statInfo>
       </result>
     </searchResponse>

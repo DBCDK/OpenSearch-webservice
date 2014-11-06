@@ -28,6 +28,7 @@
                 <title>Elder scrolls V</title>
                 <titleFull>Elder scrolls V : Skyrim official strategy guide</titleFull>
                 <type>Bog</type>
+                <workType>book</workType>
               </manifestation>
             </briefDisplay>
           </formattedCollection>
@@ -55,6 +56,7 @@
                 <title>Blandt drager og dæmoner</title>
                 <titleFull>Blandt drager og dæmoner : the Elder Scrolls V: Skyrim</titleFull>
                 <type>Tidsskriftsartikel</type>
+                <workType>article</workType>
               </manifestation>
             </briefDisplay>
           </formattedCollection>
@@ -89,6 +91,7 @@
                 <title>Skyrim</title>
                 <titleFull>Skyrim</titleFull>
                 <type>Playstation 3</type>
+                <workType>game</workType>
               </manifestation>
               <manifestation>
                 <accessType>physical</accessType>
@@ -97,6 +100,7 @@
                 <title>Skyrim</title>
                 <titleFull>Skyrim</titleFull>
                 <type>Xbox 360</type>
+                <workType>game</workType>
               </manifestation>
             </briefDisplay>
           </formattedCollection>
@@ -105,8 +109,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>18</fedoraRecordsRead>
-          <time>0.544696</time>
-          <trackingId>os:2014-10-29T14:18:44:743293:13435</trackingId>
+          <time>0.534173</time>
+          <trackingId>os:2014-11-06T11:15:23:667741:22936</trackingId>
         </statInfo>
       </result>
     </searchResponse>
