@@ -285,26 +285,9 @@ class openSearch extends webServiceServer {
       $rank_q = '&qf=' . urlencode($rank_qf) .  '&pf=' . urlencode($rank_pf) .  '&tie=' . $rank_tie;
     }
 
+    $facet_q = self::set_solr_facet_parameters($param->facets->_value);
+
     $rows = ($start + $step_value + 100) * 2;
-    if ($param->facets->_value->facetName) {
-      $pfacets = &$param->facets->_value;
-      $facet_min = 1;
-      if (isset($pfacets->facetMinCount->_value)) {
-        $facet_min = $pfacets->facetMinCount->_value;
-      }
-      $facet_q .= '&facet=true&facet.limit=' . $pfacets->numberOfTerms->_value .  '&facet.mincount=' . $facet_min;
-      if ($facet_sort = $pfacets->facetSort->_value) {
-        $facet_q .= '&facet.sort=' . $facet_sort;
-      }
-      if (is_array($pfacets->facetName)) {
-        foreach ($pfacets->facetName as $facet_name) {
-          $facet_q .= '&facet.field=' . $facet_name->_value;
-        }
-      }
-      elseif (is_scalar($pfacets->facetName->_value)) {
-        $facet_q .= '&facet.field=' . $pfacets->facetName->_value;
-      }
-    }
 
     verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
 
@@ -703,6 +686,9 @@ class openSearch extends webServiceServer {
   *        includeHoldingsCount - boolean
   *        relationData - type, uri og full
   *        repository
+  * 
+  * @param object $param - the user request
+  * @retval object - the answer to the request
   */
   public function getObject($param) {
     $ret_error->searchResponse->_value->error->_value = &$error;
@@ -801,8 +787,8 @@ class openSearch extends webServiceServer {
     }
     $this->cql2solr = new SolrQuery($this->repository, $this->config);
     $chk_query = $this->cql2solr->parse('rec.id=(' . implode(OR_OP, $id_array) . ')');
-        $solr_q = $this->repository['solr'] .
-        '?wt=phps' .
+    $solr_q = $this->repository['solr'] .
+             '?wt=phps' .
               '&q=' . urlencode(implode(AND_OP, $chk_query['edismax']['q'])) .
               '&fq=' . $filter_q .
               // if briefDisplay data must be fetched from primaryObject '&fq=unit.isPrimaryObject:true' . 
@@ -939,6 +925,8 @@ class openSearch extends webServiceServer {
 
   /** \brief Entry info: collect info
   *
+  * @param object $param - the user request
+  * @retval object - the answer to the request
   */
   public function info($param) {
     $result = &$ret->infoResponse->_value;
@@ -958,7 +946,9 @@ class openSearch extends webServiceServer {
 
   /** \brief Get information about search profile (info operation)
    * 
-   * @retval object 
+   * @param string $agency 
+   * @param string $profile 
+   * @retval object - the user profile
    */
   private function get_search_profile_info($agency, $profile) {
     if ($s_profile = self::fetch_profile_from_agency($agency, $profile)) {
@@ -1176,6 +1166,34 @@ class openSearch extends webServiceServer {
         }
       }
     }
+  }
+
+  /** \brief Set the parameters to solr facets
+   *
+   * @param object $facets - the facet paramaters from the request
+   * @retval string - facet part of solr url
+   */
+  private function set_solr_facet_parameters($facets) {
+    $ret = '';
+    if ($facets->facetName) {
+      $facet_min = 1;
+      if (isset($facets->facetMinCount->_value)) {
+        $facet_min = $facets->facetMinCount->_value;
+      }
+      $ret .= '&facet=true&facet.limit=' . $facets->numberOfTerms->_value .  '&facet.mincount=' . $facet_min;
+      if ($facet_sort = $facets->facetSort->_value) {
+        $ret .= '&facet.sort=' . $facet_sort;
+      }
+      if (is_array($facets->facetName)) {
+        foreach ($facets->facetName as $facet_name) {
+          $ret .= '&facet.field=' . $facet_name->_value;
+        }
+      }
+      elseif (is_scalar($facets->facetName->_value)) {
+        $ret .= '&facet.field=' . $facets->facetName->_value;
+      }
+    }
+    return $ret;
   }
 
   /** \brief Compares registers in cql_file with solr, using the luke request handler:
