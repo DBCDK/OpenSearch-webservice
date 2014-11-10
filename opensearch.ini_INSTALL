@@ -504,30 +504,30 @@ sort[article_date_ascending][] = solr_article_date_ascending
 sort[article_date_descending][] = solr_article_date_descending
 
 sort[creator_ascending][] = solr_creator_ascending
-sort[creator_ascending][] = solr_date_ascending
+sort[creator_ascending][] = solr_date_descending
 sort[creator_ascending][] = solr_title_ascending
 sort[creator_descending][] = solr_creator_descending
 sort[creator_descending][] = solr_date_descending
-sort[creator_descending][] = solr_title_descending
+sort[creator_descending][] = solr_title_ascending
 
 sort[date_ascending][] = solr_date_ascending
 sort[date_ascending][] = solr_work_type_ascending
 sort[date_ascending][] = solr_record_owner_ascending
 sort[date_ascending][] = solr_article_date_ascending
 sort[date_descending][] = solr_date_descending
-sort[date_descending][] = solr_work_type_descending
-sort[date_descending][] = solr_record_owner_descending
+sort[date_descending][] = solr_work_type_ascending
+sort[date_descending][] = solr_record_owner_ascending
 sort[date_descending][] = solr_article_date_descending
 
 sort[record_owner_ascending][] = solr_record_owner_ascending
 sort[record_owner_descending][] = solr_record_owner_descending
 
 sort[title_ascending][] = solr_title_ascending
-sort[title_ascending][] = solr_date_ascending
+sort[title_ascending][] = solr_date_descending
 sort[title_ascending][] = solr_creator_ascending
 sort[title_descending][] = solr_title_descending
 sort[title_descending][] = solr_date_descending
-sort[title_descending][] = solr_creator_decending
+sort[title_descending][] = solr_creator_ascending
 
 sort[work_type_ascending][] = solr_work_type_ascending
 sort[work_type_descending][] = solr_work_type_descending
