@@ -27,6 +27,7 @@ require_once 'OLS_class_lib/solr_query_class.php';
 
 //-----------------------------------------------------------------------------
 class openSearch extends webServiceServer {
+  protected $agency;
   protected $cql2solr;
   protected $curl;
   protected $cache;
@@ -67,7 +68,6 @@ class openSearch extends webServiceServer {
     define(MAX_OBJECTS_IN_WORK, 100);
     define('AND_OP', ' AND ');
     define('OR_OP', ' OR ');
-    $this->agency_priority_list = array_flip(array('810015', '820040', '820010', '870970'));
   }
 
   /** \brief Entry search: Handles the request and set up the response
@@ -111,6 +111,8 @@ class openSearch extends webServiceServer {
                      ' for ' . $param->agency->_value;
     }
     if ($unsupported) return $ret_error;
+
+    $this->agency = $param->agency->_value;
     $this->filter_agency = self::set_solr_filter($this->search_profile);
     self::set_valid_relations_and_sources($this->search_profile);
 
@@ -142,7 +144,7 @@ class openSearch extends webServiceServer {
       $this->query_language = $param->queryLanguage->_value;
     }
     $debug_query = $this->xs_boolean($param->queryDebug->_value);
-    $this->agency_catalog_source = $param->agency->_value . '-katalog';
+    $this->agency_catalog_source = $this->agency . '-katalog';
 
 
     if ($us_settings = $this->repository['universal']) {
@@ -508,6 +510,7 @@ class openSearch extends webServiceServer {
     $collections = array();
     $rec_no = max(1, $start);
     $HOLDINGS = ' holdings ';
+    $this->agency_priority_list = self::get_agency_show_priority();
     foreach ($work_ids as &$work) {
       $objects = array();
       foreach ($work as $unit_id) {
@@ -515,8 +518,8 @@ class openSearch extends webServiceServer {
         self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
         // waiting for some prio list to be developed
-        // list($fpid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy);
-        list($fpid, $unit_members) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
+        list($fpid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy);
+        // list($fpid, $unit_members) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
         $sort_holdings = ' ';
         unset($no_of_holdings);
         if (self::xs_boolean($param->includeHoldingsCount->_value)) {
@@ -669,7 +672,7 @@ class openSearch extends webServiceServer {
     $result->statInfo->_value->trackingId->_value = $this->tracking_id;
 
     verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
-                       ':: agency:' . $param->agency->_value . 
+                       ':: agency:' . $this->agency->_value . 
                        ' profile:' . $param->profile->_value . 
                        ' query:' . $param->query->_value . ' ' . $this->watch->dump());
 
@@ -704,21 +707,21 @@ class openSearch extends webServiceServer {
       $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
       $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
     }
-    if ($agency = $param->agency->_value) {
+    if ($this->agency = $param->agency->_value) {
       if ($param->profile->_value) {
-        if (!($this->search_profile = self::fetch_profile_from_agency($agency, $param->profile->_value))) {
-          $error = 'Error: Cannot fetch profile: ' . $param->profile->_value . ' for ' . $agency;
+        if (!($this->search_profile = self::fetch_profile_from_agency($this->agency, $param->profile->_value))) {
+          $error = 'Error: Cannot fetch profile: ' . $param->profile->_value . ' for ' . $this->agency;
           return $ret_error;
         }
       }
       else
         $agencies = $this->config->get_value('agency', 'agency');
-      $agencies[$agency] = self::set_solr_filter($this->search_profile);
+      $agencies[$this->agency] = self::set_solr_filter($this->search_profile);
       self::set_valid_relations_and_sources($this->search_profile);
-      if (isset($agencies[$agency]))
-        $this->filter_agency = $agencies[$agency];
+      if (isset($agencies[$this->agency]))
+        $this->filter_agency = $agencies[$this->agency];
       else {
-        $error = 'Error: Unknown agency: ' . $agency;
+        $error = 'Error: Unknown agency: ' . $this->agency;
         return $ret_error;
       }
     }
@@ -726,7 +729,7 @@ class openSearch extends webServiceServer {
       $filter_q = rawurlencode($this->filter_agency);
     }
 
-    $this->agency_catalog_source = $agency . '-katalog';
+    $this->agency_catalog_source = $this->agency . '-katalog';
     $this->format = self::set_format($param->objectFormat, 
                                $this->config->get_value('open_format', 'setup'), 
                                $this->config->get_value('solr_format', 'setup'));
@@ -751,7 +754,7 @@ class openSearch extends webServiceServer {
         $docs['docs'][] = array('marc.001a' => array(0 => $id), 'marc.001b' => $owner);
       }
       foreach ($lpids as $lid) {
-        $docs['docs'][] = array('marc.001a' => array(0 => $lid->_value), 'marc.001b' => $param->agency->_value);
+        $docs['docs'][] = array('marc.001a' => array(0 => $lid->_value), 'marc.001b' => $this->agency);
       }
       $collections = self::get_records_from_postgress($pg_repos, $docs);
       //var_dump($collections); die();
@@ -780,8 +783,8 @@ class openSearch extends webServiceServer {
       $id_array[] = $fpid->_value;
     }
     foreach ($lids as $lid) {
-      $id_array[] = $param->agency->_value . '-katalog:' . $lid->_value;
-      if (substr($param->agency->_value, 0, 1) == '7') {
+      $id_array[] = $this->agency . '-katalog:' . $lid->_value;
+      if (self::get_agency_type($this->agency) == 'Folkebibliotek') {
         $id_array[] = '870970-basis:' . $lid->_value;
       }
     }
@@ -802,7 +805,7 @@ class openSearch extends webServiceServer {
   // transform the local ids to fedora pids
   // the 870970-basis record source is prefered over the -katalog record source if for some odd reason they both exist
     foreach ($lids as $lid) {
-      $best_pid->_value = $param->agency->_value . '-katalog:' . $lid->_value;
+      $best_pid->_value = $this->agency . '-katalog:' . $lid->_value;
       foreach ($solr_2_arr as $s_2_a) {
         foreach ($s_2_a['response']['docs'] as $fdoc) {
           $p_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
@@ -1740,7 +1743,7 @@ class openSearch extends webServiceServer {
       if (empty($dom)) {
         $dom = new DomDocument();
       }
-      $dom->preserveWhiteSpace = false;
+      $dom->preserveWhiteSpace = FALSE;
       if (@ $dom->loadXML($holds)) {
         $holds = array('have' => $dom->getElementsByTagName('librariesHave')->item(0)->nodeValue,
                        'lend' => $dom->getElementsByTagName('librariesLend')->item(0)->nodeValue);
@@ -1995,7 +1998,7 @@ class openSearch extends webServiceServer {
       if ($obj_rec) {
         if (empty($dom))
           $dom = new DomDocument();
-        $dom->preserveWhiteSpace = false;
+        $dom->preserveWhiteSpace = FALSE;
         if (@ $dom->loadXML($obj_rec))
           $state = $dom->getElementsByTagName('objState')->item(0)->nodeValue;
       }
@@ -2212,7 +2215,7 @@ class openSearch extends webServiceServer {
     static $dom;
     if (empty($dom)) {
       $dom = new DomDocument();
-      $dom->preserveWhiteSpace = false;
+      $dom->preserveWhiteSpace = FALSE;
     }
     self::get_fedora_datastreams($pid, $ds_xml);
     $ret = array();
@@ -2270,10 +2273,25 @@ class openSearch extends webServiceServer {
                                          $cache['host'], $cache['port'], $cache['expire']);
     }
     $agency_type = $agency_types->get_agency_type($agency);
-    if ($agency_types->get_branch_type($agency) <> 'D')
+    if ($agency_types->get_branch_type($agency) <> 'D') {
       return $agency_type;
+    }
 
     return FALSE;
+  }
+
+  /** \brief Fetch priority list for agency
+   *
+   * @retval mixed - array of agencies
+   */
+  private function get_agency_show_priority() {
+    require_once 'OLS_class_lib/show_priority_class.php';
+    $agency_prio = new ShowPriority($this->config->get_value('agency_show_order', 'setup'), 
+                                    $cache['host'], $cache['port'], $cache['expire']);
+    if ($agency_list = $agency_prio->get_priority($this->agency)) {
+      return $agency_list;
+    }
+    return array();
   }
 
   /** \brief Extract source part of an ID 
@@ -2490,7 +2508,7 @@ class openSearch extends webServiceServer {
     static $dom;
     if (empty($dom)) {
       $dom = new DomDocument();
-      $dom->preserveWhiteSpace = false;
+      $dom->preserveWhiteSpace = FALSE;
     }
     if (@ $dom->loadXML($rels_hierarchy)) {
       foreach ($tags as $tag) {
@@ -2511,7 +2529,8 @@ class openSearch extends webServiceServer {
    * @retval string - "best" object_id from the unit
    */
   private function fetch_primary_bib_object($u_rel) {
-    $arr = self::parse_unit_for_object_ids($u_rel);
+    $arr = self::parse_unit_for_best_agency($u_rel);
+    //$arr = self::parse_unit_for_object_ids($u_rel);
     return $arr[0];
   }
 
@@ -2525,7 +2544,7 @@ class openSearch extends webServiceServer {
     static $dom;
     if (empty($dom)) {
       $dom = new DomDocument();
-      $dom->preserveWhiteSpace = false;
+      $dom->preserveWhiteSpace = FALSE;
     }
     $oid = $length = FALSE;
     if (@ $dom->loadXML($u_rel)) {
@@ -2554,16 +2573,20 @@ class openSearch extends webServiceServer {
     static $dom;
     if (empty($dom)) {
       $dom = new DomDocument();
-      $dom->preserveWhiteSpace = false;
+      $dom->preserveWhiteSpace = FALSE;
     }
     $oid = $length = FALSE;
     if (@ $dom->loadXML($u_rel)) {
+      $agency_type = self::get_agency_type($this->agency);
       $hmou = $dom->getElementsByTagName('hasMemberOfUnit');
       $length = $hmou->length;
       $best_pos = count($this->agency_priority_list);
       foreach ($hmou as $mou) {
         $record_source = self::record_source_from_pid($mou->nodeValue);
-        if (($record_source == '870970-basis') || isset($this->valid_source[$record_source])) {
+        if (isset($this->valid_source[$record_source]) ||
+            ($agency_type == 'Folkebibliotek' && $record_source == '870970-basis') ||
+            ($agency_type == 'Forskningsbibliotek' && $record_source == '870970-forsk')) {
+        //if (($record_source == '870970-basis') || isset($this->valid_source[$record_source])) {
           list($agency, $collection) = self::split_record_source($record_source);
           if (isset($this->agency_priority_list[$agency])) {
             if ($this->agency_priority_list[$agency] < $best_pos) {
@@ -2575,6 +2598,9 @@ class openSearch extends webServiceServer {
             $oid = $mou->nodeValue;
           }
         }
+      }
+      if (!$oid) {   // this is kinda wrong
+        $oid = $dom->getElementsByTagName('hasPrimaryBibObject')->item(0)->nodeValue;
       }
     }
     return(array($oid, $length));
@@ -2590,7 +2616,7 @@ class openSearch extends webServiceServer {
     static $dom;
     if (empty($dom)) {
       $dom = new DomDocument();
-      $dom->preserveWhiteSpace = false;
+      $dom->preserveWhiteSpace = FALSE;
     }
     if (@ $dom->loadXML($w_rel)) {
       $res = array();
@@ -2621,7 +2647,7 @@ class openSearch extends webServiceServer {
     static $fedora_dom;
     if (empty($fedora_dom)) {
       $fedora_dom = new DomDocument();
-      $fedora_dom->preserveWhiteSpace = false;
+      $fedora_dom->preserveWhiteSpace = FALSE;
     }
     if (@ !$fedora_dom->loadXML($fedora_xml)) {
       verbose::log(FATAL, 'Cannot load recid ' . $rec_id . ' into DomXml');
