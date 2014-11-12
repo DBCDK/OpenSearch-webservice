@@ -213,10 +213,17 @@ agency_search_profile = @AGENCY_SEARCH_PROFILE@
 ; --------------
 ; find Library service end point
 ; ex:
-;   agency_types = http://some.openagency/?action=findLibrary&libraryType=Forskningsbibliotek&outputType=json
-  ; agency_types = http://some.openagency/?action=findLibrary&libraryType=Alle&outputType=json
+; agency_types = http://some.openagency/?action=findLibrary&libraryType=Alle&outputType=json
 ;
 agency_types = @AGENCY_TYPES@
+
+
+; --------------
+; find Library show priority end point
+; ex:
+;   agency_types = http://some.openagency/?action=showOrder&agencyId=%s
+;
+agency_show_order = @AGENCY_SHOW_ORDER@
 
 
 ; --------------
