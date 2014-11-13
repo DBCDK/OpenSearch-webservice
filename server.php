@@ -2540,6 +2540,7 @@ class openSearch extends webServiceServer {
    * @param string $u_rel - xml of the unit object
    * @retval array - of object_id and number of members in the unit
    */
+  /*           OBSOLETE. replaced by parse_unit_for_best_agency() below             */
   private function parse_unit_for_object_ids($u_rel) {
     static $dom;
     if (empty($dom)) {
@@ -2599,9 +2600,11 @@ class openSearch extends webServiceServer {
           }
         }
       }
-      if (!$oid) {   // this is kinda wrong
+/*
+      if (!$oid) {   // this is the old style 
         $oid = $dom->getElementsByTagName('hasPrimaryBibObject')->item(0)->nodeValue;
       }
+*/
     }
     return(array($oid, $length));
   }
