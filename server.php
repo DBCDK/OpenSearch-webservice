@@ -518,7 +518,7 @@ class openSearch extends webServiceServer {
         self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
         // waiting for some prio list to be developed
-        list($fpid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy);
+        list($fpid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, TRUE);
         // list($fpid, $unit_members) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
         $sort_holdings = ' ';
         unset($no_of_holdings);
@@ -2528,8 +2528,8 @@ class openSearch extends webServiceServer {
    * @param string $u_rel - xml of the unit object
    * @retval string - "best" object_id from the unit
    */
-  private function fetch_primary_bib_object($u_rel) {
-    $arr = self::parse_unit_for_best_agency($u_rel);
+  private function fetch_primary_bib_object($u_rel, $fallback = TRUE) {
+    $arr = self::parse_unit_for_best_agency($u_rel, $fallback);
     //$arr = self::parse_unit_for_object_ids($u_rel);
     return $arr[0];
   }
@@ -2570,7 +2570,7 @@ class openSearch extends webServiceServer {
    * @param string $u_rel - xml of the unit object
    * @retval array - of object_id and number of members in the unit
    */
-  private function parse_unit_for_best_agency($u_rel) {
+  private function parse_unit_for_best_agency($u_rel, $fallback = TRUE) {
     static $dom;
     if (empty($dom)) {
       $dom = new DomDocument();
@@ -2600,10 +2600,10 @@ class openSearch extends webServiceServer {
           }
         }
       }
-/*
-      if (!$oid) {   // this is the old style 
+      if ($fallback && !$oid) {   // this is the old style 
         $oid = $dom->getElementsByTagName('hasPrimaryBibObject')->item(0)->nodeValue;
       }
+/*
 */
     }
     return(array($oid, $length));
