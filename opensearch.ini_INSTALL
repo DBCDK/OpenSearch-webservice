@@ -355,55 +355,47 @@ dump_timer = opensearch(%s)
 ; - phrase_boost will go into the pf (phrase fields) parameter
 ; - tie will go into the tie (tie breaker) parameter
 
-rank[rank_main_title][word_boost][dkcclterm.ht] = 2
+rank[rank_main_title][word_boost][dkcclterm.ht] = 10
+rank[rank_main_title][word_boost][rankterm.title] = 2
 rank[rank_main_title][word_boost][term.default] = 1
-rank[rank_main_title][phrase_boost][dkcclterm.ht] = 8
+rank[rank_main_title][phrase_boost][dkcclterm.ht] = 15
+rank[rank_main_title][phrase_boost][rankterm.title] = 2
 rank[rank_main_title][tie] = 0.1
 
-rank[rank_subject][word_boost][rankterm.subject] = 4
-rank[rank_subject][word_boost][dkcclterm.ht] = 3
+rank[rank_subject][word_boost][dkcclterm.em] = 10
+rank[rank_subject][word_boost][rankterm.subject] = 3
 rank[rank_subject][word_boost][dkcclterm.ti] = 2
 rank[rank_subject][word_boost][term.default] = 1
-rank[rank_subject][phrase_boost][rankterm.subject] = 8
+rank[rank_subject][phrase_boost][dkcclterm.em] = 15
 rank[rank_subject][tie] = 0.1
 
 rank[rank_verification][word_boost][rankterm.title] = 4
-rank[rank_verification][phrase_boost][rankterm.title] = 8
 rank[rank_verification][word_boost][rankterm.creator] = 4
+rank[rank_verification][word_boost][term.default] = 1
+rank[rank_verification][phrase_boost][rankterm.title] = 8
 rank[rank_verification][phrase_boost][rankterm.creator] = 6
-rank[rank_verification][word_boost][cql.allIndexes] = 1
-rank[rank_verification][phrase_boost][cql.allIndexes] = 2
+rank[rank_verification][phrase_boost][term.default] = 2
 rank[rank_verification][tie] = 0.1
 
-rank[rank_subject][word_boost][rankterm.subject] = 5
-rank[rank_subject][phrase_boost][rankterm.subject] = 10
-rank[rank_subject][word_boost][rankterm.title] = 3
-rank[rank_subject][phrase_boost][rankterm.title] = 6
-rank[rank_subject][word_boost][rankterm.description] = 2
-rank[rank_subject][phrase_boost][rankterm.description] = 3
-rank[rank_subject][word_boost][cql.allIndexes] = 1
-rank[rank_subject][phrase_boost][cql.allIndexes] = 1
-rank[rank_subject][tie] = 0.1
-
 rank[rank_title][word_boost][dkcclterm.ti] = 4
-rank[rank_title][phrase_boost][dkcclterm.ti] = 8
 rank[rank_title][word_boost][term.default] = 1
+rank[rank_title][phrase_boost][dkcclterm.ti] = 8
 rank[rank_title][phrase_boost][term.default] = 2
 rank[rank_title][tie] = 0.1
 
-rank[rank_creator][word_boost][dkcclterm.fo] = 4
-rank[rank_creator][phrase_boost][dkcclterm.fo] = 8
+rank[rank_creator][word_boost][rankterm.creator] = 10
+rank[rank_creator][word_boost][dkcclterm.fo] = 3
 rank[rank_creator][word_boost][term.default] = 1
-rank[rank_creator][phrase_boost][term.default] = 2
+rank[rank_creator][phrase_boost][rankterm.creator] = 15
 rank[rank_creator][tie] = 0.1
 
 rank[rank_general][word_boost][dkcclterm.ti] = 3
-rank[rank_general][phrase_boost][dkcclterm.ti] = 6
 rank[rank_general][word_boost][dkcclterm.fo] = 4
-rank[rank_general][phrase_boost][dkcclterm.fo] = 8
 rank[rank_general][word_boost][dkcclterm.em] = 2
-rank[rank_general][phrase_boost][dkcclterm.em] = 3
 rank[rank_general][word_boost][term.default] = 1
+rank[rank_general][phrase_boost][dkcclterm.ti] = 6
+rank[rank_general][phrase_boost][dkcclterm.fo] = 8
+rank[rank_general][phrase_boost][dkcclterm.em] = 3
 rank[rank_general][phrase_boost][term.default] = 2
 rank[rank_general][tie] = 0.1
 
@@ -445,9 +437,10 @@ rank_frequency[profile] = user_profile
 ; 
 rank_frequency[title][register] = dkcclterm.ti
 rank_frequency[title][scheme] = rank_title
+rank_frequency[title][weight] = 2
 rank_frequency[creator][register] = dkcclterm.fo
 rank_frequency[creator][scheme] = rank_creator
-rank_frequency[creator][weight] = 2
+rank_frequency[creator][weight] = 1
 rank_frequency[subject][register] = dkcclterm.em
 rank_frequency[subject][scheme] = rank_subject
 rank_frequency[subject][weight] = 3
@@ -699,6 +692,8 @@ showinfo[] = verbose:            __verbose__
 showinfo[] = agency:             __open_agency__
 showinfo[] = holdings:           __holdings_db__
 showinfo[] = aaa_credentials:    __aaa_credentials__
+showinfo[] = aaa_fors_rights:    __aaa_fors_rights__
+showinfo[] = aaa_ip_rights:      __aaa_ip_rights__
 showinfo[] = default_repository: __default_repository__
 showinfo[] = repository:         __repository__
 showinfo[] = rank:               __rank__
