@@ -383,10 +383,11 @@ rank[rank_title][phrase_boost][dkcclterm.ti] = 8
 rank[rank_title][phrase_boost][term.default] = 2
 rank[rank_title][tie] = 0.1
 
-rank[rank_creator][word_boost][rankterm.creator] = 10
+rank[rank_creator][word_boost][dkcclterm.po] = 10
 rank[rank_creator][word_boost][dkcclterm.fo] = 3
+rank[rank_creator][word_boost][rankterm.creator] = 2
 rank[rank_creator][word_boost][term.default] = 1
-rank[rank_creator][phrase_boost][rankterm.creator] = 15
+rank[rank_creator][phrase_boost][dkcclterm.po] = 15
 rank[rank_creator][tie] = 0.1
 
 rank[rank_general][word_boost][dkcclterm.ti] = 3
