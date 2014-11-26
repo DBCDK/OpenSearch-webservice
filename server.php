@@ -46,7 +46,7 @@ class openSearch extends webServiceServer {
   protected $collapsing_field = FALSE;  // if used, defined in ini-file
   protected $separate_field_query_style = TRUE; // seach as field:(a OR b) ie FALSE or (field:a OR field:b) ie TRUE
   protected $valid_relation = array(); 
-  protected $valid_source = array(); 
+  protected $valid_search_source = array(); 
   protected $rank_frequence_debug;
   protected $collection_alias = array();
   protected $agency_priority_list = array();  // prioritised list af agencies for the actual agency
@@ -518,7 +518,7 @@ class openSearch extends webServiceServer {
         self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
         // waiting for some prio list to be developed
-        list($fpid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, TRUE);
+        list($fpid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, FALSE);
         // list($fpid, $unit_members) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
         $sort_holdings = ' ';
         unset($no_of_holdings);
@@ -2241,7 +2241,7 @@ class openSearch extends webServiceServer {
   private function set_valid_relations_and_sources($profile) {
     if (empty($this->valid_relation)) {
       foreach ($profile as $src) {
-        $this->valid_source[$src['sourceIdentifier']] = TRUE;
+        $this->valid_search_source[$src['sourceIdentifier']] = self::xs_boolean($src['sourceSearchable']);
         if ($src['relation']) {
           foreach ($src['relation'] as $rel) {
             if ($rel['rdfLabel'])
@@ -2254,7 +2254,7 @@ class openSearch extends webServiceServer {
 
       if (DEBUG_ON) {
         print_r($profile);
-        echo "rels:\n"; print_r($this->valid_relation); echo "source:\n"; print_r($this->valid_source);
+        echo "rels:\n"; print_r($this->valid_relation); echo "source:\n"; print_r($this->valid_search_source);
       }
     }
   }
@@ -2584,11 +2584,8 @@ class openSearch extends webServiceServer {
       $best_pos = count($this->agency_priority_list);
       foreach ($hmou as $mou) {
         $record_source = self::record_source_from_pid($mou->nodeValue);
-        if (isset($this->valid_source[$record_source]) ||
-            ($agency_type == 'Folkebibliotek' && $record_source == '870970-basis') ||
-            ($agency_type == 'Forskningsbibliotek' && $record_source == '870970-forsk')) {
-        //if (($record_source == '870970-basis') || isset($this->valid_source[$record_source])) {
-          list($agency, $collection) = self::split_record_source($record_source);
+        list($agency, $collection) = self::split_record_source($record_source);
+        if ($this->valid_search_source[$record_source] || self::is_valid_source_grouping($agency)) {
           if (isset($this->agency_priority_list[$agency])) {
             if ($this->agency_priority_list[$agency] < $best_pos) {
               $oid = $mou->nodeValue;
@@ -2603,10 +2600,20 @@ class openSearch extends webServiceServer {
       if ($fallback && !$oid) {   // this is the old style 
         $oid = $dom->getElementsByTagName('hasPrimaryBibObject')->item(0)->nodeValue;
       }
-/*
-*/
     }
     return(array($oid, $length));
+  }
+
+  /** \brief check if a record source is part of one of the two rec.collectionIndentifier groupings. 
+   * - For public libaries: 870970-basis and for research libraries: 870970-forsk
+   *
+   * @param string $agency 
+   * @retval boolen - TRUE is part of a source_grouping
+   */
+  private function is_valid_source_grouping($agency) {
+    $agency_type = self::get_agency_type($agency);
+    return (($agency_type == 'Folkebibliotek' && $this->valid_search_source['870970-basis']) ||
+            ($agency_type == 'Forskningsbibliotek' && $this->valid_search_source['870970-forsk']));
   }
 
   /** \brief Parse a work relation and return array of ids
