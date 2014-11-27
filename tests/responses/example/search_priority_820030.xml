@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://oss.dbc.dk/ns/opensearch">
+  <SOAP-ENV:Body>
+    <searchResponse>
+      <result>
+        <hitCount>9</hitCount>
+        <collectionCount>1</collectionCount>
+        <more>true</more>
+        <searchResult>
+          <collection>
+            <resultPosition>1</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <dkabm:record>
+                <ac:identifier>836533|820030</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">0330440101</dc:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">0330440306</dc:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>No country for old men</dc:title>
+                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
+                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
+                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dc:publisher>Picador</dc:publisher>
+                <dc:date>2005</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
+                <dcterms:extent>309 s.</dcterms:extent>
+              </dkabm:record>
+              <identifier>820030-katalog:836533</identifier>
+              <creationDate>2011-12-15</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+            </object>
+          </collection>
+        </searchResult>
+        <facetResult/>
+        <statInfo>
+          <fedoraRecordsCached>0</fedoraRecordsCached>
+          <fedoraRecordsRead>5</fedoraRecordsRead>
+          <time>3.688576</time>
+          <trackingId>os:2014-11-26T14:24:33:652545:17659</trackingId>
+        </statInfo>
+      </result>
+    </searchResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
