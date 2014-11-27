@@ -326,6 +326,9 @@ verbose = @VERBOSE_LEVEL@
 ; format for automatic timer dump %s is the soap-action used
 dump_timer = opensearch(%s)
 
+; include line below to add the request ip adress to the TIMER log lines
+;dump_timer_ip = TRUE
+
 ; --------------
 ; sorting & ranking
 ; sorting and rakings are defined in the structure below
