@@ -25,6 +25,7 @@ require_once('OLS_class_lib/webServiceServer_class.php');
 require_once 'OLS_class_lib/memcache_class.php';
 require_once 'OLS_class_lib/solr_query_class.php';
 
+define('PRIO', $_REQUEST['PRIO']);
 //-----------------------------------------------------------------------------
 class openSearch extends webServiceServer {
   protected $agency;
@@ -40,13 +41,14 @@ class openSearch extends webServiceServer {
   protected $number_of_fedora_calls = 0;
   protected $number_of_fedora_cached = 0;
   protected $agency_catalog_source = '';
+  protected $agency_type = '';
   protected $filter_agency = '';
   protected $format = '';
   protected $which_rec_id = '';
   protected $collapsing_field = FALSE;  // if used, defined in ini-file
   protected $separate_field_query_style = TRUE; // seach as field:(a OR b) ie FALSE or (field:a OR field:b) ie TRUE
   protected $valid_relation = array(); 
-  protected $valid_search_source = array(); 
+  protected $searchable_source = array(); 
   protected $rank_frequence_debug;
   protected $collection_alias = array();
   protected $agency_priority_list = array();  // prioritised list af agencies for the actual agency
@@ -145,6 +147,7 @@ class openSearch extends webServiceServer {
     }
     $debug_query = $this->xs_boolean($param->queryDebug->_value);
     $this->agency_catalog_source = $this->agency . '-katalog';
+    $this->agency_type = self::get_agency_type($this->agency);
 
 
     if ($us_settings = $this->repository['universal']) {
@@ -474,6 +477,7 @@ class openSearch extends webServiceServer {
                 $u_id =  self::scalar_or_first_elem($fdoc['unit.id']);
                 if ($u_id == $w) {
                   $unit_sort_keys[$u_id] = $fdoc['sort.complexKey'] . '  ' . $u_id;
+    if (@ constant('PRIO')) var_dump($fdoc['rec.collectionIdentifier']);
                   $collection_identifier[$u_id] =  self::scalar_or_first_elem($fdoc['rec.collectionIdentifier']);
                   break 2;
                 }
@@ -511,6 +515,7 @@ class openSearch extends webServiceServer {
     $rec_no = max(1, $start);
     $HOLDINGS = ' holdings ';
     $this->agency_priority_list = self::get_agency_show_priority();
+    if (@ constant('PRIO')) var_dump($collection_identifier);
     foreach ($work_ids as &$work) {
       $objects = array();
       foreach ($work as $unit_id) {
@@ -672,10 +677,14 @@ class openSearch extends webServiceServer {
     $result->statInfo->_value->trackingId->_value = $this->tracking_id;
 
     verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
-                       ':: agency:' . $this->agency->_value . 
+                       ':: agency:' . $this->agency . 
                        ' profile:' . $param->profile->_value . 
+                       ' ip:' . $_SERVER['REMOTE_ADDR'] .
                        ' query:' . $param->query->_value . ' ' . $this->watch->dump());
 
+    if (@ constant('PRIO')) var_dump($this->searchable_source);
+    if (@ constant('PRIO')) var_dump($this->agency_priority_list);
+    if (@ constant('PRIO')) die('aa');
     return $ret;
   }
 
@@ -730,6 +739,7 @@ class openSearch extends webServiceServer {
     }
 
     $this->agency_catalog_source = $this->agency . '-katalog';
+    $this->agency_type = self::get_agency_type($this->agency);
     $this->format = self::set_format($param->objectFormat, 
                                $this->config->get_value('open_format', 'setup'), 
                                $this->config->get_value('solr_format', 'setup'));
@@ -1445,6 +1455,8 @@ class openSearch extends webServiceServer {
    * @retval string
    */
   private function set_data_stream_name($col_id) {
+    if (@ constant('PRIO')) var_dump('-----------------------');
+    if (@ constant('PRIO')) var_dump($col_id);
     if ($col_id && (substr($col_id, 0, 1) == '7')) {
       $data_stream = 'localData.' . $col_id;
     }
@@ -2230,6 +2242,8 @@ class openSearch extends webServiceServer {
         echo 'datastreams: ' . implode('; ', $ret) . PHP_EOL;
       }
     }
+    if (@ constant('PRIO')) var_dump($pid);
+    if (@ constant('PRIO')) var_dump($ret);
     return $ret;
   }
 
@@ -2241,7 +2255,7 @@ class openSearch extends webServiceServer {
   private function set_valid_relations_and_sources($profile) {
     if (empty($this->valid_relation)) {
       foreach ($profile as $src) {
-        $this->valid_search_source[$src['sourceIdentifier']] = self::xs_boolean($src['sourceSearchable']);
+        $this->searchable_source[$src['sourceIdentifier']] = self::xs_boolean($src['sourceSearchable']);
         if ($src['relation']) {
           foreach ($src['relation'] as $rel) {
             if ($rel['rdfLabel'])
@@ -2254,7 +2268,7 @@ class openSearch extends webServiceServer {
 
       if (DEBUG_ON) {
         print_r($profile);
-        echo "rels:\n"; print_r($this->valid_relation); echo "source:\n"; print_r($this->valid_search_source);
+        echo "rels:\n"; print_r($this->valid_relation); echo "source:\n"; print_r($this->searchable_source);
       }
     }
   }
@@ -2581,12 +2595,14 @@ class openSearch extends webServiceServer {
       $agency_type = self::get_agency_type($this->agency);
       $hmou = $dom->getElementsByTagName('hasMemberOfUnit');
       $length = $hmou->length;
-      $best_pos = count($this->agency_priority_list);
+      $best_pos = count($this->agency_priority_list) + 1;
       foreach ($hmou as $mou) {
+        if (@ constant('PRIO')) var_dump($mou->nodeValue);
         $record_source = self::record_source_from_pid($mou->nodeValue);
         list($agency, $collection) = self::split_record_source($record_source);
-        if ($this->valid_search_source[$record_source] || self::is_valid_source_grouping($agency)) {
+        if (self::is_valid_source($agency, $collection)) {
           if (isset($this->agency_priority_list[$agency])) {
+            if (@ constant('PRIO')) var_dump($this->agency_priority_list[$agency]);
             if ($this->agency_priority_list[$agency] < $best_pos) {
               $oid = $mou->nodeValue;
               $best_pos = $this->agency_priority_list[$agency];
@@ -2601,19 +2617,22 @@ class openSearch extends webServiceServer {
         $oid = $dom->getElementsByTagName('hasPrimaryBibObject')->item(0)->nodeValue;
       }
     }
+    if (@ constant('PRIO')) var_dump($oid);
     return(array($oid, $length));
   }
 
-  /** \brief check if a record source is part of one of the two rec.collectionIndentifier groupings. 
-   * - For public libaries: 870970-basis and for research libraries: 870970-forsk
+  /** \brief check if a record source is contained in the search profile: searchable_source
+   * - Public libraries has to be in their own catalog or as part of 870970-basis
+   * - Research libraries has to be in their own catalog or any reasearch library when 870970-forsk is in the search profile
    *
    * @param string $agency 
    * @retval boolen - TRUE is part of a source_grouping
    */
-  private function is_valid_source_grouping($agency) {
+  private function is_valid_source($agency, $collection) {
     $agency_type = self::get_agency_type($agency);
-    return (($agency_type == 'Folkebibliotek' && $this->valid_search_source['870970-basis']) ||
-            ($agency_type == 'Forskningsbibliotek' && $this->valid_search_source['870970-forsk']));
+    return (($this->searchable_source[$agency . '-' . $collection]) ||
+            ($this->agency_type == 'Folkebibliotek' && $agency == '870970' && $collection == 'basis' && $this->searchable_source[$this->agency_catalog_source]) ||
+            ($agency_type == 'Forskningsbibliotek' && $this->searchable_source['870970-forsk']));
   }
 
   /** \brief Parse a work relation and return array of ids
