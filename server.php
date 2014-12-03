@@ -841,6 +841,7 @@ class openSearch extends webServiceServer {
         }
       }
       if (!$unit_id) {  // should never happen, since the unit.id has to be present in SOLR
+        verbose::log(WARNING, 'getObject:: Cannot find unit for ' . $fpid->_value . ' in SOLR');
         self::get_fedora_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
         $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
       }
