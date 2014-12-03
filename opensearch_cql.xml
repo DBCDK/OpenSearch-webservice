@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License along w
     <database/>
   </serverInfo>
   <metaInfo>
-    <dateModified>2014-09-25</dateModified>
+    <dateModified>2014-12-02</dateModified>
   </metaInfo>
   <indexInfo>
     <set identifier="info:srw/cql-context-set/1/cql-v1.1" name="cql"/>
@@ -1839,6 +1839,14 @@ You should have received a copy of the GNU Affero General Public License along w
       <title lang="en">Nationality movies (term)</title>
       <map>
         <name set="term">nationality</name>
+      </map>
+    </index>
+    <index>
+    <index>
+      <title lang="da">Adgang via Internet(enkeltord)</title>
+      <title lang="en">Online access (term)</title>
+      <map>
+        <name set="term">onlineAccess</name>
       </map>
     </index>
     <index>
