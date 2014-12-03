@@ -522,9 +522,9 @@ class openSearch extends webServiceServer {
         $data_stream = self::set_data_stream_name($collection_identifier[$unit_id]);
         self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
+//var_dump($unit_rels_hierarchy); die();
         // waiting for some prio list to be developed
-        list($fpid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, FALSE);
-        // list($fpid, $unit_members) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
+        list($fpid, $primary_oid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, FALSE);
         $sort_holdings = ' ';
         unset($no_of_holdings);
         if (self::xs_boolean($param->includeHoldingsCount->_value)) {
@@ -570,9 +570,10 @@ class openSearch extends webServiceServer {
         $objects[$sort_key]->_value =
           self::parse_fedora_object($fedora_result,
                                     $fedora_addi_relation,
+                                    $unit_members,
                                     $param->relationData->_value,
                                     $fpid,
-                                    NULL, // no primary Pid
+                                    $primary_oid, // no primary Pid
                                     NULL, // no $filter_agency on search - bad performance
                                     $no_of_holdings,
                                     $explain);
@@ -828,33 +829,27 @@ class openSearch extends webServiceServer {
       $fpids[] = $best_pid;
       unset($best_pid);
     }
+    unset($unit_id);
     foreach ($fpids as $fpid_number => $fpid) {
-      $collection_identifier = $is_primary = '';
       foreach ($solr_2_arr as $s_2_a) {
         foreach ($s_2_a['response']['docs'] as $fdoc) {
           $p_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
           if ($p_id == $fpid->_value) {
-            $is_primary =  self::scalar_or_first_elem($fdoc['unit.isPrimaryObject']);
-            $collection_identifier =  self::scalar_or_first_elem($fdoc['rec.collectionIdentifier']);
+            $unit_id =  self::scalar_or_first_elem($fdoc['unit.id']);
             break 2;
           }
         }
       }
-      if (is_primary == 'true') {
-        $primary_pid = $p_id;
-        unset($unit_id);
-      }
-      else {
+      if (!$unit_id) {  // should never happen, since the unit.id has to be present in SOLR
         self::get_fedora_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
         $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
-        self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
-        $primary_pid = self::fetch_primary_bib_object($unit_rels_hierarchy);
-        $sources = self::fetch_valid_sources_from_stream($primary_pid);
-        $data_stream = in_array($this->agency_catalog_source, $sources) ? 'localData.' . $this->agency_catalog_source : '';
       }
+      self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
+      list($best_pid, $primary_oid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, FALSE);
+      $sources = self::fetch_valid_sources_from_stream($best_pid);
+      $data_stream = in_array($this->agency_catalog_source, $sources) ? 'localData.' . $this->agency_catalog_source : '';
 //var_dump($filter_q);
 //var_dump($solr_2_arr); 
-//var_dump($collection_identifier);
 //var_dump($data_stream); die();
       
       if (self::deleted_object($fpid->_value)) {
@@ -894,9 +889,10 @@ class openSearch extends webServiceServer {
         $o->collection->_value->object[]->_value =
           self::parse_fedora_object($fedora_result,
                                     $fedora_addi_relation,
+                                    $unit_members,
                                     $param->relationData->_value,
                                     $fpid->_value,
-                                    $primary_pid,
+                                    $best_pid,
                                     $this->filter_agency,
                                     $no_of_holdings);
       }
@@ -2180,7 +2176,7 @@ class openSearch extends webServiceServer {
   private function check_valid_internal_relation($unit_id, $relation, $profile) {
     self::set_valid_relations_and_sources($profile);
     self::get_fedora_rels_hierarchy($unit_id, $rels_hierarchy);
-    $pid = self::fetch_primary_bib_object($rels_hierarchy);
+    $pid = self::fetch_best_bib_object($rels_hierarchy);
     foreach (self::find_record_sources_and_group_by_relation($pid, $relation) as $to_record_source) {
       $valid = isset($this->valid_relation[$to_record_source][$relation]);
       if (DEBUG_ON) {
@@ -2540,49 +2536,19 @@ class openSearch extends webServiceServer {
    *         or the id of the primaryBibObject
    *
    * @param string $u_rel - xml of the unit object
+   * @param boolean $fallback - use primaryObject if no member is acceptable
    * @retval string - "best" object_id from the unit
    */
-  private function fetch_primary_bib_object($u_rel, $fallback = TRUE) {
+  private function fetch_best_bib_object($u_rel, $fallback = TRUE) {
     $arr = self::parse_unit_for_best_agency($u_rel, $fallback);
-    //$arr = self::parse_unit_for_object_ids($u_rel);
     return $arr[0];
-  }
-
-  /** \brief Parse a unit object and return the id of the users object ($this->agency_catalog_source)
-   *         or the id of the primaryBibObject
-   *
-   * @param string $u_rel - xml of the unit object
-   * @retval array - of object_id and number of members in the unit
-   */
-  /*           OBSOLETE. replaced by parse_unit_for_best_agency() below             */
-  private function parse_unit_for_object_ids($u_rel) {
-    static $dom;
-    if (empty($dom)) {
-      $dom = new DomDocument();
-      $dom->preserveWhiteSpace = FALSE;
-    }
-    $oid = $length = FALSE;
-    if (@ $dom->loadXML($u_rel)) {
-      $hpbo = $dom->getElementsByTagName('hasPrimaryBibObject');
-      if ($hpbo->item(0)) {
-        $oid = $hpbo->item(0)->nodeValue;
-      }
-      $hmou = $dom->getElementsByTagName('hasMemberOfUnit');
-      $length = $hmou->length;
-      foreach ($hmou as $mou) {
-        if ($this->agency_catalog_source == self::record_source_from_pid($mou->nodeValue)) {
-          $oid = $mou->nodeValue;
-          break;
-        }
-      }
-    }
-    return(array($oid, $length));
   }
 
   /** \brief Parse a unit object and return the id of the agency with best priority for the agency
    *
    * @param string $u_rel - xml of the unit object
-   * @retval array - of object_id and number of members in the unit
+   * @param boolean $fallback - use primaryObject if no member is acceptable
+   * @retval array - of object_id, primary_object_id and array of unit members
    */
   private function parse_unit_for_best_agency($u_rel, $fallback = TRUE) {
     static $dom;
@@ -2591,8 +2557,10 @@ class openSearch extends webServiceServer {
       $dom->preserveWhiteSpace = FALSE;
     }
     $oid = $length = FALSE;
+    $unit_members = array();
     if (@ $dom->loadXML($u_rel)) {
       $agency_type = self::get_agency_type($this->agency);
+      $primary_oid = $dom->getElementsByTagName('hasPrimaryBibObject')->item(0)->nodeValue;
       $hmou = $dom->getElementsByTagName('hasMemberOfUnit');
       $length = $hmou->length;
       $best_pos = count($this->agency_priority_list) + 1;
@@ -2601,6 +2569,7 @@ class openSearch extends webServiceServer {
         $record_source = self::record_source_from_pid($mou->nodeValue);
         list($agency, $collection) = self::split_record_source($record_source);
         if (self::is_valid_source($agency, $collection)) {
+          $unit_members[] = $mou->nodeValue;
           if (isset($this->agency_priority_list[$agency])) {
             if (@ constant('PRIO')) var_dump($this->agency_priority_list[$agency]);
             if ($this->agency_priority_list[$agency] < $best_pos) {
@@ -2614,11 +2583,12 @@ class openSearch extends webServiceServer {
         }
       }
       if ($fallback && !$oid) {   // this is the old style 
-        $oid = $dom->getElementsByTagName('hasPrimaryBibObject')->item(0)->nodeValue;
+        $oid = $primary_oid;
+        $unit_members[] = $oid;
       }
     }
     if (@ constant('PRIO')) var_dump($oid);
-    return(array($oid, $length));
+    return(array($oid, $primary_oid, $unit_members));
   }
 
   /** \brief check if a record source is contained in the search profile: searchable_source
@@ -2665,6 +2635,7 @@ class openSearch extends webServiceServer {
    *
    * @param string $fedora_xml      - the bibliographic record from fedora
    * @param DOMDocument $fedora_addi_obj - corresponding relation object
+   * @param array $unit_members     - list of unit members contained by the search profile
    * @param string $rels_type       - level for returning relations
    * @param string $rec_id          - record id of the record
    * @param string $filter          - agency filter
@@ -2672,7 +2643,7 @@ class openSearch extends webServiceServer {
    * @param object $debug_info      -
    * @retval object - record object in a collection object
    */
-  private function parse_fedora_object(&$fedora_xml, $fedora_addi_obj, $rels_type, $rec_id, $primary_id, $filter, $holdings_count, $debug_info='') {
+  private function parse_fedora_object(&$fedora_xml, $fedora_addi_obj, $unit_members, $rels_type, $rec_id, $primary_id, $filter, $holdings_count, $debug_info='') {
     static $fedora_dom;
     if (empty($fedora_dom)) {
       $fedora_dom = new DomDocument();
@@ -2686,7 +2657,7 @@ class openSearch extends webServiceServer {
     $rec = self::extract_record($fedora_dom, $rec_id);
 
     if (in_array($rels_type, array('type', 'uri', 'full'))) {
-      self::get_relations_from_datastream_domobj($relations, $fedora_dom, $rels_type);
+      self::get_relations_from_datastream_domobj($relations, $unit_members, $rels_type);
       self::get_relations_from_addi_stream($relations, $fedora_addi_obj, $rels_type, $filter);
     }
 
@@ -2781,67 +2752,67 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  /** \brief Handle relations in commonData streams
+  /** \brief Handle relations located in commonData/localData streams in dom representation
    * @param object $relations - return parameter, the relations found
-   * @param string $rec_id - commonData record id
+   * @param array $unit_members - list of the members in the unit contained by the search profile
    * @param string $rels_type - type, uri or full
    *
    */
-  private function get_relations_from_commonData_stream(&$relations, $rec_id, $rels_type) {
+  private function get_relations_from_datastream_domobj(&$relations, $unit_members, $rels_type) {
+//var_dump($unit_members);
+//var_dump($this->search_profile);
     static $stream_dom;
-    self::get_fedora_raw($rec_id, $fedora_streams);
     if (empty($stream_dom)) {
       $stream_dom = new DomDocument();
     }
-    if (@ !$stream_dom->loadXML($fedora_streams)) {
-      verbose::log(DEBUG, 'Cannot load STREAMS for ' . $rec_id . ' into DomXml');
-    } else {
-      self::get_relations_from_datastream_domobj($relations, $stream_dom, $rels_type);
-    }
-  }
-
-  /** \brief Handle relations located in commonData/localData streams in dom representation
-   * @param object $relations - return parameter, the relations found
-   * @param DOMDocument $stream_dom - commonData or localData stream
-   * @param string $rels_type - type, uri or full
-   *
-   */
-  private function get_relations_from_datastream_domobj(&$relations, &$stream_dom, $rels_type) {
     $dub_check = array();
-    foreach ($stream_dom->getElementsByTagName('link') as $link) {
-      $url = $link->getelementsByTagName('url')->item(0)->nodeValue;
-      if (empty($dup_check[$url])) {
-        $this_relation = $link->getelementsByTagName('relationType')->item(0)->nodeValue;
-        unset($lci);
-        $relation_ok = FALSE;
-        foreach ($link->getelementsByTagName('collectionIdentifier') as $collection) {
-          $relation_ok = $relation_ok || 
-                            self::check_valid_external_relation($collection->nodeValue, $this_relation, $this->search_profile);
-          $lci[]->_value = $collection->nodeValue;
-        }
-        if ($relation_ok) {
-          if (!$relation->relationType->_value = $this_relation) {   // ????? WHY - is relationType sometimes empty?
-            $relation->relationType->_value = $link->getelementsByTagName('access')->item(0)->nodeValue;
+    foreach ($unit_members as $member) {
+      self::get_fedora_raw($member, $fedora_streams);
+//var_dump($fedora_streams);
+      if (@ !$stream_dom->loadXML($fedora_streams)) {
+        verbose::log(ERROR, 'Cannot load STREAMS for ' . $member . ' into DomXml');
+      } 
+      else {
+        foreach ($stream_dom->getElementsByTagName('link') as $link) {
+          $url = $link->getelementsByTagName('url')->item(0)->nodeValue;
+          if (empty($dup_check[$url])) {
+            $this_relation = $link->getelementsByTagName('relationType')->item(0)->nodeValue;
+//echo PHP_EOL . 'found link ' . $this_relation . PHP_EOL;
+            unset($lci);
+            $relation_ok = FALSE;
+            foreach ($link->getelementsByTagName('collectionIdentifier') as $collection) {
+//echo PHP_EOL . 'collection: ' . $collection->nodeValue . PHP_EOL;
+              $relation_ok = $relation_ok || 
+                self::check_valid_external_relation($collection->nodeValue, $this_relation, $this->search_profile);
+              $lci[]->_value = $collection->nodeValue;
+            }
+            if ($relation_ok) {
+//echo PHP_EOL . 'relation ok' . PHP_EOL;
+              if (!$relation->relationType->_value = $this_relation) {   // ????? WHY - is relationType sometimes empty?
+                $relation->relationType->_value = $link->getelementsByTagName('access')->item(0)->nodeValue;
+              }
+              if ($rels_type == 'uri' || $rels_type == 'full') {
+                $relation->relationUri->_value = $url;
+                if ($nv = $link->getelementsByTagName('accessType')->item(0)->nodeValue) {
+                  $relation->linkObject->_value->accessType->_value = $nv;
+                }
+                if ($nv = $link->getelementsByTagName('access')->item(0)->nodeValue) {
+                  $relation->linkObject->_value->access->_value = $nv;
+                }
+                $relation->linkObject->_value->linkTo->_value = $link->getelementsByTagName('linkTo')->item(0)->nodeValue;
+                if ($lci) {
+                  $relation->linkObject->_value->linkCollectionIdentifier = $lci;
+                }
+              }
+              $dup_check[$url] = TRUE;
+              $relations->relation[]->_value = $relation;
+              unset($relation);
+            }
           }
-          if ($rels_type == 'uri' || $rels_type == 'full') {
-            $relation->relationUri->_value = $url;
-            if ($nv = $link->getelementsByTagName('accessType')->item(0)->nodeValue) {
-              $relation->linkObject->_value->accessType->_value = $nv;
-            }
-            if ($nv = $link->getelementsByTagName('access')->item(0)->nodeValue) {
-              $relation->linkObject->_value->access->_value = $nv;
-            }
-            $relation->linkObject->_value->linkTo->_value = $link->getelementsByTagName('linkTo')->item(0)->nodeValue;
-            if ($lci) {
-              $relation->linkObject->_value->linkCollectionIdentifier = $lci;
-            }
-          }
-          $dup_check[$url] = TRUE;
-          $relations->relation[]->_value = $relation;
-          unset($relation);
         }
       }
     }
+ //die();
   }
 
   /** \brief Handle relations comming from addi streams
@@ -2868,27 +2839,26 @@ class openSearch extends webServiceServer {
           if (($relation_count[$this_relation]++ < MAX_IDENTICAL_RELATIONS) &&
               ($rel_source = self::check_valid_internal_relation($tag->nodeValue, $this_relation, $this->search_profile))) {
             self::get_fedora_rels_hierarchy($tag->nodeValue, $rels_sys);
-            $rel_uri = self::fetch_primary_bib_object($rels_sys);
-            self::get_fedora_raw($rel_uri, $related_obj);
+            list($rel_oid, $primary_oid, $rel_unit_members) = self::parse_unit_for_best_agency($rels_sys, FALSE);
+            self::get_fedora_raw($rel_oid, $related_obj);
             if (@ !$rels_dom->loadXML($related_obj)) {
-              verbose::log(FATAL, 'Cannot load ' . $rel_uri . ' object from commonData into DomXml');
+              verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from commonData into DomXml');
               $rels_dom = NULL;
             }
             $collection_id = self::get_element_from_admin_data($rels_dom, 'collectionIdentifier');
             if (empty($this->valid_relation[$collection_id])) {  // handling of local data streams
               if (DEBUG_ON) { 
-                echo 'Datastream(s): ' . implode(',', self::fetch_valid_sources_from_stream($rel_uri)) . PHP_EOL;
+                echo 'Datastream(s): ' . implode(',', self::fetch_valid_sources_from_stream($rel_oid)) . PHP_EOL;
               }
-              foreach (self::fetch_valid_sources_from_stream($rel_uri) as $source) {
+              foreach (self::fetch_valid_sources_from_stream($rel_oid) as $source) {
                 if ($this->valid_relation[$source]) {
                   if (DEBUG_ON) { 
                     echo '--- use: ' . $source . PHP_EOL;
                   }
-                   
                   $collection_id = $source;
-                  self::get_fedora_raw($rel_uri, $related_obj, self::set_data_stream_name($collection_id));
+                  self::get_fedora_raw($rel_oid, $related_obj, self::set_data_stream_name($collection_id));
                   if (@ !$rels_dom->loadXML($related_obj)) {
-                    verbose::log(FATAL, 'Cannot load ' . $rel_uri . ' object from ' . $source . ' into DomXml');
+                    verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from ' . $source . ' into DomXml');
                     $rels_dom = NULL;
                   }
                   break;
@@ -2898,16 +2868,16 @@ class openSearch extends webServiceServer {
             if (isset($this->valid_relation[$collection_id]) && self::is_searchable($tag->nodeValue, $filter)) {
               $relation->relationType->_value = $this_relation;
               if ($rels_type == 'uri' || $rels_type == 'full') {
-                $relation->relationUri->_value = $rel_uri;
+                $relation->relationUri->_value = $rel_oid;
               }
               if (is_object($rels_dom) && ($rels_type == 'full')) {
                 $rel_obj = &$relation->relationObject->_value->object->_value;
                 $rel_obj = self::extract_record($rels_dom, $tag->nodeValue);
-                $rel_obj->identifier->_value = $rel_uri;
+                $rel_obj->identifier->_value = $rel_oid;
                 if ($cd = self::get_creation_date($rels_dom)) {
                   $rel_obj->creationDate->_value = $cd;
                 }
-                self::get_relations_from_commonData_stream($ext_relations, $rel_uri, $rels_type);
+                self::get_relations_from_datastream_domobj($ext_relations, $rel_unit_members, $rels_type);
                 if ($ext_relations) {
                   $rel_obj->relations->_value = $ext_relations;
                   unset($ext_relations);
