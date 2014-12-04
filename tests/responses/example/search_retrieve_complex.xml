@@ -40,6 +40,7 @@
                 <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
               </dkabm:record>
               <identifier>870970-basis:43917129</identifier>
+              <primaryObjectIdentifier>870970-basis:43917129</primaryObjectIdentifier>
               <creationDate>2006-07-20</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -52,8 +53,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>5</fedoraRecordsRead>
-          <time>0.373265</time>
-          <trackingId>os:2014-10-16T13:47:26:487657:2060</trackingId>
+          <time>5.066951</time>
+          <trackingId>os:2014-12-04T09:15:46:300237:7743</trackingId>
         </statInfo>
       </result>
     </searchResponse>

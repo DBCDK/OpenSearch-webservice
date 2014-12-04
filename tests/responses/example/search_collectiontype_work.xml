@@ -66,6 +66,7 @@
                 <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
               </dkabm:record>
               <identifier>870970-basis:27589995</identifier>
+              <primaryObjectIdentifier>870970-basis:27589995</primaryObjectIdentifier>
               <creationDate>2009-01-23</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -126,6 +127,7 @@
                 <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
               </dkabm:record>
               <identifier>820010-katalog:3540389</identifier>
+              <primaryObjectIdentifier>820010-katalog:3540389</primaryObjectIdentifier>
               <creationDate>2009-10-11</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -193,6 +195,7 @@
                 <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
               </dkabm:record>
               <identifier>870970-basis:27928846</identifier>
+              <primaryObjectIdentifier>870970-basis:27928846</primaryObjectIdentifier>
               <creationDate>2009-09-21</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -265,6 +268,7 @@
                 <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
               </dkabm:record>
               <identifier>820010-katalog:3755325</identifier>
+              <primaryObjectIdentifier>820010-katalog:3755325</primaryObjectIdentifier>
               <creationDate>2010-06-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -341,6 +345,7 @@
                 <dcterms:temporal xsi:type="dkdcplus:DBCM">2000-2009</dcterms:temporal>
               </dkabm:record>
               <identifier>870970-basis:27694381</identifier>
+              <primaryObjectIdentifier>870970-basis:27694381</primaryObjectIdentifier>
               <creationDate>2009-04-01</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -353,8 +358,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>19</fedoraRecordsRead>
-          <time>0.537109</time>
-          <trackingId>os:2014-10-27T16:57:14:503827:13435</trackingId>
+          <time>16.823583</time>
+          <trackingId>os:2014-12-04T09:13:54:544747:7743</trackingId>
         </statInfo>
       </result>
     </searchResponse>

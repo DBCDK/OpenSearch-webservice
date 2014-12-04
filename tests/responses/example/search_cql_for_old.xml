@@ -31,6 +31,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:25873262</identifier>
+              <primaryObjectIdentifier>870970-basis:25873262</primaryObjectIdentifier>
               <creationDate>2005-08-25</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -67,6 +68,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:44082985</identifier>
+              <primaryObjectIdentifier>870970-basis:44082985</primaryObjectIdentifier>
               <creationDate>2007-03-19</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -95,6 +97,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:44319454</identifier>
+              <primaryObjectIdentifier>870970-basis:44319454</primaryObjectIdentifier>
               <creationDate>2008-03-03</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -131,6 +134,7 @@
                 <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
               </dkabm:record>
               <identifier>870970-basis:43917129</identifier>
+              <primaryObjectIdentifier>870970-basis:43917129</primaryObjectIdentifier>
               <creationDate>2006-07-20</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -166,6 +170,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:44273160</identifier>
+              <primaryObjectIdentifier>870970-basis:44273160</primaryObjectIdentifier>
               <creationDate>2008-01-09</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -193,6 +198,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:43683799</identifier>
+              <primaryObjectIdentifier>870970-basis:43683799</primaryObjectIdentifier>
               <creationDate>2005-09-02</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -205,8 +211,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>24</fedoraRecordsRead>
-          <time>0.58968</time>
-          <trackingId>os:2014-06-27T12:06:48:133273:13002</trackingId>
+          <time>22.979948</time>
+          <trackingId>os:2014-12-04T09:14:23:192925:7741</trackingId>
         </statInfo>
       </result>
     </searchResponse>

@@ -66,6 +66,7 @@
                 <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
               </dkabm:record>
               <identifier>870970-basis:27589995</identifier>
+              <primaryObjectIdentifier>870970-basis:27589995</primaryObjectIdentifier>
               <creationDate>2009-01-23</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -166,6 +167,7 @@
                 <dcterms:temporal xsi:type="dkdcplus:DBCM">2000-2009</dcterms:temporal>
               </dkabm:record>
               <identifier>870970-basis:27694381</identifier>
+              <primaryObjectIdentifier>870970-basis:27694381</primaryObjectIdentifier>
               <creationDate>2009-04-01</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -178,8 +180,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>19</fedoraRecordsRead>
-          <time>0.540945</time>
-          <trackingId>os:2014-10-27T16:57:13:929905:13434</trackingId>
+          <time>16.968248</time>
+          <trackingId>os:2014-12-04T09:13:37:520085:17339</trackingId>
         </statInfo>
       </result>
     </searchResponse>

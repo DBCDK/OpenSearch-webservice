@@ -31,6 +31,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:25873262</identifier>
+              <primaryObjectIdentifier>870970-basis:25873262</primaryObjectIdentifier>
               <creationDate>2005-08-25</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -109,8 +110,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>5</fedoraRecordsRead>
-          <time>0.334473</time>
-          <trackingId>os:2014-10-14T09:04:13:165341:2058</trackingId>
+          <time>6.410651</time>
+          <trackingId>os:2014-12-04T09:13:09:127468:7856</trackingId>
         </statInfo>
       </result>
     </searchResponse>

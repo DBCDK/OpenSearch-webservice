@@ -34,6 +34,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:44082985</identifier>
+              <primaryObjectIdentifier>870970-basis:44082985</primaryObjectIdentifier>
               <creationDate>2007-03-19</creationDate>
               <relations>
                 <relation>
@@ -438,6 +439,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:44319454</identifier>
+              <primaryObjectIdentifier>870970-basis:44319454</primaryObjectIdentifier>
               <creationDate>2008-03-03</creationDate>
               <relations>
                 <relation>
@@ -850,6 +852,7 @@
                 <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
               </dkabm:record>
               <identifier>870970-basis:43917129</identifier>
+              <primaryObjectIdentifier>870970-basis:43917129</primaryObjectIdentifier>
               <creationDate>2006-07-20</creationDate>
               <relations>
                 <relation>
@@ -1237,9 +1240,9 @@
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>116</fedoraRecordsRead>
-          <time>31.245669</time>
-          <trackingId>os:2014-06-27T12:13:17:795637:13003</trackingId>
+          <fedoraRecordsRead>119</fedoraRecordsRead>
+          <time>180.09566</time>
+          <trackingId>os:2014-12-04T09:17:05:772198:17339</trackingId>
         </statInfo>
       </result>
     </searchResponse>

@@ -27,6 +27,7 @@
                 <dcterms:extent>309 s.</dcterms:extent>
               </dkabm:record>
               <identifier>820030-katalog:836533</identifier>
+              <primaryObjectIdentifier>870970-basis:25873262</primaryObjectIdentifier>
               <creationDate>2011-12-15</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -39,8 +40,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>5</fedoraRecordsRead>
-          <time>1.700872</time>
-          <trackingId>os:2014-11-27T15:34:50:172350:1135</trackingId>
+          <time>6.166153</time>
+          <trackingId>os:2014-12-04T09:15:01:956198:7740</trackingId>
         </statInfo>
       </result>
     </searchResponse>

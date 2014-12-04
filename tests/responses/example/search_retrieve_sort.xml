@@ -13,6 +13,7 @@
             <numberOfObjects>1</numberOfObjects>
             <object>
               <identifier>870970-basis:25873262</identifier>
+              <primaryObjectIdentifier>870970-basis:25873262</primaryObjectIdentifier>
               <creationDate>2005-08-25</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -39,8 +40,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>5</fedoraRecordsRead>
-          <time>0.371316</time>
-          <trackingId>os:2014-11-06T11:16:01:313489:27777</trackingId>
+          <time>6.35189</time>
+          <trackingId>os:2014-12-04T09:20:05:977953:7739</trackingId>
         </statInfo>
       </result>
     </searchResponse>

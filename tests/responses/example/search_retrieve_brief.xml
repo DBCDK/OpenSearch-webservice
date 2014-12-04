@@ -12,6 +12,7 @@
             <numberOfObjects>1</numberOfObjects>
             <object>
               <identifier>870970-basis:45235394</identifier>
+              <primaryObjectIdentifier>870970-basis:45235394</primaryObjectIdentifier>
               <creationDate>2012-05-25</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -39,6 +40,7 @@
             <numberOfObjects>1</numberOfObjects>
             <object>
               <identifier>870971-tsart:34497745</identifier>
+              <primaryObjectIdentifier>870971-tsart:34497745</primaryObjectIdentifier>
               <creationDate>2011-02-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -67,6 +69,7 @@
             <numberOfObjects>2</numberOfObjects>
             <object>
               <identifier>870970-basis:29069654</identifier>
+              <primaryObjectIdentifier>870970-basis:29069654</primaryObjectIdentifier>
               <creationDate>2011-11-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -75,6 +78,7 @@
             </object>
             <object>
               <identifier>870970-basis:29069638</identifier>
+              <primaryObjectIdentifier>870970-basis:29069638</primaryObjectIdentifier>
               <creationDate>2011-11-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -109,8 +113,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>18</fedoraRecordsRead>
-          <time>0.534173</time>
-          <trackingId>os:2014-11-06T11:15:23:667741:22936</trackingId>
+          <time>14.303234</time>
+          <trackingId>os:2014-12-04T09:15:31:952157:17339</trackingId>
         </statInfo>
       </result>
     </searchResponse>

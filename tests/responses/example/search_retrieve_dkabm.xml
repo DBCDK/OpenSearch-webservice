@@ -37,6 +37,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:45235394</identifier>
+              <primaryObjectIdentifier>870970-basis:45235394</primaryObjectIdentifier>
               <creationDate>2012-05-25</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -74,6 +75,7 @@
                 <dcterms:isPartOf xsi:type="dkdcplus:ISSN">1603-6522</dcterms:isPartOf>
               </dkabm:record>
               <identifier>870971-tsart:34497745</identifier>
+              <primaryObjectIdentifier>870971-tsart:34497745</primaryObjectIdentifier>
               <creationDate>2011-02-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -113,6 +115,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:29069654</identifier>
+              <primaryObjectIdentifier>870970-basis:29069654</primaryObjectIdentifier>
               <creationDate>2011-11-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -145,6 +148,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:29069638</identifier>
+              <primaryObjectIdentifier>870970-basis:29069638</primaryObjectIdentifier>
               <creationDate>2011-11-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -157,8 +161,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>18</fedoraRecordsRead>
-          <time>0.505775</time>
-          <trackingId>os:2014-10-27T16:57:19:793920:13433</trackingId>
+          <time>13.820225</time>
+          <trackingId>os:2014-12-04T09:15:51:415898:7740</trackingId>
         </statInfo>
       </result>
     </searchResponse>

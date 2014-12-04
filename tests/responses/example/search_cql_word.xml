@@ -66,6 +66,7 @@
                 <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
               </dkabm:record>
               <identifier>870970-basis:27589995</identifier>
+              <primaryObjectIdentifier>870970-basis:27589995</primaryObjectIdentifier>
               <creationDate>2009-01-23</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -126,6 +127,7 @@
                 <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
               </dkabm:record>
               <identifier>820010-katalog:3540389</identifier>
+              <primaryObjectIdentifier>820010-katalog:3540389</primaryObjectIdentifier>
               <creationDate>2009-10-11</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -193,6 +195,7 @@
                 <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
               </dkabm:record>
               <identifier>870970-basis:27928846</identifier>
+              <primaryObjectIdentifier>870970-basis:27928846</primaryObjectIdentifier>
               <creationDate>2009-09-21</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -265,6 +268,7 @@
                 <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
               </dkabm:record>
               <identifier>820010-katalog:3755325</identifier>
+              <primaryObjectIdentifier>820010-katalog:3755325</primaryObjectIdentifier>
               <creationDate>2010-06-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -277,8 +281,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>14</fedoraRecordsRead>
-          <time>0.481968</time>
-          <trackingId>os:2014-10-27T16:57:17:196435:13434</trackingId>
+          <time>13.888225</time>
+          <trackingId>os:2014-12-04T09:14:48:007554:17339</trackingId>
         </statInfo>
       </result>
     </searchResponse>

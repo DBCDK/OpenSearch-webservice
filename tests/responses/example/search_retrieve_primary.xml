@@ -34,6 +34,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:44082985</identifier>
+              <primaryObjectIdentifier>870970-basis:44082985</primaryObjectIdentifier>
               <creationDate>2007-03-19</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -62,6 +63,7 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>870970-basis:44319454</identifier>
+              <primaryObjectIdentifier>870970-basis:44319454</primaryObjectIdentifier>
               <creationDate>2008-03-03</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -98,6 +100,7 @@
                 <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
               </dkabm:record>
               <identifier>870970-basis:43917129</identifier>
+              <primaryObjectIdentifier>870970-basis:43917129</primaryObjectIdentifier>
               <creationDate>2006-07-20</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -110,8 +113,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>11</fedoraRecordsRead>
-          <time>0.420626</time>
-          <trackingId>os:2014-06-27T11:22:56:145205:13006</trackingId>
+          <time>10.892088</time>
+          <trackingId>os:2014-12-04T09:16:54:826923:7742</trackingId>
         </statInfo>
       </result>
     </searchResponse>

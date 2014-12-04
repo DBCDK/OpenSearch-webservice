@@ -74,6 +74,7 @@
                 <dcterms:temporal xsi:type="dkdcplus:DBCM">2000-2009</dcterms:temporal>
               </dkabm:record>
               <identifier>870970-basis:27694381</identifier>
+              <primaryObjectIdentifier>870970-basis:27694381</primaryObjectIdentifier>
               <creationDate>2009-04-01</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -86,8 +87,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>5</fedoraRecordsRead>
-          <time>0.355459</time>
-          <trackingId>os:2014-10-16T11:14:59:025844:2060</trackingId>
+          <time>4.917613</time>
+          <trackingId>os:2014-12-04T09:14:18:224174:7856</trackingId>
         </statInfo>
       </result>
     </searchResponse>
