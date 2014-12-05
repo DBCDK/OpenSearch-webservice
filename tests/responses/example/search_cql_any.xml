@@ -3,7 +3,7 @@
   <SOAP-ENV:Body>
     <searchResponse>
       <result>
-        <hitCount>8</hitCount>
+        <hitCount>11</hitCount>
         <collectionCount>1</collectionCount>
         <more>true</more>
         <searchResult>
@@ -87,8 +87,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>5</fedoraRecordsRead>
-          <time>4.917613</time>
-          <trackingId>os:2014-12-04T09:14:18:224174:7856</trackingId>
+          <time>4.619637</time>
+          <trackingId>os:2014-12-05T14:28:03:817735:7741</trackingId>
         </statInfo>
       </result>
     </searchResponse>
