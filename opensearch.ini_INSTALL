@@ -440,14 +440,14 @@ rank_frequency[profile] = user_profile
 ; rank_frequence[my_group][profile] = search.profile.defined.for.library.number
 ; 
 rank_frequency[title][register] = dkcclterm.ti
-rank_frequency[title][scheme] = rank_title
+rank_frequency[title][scheme] = rank_main_title
 rank_frequency[title][weight] = 2
 rank_frequency[creator][register] = dkcclterm.fo
 rank_frequency[creator][scheme] = rank_creator
 rank_frequency[creator][weight] = 1
 rank_frequency[subject][register] = dkcclterm.em
 rank_frequency[subject][scheme] = rank_subject
-rank_frequency[subject][weight] = 3
+rank_frequency[subject][weight] = 6
 
 
 ; rank[rank_frequency][an existing register] = rank_method_1
