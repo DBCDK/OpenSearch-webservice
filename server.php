@@ -217,17 +217,17 @@ class openSearch extends webServiceServer {
     }
 
     /**
-    *  Approach
-    *  a) Do the solr search and fetch enough unit-ids in result
+    *  Approach \n
+    *  a) Do the solr search and fetch enough unit-ids in result \n
     *  b) Fetch a unit-ids work-object unless the record has been found
-    *     in an earlier handled work-objects
-    *  c) Collect unit-ids in this work-object
-    *  d) repeat b. and c. until the requested number of objects is found
+    *     in an earlier handled work-objects \n
+    *  c) Collect unit-ids in this work-object \n
+    *  d) repeat b. and c. until the requested number of objects is found \n
     *  e) if allObject is not set, do a new search combining the users search
     *     with an or'ed list of the unit-ids in the active objects and
-    *     remove the unit-ids not found in the result
+    *     remove the unit-ids not found in the result \n
     *  f) Read full records from fedora for objects in result or fetch display-fields
-    *     from solr, depending on the selected format
+    *     from solr, depending on the selected format \n
     *
     *  if $use_work_collection is FALSE skip b) to e)
     */
@@ -692,13 +692,13 @@ class openSearch extends webServiceServer {
 
   /** \brief Entry getObject: Get an object in a specific format
   *
-  * param: agency: 
-  *        profile:
-  *        identifier - fedora pid
-  *        objectFormat - one of dkabm, docbook, marcxchange, opensearchobject
-  *        includeHoldingsCount - boolean
-  *        relationData - type, uri og full
-  *        repository
+  * param: agency: \n
+  *        profile:\n
+  *        identifier - fedora pid\n
+  *        objectFormat - one of dkabm, docbook, marcxchange, opensearchobject\n
+  *        includeHoldingsCount - boolean\n
+  *        relationData - type, uri og full\n
+  *        repository\n
   * 
   * @param object $param - the user request
   * @retval object - the answer to the request
@@ -2181,7 +2181,7 @@ class openSearch extends webServiceServer {
     foreach (self::find_record_sources_and_group_by_relation($pid, $relation) as $to_record_source) {
       $valid = isset($this->valid_relation[$to_record_source][$relation]);
       if (DEBUG_ON) {
-        echo "pid: $pid to: $to_record_source relation: $relation - " . ($valid ? '' : 'no ') . "go\n";
+        echo "unit: $unit_id pid: $pid to: $to_record_source relation: $relation - " . ($valid ? '' : 'no ') . "go\n";
       }
       if ($valid) {
         return $to_record_source;
@@ -2837,10 +2837,11 @@ class openSearch extends webServiceServer {
             $this_relation = $rel_prefix . ':' . $tag->localName;
           else
             $this_relation = $tag->localName;
-          if (($relation_count[$this_relation]++ < MAX_IDENTICAL_RELATIONS) &&
+          if (($relation_count[$this_relation] < MAX_IDENTICAL_RELATIONS) &&
               ($rel_source = self::check_valid_internal_relation($tag->nodeValue, $this_relation, $this->search_profile))) {
+            $relation_count[$this_relation]++;
             self::get_fedora_rels_hierarchy($tag->nodeValue, $rels_sys);
-            list($rel_oid, $primary_oid, $rel_unit_members) = self::parse_unit_for_best_agency($rels_sys, FALSE);
+            list($rel_oid, $primary_oid, $rel_unit_members) = self::parse_unit_for_best_agency($rels_sys, TRUE);
             self::get_fedora_raw($rel_oid, $related_obj);
             if (@ !$rels_dom->loadXML($related_obj)) {
               verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from commonData into DomXml');
