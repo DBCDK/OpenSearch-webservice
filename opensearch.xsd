@@ -765,8 +765,8 @@ You should have received a copy of the GNU Affero General Public License along w
         <xs:element ref="os:relationType"/>
         <xs:element ref="os:relationUri" minOccurs="0"/>
         <xs:choice>
-          <xs:element ref="os:linkObject"/>
-          <xs:element ref="os:relationObject"/>
+          <xs:element ref="os:linkObject" minOccurs="0"/>
+          <xs:element ref="os:relationObject" minOccurs="0"/>
         </xs:choice>
       </xs:sequence>
     </xs:complexType>
@@ -811,7 +811,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="relationUri" type="xs:anyURI">
+  <xs:element name="relationUri" type="xs:string">
     <xs:annotation>
       <xs:documentation xml:lang="en">URI of the relation.</xs:documentation>
     </xs:annotation>
@@ -1019,6 +1019,7 @@ You should have received a copy of the GNU Affero General Public License along w
     <xs:restriction base="xs:string">
       <xs:enumeration value="file"/>
       <xs:enumeration value="linkresolver"/>
+      <xs:enumeration value="proxy"/>
       <xs:enumeration value="webservice"/>
       <xs:enumeration value="website"/>
     </xs:restriction>
