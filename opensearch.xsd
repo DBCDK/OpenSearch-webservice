@@ -388,6 +388,16 @@ You should have received a copy of the GNU Affero General Public License along w
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="indexName" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Exposed name of index.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="indexSlop" type="xs:integer">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The specific slop for the index.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:element name="infoCqlIndexDocs">
     <xs:annotation>
       <xs:documentation xml:lang="en">Information about index definitions</xs:documentation>
@@ -800,11 +810,6 @@ You should have received a copy of the GNU Affero General Public License along w
         <xs:element ref="os:relationType" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
-  </xs:element>
-  <xs:element name="relationData" type="os:relationDataType">
-    <xs:annotation>
-      <xs:documentation xml:lang="en">Type of the relation from the list in relationTypeType.</xs:documentation>
-    </xs:annotation>
   </xs:element>
   <xs:element name="relationUri" type="xs:anyURI">
     <xs:annotation>
