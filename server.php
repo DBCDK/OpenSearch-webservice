@@ -749,7 +749,7 @@ class openSearch extends webServiceServer {
                              $this->config->get_value('cache_expire', 'setup'));
 
     $fpids = is_array($param->identifier) ? $param->identifier : ($param->identifier ? array($param->identifier) : array());
-    $lids = is_array($param->localIdentifier) ? $param->localIdentifier : ($param->localIdentifier ? array($param->localIdentifier) : array());
+    $lpids = is_array($param->localIdentifier) ? $param->localIdentifier : ($param->localIdentifier ? array($param->localIdentifier) : array());
 
     if ($this->format['found_solr_format']) {
       foreach ($this->format as $f) {
@@ -774,7 +774,7 @@ class openSearch extends webServiceServer {
         return $ret_error;
       }
       $result = &$ret->searchResponse->_value->result->_value;
-      $result->hitCount->_value = count($fpids);
+      $result->hitCount->_value = count($collections);
       $result->collectionCount->_value = count($collections);
       $result->more->_value = 'false';
       $result->searchResult = &$collections;
@@ -1285,6 +1285,9 @@ class openSearch extends webServiceServer {
           $pg->set_query($query);
           $pg->execute();
           $row = $pg->get_row();
+          if (empty($row)) { 
+            return 'No records found';
+          }
           @ $dom->loadXml(base64_decode($row['content']));
         }
         $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
