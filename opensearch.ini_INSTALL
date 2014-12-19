@@ -419,7 +419,7 @@ rank[rank_frequency] = rank_frequency
 rank_frequency[weight] = 1
 ; default filter for the search. Specified as a valid edismax solr search
 ; - to limit to the most representation record. Could be the newest only like
-rank_frequency[filter] = term.date:[1940 TO *]
+;rank_frequency[filter] = term.date:[1940 TO *]
 ; default search profile to use. 
 ; - if set to "user_profile" the user specified profile is used, and agency is not needed
 ; - otherwise profile and agency together defines the search profile to be used
