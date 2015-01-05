@@ -11,7 +11,7 @@
 ;version
 ; Note that the version is used as part of the cache key, so do not run 2 versions of the service with identical
 ; version name, unless you specificly want them to share cache
-version = 4.0
+version = 4.1
 
 ; --------------
 ; wsdl for service
@@ -126,6 +126,19 @@ repository[defaults][cql_file] = opensearch_cql.xml
 
 repository[@REPOSITORY_NAME@][solr] = @SOLR@
 repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
+
+; Querying holdings using the join handler
+; to "filter" searches using holding information registered in a seperate solr index
+; opensearch_cql.xml describes which indexes are to be found in $HOLDINGS_ITEMS_INDEX@ via the searchHandler attribute
+; Could be in opensearch_cql.xml a line like
+;   <name set="holdingsitem" searchHandler="holding" filter="1">accessionDate</name>
+; would use a setting like the lines below
+;repository[myrepos][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId fromIndex=holdings-items-index defType=edismax} %s
+;repository[myrepos][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId fromIndex=holdings-items-index defType=edismax} %s%22
+; the filter attribute controls if the join operation shold go to fq (filter query) or q (query) solr parameter
+
+repository[@REPOSITORY_NAME@][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId fromIndex=@HOLDINGS_ITEMS_INDEX@ defType=edismax} %s
+repository[@REPOSITORY_NAME@][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId fromIndex=@HOLDINGS_ITEMS_INDEX@ defType=edismax} %s%22
 
 ; collection query filter
 ; Filtering on the collectionIdentifiers specified by the search profile
@@ -680,6 +693,12 @@ action[getObject][] = outputType
 action[getObject][] = relationData
 action[getObject][] = repository
 action[getObject][] = trackingId
+
+action[info][] = agency
+action[info][] = profile
+action[info][] = callback
+action[info][] = outputType
+action[info][] = trackingId
 
 ; ==============
 
