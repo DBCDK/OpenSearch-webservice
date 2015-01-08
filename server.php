@@ -793,7 +793,7 @@ class openSearch extends webServiceServer {
     foreach ($fpids as $fpid) {
       $id_array[] = $fpid->_value;
     }
-    foreach ($lids as $lid) {
+    foreach ($lpids as $lid) {
       $id_array[] = $this->agency . '-katalog:' . $lid->_value;
       if (self::get_agency_type($this->agency) == 'Folkebibliotek') {
         $id_array[] = '870970-basis:' . $lid->_value;
@@ -815,7 +815,7 @@ class openSearch extends webServiceServer {
 
   // transform the local ids to fedora pids
   // the 870970-basis record source is prefered over the -katalog record source if for some odd reason they both exist
-    foreach ($lids as $lid) {
+    foreach ($lpids as $lid) {
       $best_pid->_value = $this->agency . '-katalog:' . $lid->_value;
       foreach ($solr_2_arr as $s_2_a) {
         foreach ($s_2_a['response']['docs'] as $fdoc) {
