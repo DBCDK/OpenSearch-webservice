@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License along w
     <database/>
   </serverInfo>
   <metaInfo>
-    <dateModified>2014-12-02</dateModified>
+    <dateModified>2015-01-20</dateModified>
   </metaInfo>
   <indexInfo>
     <set identifier="info:srw/cql-context-set/1/cql-v1.1" name="cql"/>
@@ -1986,6 +1986,20 @@ You should have received a copy of the GNU Affero General Public License along w
       <title lang="en">Literary Form (term)</title>
       <map>
         <name set="term">literaryForm</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Hovedforfatter (enkeltord)</title>
+      <title lang="en">Main Creator (term)</title>
+      <map>
+        <name set="term">mainCreator</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Hovedtitel (enkeltord)</title>
+      <title lang="en">Main Title (term)</title>
+      <map>
+        <name set="term">mainTitle</name>
       </map>
     </index>
     <index>
