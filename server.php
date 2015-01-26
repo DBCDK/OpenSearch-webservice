@@ -359,7 +359,7 @@ class openSearch extends webServiceServer {
         $uid = &$search_ids[$s_idx];
         if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
           $this->watch->start('Solr_add');
-          verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']);
+          verbose::log(WARNING, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']['q']);
           $rows *= 2;
           if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr)) {
             $error = $err;
@@ -427,16 +427,17 @@ class openSearch extends webServiceServer {
         }
         $work_cache_struct[$w_no] = $uid_array;
         if (count($uid_array) >= MAX_OBJECTS_IN_WORK) {
-          verbose::log(FATAL, 'Fedora work-record: ' . $work_id . ' refered from: ' . $uid . ' contains ' . count($uid_array) . ' objects');
+          verbose::log(WARNING, 'Fedora work-record: ' . $work_id . ' refered from: ' . $uid . ' contains ' . count($uid_array) . ' objects');
           array_splice($uid_array, MAX_OBJECTS_IN_WORK);
         }
         if ($w_no >= $start)
           $work_ids[$w_no] = $uid_array;
       }
+      verbose::log(TRACE, 'SOLR stat: used ' . $s_idx . ' of ' . count($search_ids) . ' rows. start: ' . $start . ' step: ' . $step_value);
     }
 
     if (count($work_ids) < $step_value && count($search_ids) < $numFound) {
-      verbose::log(FATAL, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']);
+      verbose::log(WARNING, 'To few search_ids found in solr. Query: ' . $solr_query['edismax']['q']);
     }
 
     // check if the search result contains the ids
@@ -2598,6 +2599,9 @@ class openSearch extends webServiceServer {
   /** \brief check if a record source is contained in the search profile: searchable_source
    * - Public libraries has to be in their own catalog or as part of 870970-basis
    * - Research libraries has to be in their own catalog or any reasearch library when 870970-forsk is in the search profile
+   * 
+   * TODO: There are other "collective" groups, like 870970-lokalbibl which is not currently handled - 
+   *       some structure for this may be needen, but it is still open from where this information can be fetched
    *
    * @param string $agency 
    * @retval boolen - TRUE is part of a source_grouping
