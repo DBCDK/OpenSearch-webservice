@@ -174,16 +174,6 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:documentation xml:lang="en">Number of collections returned in the search result.</xs:documentation>
     </xs:annotation>
   </xs:element>
-  <xs:element name="collectionIdentifier" type="xs:string">
-    <xs:annotation>
-      <xs:documentation xml:lang="en">The internal identifier for the collection.</xs:documentation>
-    </xs:annotation>
-  </xs:element>
-  <xs:element name="collectionName" type="xs:string">
-    <xs:annotation>
-      <xs:documentation xml:lang="en">Name of collection as seen in VIP.</xs:documentation>
-    </xs:annotation>
-  </xs:element>
   <xs:element name="collectionType" type="os:collectionTypeType">
     <xs:annotation>
       <xs:documentation xml:lang="en">E.g presented as single manifestations or as collections of works.</xs:documentation>
@@ -731,6 +721,16 @@ You should have received a copy of the GNU Affero General Public License along w
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="searchCollectionIdentifier" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">The internal identifier for the collection.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="searchCollectionName" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Name of collection as seen in VIP.</xs:documentation>
+    </xs:annotation>
+  </xs:element>  
   <xs:element name="sortDetails">
     <xs:annotation>
       <xs:documentation xml:lang="en"></xs:documentation>
