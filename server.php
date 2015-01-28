@@ -841,40 +841,48 @@ class openSearch extends webServiceServer {
           }
         }
       }
+
       if (!$unit_id) {  // should never happen, since the unit.id has to be present in SOLR
+// TODO: This should break the flow and return an error. The records has to be searchable with the chosen search profile
+//       Consider if this will break some systems since getObject once could get all objects in the repository.
         verbose::log(WARNING, 'getObject:: Cannot find unit for ' . $fpid->_value . ' in SOLR');
         self::get_fedora_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
         $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
       }
-      self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
-      list($best_pid, $primary_oid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, FALSE);
-      $sources = self::fetch_valid_sources_from_stream($best_pid);
-      $data_stream = in_array($this->agency_catalog_source, $sources) ? 'localData.' . $this->agency_catalog_source : '';
+      if (!$unit_id) {
+        $rec_error = 'Error: unknown/missing/inaccessible record: ' . $fpid->_value;
+      }
+      else {
+        self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
+        list($best_pid, $primary_oid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, FALSE);
+        $sources = self::fetch_valid_sources_from_stream($best_pid);
+        $data_stream = in_array($this->agency_catalog_source, $sources) ? 'localData.' . $this->agency_catalog_source : '';
 //var_dump($filter_q);
 //var_dump($solr_2_arr); 
 //var_dump($data_stream); die();
       
-      if (self::deleted_object($fpid->_value)) {
-        $rec_error = 'Error: deleted record: ' . $fpid->_value;
-      }
-      elseif ($error = self::get_fedora_raw($fpid->_value, $fedora_result, $data_stream)) {
-        $rec_error = 'Error: unknown/missing record: ' . $fpid->_value;
-      }
-      elseif ($param->relationData->_value || 
-          $this->format['found_solr_format'] || 
-          self::xs_boolean($param->includeHoldingsCount->_value)) {
-        if (empty($unit_id)) {
-          self::get_fedora_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
-          $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
+        if (self::deleted_object($fpid->_value)) {
+          $rec_error = 'Error: deleted record: ' . $fpid->_value;
         }
-        if ($param->relationData->_value) {
-          self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
+        elseif ($error = self::get_fedora_raw($fpid->_value, $fedora_result, $data_stream)) {
+          $rec_error = 'Error: unknown/missing record: ' . $fpid->_value;
         }
-        if (self::xs_boolean($param->includeHoldingsCount->_value)) {
-          //self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
-          //list($dummy, $dummy) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
-          $this->cql2solr = new SolrQuery($this->repository, $this->config);
-          $no_of_holdings = self::get_holdings($fpid->_value);
+        elseif ($param->relationData->_value || 
+            $this->format['found_solr_format'] || 
+            self::xs_boolean($param->includeHoldingsCount->_value)) {
+          if (empty($unit_id)) {
+            self::get_fedora_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
+            $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
+          }
+          if ($param->relationData->_value) {
+            self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
+          }
+          if (self::xs_boolean($param->includeHoldingsCount->_value)) {
+            //self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
+            //list($dummy, $dummy) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
+            $this->cql2solr = new SolrQuery($this->repository, $this->config);
+            $no_of_holdings = self::get_holdings($fpid->_value);
+          }
         }
       }
 //var_dump($fedora_rels_hierarchy);
@@ -884,7 +892,10 @@ class openSearch extends webServiceServer {
       $o->collection->_value->resultPosition->_value = $fpid_number + 1;
       $o->collection->_value->numberOfObjects->_value = 1;
       if ($rec_error) {
-        $o->collection->_value->object[]->_value->error->_value = $rec_error;
+        $help->_value->error->_value = $rec_error;
+        $help->_value->identifier->_value = $fpid->_value;
+        $o->collection->_value->object[] = $help;
+        unset($help);
         unset($rec_error);
       } 
       else {
@@ -941,7 +952,7 @@ class openSearch extends webServiceServer {
   */
   public function info($param) {
     $result = &$ret->infoResponse->_value;
-    $result->infoGenerel->_value->defaultRepository->_value = $this->config->get_value('default_repository', 'setup');
+    $result->infoGeneral->_value->defaultRepository->_value = $this->config->get_value('default_repository', 'setup');
     $result->infoRepositories = self::get_repository_info();
     $result->infoCqlIndexDocs = self::get_cql_index_info();
     $result->infoObjectFormats = self::get_object_format_info();
@@ -964,8 +975,8 @@ class openSearch extends webServiceServer {
   private function get_search_profile_info($agency, $profile) {
     if ($s_profile = self::fetch_profile_from_agency($agency, $profile)) {
       foreach ($s_profile as $p) {
-        $coll->collectionName->_value = $p['sourceName'];
-        $coll->collectionIdentifier->_value = $p['sourceIdentifier'];
+        $coll->searchCollectionName->_value = $p['sourceName'];
+        $coll->searchCollectionIdentifier->_value = $p['sourceIdentifier'];
         if ($p['relation'])
           foreach ($p['relation'] as $relation) {
             if ($r = $relation['rdfLabel']) {

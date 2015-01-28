@@ -99,7 +99,7 @@ You should have received a copy of the GNU Affero General Public License along w
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="os:infoGenerel"/>
+        <xs:element ref="os:infoGeneral"/>
         <xs:element ref="os:infoRepositories"/>
         <xs:element ref="os:infoCqlIndexDocs"/>
         <xs:element ref="os:infoObjectFormats"/>
@@ -419,9 +419,9 @@ You should have received a copy of the GNU Affero General Public License along w
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="infoGenerel">
+  <xs:element name="infoGeneral">
     <xs:annotation>
-      <xs:documentation xml:lang="en">Generel info.</xs:documentation>
+      <xs:documentation xml:lang="en">General info.</xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -725,8 +725,8 @@ You should have received a copy of the GNU Affero General Public License along w
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="os:collectionName"/>
-        <xs:element ref="os:collectionIdentifier"/>
+        <xs:element ref="os:searchCollectionName"/>
+        <xs:element ref="os:searchCollectionIdentifier"/>
         <xs:element ref="os:relationType" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
