@@ -50,6 +50,11 @@ You should have received a copy of the GNU Affero General Public License along w
       <title lang="da">Fritekst, samme som intet index</title>
       <map>
         <name set="cql">serverChoice</name>
+        <alias set="" slop="10">slop10</alias>
+        <alias set="" slop="20">slop20</alias>
+        <alias set="" slop="50">slop50</alias>
+        <alias set="" slop="100">slop100</alias>
+        <alias set="" slop="200">slop200</alias>
       </map>
     </index>
     <index>
@@ -57,13 +62,7 @@ You should have received a copy of the GNU Affero General Public License along w
       <title lang="da">Fritekst, samme som term.default</title>
       <map>
         <name set="cql">keywords</name>
-      </map>
-    </index>
-    <index>
-      <title lang="en">Same as term.default</title>
-      <title lang="da">Fritekst, samme som term.default</title>
-      <map>
-        <name set="cql">anyIndexes</name>
+        <alias set="cql">anyIndexes</alias>
       </map>
     </index>
     <index>
@@ -2141,6 +2140,13 @@ You should have received a copy of the GNU Affero General Public License along w
       <map>
         <name set="holdingsitem" searchHandler="holding" filter="1">branch</name>
         <alias>branch</alias>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Materiale circulationRule/udlånsregel (beholdning)</title>
+      <title lang="en"></title>
+      <map>
+        <name set="holdingsitem" searchHandler="holding" filter="1">circulationRule</name>
       </map>
     </index>
     <index>
