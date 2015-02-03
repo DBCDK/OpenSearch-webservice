@@ -15,7 +15,7 @@ You should have received a copy of the GNU Affero General Public License along w
     <database/>
   </serverInfo>
   <metaInfo>
-    <dateModified>2015-01-20</dateModified>
+    <dateModified>2015-02-03</dateModified>
   </metaInfo>
   <indexInfo>
     <set identifier="info:srw/cql-context-set/1/cql-v1.1" name="cql"/>
