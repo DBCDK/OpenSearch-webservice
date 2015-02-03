@@ -50,11 +50,6 @@ You should have received a copy of the GNU Affero General Public License along w
       <title lang="da">Fritekst, samme som intet index</title>
       <map>
         <name set="cql">serverChoice</name>
-        <alias set="" slop="10">slop10</alias>
-        <alias set="" slop="20">slop20</alias>
-        <alias set="" slop="50">slop50</alias>
-        <alias set="" slop="100">slop100</alias>
-        <alias set="" slop="200">slop200</alias>
       </map>
     </index>
     <index>
