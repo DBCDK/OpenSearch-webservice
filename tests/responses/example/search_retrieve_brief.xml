@@ -93,7 +93,7 @@
                 <fedoraPid>870970-basis:29069654</fedoraPid>
                 <identifier>870970-basis:29069654</identifier>
                 <title>Skyrim</title>
-                <titleFull>Skyrim</titleFull>
+                <titleFull>Skyrim. Playstation 3</titleFull>
                 <type>Playstation 3</type>
                 <workType>game</workType>
               </manifestation>
@@ -102,7 +102,7 @@
                 <fedoraPid>870970-basis:29069638</fedoraPid>
                 <identifier>870970-basis:29069638</identifier>
                 <title>Skyrim</title>
-                <titleFull>Skyrim</titleFull>
+                <titleFull>Skyrim. Xbox 360</titleFull>
                 <type>Xbox 360</type>
                 <workType>game</workType>
               </manifestation>
@@ -113,8 +113,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>18</fedoraRecordsRead>
-          <time>14.303234</time>
-          <trackingId>os:2014-12-04T09:15:31:952157:17339</trackingId>
+          <time>13.173332</time>
+          <trackingId>os:2015-02-06T08:56:06:359267:30117</trackingId>
         </statInfo>
       </result>
     </searchResponse>
