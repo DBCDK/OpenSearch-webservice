@@ -38,6 +38,7 @@ in_house_domain = @MY_DOMAIN@
 ; Can be found in the wsdl but is stated here for convenience
 soapAction[search] = searchRequest
 soapAction[getObject] = getObjectRequest
+soapAction[info] = infoRequest
 
 
 ; --------------
