@@ -49,6 +49,7 @@ class openSearch extends webServiceServer {
   protected $separate_field_query_style = TRUE; // seach as field:(a OR b) ie FALSE or (field:a OR field:b) ie TRUE
   protected $valid_relation = array(); 
   protected $searchable_source = array(); 
+  protected $collection_contained_in = array(); 
   protected $rank_frequence_debug;
   protected $collection_alias = array();
   protected $agency_priority_list = array();  // prioritised list af agencies for the actual agency
@@ -193,6 +194,7 @@ class openSearch extends webServiceServer {
                     '&start=' . ($start - 1).  
                     '&rows=' . $step_value .  
                     '&defType=edismax&wt=phps&fl=' . ($debug_query ? '&debugQuery=on' : '');
+      $solr_urls[0]['debug'] = str_replace('wt=phps', 'wt=xml', $solr_urls[0]['url']);
       if ($err = self::do_solr($solr_urls, $solr_arr)) {
         $error = $err;
         return $ret_error;
@@ -685,6 +687,7 @@ class openSearch extends webServiceServer {
                        ' query:' . $param->query->_value . ' ' . $this->watch->dump());
 
     if (@ constant('PRIO')) var_dump($this->searchable_source);
+    if (@ constant('PRIO')) var_dump($this->collection_contained_in);
     if (@ constant('PRIO')) var_dump($this->agency_priority_list);
     if (@ constant('PRIO')) die('aa');
     return $ret;
@@ -742,6 +745,7 @@ class openSearch extends webServiceServer {
 
     $this->agency_catalog_source = $this->agency . '-katalog';
     $this->agency_type = self::get_agency_type($this->agency);
+    $this->agency_priority_list = self::get_agency_show_priority();
     $this->format = self::set_format($param->objectFormat, 
                                $this->config->get_value('open_format', 'setup'), 
                                $this->config->get_value('solr_format', 'setup'));
@@ -1288,6 +1292,7 @@ class openSearch extends webServiceServer {
       $pg->open();
       $rec_pos = $solr_response['start'];
       foreach ($solr_response['docs'] as $solr_doc) {
+        //$solr_doc['marc.001a'][0] = '90003984'; $solr_doc['marc.001b'] = '761500';
         if (empty($solr_doc['marc.001a']) || empty($solr_doc['marc.001b'])) {
           verbose::log(FATAL, 'SOLR error: cannot find field marc.001a or marc.001b');
           @ $dom->loadXml('<?xml version="1.0" encoding="UTF-8"?' . '><marcx:record format="danMARC2" type="Bibliographic" xmlns:marcx="info:lc/xmlns/marcxchange-v1"><marcx:datafield tag="245" ind1="0" ind2="0"><marcx:subfield code="a">ERROR: Cannot read record from repository: ' . $this->repository_name . '</marcx:subfield></marcx:datafield></marcx:record>');
@@ -1460,17 +1465,17 @@ class openSearch extends webServiceServer {
   }
 
   /** \brief return data stream name depending on collection identifier
-   *  - if $col_id (rec.collectionIdentifier) startes with 7 - dataStream: localData.$col_id
+   *  - if $collection_id (rec.collectionIdentifier) startes with 7 - dataStream: localData.$collection_id
    *  - else dataStream: commonData
    *
-   * @param string $col_id 
+   * @param string $collection_id 
    * @retval string
    */
-  private function set_data_stream_name($col_id) {
+  private function set_data_stream_name($collection_id) {
     if (@ constant('PRIO')) var_dump('-----------------------');
-    if (@ constant('PRIO')) var_dump($col_id);
-    if ($col_id && (substr($col_id, 0, 1) == '7')) {
-      $data_stream = 'localData.' . $col_id;
+    if (@ constant('PRIO')) var_dump($collection_id);
+    if ($collection_id && (substr($collection_id, 0, 1) == '7')) {
+      $data_stream = 'localData.' . $collection_id;
     }
     else {
       $data_stream = 'commonData';
@@ -1811,17 +1816,17 @@ class openSearch extends webServiceServer {
                       }
                       else {
                         if (is_array($solr_doc[$format_tag])) {
-                          if (TRUE) {
-                            $mani->_value->$tag_value->_namespace = $solr_display_ns;
-                            $mani->_value->$tag_value->_value = self::normalize_chars($solr_doc[$format_tag][0]);
-                          }
-                          else {
+                          if ($format_tag == 'display.creator') {   // more than one for this alone
                             foreach ($solr_doc[$format_tag] as $solr_tag) {
                               $help->_namespace = $solr_display_ns;
                               $help->_value = self::normalize_chars($solr_tag);
                               $mani->_value->{$tag_value}[] = $help;
                               unset($help);
                             }
+                          }
+                          else {
+                            $mani->_value->$tag_value->_namespace = $solr_display_ns;
+                            $mani->_value->$tag_value->_value = self::normalize_chars($solr_doc[$format_tag][0]);
                           }
                         }
                         else {
@@ -2268,6 +2273,9 @@ class openSearch extends webServiceServer {
     if (empty($this->valid_relation)) {
       foreach ($profile as $src) {
         $this->searchable_source[$src['sourceIdentifier']] = self::xs_boolean($src['sourceSearchable']);
+        if ($src['sourceContainedIn']) {
+          $this->collection_contained_in[$src['sourceIdentifier']] = $src['sourceContainedIn'];
+        }
         if ($src['relation']) {
           foreach ($src['relation'] as $rel) {
             if ($rel['rdfLabel'])
@@ -2611,17 +2619,46 @@ class openSearch extends webServiceServer {
    * - Public libraries has to be in their own catalog or as part of 870970-basis
    * - Research libraries has to be in their own catalog or any reasearch library when 870970-forsk is in the search profile
    * 
-   * TODO: There are other "collective" groups, like 870970-lokalbibl which is not currently handled - 
-   *       some structure for this may be needen, but it is still open from where this information can be fetched
-   *
    * @param string $agency 
-   * @retval boolen - TRUE is part of a source_grouping
+   * @param string $collection 
+   * @retval boolean - TRUE is part of a source_grouping
    */
   private function is_valid_source($agency, $collection) {
     $agency_type = self::get_agency_type($agency);
     return (($this->searchable_source[$agency . '-' . $collection]) ||
             ($this->agency_type == 'Folkebibliotek' && $agency == '870970' && $collection == 'basis' && $this->searchable_source[$this->agency_catalog_source]) ||
-            ($agency_type == 'Forskningsbibliotek' && $this->searchable_source['870970-forsk']));
+            ($agency_type == 'Forskningsbibliotek' && $this->searchable_source['870970-forsk']) ||
+            (self::is_collective_collection($agency . '-' . $collection)) ||
+            (self::is_contained_in_collection($agency . '-' . $collection))
+    );
+  }
+
+  /** \brief Check if a collectionIdentifier contains a searchable "sub collection"
+   *       - 150013-palle is not a datastream on its own, but is produced from 870970-basis
+   *
+   * @param string $collection_id - collection identifier
+   * @retval boolean -
+   */
+  private function is_collective_collection($collection_id) {
+    foreach ($this->collection_contained_in as $sub_collection => $container) {
+      if ($collection_id == $container && $this->searchable_source[$sub_collection]) {
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+
+  /** \brief Check if a collectionIdentifier is part of a searchable "collective collection"
+   *       - 870970-lokalbibl is a collective collecton for 159xxx-lokalbibl
+   *
+   * @param string $collection_id - collection identifier
+   * @retval boolean -
+   */
+  private function is_contained_in_collection($collection_id) {
+    if ($cont_id = $this->collection_contained_in[$collection_id]) {
+      return $this->searchable_source[$cont_id];
+    }
+    return FALSE;
   }
 
   /** \brief Parse a work relation and return array of ids
