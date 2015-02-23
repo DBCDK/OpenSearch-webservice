@@ -2625,11 +2625,25 @@ class openSearch extends webServiceServer {
    */
   private function is_valid_source($agency, $collection) {
     $agency_type = self::get_agency_type($agency);
+    $coll_id = $agency . '-' . $collection;
+    if (DEBUG_ON) {
+      echo 'is_valid_source::' . 
+           ' agency: ' . $agency .
+           ' collection: ' . $collection .
+           ' agency_type: ' . $agency_type . 
+           ' agency_catalog: ' . $this->agency_catalog_source .
+           ' type_catalog: ' . $this->agency_type .
+           ' searchable: ' . ($this->searchable_source[$coll_id] ? 'TRUE' : 'FALSE') . 
+           ' searchable_source: ' . ($this->searchable_source[$this->agency_catalog_source] ? 'TRUE' : 'FALSE') .
+           ' collective_coll: ' . (self::is_collective_collection($coll_id) ? 'TRUE' : 'FALSE') . 
+           ' contained_in_coll: ' . (self::is_contained_in_collection($coll_id) ? 'TRUE' : 'FALSE') . 
+           PHP_EOL;
+    }
     return (($this->searchable_source[$agency . '-' . $collection]) ||
-            ($this->agency_type == 'Folkebibliotek' && $agency == '870970' && $collection == 'basis' && $this->searchable_source[$this->agency_catalog_source]) ||
+            ($this->agency_type == 'Folkebibliotek' && $coll_id == '870970-basis' && $this->searchable_source[$this->agency_catalog_source]) ||
             ($agency_type == 'Forskningsbibliotek' && $this->searchable_source['870970-forsk']) ||
-            (self::is_collective_collection($agency . '-' . $collection)) ||
-            (self::is_contained_in_collection($agency . '-' . $collection))
+            (self::is_collective_collection($coll_id)) ||
+            (self::is_contained_in_collection($coll_id))
     );
   }
 
