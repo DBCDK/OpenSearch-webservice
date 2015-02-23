@@ -11,11 +11,14 @@
 ;version
 ; Note that the version is used as part of the cache key, so do not run 2 versions of the service with identical
 ; version name, unless you specificly want them to share cache
-version = 4.1
+version = 4.0.1
 
 ; --------------
 ; wsdl for service
 wsdl = opensearch.wsdl
+
+;service location used as endpoint in the wsdl-file
+service_location = opensearch.addi.dk/4.0.1/
 
 ; --------------
 ; in_house_domain may use ?ShowInfo and use create_sample form
@@ -46,11 +49,12 @@ soapAction[info] = infoRequest
 ; url_override[url_command] = functionToCall
 ; if start of the request equals url_command and functionToCall exists, it will be called
 ; like: myservice.dk/myversion?url_command
-; ShowInfo, Version, HowRU, RegressionTest are found in the abstract service
+; functions ShowInfo, Version, HowRU, Wsdl and RegressionTest are found in the abstract service
 ; if not specified, defaults to HowRU, ShowInfo and Version
 url_override[HowRU] = HowRU
 url_override[ShowInfo] = ShowInfo
 url_override[Version] = Version
+url_override[wsdl] = WSDL
 url_override[RegressionTest] = RegressionTest
 ; diffCqlFileWithSolr - use &repository= in url if set
 url_override[diffCqlFileWithSolr] = diffCqlFileWithSolr
@@ -129,7 +133,7 @@ repository[@REPOSITORY_NAME@][solr] = @SOLR@
 repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 
 ; Querying holdings using the join handler
-; to "filter" searches using holding information registered in a seperate solr index
+; to "filter" searches using holding information registered in a separate solr index
 ; opensearch_cql.xml describes which indexes are to be found in $HOLDINGS_ITEMS_INDEX@ via the searchHandler attribute
 ; Could be in opensearch_cql.xml a line like
 ;   <name set="holdingsitem" searchHandler="holding" filter="1">accessionDate</name>
