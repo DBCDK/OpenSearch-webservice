@@ -53,6 +53,7 @@ class openSearch extends webServiceServer {
   protected $rank_frequence_debug;
   protected $collection_alias = array();
   protected $agency_priority_list = array();  // prioritised list af agencies for the actual agency
+  protected $feature_sw = array();
 
 
   public function __construct() {
@@ -118,6 +119,8 @@ class openSearch extends webServiceServer {
     $this->agency = $param->agency->_value;
     $this->filter_agency = self::set_solr_filter($this->search_profile);
     self::set_valid_relations_and_sources($this->search_profile);
+
+    $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
     if ($ufc = $this->config->get_value('collapsing_field', 'setup')) {
       $this->collapsing_field = $ufc;
@@ -519,6 +522,9 @@ class openSearch extends webServiceServer {
     $HOLDINGS = ' holdings ';
     $this->agency_priority_list = self::get_agency_show_priority();
     if (@ constant('PRIO')) var_dump($collection_identifier);
+    if ($debug_query) {
+      $explain_keys = array_keys($solr_arr['debug']['explain']);
+    }
     foreach ($work_ids as &$work) {
       $objects = array();
       foreach ($work as $unit_id) {
@@ -551,22 +557,22 @@ class openSearch extends webServiceServer {
         if ($debug_query) {
           unset($explain);
           if ($this->collapsing_field) {
-            foreach ($solr_arr['grouped'][$this->collapsing_field]['groups'] as $solr_idx => $solr_grp) {
-              if ($fpid == $solr_grp['groupValue']) {
-                $explain = $solr_arr['debug']['explain'][$fpid];
-                break;
-              }
-            }
+            $explain = 'No explain available when using collapsing field';
+            //foreach ($solr_arr['grouped'][$this->collapsing_field]['groups'] as $solr_idx => $solr_grp) {
+            //  if ($fpid == $solr_grp['groupValue']) {
+            //    $explain = $solr_arr['debug']['explain'][$fpid];
+            //    break;
+            //  }
+            //}
           }
           else {
             foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
-              if ($fpid == $solr_rec['fedoraPid']) {
-                $explain = $solr_arr['debug']['explain'][$fpid];
+              if ($unit_id == $solr_rec['unit.id']) {
+                $explain = $solr_arr['debug']['explain'][$explain_keys[$solr_idx]];
                 break;
               }
             }
           }
-
         }
         $sort_key = $fpid_sort_keys[$fpid] . ' ' . sprintf('%04d', count($objects));
         $sorted_work[$sort_key] = $unit_id;
@@ -742,6 +748,8 @@ class openSearch extends webServiceServer {
     if ($this->filter_agency) {
       $filter_q = rawurlencode($this->filter_agency);
     }
+
+    $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
     $this->agency_catalog_source = $this->agency . '-katalog';
     $this->agency_type = self::get_agency_type($this->agency);
@@ -1816,7 +1824,7 @@ class openSearch extends webServiceServer {
                       }
                       else {
                         if (is_array($solr_doc[$format_tag])) {
-                          if ($format_tag == 'display.creator') {   // more than one for this alone
+                          if ($this->feature_sw[$format_tag] == 'array') {   // more than one for this
                             foreach ($solr_doc[$format_tag] as $solr_tag) {
                               $help->_namespace = $solr_display_ns;
                               $help->_value = self::normalize_chars($solr_tag);
