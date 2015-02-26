@@ -43,6 +43,11 @@ soapAction[search] = searchRequest
 soapAction[getObject] = getObjectRequest
 soapAction[info] = infoRequest
 
+; --------------
+; Feature switches
+; display.xxxx set to array will return all display.xxxx as array for objectFormats defined below in solr_format[]
+; for display.creator this would be like
+; feature_switch[display.creator] = array 
 
 ; --------------
 ; url_override
