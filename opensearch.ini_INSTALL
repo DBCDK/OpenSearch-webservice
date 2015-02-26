@@ -14,11 +14,11 @@
 version = 4.0.1
 
 ; --------------
-; wsdl for service
+; wsdl and service location for service. Used to replace __LOCATION__ in wsdl
 wsdl = opensearch.wsdl
 
-;service location used as endpoint in the wsdl-file
-service_location = opensearch.addi.dk/4.0.1/
+;service location used as endpoint in the wsdl-file. If not set, the actual address/location is used
+;service_location = opensearch.addi.dk/4.0.1/
 
 ; --------------
 ; in_house_domain may use ?ShowInfo and use create_sample form
