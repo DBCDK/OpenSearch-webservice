@@ -54,7 +54,7 @@ soapAction[info] = infoRequest
 ; url_override[url_command] = functionToCall
 ; if start of the request equals url_command and functionToCall exists, it will be called
 ; like: myservice.dk/myversion?url_command
-; functions ShowInfo, Version, HowRU, Wsdl and RegressionTest are found in the abstract service
+; functions ShowInfo, Version, HowRU, wsdl and RegressionTest are found in the abstract service
 ; if not specified, defaults to HowRU, ShowInfo and Version
 url_override[HowRU] = HowRU
 url_override[ShowInfo] = ShowInfo
