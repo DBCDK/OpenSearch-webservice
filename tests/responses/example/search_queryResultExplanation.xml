@@ -41,29 +41,29 @@
               <queryResultExplanation>
 0.91989857 = (MATCH) sum of:
   0.91989857 = (MATCH) max plus 0.1 times others of:
-    0.14884742 = (MATCH) weight(term.default:old in 7) [DefaultSimilarity], result of:
-      0.14884742 = score(doc=7,freq=4.0 = termFreq=4.0
+    0.14884742 = (MATCH) weight(term.default:old in 15) [DefaultSimilarity], result of:
+      0.14884742 = score(doc=15,freq=4.0 = termFreq=4.0
 ), product of:
         0.23985684 = queryWeight, product of:
           1.9858168 = idf(docFreq=24, maxDocs=67)
           0.120784976 = queryNorm
-        0.62056774 = fieldWeight in 7, product of:
+        0.62056774 = fieldWeight in 15, product of:
           2.0 = tf(freq=4.0), with freq of:
             4.0 = termFreq=4.0
           1.9858168 = idf(docFreq=24, maxDocs=67)
-          0.15625 = fieldNorm(doc=7)
-    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 7) [DefaultSimilarity], result of:
-      0.9050138 = score(doc=7,freq=1.0 = termFreq=1.0
+          0.15625 = fieldNorm(doc=15)
+    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 15) [DefaultSimilarity], result of:
+      0.9050138 = score(doc=15,freq=1.0 = termFreq=1.0
 ), product of:
         0.9997123 = queryWeight, product of:
           4.0 = boost
           2.0691984 = idf(docFreq=22, maxDocs=67)
           0.120784976 = queryNorm
-        0.9052743 = fieldWeight in 7, product of:
+        0.9052743 = fieldWeight in 15, product of:
           1.0 = tf(freq=1.0), with freq of:
             1.0 = termFreq=1.0
           2.0691984 = idf(docFreq=22, maxDocs=67)
-          0.4375 = fieldNorm(doc=7)
+          0.4375 = fieldNorm(doc=15)
 </queryResultExplanation>
             </object>
           </collection>
@@ -105,29 +105,29 @@
               <queryResultExplanation>
 0.9169216 = (MATCH) sum of:
   0.9169216 = (MATCH) max plus 0.1 times others of:
-    0.119077936 = (MATCH) weight(term.default:old in 6) [DefaultSimilarity], result of:
-      0.119077936 = score(doc=6,freq=4.0 = termFreq=4.0
+    0.119077936 = (MATCH) weight(term.default:old in 5) [DefaultSimilarity], result of:
+      0.119077936 = score(doc=5,freq=4.0 = termFreq=4.0
 ), product of:
         0.23985684 = queryWeight, product of:
           1.9858168 = idf(docFreq=24, maxDocs=67)
           0.120784976 = queryNorm
-        0.4964542 = fieldWeight in 6, product of:
+        0.4964542 = fieldWeight in 5, product of:
           2.0 = tf(freq=4.0), with freq of:
             4.0 = termFreq=4.0
           1.9858168 = idf(docFreq=24, maxDocs=67)
-          0.125 = fieldNorm(doc=6)
-    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 6) [DefaultSimilarity], result of:
-      0.9050138 = score(doc=6,freq=1.0 = termFreq=1.0
+          0.125 = fieldNorm(doc=5)
+    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 5) [DefaultSimilarity], result of:
+      0.9050138 = score(doc=5,freq=1.0 = termFreq=1.0
 ), product of:
         0.9997123 = queryWeight, product of:
           4.0 = boost
           2.0691984 = idf(docFreq=22, maxDocs=67)
           0.120784976 = queryNorm
-        0.9052743 = fieldWeight in 6, product of:
+        0.9052743 = fieldWeight in 5, product of:
           1.0 = tf(freq=1.0), with freq of:
             1.0 = termFreq=1.0
           2.0691984 = idf(docFreq=22, maxDocs=67)
-          0.4375 = fieldNorm(doc=6)
+          0.4375 = fieldNorm(doc=5)
 </queryResultExplanation>
             </object>
             <object>
@@ -161,29 +161,29 @@
               <queryResultExplanation>
 0.91245615 = (MATCH) sum of:
   0.91245615 = (MATCH) max plus 0.1 times others of:
-    0.07442371 = (MATCH) weight(term.default:old in 1) [DefaultSimilarity], result of:
-      0.07442371 = score(doc=1,freq=4.0 = termFreq=4.0
+    0.07442371 = (MATCH) weight(term.default:old in 9) [DefaultSimilarity], result of:
+      0.07442371 = score(doc=9,freq=4.0 = termFreq=4.0
 ), product of:
         0.23985684 = queryWeight, product of:
           1.9858168 = idf(docFreq=24, maxDocs=67)
           0.120784976 = queryNorm
-        0.31028387 = fieldWeight in 1, product of:
+        0.31028387 = fieldWeight in 9, product of:
           2.0 = tf(freq=4.0), with freq of:
             4.0 = termFreq=4.0
           1.9858168 = idf(docFreq=24, maxDocs=67)
-          0.078125 = fieldNorm(doc=1)
-    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 1) [DefaultSimilarity], result of:
-      0.9050138 = score(doc=1,freq=1.0 = termFreq=1.0
+          0.078125 = fieldNorm(doc=9)
+    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 9) [DefaultSimilarity], result of:
+      0.9050138 = score(doc=9,freq=1.0 = termFreq=1.0
 ), product of:
         0.9997123 = queryWeight, product of:
           4.0 = boost
           2.0691984 = idf(docFreq=22, maxDocs=67)
           0.120784976 = queryNorm
-        0.9052743 = fieldWeight in 1, product of:
+        0.9052743 = fieldWeight in 9, product of:
           1.0 = tf(freq=1.0), with freq of:
             1.0 = termFreq=1.0
           2.0691984 = idf(docFreq=22, maxDocs=67)
-          0.4375 = fieldNorm(doc=1)
+          0.4375 = fieldNorm(doc=9)
 </queryResultExplanation>
             </object>
             <object>
@@ -225,29 +225,29 @@
               <queryResultExplanation>
 0.9109677 = (MATCH) sum of:
   0.9109677 = (MATCH) max plus 0.1 times others of:
-    0.059538968 = (MATCH) weight(term.default:old in 5) [DefaultSimilarity], result of:
-      0.059538968 = score(doc=5,freq=4.0 = termFreq=4.0
+    0.059538968 = (MATCH) weight(term.default:old in 4) [DefaultSimilarity], result of:
+      0.059538968 = score(doc=4,freq=4.0 = termFreq=4.0
 ), product of:
         0.23985684 = queryWeight, product of:
           1.9858168 = idf(docFreq=24, maxDocs=67)
           0.120784976 = queryNorm
-        0.2482271 = fieldWeight in 5, product of:
+        0.2482271 = fieldWeight in 4, product of:
           2.0 = tf(freq=4.0), with freq of:
             4.0 = termFreq=4.0
           1.9858168 = idf(docFreq=24, maxDocs=67)
-          0.0625 = fieldNorm(doc=5)
-    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 5) [DefaultSimilarity], result of:
-      0.9050138 = score(doc=5,freq=1.0 = termFreq=1.0
+          0.0625 = fieldNorm(doc=4)
+    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 4) [DefaultSimilarity], result of:
+      0.9050138 = score(doc=4,freq=1.0 = termFreq=1.0
 ), product of:
         0.9997123 = queryWeight, product of:
           4.0 = boost
           2.0691984 = idf(docFreq=22, maxDocs=67)
           0.120784976 = queryNorm
-        0.9052743 = fieldWeight in 5, product of:
+        0.9052743 = fieldWeight in 4, product of:
           1.0 = tf(freq=1.0), with freq of:
             1.0 = termFreq=1.0
           2.0691984 = idf(docFreq=22, maxDocs=67)
-          0.4375 = fieldNorm(doc=5)
+          0.4375 = fieldNorm(doc=4)
 </queryResultExplanation>
             </object>
           </collection>
@@ -288,29 +288,29 @@
               <queryResultExplanation>
 0.91245615 = (MATCH) sum of:
   0.91245615 = (MATCH) max plus 0.1 times others of:
-    0.07442371 = (MATCH) weight(term.default:old in 5) [DefaultSimilarity], result of:
-      0.07442371 = score(doc=5,freq=4.0 = termFreq=4.0
+    0.07442371 = (MATCH) weight(term.default:old in 13) [DefaultSimilarity], result of:
+      0.07442371 = score(doc=13,freq=4.0 = termFreq=4.0
 ), product of:
         0.23985684 = queryWeight, product of:
           1.9858168 = idf(docFreq=24, maxDocs=67)
           0.120784976 = queryNorm
-        0.31028387 = fieldWeight in 5, product of:
+        0.31028387 = fieldWeight in 13, product of:
           2.0 = tf(freq=4.0), with freq of:
             4.0 = termFreq=4.0
           1.9858168 = idf(docFreq=24, maxDocs=67)
-          0.078125 = fieldNorm(doc=5)
-    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 5) [DefaultSimilarity], result of:
-      0.9050138 = score(doc=5,freq=1.0 = termFreq=1.0
+          0.078125 = fieldNorm(doc=13)
+    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 13) [DefaultSimilarity], result of:
+      0.9050138 = score(doc=13,freq=1.0 = termFreq=1.0
 ), product of:
         0.9997123 = queryWeight, product of:
           4.0 = boost
           2.0691984 = idf(docFreq=22, maxDocs=67)
           0.120784976 = queryNorm
-        0.9052743 = fieldWeight in 5, product of:
+        0.9052743 = fieldWeight in 13, product of:
           1.0 = tf(freq=1.0), with freq of:
             1.0 = termFreq=1.0
           2.0691984 = idf(docFreq=22, maxDocs=67)
-          0.4375 = fieldNorm(doc=5)
+          0.4375 = fieldNorm(doc=13)
 </queryResultExplanation>
             </object>
             <object>
@@ -343,29 +343,29 @@
               <queryResultExplanation>
 0.91394466 = (MATCH) sum of:
   0.91394466 = (MATCH) max plus 0.1 times others of:
-    0.08930845 = (MATCH) weight(term.default:old in 3) [DefaultSimilarity], result of:
-      0.08930845 = score(doc=3,freq=4.0 = termFreq=4.0
+    0.08930845 = (MATCH) weight(term.default:old in 11) [DefaultSimilarity], result of:
+      0.08930845 = score(doc=11,freq=4.0 = termFreq=4.0
 ), product of:
         0.23985684 = queryWeight, product of:
           1.9858168 = idf(docFreq=24, maxDocs=67)
           0.120784976 = queryNorm
-        0.37234065 = fieldWeight in 3, product of:
+        0.37234065 = fieldWeight in 11, product of:
           2.0 = tf(freq=4.0), with freq of:
             4.0 = termFreq=4.0
           1.9858168 = idf(docFreq=24, maxDocs=67)
-          0.09375 = fieldNorm(doc=3)
-    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 3) [DefaultSimilarity], result of:
-      0.9050138 = score(doc=3,freq=1.0 = termFreq=1.0
+          0.09375 = fieldNorm(doc=11)
+    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 11) [DefaultSimilarity], result of:
+      0.9050138 = score(doc=11,freq=1.0 = termFreq=1.0
 ), product of:
         0.9997123 = queryWeight, product of:
           4.0 = boost
           2.0691984 = idf(docFreq=22, maxDocs=67)
           0.120784976 = queryNorm
-        0.9052743 = fieldWeight in 3, product of:
+        0.9052743 = fieldWeight in 11, product of:
           1.0 = tf(freq=1.0), with freq of:
             1.0 = termFreq=1.0
           2.0691984 = idf(docFreq=22, maxDocs=67)
-          0.4375 = fieldNorm(doc=3)
+          0.4375 = fieldNorm(doc=11)
 </queryResultExplanation>
             </object>
           </collection>
@@ -432,29 +432,29 @@
               <queryResultExplanation>
 0.9113943 = (MATCH) sum of:
   0.9113943 = (MATCH) max plus 0.1 times others of:
-    0.06380504 = (MATCH) weight(term.default:old in 0) [DefaultSimilarity], result of:
-      0.06380504 = score(doc=0,freq=6.0 = termFreq=6.0
+    0.06380504 = (MATCH) weight(term.default:old in 8) [DefaultSimilarity], result of:
+      0.06380504 = score(doc=8,freq=6.0 = termFreq=6.0
 ), product of:
         0.23985684 = queryWeight, product of:
           1.9858168 = idf(docFreq=24, maxDocs=67)
           0.120784976 = queryNorm
-        0.26601303 = fieldWeight in 0, product of:
+        0.26601303 = fieldWeight in 8, product of:
           2.4494898 = tf(freq=6.0), with freq of:
             6.0 = termFreq=6.0
           1.9858168 = idf(docFreq=24, maxDocs=67)
-          0.0546875 = fieldNorm(doc=0)
-    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 0) [DefaultSimilarity], result of:
-      0.9050138 = score(doc=0,freq=1.0 = termFreq=1.0
+          0.0546875 = fieldNorm(doc=8)
+    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 8) [DefaultSimilarity], result of:
+      0.9050138 = score(doc=8,freq=1.0 = termFreq=1.0
 ), product of:
         0.9997123 = queryWeight, product of:
           4.0 = boost
           2.0691984 = idf(docFreq=22, maxDocs=67)
           0.120784976 = queryNorm
-        0.9052743 = fieldWeight in 0, product of:
+        0.9052743 = fieldWeight in 8, product of:
           1.0 = tf(freq=1.0), with freq of:
             1.0 = termFreq=1.0
           2.0691984 = idf(docFreq=22, maxDocs=67)
-          0.4375 = fieldNorm(doc=0)
+          0.4375 = fieldNorm(doc=8)
 </queryResultExplanation>
             </object>
             <object>
@@ -529,29 +529,29 @@
               <queryResultExplanation>
 0.9102235 = (MATCH) sum of:
   0.9102235 = (MATCH) max plus 0.1 times others of:
-    0.052096598 = (MATCH) weight(term.default:old in 2) [DefaultSimilarity], result of:
-      0.052096598 = score(doc=2,freq=4.0 = termFreq=4.0
+    0.052096598 = (MATCH) weight(term.default:old in 10) [DefaultSimilarity], result of:
+      0.052096598 = score(doc=10,freq=4.0 = termFreq=4.0
 ), product of:
         0.23985684 = queryWeight, product of:
           1.9858168 = idf(docFreq=24, maxDocs=67)
           0.120784976 = queryNorm
-        0.21719871 = fieldWeight in 2, product of:
+        0.21719871 = fieldWeight in 10, product of:
           2.0 = tf(freq=4.0), with freq of:
             4.0 = termFreq=4.0
           1.9858168 = idf(docFreq=24, maxDocs=67)
-          0.0546875 = fieldNorm(doc=2)
-    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 2) [DefaultSimilarity], result of:
-      0.9050138 = score(doc=2,freq=1.0 = termFreq=1.0
+          0.0546875 = fieldNorm(doc=10)
+    0.9050138 = (MATCH) weight(dkcclterm.ti:old^4.0 in 10) [DefaultSimilarity], result of:
+      0.9050138 = score(doc=10,freq=1.0 = termFreq=1.0
 ), product of:
         0.9997123 = queryWeight, product of:
           4.0 = boost
           2.0691984 = idf(docFreq=22, maxDocs=67)
           0.120784976 = queryNorm
-        0.9052743 = fieldWeight in 2, product of:
+        0.9052743 = fieldWeight in 10, product of:
           1.0 = tf(freq=1.0), with freq of:
             1.0 = termFreq=1.0
           2.0691984 = idf(docFreq=22, maxDocs=67)
-          0.4375 = fieldNorm(doc=2)
+          0.4375 = fieldNorm(doc=10)
 </queryResultExplanation>
             </object>
           </collection>
@@ -726,8 +726,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>42</fedoraRecordsRead>
-          <time>33.776908</time>
-          <trackingId>os:2015-02-27T09:28:29:983156:31571</trackingId>
+          <time>34.857941</time>
+          <trackingId>os:2015-03-02T08:59:47:631338:9006</trackingId>
         </statInfo>
       </result>
     </searchResponse>
