@@ -9,83 +9,6 @@
         <searchResult>
           <collection>
             <resultPosition>1</resultPosition>
-            <numberOfObjects>1</numberOfObjects>
-            <object>
-              <dkabm:record>
-                <ac:identifier>27694381|870970</ac:identifier>
-                <dc:identifier>Concord 0888072312319</dc:identifier>
-                <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>The curious case of Benjamin Button</dc:title>
-                <dc:title xsi:type="dkdcplus:full">The curious case of Benjamin Button : music from the motion picture</dc:title>
-                <dcterms:alternative>Score</dcterms:alternative>
-                <dcterms:alternative>Songs</dcterms:alternative>
-                <dc:subject xsi:type="dkdcplus:DK5">78.81:8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Operaer, syngespil, operetter, revyer, skuespilmusik m.v.</dc:subject>
-                <dc:subject xsi:type="dkdcplus:genre">filmmusik - soundtracks</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCM">filmmusik</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCM">instrumental</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCM">jazz</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCM">orkester</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCO">soundtracks</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCM">swing</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCM">traditionel jazz</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCM">vokal</dc:subject>
-                <dc:description>Med små bidder af dialog fra filmen</dc:description>
-                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Concord Music Group</dc:publisher>
-                <dc:contributor>Bix Beiderbecke</dc:contributor>
-                <dc:contributor>Alexandre Desplat</dc:contributor>
-                <dc:contributor>David Fincher</dc:contributor>
-                <dc:contributor>De De Pierce</dc:contributor>
-                <dc:contributor>Doc Paulin</dc:contributor>
-                <dc:contributor>Frankie Trumbauer</dc:contributor>
-                <dc:contributor>Billie Pierce</dc:contributor>
-                <dc:contributor>Louis Armstrong</dc:contributor>
-                <dc:contributor>Robert Schumann</dc:contributor>
-                <dc:contributor>Sidney Bechet</dc:contributor>
-                <dc:contributor>Pérez Prado</dc:contributor>
-                <dc:contributor>Randy Kerber</dc:contributor>
-                <dc:contributor>Boswell Sisters</dc:contributor>
-                <dc:contributor>Preservation Hall Jazz Band</dc:contributor>
-                <dc:contributor>Choeur de la Cathedrale de la Rue Daru, Paris XVII</dc:contributor>
-                <dc:contributor>The Platters</dc:contributor>
-                <dc:date>2008</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Cd (musik)</dc:type>
-                <dc:format>2 cd'er</dc:format>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
-                <dc:language xsi:type="dcterms:ISO639-2">rus</dc:language>
-                <dc:language>Russisk</dc:language>
-                <dcterms:hasPart xsi:type="dkdcplus:track">We shall walk through the streets of the city</dcterms:hasPart>
-                <dcterms:hasPart xsi:type="dkdcplus:track">Oistrich walk</dcterms:hasPart>
-                <dcterms:hasPart xsi:type="dkdcplus:track">That's how rhythm was born</dcterms:hasPart>
-                <dcterms:hasPart xsi:type="dkdcplus:track">Freight train blues</dcterms:hasPart>
-                <dcterms:hasPart xsi:type="dkdcplus:track">Basin Street blues</dcterms:hasPart>
-                <dcterms:hasPart xsi:type="dkdcplus:track">If I could be with you (one hour tonight)</dcterms:hasPart>
-                <dcterms:hasPart xsi:type="dkdcplus:track">Dear old Southland</dcterms:hasPart>
-                <dcterms:hasPart xsi:type="dkdcplus:track">Arabeske for klaver, C-dur, opus 18</dcterms:hasPart>
-                <dcterms:hasPart xsi:type="dkdcplus:track">Out of nowhere</dcterms:hasPart>
-                <dcterms:hasPart xsi:type="dkdcplus:track">Skokiaan</dcterms:hasPart>
-                <dcterms:hasPart xsi:type="dkdcplus:track">My prayer</dcterms:hasPart>
-                <dcterms:hasPart xsi:type="dkdcplus:track">Bethena</dcterms:hasPart>
-                <dcterms:spatial xsi:type="dkdcplus:DBCM">Frankrig</dcterms:spatial>
-                <dcterms:spatial xsi:type="dkdcplus:DBCM">USA</dcterms:spatial>
-                <dcterms:temporal xsi:type="dkdcplus:DBCM">1900-1999</dcterms:temporal>
-                <dcterms:temporal xsi:type="dkdcplus:DBCM">2000-2009</dcterms:temporal>
-              </dkabm:record>
-              <identifier>870970-basis:27694381</identifier>
-              <primaryObjectIdentifier>870970-basis:27694381</primaryObjectIdentifier>
-              <creationDate>2009-04-01</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-            </object>
-          </collection>
-        </searchResult>
-        <searchResult>
-          <collection>
-            <resultPosition>2</resultPosition>
             <numberOfObjects>4</numberOfObjects>
             <object>
               <dkabm:record>
@@ -354,12 +277,89 @@
             </object>
           </collection>
         </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>2</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <dkabm:record>
+                <ac:identifier>27694381|870970</ac:identifier>
+                <dc:identifier>Concord 0888072312319</dc:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>The curious case of Benjamin Button</dc:title>
+                <dc:title xsi:type="dkdcplus:full">The curious case of Benjamin Button : music from the motion picture</dc:title>
+                <dcterms:alternative>Score</dcterms:alternative>
+                <dcterms:alternative>Songs</dcterms:alternative>
+                <dc:subject xsi:type="dkdcplus:DK5">78.81:8</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Operaer, syngespil, operetter, revyer, skuespilmusik m.v.</dc:subject>
+                <dc:subject xsi:type="dkdcplus:genre">filmmusik - soundtracks</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">filmmusik</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">instrumental</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">jazz</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">orkester</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCO">soundtracks</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">swing</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">traditionel jazz</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">vokal</dc:subject>
+                <dc:description>Med små bidder af dialog fra filmen</dc:description>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dc:publisher>Concord Music Group</dc:publisher>
+                <dc:contributor>Bix Beiderbecke</dc:contributor>
+                <dc:contributor>Alexandre Desplat</dc:contributor>
+                <dc:contributor>David Fincher</dc:contributor>
+                <dc:contributor>De De Pierce</dc:contributor>
+                <dc:contributor>Doc Paulin</dc:contributor>
+                <dc:contributor>Frankie Trumbauer</dc:contributor>
+                <dc:contributor>Billie Pierce</dc:contributor>
+                <dc:contributor>Louis Armstrong</dc:contributor>
+                <dc:contributor>Robert Schumann</dc:contributor>
+                <dc:contributor>Sidney Bechet</dc:contributor>
+                <dc:contributor>Pérez Prado</dc:contributor>
+                <dc:contributor>Randy Kerber</dc:contributor>
+                <dc:contributor>Boswell Sisters</dc:contributor>
+                <dc:contributor>Preservation Hall Jazz Band</dc:contributor>
+                <dc:contributor>Choeur de la Cathedrale de la Rue Daru, Paris XVII</dc:contributor>
+                <dc:contributor>The Platters</dc:contributor>
+                <dc:date>2008</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Cd (musik)</dc:type>
+                <dc:format>2 cd'er</dc:format>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
+                <dc:language xsi:type="dcterms:ISO639-2">rus</dc:language>
+                <dc:language>Russisk</dc:language>
+                <dcterms:hasPart xsi:type="dkdcplus:track">We shall walk through the streets of the city</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Oistrich walk</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">That's how rhythm was born</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Freight train blues</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Basin Street blues</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">If I could be with you (one hour tonight)</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Dear old Southland</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Arabeske for klaver, C-dur, opus 18</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Out of nowhere</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Skokiaan</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">My prayer</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Bethena</dcterms:hasPart>
+                <dcterms:spatial xsi:type="dkdcplus:DBCM">Frankrig</dcterms:spatial>
+                <dcterms:spatial xsi:type="dkdcplus:DBCM">USA</dcterms:spatial>
+                <dcterms:temporal xsi:type="dkdcplus:DBCM">1900-1999</dcterms:temporal>
+                <dcterms:temporal xsi:type="dkdcplus:DBCM">2000-2009</dcterms:temporal>
+              </dkabm:record>
+              <identifier>870970-basis:27694381</identifier>
+              <primaryObjectIdentifier>870970-basis:27694381</primaryObjectIdentifier>
+              <creationDate>2009-04-01</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+            </object>
+          </collection>
+        </searchResult>
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>19</fedoraRecordsRead>
-          <time>17.556799</time>
-          <trackingId>os:2015-01-28T09:52:09:380625:11059</trackingId>
+          <time>15.804048</time>
+          <trackingId>os:2015-03-06T09:47:58:388329:8924</trackingId>
         </statInfo>
       </result>
     </searchResponse>
