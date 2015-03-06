@@ -8,7 +8,6 @@
       <ns1:start>1</ns1:start>
       <ns1:stepValue>0</ns1:stepValue>
       <ns1:queryDebug>1</ns1:queryDebug>
-      <ns1:repository>ivs193</ns1:repository>
     </ns1:searchRequest>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
