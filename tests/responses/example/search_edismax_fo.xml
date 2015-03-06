@@ -2,7 +2,24 @@
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://oss.dbc.dk/ns/opensearch">
   <SOAP-ENV:Body>
     <searchResponse>
-      <error>Error: Unknown repository: ivs193</error>
+      <result>
+        <hitCount>0</hitCount>
+        <collectionCount>0</collectionCount>
+        <more>false</more>
+        <facetResult/>
+        <queryDebugResult>
+          <rawQueryString>term.creator:"mervyn peake"~9999</rawQueryString>
+          <queryString>term.creator:"mervyn peake"~9999</queryString>
+          <parsedQuery>(+PhraseQuery(term.creator:"mervyn peake"~9999))/no_coord</parsedQuery>
+          <parsedQueryString>+term.creator:"mervyn peake"~9999</parsedQueryString>
+        </queryDebugResult>
+        <statInfo>
+          <fedoraRecordsCached>0</fedoraRecordsCached>
+          <fedoraRecordsRead>0</fedoraRecordsRead>
+          <time>2.077484</time>
+          <trackingId>os:2015-03-06T12:16:03:750178:9006</trackingId>
+        </statInfo>
+      </result>
     </searchResponse>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
