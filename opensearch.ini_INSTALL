@@ -11,14 +11,14 @@
 ;version
 ; Note that the version is used as part of the cache key, so do not run 2 versions of the service with identical
 ; version name, unless you specificly want them to share cache
-version = 4.0.1
+version = 4.1
 
 ; --------------
 ; wsdl and service location for service. Used to replace __LOCATION__ in wsdl
 wsdl = opensearch.wsdl
 
 ;service location used as endpoint in the wsdl-file. If not set, the actual address/location is used
-;service_location = opensearch.addi.dk/4.0.1/
+;service_location = opensearch.addi.dk/4.1/
 
 ; --------------
 ; in_house_domain may use ?ShowInfo and use create_sample form
@@ -677,6 +677,7 @@ action[search][facets][] = numberOfTerms
 action[search][facets][] = facets.facetName
 action[search][facets][] = facetName
 action[search][] = includeHoldingsCount
+action[search][] = collapseHitsThreshold
 action[search][] = outputType
 action[search][] = objectFormat
 action[search][] = relationData

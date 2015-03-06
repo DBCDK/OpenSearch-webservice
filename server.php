@@ -634,22 +634,27 @@ class openSearch extends webServiceServer {
     }
 
 // try to get a better hitCount by looking for primaryObjects only 
-    $nfcl = intval($this->config->get_value('num_found_collaps_limit', 'setup'));
+    if (is_null($param->collapseHitsThreshold->_value) || ($param->collapseHitsThreshold->_value == 'default')) {
+      $nfcl = intval($this->config->get_value('num_found_collaps_limit', 'setup'));
+    }
+    else {
+      $nfcl = intval($param->collapseHitsThreshold->_value);
+    }
     if ($nfcl >= $numFound) {
       if ($nfcf = $this->config->get_value('num_found_collapsing_field', 'setup')) {
         $this->collapsing_field = $nfcf;
       }
     }
-    $this->watch->start('Solr_hits');
+    $this->watch->start('Solr_hits_facets');
     // obsolete - handled by collaps-settings above   
     // $solr_query['edismax']['fq'][] = 'unit.isPrimaryObject:true';   // need some discussion to decide for or against this line
     if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', $rank_q, $facet_q, $filter_q, '', $debug_query, $solr_arr)) {
-      $this->watch->stop('Solr_hits');
+      $this->watch->stop('Solr_hits_facets');
       $error = $err;
       return $ret_error;
     }
     else {
-      $this->watch->stop('Solr_hits');
+      $this->watch->stop('Solr_hits_facets');
       if ($n = self::get_num_found($solr_arr)) {
         verbose::log(TRACE, 'Modify hitcount from: ' . $numFound . ' to ' . $n);
         $numFound = $n;
@@ -938,7 +943,7 @@ class openSearch extends webServiceServer {
 
     $result = &$ret->searchResponse->_value->result->_value;
     $result->hitCount->_value = count($collections);
-    $result->collectionCount->_value = 1;
+    $result->collectionCount->_value = count($collections);
     $result->more->_value = 'false';
     $result->searchResult = $collections;
     $result->facetResult->_value = '';

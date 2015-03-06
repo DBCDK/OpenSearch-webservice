@@ -76,6 +76,7 @@ You should have received a copy of the GNU Affero General Public License along w
         <xs:element ref="os:collectionType" minOccurs="0"/>
         <xs:element ref="os:facets" minOccurs="0"/>
         <xs:element ref="os:includeHoldingsCount" minOccurs="0"/>
+        <xs:element ref="os:collapseHitsThreshold" minOccurs="0"/>
         <xs:element ref="os:objectFormat" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="os:outputType" minOccurs="0"/>
         <xs:element ref="os:relationData" minOccurs="0"/>
@@ -155,6 +156,11 @@ You should have received a copy of the GNU Affero General Public License along w
   <xs:element name="callback" type="xs:string">
     <xs:annotation>
       <xs:documentation xml:lang="en">If outputType=json.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="collapseHitsThreshold" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">integer or default to set when solr should collapse hit count for result</xs:documentation>
     </xs:annotation>
   </xs:element>
   <xs:element name="collection">
