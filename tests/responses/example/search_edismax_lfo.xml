@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://oss.dbc.dk/ns/opensearch">
+  <SOAP-ENV:Body>
+    <searchResponse>
+      <result>
+        <hitCount>0</hitCount>
+        <collectionCount>0</collectionCount>
+        <more>false</more>
+        <facetResult/>
+        <queryDebugResult>
+          <rawQueryString>phrase.creator:"mervyn peake"</rawQueryString>
+          <queryString>phrase.creator:"mervyn peake"</queryString>
+          <parsedQuery>(+phrase.creator:mervyn peake)/no_coord</parsedQuery>
+          <parsedQueryString>+phrase.creator:mervyn peake</parsedQueryString>
+        </queryDebugResult>
+        <statInfo>
+          <fedoraRecordsCached>0</fedoraRecordsCached>
+          <fedoraRecordsRead>0</fedoraRecordsRead>
+          <time>1.923789</time>
+          <trackingId>os:2015-03-06T11:23:18:003829:8930</trackingId>
+        </statInfo>
+      </result>
+    </searchResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
