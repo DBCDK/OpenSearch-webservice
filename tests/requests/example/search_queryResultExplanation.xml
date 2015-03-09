@@ -3,7 +3,7 @@
 <open:searchRequest>
     <open:query>old</open:query>
     <open:start>1</open:start>
-    <open:stepValue>10</open:stepValue>    
+    <open:stepValue>2</open:stepValue>    
     <open:sort>rank_title</open:sort>  
     <open:queryDebug>1</open:queryDebug>    
 </open:searchRequest>
