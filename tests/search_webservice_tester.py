@@ -34,7 +34,8 @@ import urllib2
 NAMESPACES = {'SOAP-ENV': 'http://schemas.xmlsoap.org/soap/envelope/',
               'oss': 'http://oss.dbc.dk/ns/opensearch'}
 
-IGNORE = [ '/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:statInfo' ]
+IGNORE = [ '/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:statInfo',
+           '/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:queryResultExplanation' ]
 
 ####################################################################################################
 CONFIG_FILE = 'config.ini' ### used internally to store testfolder paths
