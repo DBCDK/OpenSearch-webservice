@@ -60,7 +60,7 @@ class openSearch extends webServiceServer {
     webServiceServer::__construct('opensearch.ini');
 
     if (!$timeout = $this->config->get_value('curl_timeout', 'setup'))
-      $timeout = 20;
+      $timeout = 5;
     $this->curl = new curl();
     $this->curl->set_option(CURLOPT_TIMEOUT, $timeout);
 
@@ -1248,7 +1248,7 @@ class openSearch extends webServiceServer {
     if (empty($luke_url)) {
       die('Cannot find url to solr for repository');
     }
-    $luke = $this->config->get_value('luke', 'setup');
+    $luke = $this->config->get_value('solr_luke', 'setup');
     foreach ($luke as $from => $to) {
       $luke_url = str_replace($from, $to, $luke_url);
     }
@@ -1471,6 +1471,9 @@ class openSearch extends webServiceServer {
           $this->repository[$key] = (substr($key, 0, 7) == 'fedora_') ? $this->repository['fedora'] . $url_par : $url_par;
         }
       }
+// TODO: fetch cql_file from solr and store in in $this->repositories. Cache the file for long time.
+//       solr_files give the syntax for curl-ing the file
+//    $solr_file_url = sprintf($this->config->get_value('solr_file', 'setup'), $repository['cql_file']);
     }
     else {
       return 'Error: Unknown repository: ' . $this->repository_name;
@@ -2152,6 +2155,10 @@ class openSearch extends webServiceServer {
             $ret[] = '(rec.collectionIdentifier:' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
           }
           else {
+            if ($p['sourceIdentifier'] == $this->agency . '-holding') {
+              // NOGO $ret[] = '(rec.collectionIdentifier:870970-basis' . AND_OP . 'holdingsitem.agencyId=' . $this->agency . ')';
+              $p['sourceIdentifier'] = $this->agency . '-katalog';
+            }
             $ret[] = 'rec.collectionIdentifier:' . $p['sourceIdentifier'];
           }
         }
@@ -2319,7 +2326,9 @@ class openSearch extends webServiceServer {
       $agency_types = new agency_type($this->config->get_value('agency_types', 'setup'), 
                                          $cache['host'], $cache['port'], $cache['expire']);
     }
+    $this->watch->start('agency_type');
     $agency_type = $agency_types->get_agency_type($agency);
+    $this->watch->start('agency_type');
     if ($agency_types->get_branch_type($agency) <> 'D') {
       return $agency_type;
     }
@@ -2333,12 +2342,50 @@ class openSearch extends webServiceServer {
    */
   private function get_agency_show_priority() {
     require_once 'OLS_class_lib/show_priority_class.php';
+    $cache = self::get_agency_cache_info();
     $agency_prio = new ShowPriority($this->config->get_value('agency_show_order', 'setup'), 
                                     $cache['host'], $cache['port'], $cache['expire']);
-    if ($agency_list = $agency_prio->get_priority($this->agency)) {
-      return $agency_list;
+    $this->watch->start('agency_prio');
+    $agency_list = $agency_prio->get_priority($this->agency);
+    $this->watch->stop('agency_type');
+    return ($agency_list ? $agency_list : array());
+  }
+
+  /** \brief Fetch a profile $profile_name for agency $agency
+   *
+   * @param string $agency -
+   * @param string $profile_name - 
+   * @retval mixed - profile (array) or FALSE
+   */
+  private function fetch_profile_from_agency($agency, $profile_name) {
+    static $profiles;
+    require_once 'OLS_class_lib/search_profile_class.php';
+    $cache = self::get_agency_cache_info();
+    if (empty($profiles)) {
+      $profiles = new search_profiles($this->config->get_value('agency_search_profile', 'setup'), 
+                                      $cache['host'], $cache['port'], $cache['expire']);
     }
-    return array();
+    $this->watch->start('agency_profile');
+    $profile = $profiles->get_profile($agency, $profile_name, $this->search_profile_version);
+    $this->watch->stop('agency_profile');
+    return (is_array($profile) ? $profile : FALSE);
+  }
+
+  /** \brief Get info for OpenAgency cache style/setup
+   *
+   * @retval array - cache information from config
+   */
+  private function get_agency_cache_info() {
+    static $ret;
+    if (empty($ret)) {
+      if (!($ret['host'] = $this->config->get_value('agency_cache_host', 'setup')))
+        $ret['host'] = $this->config->get_value('cache_host', 'setup');
+      if (!($ret['port'] = $this->config->get_value('agency_cache_port', 'setup')))
+        $ret['port'] = $this->config->get_value('cache_port', 'setup');
+      if (!($ret['expire'] = $this->config->get_value('agency_cache_expire', 'setup')))
+        $ret['expire'] = $this->config->get_value('cache_expire', 'setup');
+    }
+    return $ret;
   }
 
   /** \brief Extract source part of an ID 
@@ -2358,43 +2405,6 @@ class openSearch extends webServiceServer {
    */
   private function split_record_source($record_source) {
     return explode('-', $record_source, 2);
-  }
-
-  /** \brief Fetch a profile $profile_name for agency $agency
-   *
-   * @param string $agency -
-   * @param string $profile_name - 
-   * @retval mixed - profile (array) or FALSE
-   */
-  private function fetch_profile_from_agency($agency, $profile_name) {
-    static $profiles;
-    require_once 'OLS_class_lib/search_profile_class.php';
-    $cache = self::get_agency_cache_info();
-    if (empty($profiles)) {
-      $profiles = new search_profiles($this->config->get_value('agency_search_profile', 'setup'), 
-                                      $cache['host'], $cache['port'], $cache['expire']);
-    }
-    $profile = $profiles->get_profile($agency, $profile_name, $this->search_profile_version);
-    if (is_array($profile)) {
-      return $profile;
-    }
-    else {
-      return FALSE;
-    }
-  }
-
-  /** \brief Get info for OpenAgency cache style/setup
-   *
-   * @retval array - cache information from config
-   */
-  private function get_agency_cache_info() {
-    if (!($ret['host'] = $this->config->get_value('agency_cache_host', 'setup')))
-      $ret['host'] = $this->config->get_value('cache_host', 'setup');
-    if (!($ret['port'] = $this->config->get_value('agency_cache_port', 'setup')))
-      $ret['port'] = $this->config->get_value('cache_port', 'setup');
-    if (!($ret['expire'] = $this->config->get_value('agency_cache_expire', 'setup')))
-      $ret['expire'] = $this->config->get_value('cache_expire', 'setup');
-    return $ret;
   }
 
   /** \brief Build bq (BoostQuery) as field:content^weight - so far not used
@@ -2631,6 +2641,7 @@ class openSearch extends webServiceServer {
   /** \brief check if a record source is contained in the search profile: searchable_source
    * - Public libraries has to be in their own catalog or as part of 870970-basis
    * - Research libraries has to be in their own catalog or any reasearch library when 870970-forsk is in the search profile
+   *   "part-of"- or "contains"- collections are handled by collection_contained_in structure obtained from openAgency
    * 
    * @param string $agency 
    * @param string $collection 
