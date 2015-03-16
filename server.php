@@ -2156,7 +2156,9 @@ class openSearch extends webServiceServer {
           }
           else {
             if ($p['sourceIdentifier'] == $this->agency . '-holding') {
-              // NOGO $ret[] = '(rec.collectionIdentifier:870970-basis' . AND_OP . 'holdingsitem.agencyId=' . $this->agency . ')';
+              // TODO Cannot "inject" holdingsitem.* here.
+              //      Should be transformed in cql2solr->parse to solr join-handler and fq parameter
+              // $ret[] = '(rec.collectionIdentifier:870970-basis' . AND_OP . 'holdingsitem.agencyId=' . $this->agency . ')';
               $p['sourceIdentifier'] = $this->agency . '-katalog';
             }
             $ret[] = 'rec.collectionIdentifier:' . $p['sourceIdentifier'];
@@ -2319,12 +2321,12 @@ class openSearch extends webServiceServer {
    * @retval mixed - agency type (string) or FALSE
    */
   private function get_agency_type($agency) {
-    static $agency_type_tab;
-    if (!isset($agency_type_tab)) {
+    static $agency_types;
+    if (!isset($agency_types)) {
       require_once 'OLS_class_lib/agency_type_class.php';
       $cache = self::get_agency_cache_info();
       $agency_types = new agency_type($this->config->get_value('agency_types', 'setup'), 
-                                         $cache['host'], $cache['port'], $cache['expire']);
+                                      $cache['host'], $cache['port'], $cache['expire']);
     }
     $this->watch->start('agency_type');
     $agency_type = $agency_types->get_agency_type($agency);
@@ -2341,10 +2343,13 @@ class openSearch extends webServiceServer {
    * @retval mixed - array of agencies
    */
   private function get_agency_show_priority() {
-    require_once 'OLS_class_lib/show_priority_class.php';
-    $cache = self::get_agency_cache_info();
-    $agency_prio = new ShowPriority($this->config->get_value('agency_show_order', 'setup'), 
-                                    $cache['host'], $cache['port'], $cache['expire']);
+    static $agency_prio;
+    if (!isset($agency_prio)) {
+      require_once 'OLS_class_lib/show_priority_class.php';
+      $cache = self::get_agency_cache_info();
+      $agency_prio = new ShowPriority($this->config->get_value('agency_show_order', 'setup'), 
+                                      $cache['host'], $cache['port'], $cache['expire']);
+    }
     $this->watch->start('agency_prio');
     $agency_list = $agency_prio->get_priority($this->agency);
     $this->watch->stop('agency_type');
