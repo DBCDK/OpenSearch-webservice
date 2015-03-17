@@ -11,34 +11,6 @@
             <resultPosition>1</resultPosition>
             <numberOfObjects>1</numberOfObjects>
             <object>
-              <identifier>870970-basis:45235394</identifier>
-              <primaryObjectIdentifier>870970-basis:45235394</primaryObjectIdentifier>
-              <creationDate>2012-05-25</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-            </object>
-          </collection>
-          <formattedCollection>
-            <briefDisplay>
-              <manifestation>
-                <accessType>physical</accessType>
-                <fedoraPid>870970-basis:45235394</fedoraPid>
-                <identifier>870970-basis:45235394</identifier>
-                <title>Elder scrolls V</title>
-                <titleFull>Elder scrolls V : Skyrim official strategy guide</titleFull>
-                <type>Bog</type>
-                <workType>book</workType>
-              </manifestation>
-            </briefDisplay>
-          </formattedCollection>
-        </searchResult>
-        <searchResult>
-          <collection>
-            <resultPosition>2</resultPosition>
-            <numberOfObjects>1</numberOfObjects>
-            <object>
               <identifier>870971-tsart:34497745</identifier>
               <primaryObjectIdentifier>870971-tsart:34497745</primaryObjectIdentifier>
               <creationDate>2011-02-14</creationDate>
@@ -59,6 +31,34 @@
                 <titleFull>Blandt drager og dæmoner : the Elder Scrolls V: Skyrim</titleFull>
                 <type>Tidsskriftsartikel</type>
                 <workType>article</workType>
+              </manifestation>
+            </briefDisplay>
+          </formattedCollection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>2</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <identifier>870970-basis:45235394</identifier>
+              <primaryObjectIdentifier>870970-basis:45235394</primaryObjectIdentifier>
+              <creationDate>2012-05-25</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+            </object>
+          </collection>
+          <formattedCollection>
+            <briefDisplay>
+              <manifestation>
+                <accessType>physical</accessType>
+                <fedoraPid>870970-basis:45235394</fedoraPid>
+                <identifier>870970-basis:45235394</identifier>
+                <title>Elder scrolls V</title>
+                <titleFull>Elder scrolls V : Skyrim official strategy guide</titleFull>
+                <type>Bog</type>
+                <workType>book</workType>
               </manifestation>
             </briefDisplay>
           </formattedCollection>
@@ -113,8 +113,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>18</fedoraRecordsRead>
-          <time>13.300839</time>
-          <trackingId>os:2015-02-13T15:45:09:983385:8167</trackingId>
+          <time>2.498765</time>
+          <trackingId>os:2015-03-17T09:03:33:223608:29527</trackingId>
         </statInfo>
       </result>
     </searchResponse>
