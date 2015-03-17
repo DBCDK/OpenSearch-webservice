@@ -84,7 +84,6 @@ class openSearch extends webServiceServer {
       $ret_error->searchResponse->_value->error->_value = 'authentication_error';
       return $ret_error;
     }
-    define('MAX_COLLECTIONS', $this->config->get_value('max_collections', 'setup'));
 
     // check for unsupported stuff
     $ret_error->searchResponse->_value->error->_value = &$unsupported;
@@ -126,6 +125,12 @@ class openSearch extends webServiceServer {
       $this->collapsing_field = $ufc;
     }
     $use_work_collection = ($param->collectionType->_value <> 'manifestation');
+    if ($use_work_collection) {
+      define('MAX_STEP_VALUE', $this->config->get_value('max_collections', 'setup'));
+    }
+    else {
+      define('MAX_STEP_VALUE', $this->config->get_value('max_manifestations', 'setup'));
+    }
 
     $sort = array();
     $rank_types = $this->config->get_value('rank', 'setup');
@@ -142,7 +147,7 @@ class openSearch extends webServiceServer {
 
     $ret_error->searchResponse->_value->error->_value = &$error;
     $start = $param->start->_value;
-    $step_value = min($param->stepValue->_value, MAX_COLLECTIONS);
+    $step_value = min($param->stepValue->_value, MAX_STEP_VALUE);
     if (empty($start) && $step_value) {
       $start = 1;
     }

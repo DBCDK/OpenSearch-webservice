@@ -1,6 +1,9 @@
 <pre>
 4.1
 ===
+ini: max_manifestations = 200
+ini: luke[... renamed to solr_luke[...
+ini: added solr_file to get data files from solr
 xsd, ini: in searchRequest collapseHitsThreshold will overrule ini file setting num_found_collaps_limit. Since solr collapsing is pretty expensive, some cases will benefit from setting this to 0 (zero). Settings above 1000 is discouraged
 
 4.0.1

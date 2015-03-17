@@ -54,13 +54,13 @@ soapAction[info] = infoRequest
 ; url_override[url_command] = functionToCall
 ; if start of the request equals url_command and functionToCall exists, it will be called
 ; like: myservice.dk/myversion?url_command
-; functions ShowInfo, Version, HowRU, wsdl and RegressionTest are found in the abstract service
-; if not specified, defaults to HowRU, ShowInfo and Version
+; functions ShowInfo, Version, HowRU, Wsdl and RegressionTest are found in the abstract service
+; if not specified, defaults to HowRU, ShowInfo, wsdl and Version
 url_override[HowRU] = HowRU
 url_override[ShowInfo] = ShowInfo
 url_override[Version] = Version
-url_override[wsdl] = WSDL
-url_override[RegressionTest] = RegressionTest
+url_override[wsdl] = Wsdl
+;url_override[RegressionTest] = RegressionTest
 ; diffCqlFileWithSolr - use &repository= in url if set
 url_override[diffCqlFileWithSolr] = diffCqlFileWithSolr
 
@@ -208,9 +208,11 @@ repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^...$'] =
 ; Using "universal" as repository parameter, will trigger the use of Universal Search instead of normal scheme
 ; repository[worldCat][universal] = universal_search_settings
 
-; info to find available index for at solr repos
-; luke[from] = to will replace from with to in the solr-uri
-luke[select] = admin/luke?wt=json
+; info to find available index and files from a solr repos
+; solr_luke[from] = to    will replace "from" with "to" in the solr-uri
+; solr_file[from] = to    will replace "from" with "to" in the solr-uri
+solr_luke[select] = admin/luke?wt=json
+solr_file[select] = admin/file?file=%s&contentType=text/xml;charset=utf-8
 
 ; --------------
 ; memcache
@@ -326,7 +328,10 @@ solr_timeout = 30
 
 ; --------------
 ; Max number of collection returned
+; Defines the maximum stepValue acepted. 
+; For collectionType = manifestation, max_manifestations is used, max_collections otherwise
 max_collections = 50
+max_manifestations = 200
 
 ; --------------
 ; logfile for verbose output
