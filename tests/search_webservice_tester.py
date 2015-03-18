@@ -35,7 +35,7 @@ NAMESPACES = {'SOAP-ENV': 'http://schemas.xmlsoap.org/soap/envelope/',
               'oss': 'http://oss.dbc.dk/ns/opensearch'}
 
 IGNORE = [ '/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:statInfo',
-           '/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:queryResultExplanation' ]
+           '/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:searchResult/oss:collection/oss:object/oss:queryResultExplanation' ]
 
 ####################################################################################################
 CONFIG_FILE = 'config.ini' ### used internally to store testfolder paths
@@ -92,7 +92,7 @@ def retrieve_response(url, request_string):
 
 
 def prune_and_prettyprint(xml_string):
-    """ removed nodes found in hte IGNORE list and pretty print xml"""
+    """ removed nodes found in the IGNORE list and pretty print xml"""
     parser = etree.XMLParser(remove_blank_text=True, encoding="UTF-8")
     xml = etree.fromstring(xml_string, parser)
 
