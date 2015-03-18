@@ -40,12 +40,12 @@
               </formatsAvailable>
               <queryResultExplanation>
 0.52656925 = (MATCH) sum of:
-  0.52656925 = (MATCH) weight(term.default:old^0.1 in 14) [DefaultSimilarity], result of:
-    0.52656925 = fieldWeight in 14, product of:
+  0.52656925 = (MATCH) weight(term.default:old^0.1 in 4) [DefaultSimilarity], result of:
+    0.52656925 = fieldWeight in 4, product of:
       1.4142135 = tf(freq=2.0), with freq of:
         2.0 = termFreq=2.0
       1.9858168 = idf(docFreq=24, maxDocs=67)
-      0.1875 = fieldNorm(doc=14)
+      0.1875 = fieldNorm(doc=4)
 </queryResultExplanation>
             </object>
           </collection>
@@ -86,12 +86,12 @@
               </formatsAvailable>
               <queryResultExplanation>
 0.35104614 = (MATCH) sum of:
-  0.35104614 = (MATCH) weight(term.default:old^0.1 in 4) [DefaultSimilarity], result of:
-    0.35104614 = fieldWeight in 4, product of:
+  0.35104614 = (MATCH) weight(term.default:old^0.1 in 5) [DefaultSimilarity], result of:
+    0.35104614 = fieldWeight in 5, product of:
       1.4142135 = tf(freq=2.0), with freq of:
         2.0 = termFreq=2.0
       1.9858168 = idf(docFreq=24, maxDocs=67)
-      0.125 = fieldNorm(doc=4)
+      0.125 = fieldNorm(doc=5)
 </queryResultExplanation>
             </object>
             <object>
@@ -124,12 +124,12 @@
               </formatsAvailable>
               <queryResultExplanation>
 0.21940383 = (MATCH) sum of:
-  0.21940383 = (MATCH) weight(term.default:old^0.1 in 8) [DefaultSimilarity], result of:
-    0.21940383 = fieldWeight in 8, product of:
+  0.21940383 = (MATCH) weight(term.default:old^0.1 in 9) [DefaultSimilarity], result of:
+    0.21940383 = fieldWeight in 9, product of:
       1.4142135 = tf(freq=2.0), with freq of:
         2.0 = termFreq=2.0
       1.9858168 = idf(docFreq=24, maxDocs=67)
-      0.078125 = fieldNorm(doc=8)
+      0.078125 = fieldNorm(doc=9)
 </queryResultExplanation>
             </object>
             <object>
@@ -170,12 +170,12 @@
               </formatsAvailable>
               <queryResultExplanation>
 0.17552307 = (MATCH) sum of:
-  0.17552307 = (MATCH) weight(term.default:old^0.1 in 3) [DefaultSimilarity], result of:
-    0.17552307 = fieldWeight in 3, product of:
+  0.17552307 = (MATCH) weight(term.default:old^0.1 in 4) [DefaultSimilarity], result of:
+    0.17552307 = fieldWeight in 4, product of:
       1.4142135 = tf(freq=2.0), with freq of:
         2.0 = termFreq=2.0
       1.9858168 = idf(docFreq=24, maxDocs=67)
-      0.0625 = fieldNorm(doc=3)
+      0.0625 = fieldNorm(doc=4)
 </queryResultExplanation>
             </object>
           </collection>
@@ -190,8 +190,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>16</fedoraRecordsRead>
-          <time>2.681447</time>
-          <trackingId>os:2015-03-17T09:09:22:476733:29527</trackingId>
+          <time>2.017241</time>
+          <trackingId>os:2015-03-18T11:24:03:182091:29529</trackingId>
         </statInfo>
       </result>
     </searchResponse>
