@@ -1238,6 +1238,7 @@ class openSearch extends webServiceServer {
         $ret .= '&facet.field=' . $facets->facetName->_value;
       }
     }
+    $this->watch->sums['facets'] = count($facets->facetName) . sprintf('.%03d 0', $facets->numberOfTerms->_value);
     return $ret;
   }
 
@@ -2166,7 +2167,8 @@ class openSearch extends webServiceServer {
             $found_basis = TRUE;
             if ($p['sourceIdentifier'] == $this->agency . '-holding') {
               $found_holding = TRUE;
-              // TODO Cannot "inject" holdingsitem.* here.
+              // TODO
+              // NOGO Cannot "inject" holdingsitem.* here.
               //      Should be transformed in cql2solr->parse to solr join-handler and fq parameter
               // $ret[] = '(rec.collectionIdentifier:870970-basis' . AND_OP . 'holdingsitem.agencyId=' . $this->agency . ')';
               $p['sourceIdentifier'] = $this->agency . '-katalog';
