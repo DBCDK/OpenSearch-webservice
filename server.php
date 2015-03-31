@@ -59,17 +59,13 @@ class openSearch extends webServiceServer {
   public function __construct() {
     webServiceServer::__construct('opensearch.ini');
 
-    if (!$timeout = $this->config->get_value('curl_timeout', 'setup'))
-      $timeout = 5;
     $this->curl = new curl();
-    $this->curl->set_option(CURLOPT_TIMEOUT, $timeout);
+    $this->curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 5));
 
     define(DEBUG_ON, $this->debug);
     $this->tracking_id = verbose::set_tracking_id('os', $param->trackingId->_value);
-    if (!$mir = $this->config->get_value('max_identical_relation_names', 'setup'))
-      $mir = 20;
-    define(MAX_IDENTICAL_RELATIONS, $mir);
-    define(MAX_OBJECTS_IN_WORK, 100);
+    define('MAX_IDENTICAL_RELATIONS', self::value_or_default($this->config->get_value('max_identical_relation_names', 'setup'), 20));
+    define('MAX_OBJECTS_IN_WORK', 100);
     define('AND_OP', ' AND ');
     define('OR_OP', ' OR ');
   }
@@ -126,10 +122,10 @@ class openSearch extends webServiceServer {
     }
     $use_work_collection = ($param->collectionType->_value <> 'manifestation');
     if ($use_work_collection) {
-      define('MAX_STEP_VALUE', $this->config->get_value('max_collections', 'setup'));
+      define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_collections', 'setup'), 50));
     }
     else {
-      define('MAX_STEP_VALUE', $this->config->get_value('max_manifestations', 'setup'));
+      define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
     }
 
     $sort = array();
@@ -830,9 +826,10 @@ class openSearch extends webServiceServer {
               '&fq=' . $filter_q .
               // if briefDisplay data must be fetched from primaryObject '&fq=unit.isPrimaryObject:true' . 
               '&start=0' .
-              '&rows=50000' .
+              '&rows=500' .
               '&defType=edismax' .
               '&fl=rec.collectionIdentifier,fedoraPid,rec.id,unit.id,unit.isPrimaryObject' . $add_fl;
+    verbose::log(TRACE, __FUNCTION__ . ':: Search for pids in Solr: ' . $solr_q);
     $solr_result = $this->curl->get($solr_q);
     $solr_2_arr[] = unserialize($solr_result);
 
@@ -841,11 +838,13 @@ class openSearch extends webServiceServer {
     foreach ($lpids as $lid) {
       $best_pid->_value = $this->agency . '-katalog:' . $lid->_value;
       foreach ($solr_2_arr as $s_2_a) {
-        foreach ($s_2_a['response']['docs'] as $fdoc) {
-          $p_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
-          if ($p_id == '870970-basis:' . $lid->_value) {
-            $best_pid->_value = $p_id;
-            break 2;
+        if ($s_2_a['response']['docs']) {
+          foreach ($s_2_a['response']['docs'] as $fdoc) {
+            $p_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
+            if ($p_id == '870970-basis:' . $lid->_value) {
+              $best_pid->_value = $p_id;
+              break 2;
+            }
           }
         }
       }
@@ -855,11 +854,13 @@ class openSearch extends webServiceServer {
     unset($unit_id);
     foreach ($fpids as $fpid_number => $fpid) {
       foreach ($solr_2_arr as $s_2_a) {
-        foreach ($s_2_a['response']['docs'] as $fdoc) {
-          $p_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
-          if ($p_id == $fpid->_value) {
-            $unit_id =  self::scalar_or_first_elem($fdoc['unit.id']);
-            break 2;
+        if ($s_2_a['response']['docs']) {
+          foreach ($s_2_a['response']['docs'] as $fdoc) {
+            $p_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
+            if ($p_id == $fpid->_value) {
+              $unit_id =  self::scalar_or_first_elem($fdoc['unit.id']);
+              break 2;
+            }
           }
         }
       }
@@ -1224,7 +1225,7 @@ class openSearch extends webServiceServer {
       if (isset($facets->facetMinCount->_value)) {
         $facet_min = $facets->facetMinCount->_value;
       }
-      $ret .= '&facet=true&facet.limit=' . $facets->numberOfTerms->_value .  '&facet.mincount=' . $facet_min;
+      $ret .= '&facet=true&facet.threads=' . count($facets) . '&facet.limit=' . $facets->numberOfTerms->_value .  '&facet.mincount=' . $facet_min;
       if ($facet_sort = $facets->facetSort->_value) {
         $ret .= '&facet.sort=' . $facet_sort;
       }
@@ -2152,15 +2153,19 @@ class openSearch extends webServiceServer {
   private function set_solr_filter($profile) {
     $collection_query = $this->repository['collection_query'];
     $ret = array();
+    $found_holding = $found_basis = FALSE;
     if (is_array($profile)) {
       $this->collection_alias = self::set_collection_alias($profile);
       foreach ($profile as $p) {
         if (self::xs_boolean($p['sourceSearchable'])) {
+          $found_basis = $found_basis || ($p['sourceIdentifier'] == '870970-basis');
           if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
             $ret[] = '(rec.collectionIdentifier:' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
           }
           else {
+            $found_basis = TRUE;
             if ($p['sourceIdentifier'] == $this->agency . '-holding') {
+              $found_holding = TRUE;
               // TODO Cannot "inject" holdingsitem.* here.
               //      Should be transformed in cql2solr->parse to solr join-handler and fq parameter
               // $ret[] = '(rec.collectionIdentifier:870970-basis' . AND_OP . 'holdingsitem.agencyId=' . $this->agency . ')';
@@ -2170,6 +2175,9 @@ class openSearch extends webServiceServer {
           }
         }
       }
+    }
+    if ($found_holding && !$found_basis) {
+      $ret[] = 'rec.collectionIdentifier:870970-basis';
     }
     return implode(OR_OP, $ret);
   }
@@ -2297,7 +2305,7 @@ class openSearch extends webServiceServer {
    * @retval array - of valid relations for the search profile
    */
   private function set_valid_relations_and_sources($profile) {
-    if (empty($this->valid_relation)) {
+    if (empty($this->valid_relation) && is_array($profile)) {
       foreach ($profile as $src) {
         $this->searchable_source[$src['sourceIdentifier']] = self::xs_boolean($src['sourceSearchable']);
         if ($src['sourceContainedIn']) {
@@ -3138,6 +3146,15 @@ class openSearch extends webServiceServer {
       }
     }
     return $ret;
+  }
+
+  /** \brief - 
+   * @param misc $value
+   * @param misc $default
+   * @retval misc $value if TRUE, $default otherwise
+   */
+  private function value_or_default($value, $default) {
+    return ($value ? $value : $default);
   }
 
   /** \brief - xs:boolean to php bolean
