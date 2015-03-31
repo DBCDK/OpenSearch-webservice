@@ -1,7 +1,8 @@
 <pre>
 4.1
 ===
-ini: max_manifestations = 200
+Use Solr facets.threads to parallelize facets lookups. 
+ini: max_manifestations = 200 (used when collectionType equals manifestation)
 ini: luke[... renamed to solr_luke[...
 ini: added solr_file to get data files from solr
 xsd, ini: in searchRequest collapseHitsThreshold will overrule ini file setting num_found_collaps_limit. Since solr collapsing is pretty expensive, some cases will benefit from setting this to 0 (zero). Settings above 1000 is discouraged
