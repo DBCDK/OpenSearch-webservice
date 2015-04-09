@@ -113,6 +113,7 @@ class openSearch extends webServiceServer {
 
     $this->agency = $param->agency->_value;
     $this->filter_agency = self::set_solr_filter($this->search_profile);
+    $this->holdings_include = self::set_holdings_include($this->search_profile, 'parentDocId');
     self::set_valid_relations_and_sources($this->search_profile);
 
     $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
@@ -243,7 +244,7 @@ class openSearch extends webServiceServer {
     $key_work_struct = md5($param->query->_value . $this->repository_name . $this->filter_agency .
                            $use_work_collection .  implode('', $sort) . $rank . $boost_q . $this->config->get_inifile_hash());
 
-    $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language);
+    $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language, $this->holdings_include);
     $solr_query = $this->cql2solr->parse($param->query->_value);
     if ($solr_query['error']) {
       $error = self::cql2solr_error_to_string($solr_query['error']);
@@ -1217,6 +1218,7 @@ class openSearch extends webServiceServer {
    *
    * @param object $facets - the facet paramaters from the request
    * @retval string - facet part of solr url
+   * TODO: change xsd to include facetOffset
    */
   private function set_solr_facet_parameters($facets) {
     $ret = '';
@@ -1228,6 +1230,9 @@ class openSearch extends webServiceServer {
       $ret .= '&facet=true&facet.threads=' . count($facets) . '&facet.limit=' . $facets->numberOfTerms->_value .  '&facet.mincount=' . $facet_min;
       if ($facet_sort = $facets->facetSort->_value) {
         $ret .= '&facet.sort=' . $facet_sort;
+      }
+      if ($facet_offset = $facets->facetOffset->_value) {
+        $ret .= '&facet.offset=' . $facet_offset;
       }
       if (is_array($facets->facetName)) {
         foreach ($facets->facetName as $facet_name) {
@@ -2146,12 +2151,31 @@ class openSearch extends webServiceServer {
     return;
   }
 
+  /** \brief Build search to include collections without holdings
+   *
+   * @param array $profile - the users search profile
+   * @param string $index - the index to match collection identifiers against
+   * @retval string - the SOLR filter query that represent the profile
+   */
+  private function set_holdings_include($profile, $index) {
+    $colls = array();
+    if (is_array($profile)) {
+      foreach ($profile as $p) {
+        if (self::xs_boolean($p['sourceSearchable'])) {
+          $colls[] = $p['sourceIdentifier'];
+        }
+      }
+    }
+    return $index . ':(' . implode(' OR ', $colls) . ')';
+  }
+
   /** \brief Build Solr filter_query parm
    *
    * @param array $profile - the users search profile
+   * @param string $index - the index to filter (search) for collection identifiers
    * @retval string - the SOLR filter query that represent the profile
    */
-  private function set_solr_filter($profile) {
+  private function set_solr_filter($profile, $index = 'rec.collectionIdentifier') {
     $collection_query = $this->repository['collection_query'];
     $ret = array();
     $found_holding = $found_basis = FALSE;
@@ -2161,7 +2185,7 @@ class openSearch extends webServiceServer {
         if (self::xs_boolean($p['sourceSearchable'])) {
           $found_basis = $found_basis || ($p['sourceIdentifier'] == '870970-basis');
           if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
-            $ret[] = '(rec.collectionIdentifier:' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
+            $ret[] = '(' . $index . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
           }
           else {
             $found_basis = TRUE;
@@ -2173,7 +2197,7 @@ class openSearch extends webServiceServer {
               // $ret[] = '(rec.collectionIdentifier:870970-basis' . AND_OP . 'holdingsitem.agencyId=' . $this->agency . ')';
               $p['sourceIdentifier'] = $this->agency . '-katalog';
             }
-            $ret[] = 'rec.collectionIdentifier:' . $p['sourceIdentifier'];
+            $ret[] = $index . ':' . $p['sourceIdentifier'];
           }
         }
       }
