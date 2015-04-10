@@ -21,7 +21,12 @@ if ($vars['pid']) {
     $vars['content'] = rels_to_html($rels);
   }
   else {
-    $vars['content'] = 'Kan ikke finde posten';
+    if ($rels === FALSE) {
+      $vars['content'] = 'Kan ikke finde posten';
+    }
+    else {
+      $vars['content'] = 'Kan ikke finde relationer til posten';
+    }
   }
 }
 
