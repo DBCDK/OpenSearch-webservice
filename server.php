@@ -771,6 +771,12 @@ class openSearch extends webServiceServer {
     $fpids = is_array($param->identifier) ? $param->identifier : ($param->identifier ? array($param->identifier) : array());
     $lpids = is_array($param->localIdentifier) ? $param->localIdentifier : ($param->localIdentifier ? array($param->localIdentifier) : array());
 
+    define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
+    if (MAX_STEP_VALUE <= count($fpids) + count($lpids)) {
+      $error = 'getObject can fetch up to ' . MAX_STEP_VALUE . ' records. ';
+      return $ret_error;
+    }
+
     if ($this->format['found_solr_format']) {
       foreach ($this->format as $f) {
         if ($f['is_solr_format']) {
