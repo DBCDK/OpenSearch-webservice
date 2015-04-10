@@ -2428,12 +2428,12 @@ class openSearch extends webServiceServer {
   private function get_agency_cache_info() {
     static $ret;
     if (empty($ret)) {
-      if (!($ret['host'] = $this->config->get_value('agency_cache_host', 'setup')))
-        $ret['host'] = $this->config->get_value('cache_host', 'setup');
-      if (!($ret['port'] = $this->config->get_value('agency_cache_port', 'setup')))
-        $ret['port'] = $this->config->get_value('cache_port', 'setup');
-      if (!($ret['expire'] = $this->config->get_value('agency_cache_expire', 'setup')))
-        $ret['expire'] = $this->config->get_value('cache_expire', 'setup');
+      $ret['host'] = self::value_or_default($this->config->get_value('agency_cache_host', 'setup'),
+                                            $this->config->get_value('cache_host', 'setup'));
+      $ret['port'] = self::value_or_default($this->config->get_value('agency_cache_port', 'setup'),
+                                            $this->config->get_value('cache_port', 'setup'));
+      $ret['expire'] = self::value_or_default($this->config->get_value('agency_cache_expire', 'setup'),
+                                              $this->config->get_value('cache_expire', 'setup'));
     }
     return $ret;
   }
