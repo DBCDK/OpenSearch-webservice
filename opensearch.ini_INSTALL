@@ -226,6 +226,12 @@ agency_cache_host = localhost
 agency_cache_port = 11211
 agency_cache_expire = 60
 
+; --------------
+; memcache for solr_file - if not set cache_* will be used if set
+solr_file_cache_host = localhost
+solr_file_cache_port = 11211
+solr_file_cache_expire = 3600
+
 
 ; --------------
 ; search profile service end point

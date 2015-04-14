@@ -394,27 +394,6 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:documentation xml:lang="en">The specific slop for the index.</xs:documentation>
     </xs:annotation>
   </xs:element>
-  <xs:element name="infoCqlIndexDocs">
-    <xs:annotation>
-      <xs:documentation xml:lang="en">Information about index definitions</xs:documentation>
-    </xs:annotation>
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="os:infoCqlIndexDoc" minOccurs="0" maxOccurs="unbounded"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="infoCqlIndexDoc">
-    <xs:annotation>
-      <xs:documentation xml:lang="en">Information about index definitions</xs:documentation>
-    </xs:annotation>
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="os:cqlIndexDoc"/>
-        <xs:element ref="os:cqlIndex" minOccurs="0" maxOccurs="unbounded"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
   <xs:element name="infoGeneral">
     <xs:annotation>
       <xs:documentation xml:lang="en">General info.</xs:documentation>
@@ -453,6 +432,7 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:sequence>
         <xs:element ref="os:repository"/>
         <xs:element ref="os:cqlIndexDoc" minOccurs="0"/>
+        <xs:element ref="os:cqlIndex" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

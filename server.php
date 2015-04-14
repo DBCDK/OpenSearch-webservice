@@ -984,7 +984,6 @@ class openSearch extends webServiceServer {
     $result = &$ret->infoResponse->_value;
     $result->infoGeneral->_value->defaultRepository->_value = $this->config->get_value('default_repository', 'setup');
     $result->infoRepositories = self::get_repository_info();
-    $result->infoCqlIndexDocs = self::get_cql_index_info();
     $result->infoObjectFormats = self::get_object_format_info();
     $result->infoSearchProfile = self::get_search_profile_info($param->agency->_value, $param->profile->_value);
     $result->infoSorts = self::get_sort_info();
@@ -1056,52 +1055,34 @@ class openSearch extends webServiceServer {
    * @retval object 
    */
   private function get_repository_info() {
+    $dom = new DomDocument();
     $repositories = $this->config->get_value('repository', 'setup');
     foreach ($repositories as $name => $value) {
       if ($name != 'defaults') {
         $r->repository->_value = $name;
-        $r->cqlIndexDoc->_value = ($value['cql_file'] ? $value['cql_file'] : $repositories['defaults']['cql_file']);
-        $ret->_value->infoRepository[]->_value = $r;
-        unset($r);
-      }
-    }
-    return $ret;
-  }
-
-  /** \brief Get information about cql index files (info operation)
-   * 
-   * @retval object 
-   */
-  private function get_cql_index_info() {
-    $repositories = $this->config->get_value('repository', 'setup');
-    foreach ($repositories as $name => $value) {
-      if ($v = $value['cql_file']) {
-        $cqls[$v] = $v;
-      }
-    }
-    $dom = new DomDocument();
-    foreach ($cqls as $cql) {
-      $idxdoc->cqlIndexDoc->_value = $cql;
-      if ($dom->load($cql)) {
-        foreach ($dom->getElementsByTagName('indexInfo') as $index_info) {
-          foreach ($index_info->getElementsByTagName('index') as $index) {
-            foreach ($index->getElementsByTagName('map') as $map) {
-              if ($map->getAttribute('hidden') !== '1') {
-                foreach ($map->getElementsByTagName('name') as $name) {
-                  $idx = self::set_name_and_slop($name);
+        self:: set_repositories($name, FALSE);
+        $r->cqlIndexDoc->_value = $this->repository['cql_file'];
+        if ($this->repository['cql_settings'] && @ $dom->loadXML($this->repository['cql_settings'])) {
+          foreach ($dom->getElementsByTagName('indexInfo') as $index_info) {
+            foreach ($index_info->getElementsByTagName('index') as $index) {
+              foreach ($index->getElementsByTagName('map') as $map) {
+                if ($map->getAttribute('hidden') !== '1') {
+                  foreach ($map->getElementsByTagName('name') as $name) {
+                    $idx = self::set_name_and_slop($name);
+                  }
+                  foreach ($map->getElementsByTagName('alias') as $alias) {
+                    $idx->indexAlias[]->_value = self::set_name_and_slop($alias);
+                  }
+                  $r->cqlIndex[]->_value = $idx;
+                  unset($idx);
                 }
-                foreach ($map->getElementsByTagName('alias') as $alias) {
-                  $idx->indexAlias[]->_value = self::set_name_and_slop($alias);
-                }
-                $idxdoc->cqlIndex[]->_value = $idx;
-                unset($idx);
               }
             }
           }
         }
+        $ret->_value->infoRepository[]->_value = $r;
+        unset($r);
       }
-      $ret->_value->infoCqlIndexDoc[]->_value = $idxdoc;
-      unset($idxdoc);
     }
     return $ret;
   }
@@ -1276,7 +1257,7 @@ class openSearch extends webServiceServer {
     }
     $luke_fields = &$luke_result->fields;
     $dom = new DomDocument();
-    $dom->load($this->repository['cql_file']) || die('Cannot read cql_file: ' . $this->repository['cql_file']);
+    $dom->loadXML($this->repository['cql_settings']) || die('Cannot read cql_file: ' . $this->repository['cql_file']);
 
     foreach ($dom->getElementsByTagName('indexInfo') as $info_item) {
       foreach ($info_item->getElementsByTagName('index') as $index_item) {
@@ -1296,10 +1277,10 @@ class openSearch extends webServiceServer {
       }
     }
 
-    echo '<html><body><h1>Found in ' . $this->repository['cql_file'] . ' but not in Solr</h1>';
+    echo '<html><body><h1>Found in ' . $this->repository['cql_file'] . ' but not in Solr for repository ' . $this->repository_name . '</h1>';
     foreach ($cql_regs as $cr)
       echo $cr . '</br>';
-    echo '</br><h1>Found in Solr but not in ' . $this->repository['cql_file'] . '</h1>';
+    echo '</br><h1>Found in Solr but not in ' . $this->repository['cql_file'] . ' for repository ' . $this->repository_name . '</h1>';
     foreach ($luke_fields as $lf => $obj)
       echo $lf . '</br>';
     
@@ -1476,9 +1457,10 @@ class openSearch extends webServiceServer {
   /** \brief Sets this->repository from user parameter or defaults to ini-file setup
    *
    * @param string $repository 
+   * @param boolean $cql_file_mandatory 
    * @retval mixed - error or NULL
    */
-  private function set_repositories($repository) {
+  private function set_repositories($repository, $cql_file_mandatory = TRUE) {
     $repositories = $this->config->get_value('repository', 'setup');
     if (!$this->repository_name = $repository) {
       $this->repository_name = $this->config->get_value('default_repository', 'setup');
@@ -1489,13 +1471,50 @@ class openSearch extends webServiceServer {
           $this->repository[$key] = (substr($key, 0, 7) == 'fedora_') ? $this->repository['fedora'] . $url_par : $url_par;
         }
       }
-// TODO: fetch cql_file from solr and store in in $this->repositories. Cache the file for long time.
-//       solr_files give the syntax for curl-ing the file
-//    $solr_file_url = sprintf($this->config->get_value('solr_file', 'setup'), $repository['cql_file']);
+      if ($cql_file_mandatory && empty($this->repository['cql_file'])) {
+        verbose::log(FATAL, 'cql_file not defined for repository: ' .  $this->repository_name);
+        return 'Error: cql_file not defined for repository: '  . $this->repository_name;
+      }
+      if ($this->repository['cql_file']) {
+        if (!$this->repository['cql_settings'] = self::get_solr_file($this->repository['cql_file'])) {
+          if (!$this->repository['cql_settings'] = file_get_contents($this->repository['cql_file'])) {
+            verbose::log(FATAL, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from local directory. Repository: ' .  $this->repository_name);
+            return 'Error: Cannot find cql_file for repository: '  . $this->repository_name;
+          }
+          verbose::log(ERROR, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from SOLR - use local version. Repository: ' .  $this->repository_name);
+        }
+      }
     }
     else {
       return 'Error: Unknown repository: ' . $this->repository_name;
     }
+  }
+
+  /** \brief fetch a file from the solr file directory
+   *
+   * @param string $name 
+   * @retval string (xml)
+   */
+  private function get_solr_file($name) {
+    static $solr_file_cache;
+    $file_url = $this->repository['solr'];
+    $file = $this->config->get_value('solr_file', 'setup');
+    foreach ($file as $from => $to) {
+      $file_url = str_replace($from, $to, $file_url);
+    }
+    $solr_file_url = sprintf($file_url, $name);
+    if (empty($solr_file_cache)) {
+      $cache = self::get_cache_info('solr_file');
+      $solr_file_cache = new cache($cache['host'], $cache['port'], $cache['expire']);
+    }
+    if (!$xml = $solr_file_cache->get($solr_file_url)) {
+      $xml = $this->curl->get($solr_file_url);
+      if ($this->curl->get_status('http_code') != 200) {
+        return FALSE;
+      }
+      $solr_file_cache->set($solr_file_url, $xml);
+    }
+    return $xml;
   }
 
   /** \brief return data stream name depending on collection identifier
@@ -2369,7 +2388,7 @@ class openSearch extends webServiceServer {
     static $agency_types;
     if (!isset($agency_types)) {
       require_once 'OLS_class_lib/agency_type_class.php';
-      $cache = self::get_agency_cache_info();
+      $cache = self::get_cache_info('agency');
       $agency_types = new agency_type($this->config->get_value('agency_types', 'setup'), 
                                       $cache['host'], $cache['port'], $cache['expire']);
     }
@@ -2391,7 +2410,7 @@ class openSearch extends webServiceServer {
     static $agency_prio;
     if (!isset($agency_prio)) {
       require_once 'OLS_class_lib/show_priority_class.php';
-      $cache = self::get_agency_cache_info();
+      $cache = self::get_cache_info('agency');
       $agency_prio = new ShowPriority($this->config->get_value('agency_show_order', 'setup'), 
                                       $cache['host'], $cache['port'], $cache['expire']);
     }
@@ -2410,7 +2429,7 @@ class openSearch extends webServiceServer {
   private function fetch_profile_from_agency($agency, $profile_name) {
     static $profiles;
     require_once 'OLS_class_lib/search_profile_class.php';
-    $cache = self::get_agency_cache_info();
+    $cache = self::get_cache_info('agency');
     if (empty($profiles)) {
       $profiles = new search_profiles($this->config->get_value('agency_search_profile', 'setup'), 
                                       $cache['host'], $cache['port'], $cache['expire']);
@@ -2421,18 +2440,18 @@ class openSearch extends webServiceServer {
     return (is_array($profile) ? $profile : FALSE);
   }
 
-  /** \brief Get info for OpenAgency cache style/setup
+  /** \brief Get info for OpenAgency, solr_file cache style/setup
    *
    * @retval array - cache information from config
    */
-  private function get_agency_cache_info() {
+  private function get_cache_info($offset) {
     static $ret;
     if (empty($ret)) {
-      $ret['host'] = self::value_or_default($this->config->get_value('agency_cache_host', 'setup'),
+      $ret['host'] = self::value_or_default($this->config->get_value($offset . '_cache_host', 'setup'),
                                             $this->config->get_value('cache_host', 'setup'));
-      $ret['port'] = self::value_or_default($this->config->get_value('agency_cache_port', 'setup'),
+      $ret['port'] = self::value_or_default($this->config->get_value($offset . '_cache_port', 'setup'),
                                             $this->config->get_value('cache_port', 'setup'));
-      $ret['expire'] = self::value_or_default($this->config->get_value('agency_cache_expire', 'setup'),
+      $ret['expire'] = self::value_or_default($this->config->get_value($offset . '_cache_expire', 'setup'),
                                               $this->config->get_value('cache_expire', 'setup'));
     }
     return $ret;

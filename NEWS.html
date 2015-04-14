@@ -1,9 +1,12 @@
 <pre>
 4.1
 ===
+xsd: cqlIndex as part of infoRepository. InfoCqlIndexDocs removed.
+ini: solr_file_cache_* 
 getObject can fecth up to max_manifestations (ini-file setting) records
 ini: __COLLECTION_INCLUDE__ on repository handler join operations
 Handling search using holdingsItems for collections without holding
+Added timer facets like n.mmm, where n is count(facetName) and mmm is numberOfTerms
 Use Solr facets.threads to parallelize facets lookups. 
 ini: max_manifestations = 200 (used when collectionType equals manifestation)
 ini: luke[... renamed to solr_luke[...
