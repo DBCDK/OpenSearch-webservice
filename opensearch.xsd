@@ -102,7 +102,6 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:sequence>
         <xs:element ref="os:infoGeneral"/>
         <xs:element ref="os:infoRepositories"/>
-        <xs:element ref="os:infoCqlIndexDocs"/>
         <xs:element ref="os:infoObjectFormats"/>
         <xs:element ref="os:infoSearchProfile"/>
         <xs:element ref="os:infoSorts"/>
@@ -967,7 +966,7 @@ You should have received a copy of the GNU Affero General Public License along w
   </xs:simpleType>
   <xs:simpleType name="facetType">
     <xs:annotation>
-      <xs:documentation xml:lang="en">Available facets can be found in infoCqlIndexDocs in infoResponse.</xs:documentation>
+      <xs:documentation xml:lang="en">Available facets can be found in infoRepositories in infoResponse.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string"/>
   </xs:simpleType>
