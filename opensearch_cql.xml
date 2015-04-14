@@ -1773,6 +1773,13 @@ You should have received a copy of the GNU Affero General Public License along w
       </map>
     </index>
     <index>
+      <title lang="da">Fritekst scan indeks</title>
+      <title lang="en">Default scan index</title>
+      <map>
+        <name set="scanphrase">default</name>
+      </map>
+    </index>
+    <index>
       <title lang="da">Medophav</title>
       <title lang="en">Contributor</title>
       <map>
@@ -1819,6 +1826,13 @@ You should have received a copy of the GNU Affero General Public License along w
       <title lang="en">Title</title>
       <map>
         <name set="scanphrase">title</name>
+      </map>
+    </index>
+    <index>
+      <title lang="da">Fritekst scan indeks (enkeltord)</title>
+      <title lang="en">Default scan index (term)</title>
+      <map>
+        <name set="scanterm">default</name>
       </map>
     </index>
     <index>
