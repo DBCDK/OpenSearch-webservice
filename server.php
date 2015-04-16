@@ -1477,7 +1477,7 @@ class openSearch extends webServiceServer {
       }
       if ($this->repository['cql_file']) {
         if (!$this->repository['cql_settings'] = self::get_solr_file($this->repository['cql_file'])) {
-          if (!$this->repository['cql_settings'] = file_get_contents($this->repository['cql_file'])) {
+          if (!$this->repository['cql_settings'] = @ file_get_contents($this->repository['cql_file'])) {
             verbose::log(FATAL, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from local directory. Repository: ' .  $this->repository_name);
             return 'Error: Cannot find cql_file for repository: '  . $this->repository_name;
           }
