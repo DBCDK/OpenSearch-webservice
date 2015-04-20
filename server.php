@@ -2416,7 +2416,7 @@ class openSearch extends webServiceServer {
     }
     $this->watch->start('agency_prio');
     $agency_list = $agency_prio->get_priority($this->agency);
-    $this->watch->stop('agency_type');
+    $this->watch->stop('agency_prio');
     return ($agency_list ? $agency_list : array());
   }
 
