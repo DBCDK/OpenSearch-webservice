@@ -245,6 +245,8 @@ agency_search_profile = @AGENCY_SEARCH_PROFILE@
 ; find Library service end point
 ; ex:
 ; agency_types = http://some.openagency/?action=findLibrary&libraryType=Alle&outputType=json
+; from openagency version 2.19 use
+; agency_types = http://some.openagency/?action=libraryTypeList&outputType=json
 ;
 agency_types = @AGENCY_TYPES@
 
