@@ -300,7 +300,7 @@ solr_format[score][format] = score
 
 ; Use collapsing field for modifying hit count when prelimary hit count is below hit_count_collaps_limit
 ; if collapsing_field above is set, these 2 parameters are ignored
-num_found_collaps_limit = 500
+num_found_collaps_limit = 100
 num_found_collapsing_field = fedoraPid
 
 ; --------------
