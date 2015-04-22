@@ -53,6 +53,7 @@ class openSearch extends webServiceServer {
   protected $rank_frequence_debug;
   protected $collection_alias = array();
   protected $agency_priority_list = array();  // prioritised list af agencies for the actual agency
+  protected $unit_fallback = array();     // if fedora is updated and solr is not, this is used to find some record from the old unit
   protected $feature_sw = array();
 
 
@@ -405,6 +406,7 @@ class openSearch extends webServiceServer {
             $this->watch->stop('get_w_id');
             if (DEBUG_ON) echo 'RR: ' . $record_rels_hierarchy . "\n";
 
+// test empty rels_sys $record_rels_hierarchy = self::empty_rels_hierarchy();
             if ($work_id = self::parse_rels_for_work_id($record_rels_hierarchy)) {
               // find other recs sharing the work-relation
               $this->watch->start('get_fids');
@@ -533,9 +535,9 @@ class openSearch extends webServiceServer {
         $data_stream = self::set_data_stream_name($collection_identifier[$unit_id]);
         self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
+// test empty rels_sys $unit_rels_hierarchy = self::empty_rels_hierarchy();
 //var_dump($unit_rels_hierarchy); die();
-        // waiting for some prio list to be developed
-        list($fpid, $primary_oid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, FALSE);
+        list($fpid, $primary_oid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
         $sort_holdings = ' ';
         unset($no_of_holdings);
         if (self::xs_boolean($param->includeHoldingsCount->_value)) {
@@ -884,7 +886,7 @@ class openSearch extends webServiceServer {
       }
       else {
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
-        list($best_pid, $primary_oid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, FALSE);
+        list($best_pid, $primary_oid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
         $sources = self::fetch_valid_sources_from_stream($best_pid);
         $data_stream = in_array($this->agency_catalog_source, $sources) ? 'localData.' . $this->agency_catalog_source : '';
 //var_dump($filter_q);
@@ -994,6 +996,14 @@ class openSearch extends webServiceServer {
     return $ret;
   }
   /*******************************************************************************/
+
+  /** \brief for testing to return empty rels hierarchy records
+   * 
+   * @retval object - xml string
+   */
+  private function empty_rels_hierarchy() {
+    return '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description rdf:about="info:fedora/unit:16765541"></rdf:Description></rdf:RDF>';
+  }
 
   /** \brief Get information about search profile (info operation)
    * 
@@ -1286,8 +1296,6 @@ class openSearch extends webServiceServer {
     
     die('</body></html>');
   }
-
-  /*******************************************************************************/
 
   /** \brief Reads records from Raw Record Database
    *   
@@ -1722,6 +1730,7 @@ class openSearch extends webServiceServer {
   } 
 
   /** \brief Encapsules extraction of unit.id's from the solr result
+   *       - stores unit-id and the corresponding fedorePid in unit_fallback
    *
    * @param array $solr_arr
    * @param array $search_ids - contains the result
@@ -1734,6 +1743,7 @@ class openSearch extends webServiceServer {
       foreach ($solr_groups as &$gdoc) {
         if ($uid = $gdoc['doclist']['docs'][0]['unit.id']) {
           $search_ids[] = self::scalar_or_first_elem($uid);
+          $this->unit_fallback[self::scalar_or_first_elem($uid)][] = self::scalar_or_first_elem($gdoc['doclist']['docs'][0]['fedoraPid']);
         }
         elseif (++$u_err < 10) {
           verbose::log(FATAL, 'Missing unit.id in solr_result. Record no: ' . (count($search_ids) + $u_err));
@@ -1745,6 +1755,7 @@ class openSearch extends webServiceServer {
       foreach ($solr_docs as &$fdoc) {
         if ($uid = $fdoc['unit.id']) {
           $search_ids[] = self::scalar_or_first_elem($uid);
+          $this->unit_fallback[self::scalar_or_first_elem($uid)][] = self::scalar_or_first_elem($fdoc['fedoraPid']);
         }
         elseif (++$u_err < 10) {
           verbose::log(FATAL, 'Missing unit.id in solr_result. Record no: ' . (count($search_ids) + $u_err));
@@ -2283,7 +2294,7 @@ class openSearch extends webServiceServer {
   private function check_valid_internal_relation($unit_id, $relation, $profile) {
     self::set_valid_relations_and_sources($profile);
     self::get_fedora_rels_hierarchy($unit_id, $rels_hierarchy);
-    $pid = self::fetch_best_bib_object($rels_hierarchy);
+    $pid = self::fetch_best_bib_object($rels_hierarchy, $unit_id);
     foreach (self::find_record_sources_and_group_by_relation($pid, $relation) as $to_record_source) {
       $valid = isset($this->valid_relation[$to_record_source][$relation]);
       if (DEBUG_ON) {
@@ -2568,7 +2579,7 @@ class openSearch extends webServiceServer {
                     '&start=' . $start .  $sort . $rank . $boost . $facets .  $collaps_pars .
                     '&defType=edismax';
     $debug_url = $url . '&fl=fedoraPid,unit.id&rows=1&debugQuery=on';
-    $url .= '&fl=unit.id&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
+    $url .= '&fl=fedoraPid,unit.id&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
 
     return array('url' => $url, 'debug' => $debug_url);
   }
@@ -2655,8 +2666,8 @@ class openSearch extends webServiceServer {
    * @param boolean $fallback - use primaryObject if no member is acceptable
    * @retval string - "best" object_id from the unit
    */
-  private function fetch_best_bib_object($u_rel, $fallback = TRUE) {
-    $arr = self::parse_unit_for_best_agency($u_rel, $fallback);
+  private function fetch_best_bib_object($u_rel, $unit_id, $fallback = TRUE) {
+    $arr = self::parse_unit_for_best_agency($u_rel, $unit_id, $fallback);
     return $arr[0];
   }
 
@@ -2666,7 +2677,7 @@ class openSearch extends webServiceServer {
    * @param boolean $fallback - use primaryObject if no member is acceptable
    * @retval array - of object_id, primary_object_id and array of unit members
    */
-  private function parse_unit_for_best_agency($u_rel, $fallback = TRUE) {
+  private function parse_unit_for_best_agency($u_rel, $unit_id, $fallback = TRUE) {
     static $dom;
     if (empty($dom)) {
       $dom = new DomDocument();
@@ -2680,6 +2691,14 @@ class openSearch extends webServiceServer {
       $hmou = $dom->getElementsByTagName('hasMemberOfUnit');
       $length = $hmou->length;
       $best_pos = count($this->agency_priority_list) + 1;
+      if (!$length && $this->unit_fallback[$unit_id] && (!$fallback || !$primary_oid->length)) {
+        $unit_fallback = TRUE;
+        unset($hmou);
+        foreach ($this->unit_fallback[$unit_id] as $pid) {
+          $hmou[]->nodeValue = $pid;
+        }
+        verbose::log(ERROR, 'Empty unit: ' . $unit_id . ' - use pid from Solr instead');
+      }
       foreach ($hmou as $mou) {
         if (@ constant('PRIO')) var_dump($mou->nodeValue);
         $record_source = self::record_source_from_pid($mou->nodeValue);
@@ -2697,6 +2716,9 @@ class openSearch extends webServiceServer {
             $oid = $mou->nodeValue;
           }
         }
+      }
+      if ($unit_fallback && !$primary_oid) { 
+        $primary_oid = $oid;
       }
       if ($fallback && !$oid) {   // this is the old style 
         $oid = $primary_oid;
@@ -3003,7 +3025,7 @@ class openSearch extends webServiceServer {
               ($rel_source = self::check_valid_internal_relation($tag->nodeValue, $this_relation, $this->search_profile))) {
             $relation_count[$this_relation]++;
             self::get_fedora_rels_hierarchy($tag->nodeValue, $rels_sys);
-            list($rel_oid, $primary_oid, $rel_unit_members) = self::parse_unit_for_best_agency($rels_sys, TRUE);
+            list($rel_oid, $primary_oid, $rel_unit_members) = self::parse_unit_for_best_agency($rels_sys, $tag->nodeValue, TRUE);
             self::get_fedora_raw($rel_oid, $related_obj);
             if (@ !$rels_dom->loadXML($related_obj)) {
               verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from commonData into DomXml');
