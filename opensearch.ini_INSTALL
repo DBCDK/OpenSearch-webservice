@@ -359,7 +359,8 @@ logfile = /tmp/opensearch.log
 ;   OCI     - oracle
 verbose = @VERBOSE_LEVEL@
 
-; format for automatic timer dump %s is the soap-action used
+; format for automatic timer dump %s is the soap-action used. _VERSION_ is replaced by version defined above
+;dump_timer = opensearch/_VERSION_(%s)
 dump_timer = opensearch(%s)
 
 ; include line below to add the request ip adress to the TIMER log lines
