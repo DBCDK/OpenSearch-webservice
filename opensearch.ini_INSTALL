@@ -236,7 +236,7 @@ solr_file_cache_expire = 3600
 ; --------------
 ; search profile service end point
 ; ex:
-; agency_search_profile =  http://some.openagency/?action=openSearchProfile&agencyId=%s&profileVersion=%s
+; agency_search_profile =  http://some.openagency/?action=openSearchProfile&agencyId=%s&profileVersion=%s&trackingId=%s
 ;
 agency_search_profile = @AGENCY_SEARCH_PROFILE@
 
@@ -244,9 +244,9 @@ agency_search_profile = @AGENCY_SEARCH_PROFILE@
 ; --------------
 ; find Library service end point
 ; ex:
-; agency_types = http://some.openagency/?action=findLibrary&libraryType=Alle&outputType=json
+; agency_types = http://some.openagency/?action=findLibrary&libraryType=Alle&outputType=json&trackingId=%s
 ; from openagency version 2.19 use
-; agency_types = http://some.openagency/?action=libraryTypeList&outputType=json
+; agency_types = http://some.openagency/?action=libraryTypeList&outputType=json&trackingId=%s
 ;
 agency_types = @AGENCY_TYPES@
 
@@ -254,7 +254,7 @@ agency_types = @AGENCY_TYPES@
 ; --------------
 ; find Library show priority end point
 ; ex:
-;   agency_types = http://some.openagency/?action=showOrder&agencyId=%s
+;   agency_types = http://some.openagency/?action=showOrder&agencyId=%s&trackingId=%s
 ;
 agency_show_order = @AGENCY_SHOW_ORDER@
 
