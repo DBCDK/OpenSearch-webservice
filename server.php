@@ -62,9 +62,10 @@ class openSearch extends webServiceServer {
 
     $this->curl = new curl();
     $this->curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 5));
+    define('AGENCY_TIMEOUT', self::value_or_default($this->config->get_value('agency_timeout', 'setup'), 10));
 
     define(DEBUG_ON, $this->debug);
-    $this->tracking_id = verbose::set_tracking_id('os', $param->trackingId->_value);
+    $this->tracking_id = verbose::$tracking_id;
     define('MAX_IDENTICAL_RELATIONS', self::value_or_default($this->config->get_value('max_identical_relation_names', 'setup'), 20));
     define('MAX_OBJECTS_IN_WORK', 100);
     define('AND_OP', ' AND ');
