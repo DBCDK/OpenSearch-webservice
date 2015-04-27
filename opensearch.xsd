@@ -573,6 +573,7 @@ You should have received a copy of the GNU Affero General Public License along w
         <xs:element ref="os:lendingLibraries" minOccurs="0"/>
         <xs:element ref="os:relations" minOccurs="0"/>
         <xs:element ref="os:formatsAvailable" minOccurs="0"/>
+        <xs:element ref="os:unitMembers" minOccurs="0"/>
         <xs:element ref="os:queryResultExplanation" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
@@ -888,6 +889,16 @@ You should have received a copy of the GNU Affero General Public License along w
     <xs:annotation>
       <xs:documentation xml:lang="en">Number of seconds used in the service</xs:documentation>
     </xs:annotation>
+  </xs:element>
+  <xs:element name="unitMembers">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Identifiers of records matched together in the same unit.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:identifier"/>
+      </xs:sequence>
+    </xs:complexType>
   </xs:element>
   <xs:element name="userDefinedBoost">
     <xs:annotation>

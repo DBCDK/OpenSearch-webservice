@@ -2705,8 +2705,8 @@ class openSearch extends webServiceServer {
         $record_source = self::record_source_from_pid($mou->nodeValue);
         list($agency, $collection) = self::split_record_source($record_source);
         if (self::is_valid_source($agency, $collection)) {
-          $unit_members[] = $mou->nodeValue;
           if (isset($this->agency_priority_list[$agency])) {
+            $sort_prio = sprintf('%05s', $this->agency_priority_list[$agency]);
             if (@ constant('PRIO')) var_dump($this->agency_priority_list[$agency]);
             if ($this->agency_priority_list[$agency] < $best_pos) {
               $oid = $mou->nodeValue;
@@ -2714,8 +2714,10 @@ class openSearch extends webServiceServer {
             }
           }
           elseif (!$oid) {
+            $sort_prio = sprintf('%05s', count($this->agency_priority_list) + 1);
             $oid = $mou->nodeValue;
           }
+          $unit_members[$sort_prio . $mou->nodeValue] = $mou->nodeValue;
         }
       }
       if ($unit_fallback && !$primary_oid) { 
@@ -2726,6 +2728,7 @@ class openSearch extends webServiceServer {
         $unit_members[] = $oid;
       }
     }
+    ksort($unit_members);
     if (@ constant('PRIO')) var_dump($oid);
     return(array($oid, $primary_oid, $unit_members));
   }
@@ -2870,6 +2873,10 @@ class openSearch extends webServiceServer {
     if ($fa = self::scan_for_formats($fedora_dom)) {
       $ret->formatsAvailable->_value = $fa;
     }
+    foreach ($unit_members as $um) {
+        $u_member->identifier[]->_value = $um;
+    }
+    $ret->unitMembers->_value = $u_member;
     if ($debug_info) $ret->queryResultExplanation->_value = $debug_info;
     //if (DEBUG_ON) var_dump($ret);
 
