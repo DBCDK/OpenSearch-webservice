@@ -1,6 +1,11 @@
 <pre>
 4.1
 ===
+ini: agency_type change from findLibrary to ?action=libraryTypeList&outputType=json&trackingId=%s for openagency 2.19 and later. Handles research-libraries being part of 870970-forsk in search profiles
+ini: add &trackingId=%s to agency_type, agency_search_profile and agency_show_order 
+xsd: unitMembers - containing all identifiers in the same unit as the object
+ini: agency_timeout for setting timeout for openagency calls - defaults to 10 seconds - rev 84146
+ini: added &trackingId=%s for agency_search_profile, agency_types and agency_show_order - rev 84142
 ini: syslog_id must be set when loggin to syslog - rev. 84032.
 ini: set num_found_collaps_limit = 100
 ini: _VERSION_ in dump_timer is replaced by version from ini-file - rev 84004

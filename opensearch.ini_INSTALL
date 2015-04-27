@@ -221,17 +221,20 @@ cache_port = 11211
 cache_expire = 600
 
 ; --------------
+; memcache for solr_file - if not set cache_* will be used if set
+solr_file_cache_host = localhost
+solr_file_cache_port = 11211
+solr_file_cache_expire = 3600
+
+; --------------
 ; memcache search profile - defaults to cache_host, cache_port, cache_expire if not defined
 agency_cache_host = localhost
 agency_cache_port = 11211
 agency_cache_expire = 60
 
 ; --------------
-; memcache for solr_file - if not set cache_* will be used if set
-solr_file_cache_host = localhost
-solr_file_cache_port = 11211
-solr_file_cache_expire = 3600
-
+; timeout for agency call - defaults to 10 seconds
+agency_timeout = 20
 
 ; --------------
 ; search profile service end point
