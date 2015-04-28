@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch">
+  <SOAP-ENV:Body>
+    <ns1:infoRequest>
+      <ns1:agency>190101</ns1:agency>
+      <ns1:profile>default</ns1:profile>
+    </ns1:infoRequest>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
