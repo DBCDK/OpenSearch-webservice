@@ -821,6 +821,12 @@ class openSearch extends webServiceServer {
     }
     foreach ($fpids as $fpid) {
       $id_array[] = $fpid->_value;
+      list($owner_collection, $id) = explode(':', $fpid->_value);
+      list($owner, $coll) = explode('-', $owner_collection);
+      if (self::get_agency_type($owner) == 'Folkebibliotek') {
+        $id_array[] = '870970-basis:' . $id . '-' . $owner_collection;
+        $localdata_object[$fpid->_value] = '870970-basis:' . $id;
+      }
     }
     foreach ($lpids as $lid) {
       $id_array[] = $this->agency . '-katalog:' . $lid->_value;
@@ -867,7 +873,7 @@ class openSearch extends webServiceServer {
         if ($s_2_a['response']['docs']) {
           foreach ($s_2_a['response']['docs'] as $fdoc) {
             $p_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
-            if ($p_id == $fpid->_value) {
+            if (($p_id == $fpid->_value) || ($p_id == $localdata_object[$fpid->_value])) {
               $unit_id =  self::scalar_or_first_elem($fdoc['unit.id']);
               break 2;
             }
@@ -889,11 +895,23 @@ class openSearch extends webServiceServer {
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
         list($best_pid, $primary_oid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
         $sources = self::fetch_valid_sources_from_stream($best_pid);
-        $data_stream = in_array($this->agency_catalog_source, $sources) ? 'localData.' . $this->agency_catalog_source : '';
+        list($fpid_collection) = explode(':', $fpid->_value);
+        $data_stream = '';
+        if (!in_array($fpid_colection, $sources)) {
+          list($localdata_collection) = explode(':', $localdata_object[$fpid->_value]);
+          if (in_array($localdata_collection, $sources)) {
+            $data_stream = 'localData.' . $fpid_collection;
+            $fpid->_value = $localdata_object[$fpid->_value];
+          }
+        }
 //var_dump($filter_q);
 //var_dump($solr_2_arr); 
-//var_dump($data_stream); die();
-      
+//var_dump($best_pid);
+//var_dump($data_stream); 
+//var_dump($fpid->_value); 
+//var_dump($localdata_object); 
+//var_dump($sources);
+//die();
         if (self::deleted_object($fpid->_value)) {
           $rec_error = 'Error: deleted record: ' . $fpid->_value;
         }
