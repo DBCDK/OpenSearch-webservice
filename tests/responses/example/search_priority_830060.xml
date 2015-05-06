@@ -37,6 +37,10 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
+              <unitMembers>
+                <identifier>870970-basis:25873262</identifier>
+                <identifier>820030-katalog:836533</identifier>
+              </unitMembers>
             </object>
           </collection>
         </searchResult>
@@ -44,8 +48,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>5</fedoraRecordsRead>
-          <time>6.26953</time>
-          <trackingId>os:2014-12-04T09:15:08:170900:7739</trackingId>
+          <time>1.696186</time>
+          <trackingId>2015-05-06T08:59:54:935412:16529</trackingId>
         </statInfo>
       </result>
     </searchResponse>

@@ -80,6 +80,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
+              <unitMembers>
+                <identifier>870970-basis:27694381</identifier>
+              </unitMembers>
             </object>
           </collection>
         </searchResult>
@@ -87,8 +90,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>5</fedoraRecordsRead>
-          <time>4.619637</time>
-          <trackingId>os:2014-12-05T14:28:03:817735:7741</trackingId>
+          <time>1.860309</time>
+          <trackingId>2015-05-06T08:59:32:257457:16529</trackingId>
         </statInfo>
       </result>
     </searchResponse>

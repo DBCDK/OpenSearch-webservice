@@ -74,6 +74,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
+              <unitMembers>
+                <identifier>870970-basis:27589995</identifier>
+              </unitMembers>
             </object>
             <object>
               <dkabm:record>
@@ -137,6 +140,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
+              <unitMembers>
+                <identifier>820010-katalog:3540389</identifier>
+              </unitMembers>
             </object>
             <object>
               <dkabm:record>
@@ -207,6 +213,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
+              <unitMembers>
+                <identifier>870970-basis:27928846</identifier>
+              </unitMembers>
             </object>
             <object>
               <dkabm:record>
@@ -282,6 +291,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
+              <unitMembers>
+                <identifier>820010-katalog:3755325</identifier>
+              </unitMembers>
             </object>
           </collection>
         </searchResult>
@@ -361,6 +373,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
+              <unitMembers>
+                <identifier>870970-basis:27694381</identifier>
+              </unitMembers>
             </object>
           </collection>
         </searchResult>
@@ -368,8 +383,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>19</fedoraRecordsRead>
-          <time>18.07825</time>
-          <trackingId>os:2014-12-04T09:16:22:293922:7856</trackingId>
+          <time>2.41103</time>
+          <trackingId>2015-05-06T09:00:14:741824:16625</trackingId>
         </statInfo>
       </result>
     </searchResponse>

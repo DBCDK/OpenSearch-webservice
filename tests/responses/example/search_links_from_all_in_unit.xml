@@ -47,24 +47,6 @@
               <relations>
                 <relation>
                   <relationType>dbcaddi:hasOnlineAccess</relationType>
-                  <relationUri>http://site.ebrary.com/lib/librarytitles/docDetail.action?docID=10481819</relationUri>
-                  <linkObject>
-                    <access>free</access>
-                    <linkTo>website</linkTo>
-                    <linkCollectionIdentifier>150008-academic</linkCollectionIdentifier>
-                  </linkObject>
-                </relation>
-                <relation>
-                  <relationType>dbcaddi:hasOnlineAccess</relationType>
-                  <relationUri>http://site.ebrary.com/lib/[PROVIDERSLIBRARYID]/docDetail.action?docID=10481819</relationUri>
-                  <linkObject>
-                    <access>remote</access>
-                    <linkTo>proxy</linkTo>
-                    <linkCollectionIdentifier>150008-academic</linkCollectionIdentifier>
-                  </linkObject>
-                </relation>
-                <relation>
-                  <relationType>dbcaddi:hasOnlineAccess</relationType>
                   <relationUri>http://ez.statsbiblioteket.dk:2048/login?url=http://site.ebrary.com/lib/stats/Top?id=10481819</relationUri>
                   <linkObject>
                     <linkTo>website</linkTo>
@@ -90,11 +72,35 @@
                     <linkCollectionIdentifier>870970-forsk</linkCollectionIdentifier>
                   </linkObject>
                 </relation>
+                <relation>
+                  <relationType>dbcaddi:hasOnlineAccess</relationType>
+                  <relationUri>http://site.ebrary.com/lib/librarytitles/docDetail.action?docID=10481819</relationUri>
+                  <linkObject>
+                    <access>free</access>
+                    <linkTo>website</linkTo>
+                    <linkCollectionIdentifier>150008-academic</linkCollectionIdentifier>
+                  </linkObject>
+                </relation>
+                <relation>
+                  <relationType>dbcaddi:hasOnlineAccess</relationType>
+                  <relationUri>http://site.ebrary.com/lib/[PROVIDERSLIBRARYID]/docDetail.action?docID=10481819</relationUri>
+                  <linkObject>
+                    <access>remote</access>
+                    <linkTo>proxy</linkTo>
+                    <linkCollectionIdentifier>150008-academic</linkCollectionIdentifier>
+                  </linkObject>
+                </relation>
               </relations>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
+              <unitMembers>
+                <identifier>820010-katalog:ssj0000521095</identifier>
+                <identifier>820040-katalog:ebr10481819</identifier>
+                <identifier>820120-katalog:000616573</identifier>
+                <identifier>150008-academic:ebr10481819</identifier>
+              </unitMembers>
             </object>
           </collection>
         </searchResult>
@@ -102,8 +108,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>9</fedoraRecordsRead>
-          <time>8.866714</time>
-          <trackingId>os:2014-12-05T16:05:43:145454:7856</trackingId>
+          <time>1.896416</time>
+          <trackingId>2015-05-06T08:59:51:266477:16527</trackingId>
         </statInfo>
       </result>
     </searchResponse>
