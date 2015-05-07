@@ -1314,6 +1314,10 @@
           <searchCollectionIdentifier>150014-track</searchCollectionIdentifier>
         </searchCollection>
         <searchCollection>
+          <searchCollectionName>Credo</searchCollectionName>
+          <searchCollectionIdentifier>150041-credo</searchCollectionIdentifier>
+        </searchCollection>
+        <searchCollection>
           <searchCollectionName>Ebrary Academic Complete</searchCollectionName>
           <searchCollectionIdentifier>150008-academic</searchCollectionIdentifier>
         </searchCollection>
@@ -1388,6 +1392,10 @@
           <relationType>dbcaddi:continuedIn</relationType>
           <relationType>dbcaddi:discusses</relationType>
           <relationType>dbcaddi:discussedIn</relationType>
+        </searchCollection>
+        <searchCollection>
+          <searchCollectionName>Zinio</searchCollectionName>
+          <searchCollectionIdentifier>150059-magasin</searchCollectionIdentifier>
         </searchCollection>
         <relationTypes>
           <relationType>dbcaddi:continuedIn</relationType>
