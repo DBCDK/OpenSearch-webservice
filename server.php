@@ -2736,6 +2736,15 @@ class openSearch extends webServiceServer {
             $oid = $mou->nodeValue;
           }
           $unit_members[$sort_prio . $mou->nodeValue] = $mou->nodeValue;
+          if ($record_source == '870970-basis') {
+            $id = explode(':', $mou->nodeValue);
+            $local_streams = self::fetch_valid_sources_from_stream($mou->nodeValue);
+            foreach ($local_streams as $stream) {
+              if ($stream != '870970-basis') {
+                $unit_members[$sort_prio . 'x' . $stream . ':' . $id[1]] = $stream . ':' . $id[1];
+              }
+            }
+          }
         }
       }
       if ($unit_fallback && !$primary_oid) { 
