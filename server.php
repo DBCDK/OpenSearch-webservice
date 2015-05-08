@@ -550,7 +550,6 @@ class openSearch extends webServiceServer {
         }
         $fpid_sort_keys[$fpid] = str_replace($HOLDINGS, $sort_holdings, $unit_sort_keys[$unit_id]);
         if ($error = self::get_fedora_raw($fpid, $fedora_result, $data_stream)) {
-// fetch empty record from ini-file and use instead of error
           if ($missing_record) {
             $error = NULL;
             $fedora_result = sprintf($missing_record, $fpid);
@@ -587,7 +586,7 @@ class openSearch extends webServiceServer {
                                     $unit_members,
                                     $param->relationData->_value,
                                     $fpid,
-                                    $primary_oid, // no primary Pid
+                                    $primary_oid,
                                     NULL, // no $filter_agency on search - bad performance
                                     $no_of_holdings,
                                     $explain);
@@ -895,8 +894,9 @@ class openSearch extends webServiceServer {
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
         list($best_pid, $primary_oid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
         $sources = self::fetch_valid_sources_from_stream($best_pid);
-        list($fpid_collection) = explode(':', $fpid->_value);
+        list($fpid_collection, $fpid_local) = explode(':', $fpid->_value);
         $data_stream = '';
+        $client_fpid = $fpid->_value;
         if (!in_array($fpid_colection, $sources)) {
           list($localdata_collection) = explode(':', $localdata_object[$fpid->_value]);
           if (in_array($localdata_collection, $sources)) {
@@ -913,10 +913,10 @@ class openSearch extends webServiceServer {
 //var_dump($sources);
 //die();
         if (self::deleted_object($fpid->_value)) {
-          $rec_error = 'Error: deleted record: ' . $fpid->_value;
+          $rec_error = 'Error: deleted record: ' . $client_fpid;
         }
         elseif ($error = self::get_fedora_raw($fpid->_value, $fedora_result, $data_stream)) {
-          $rec_error = 'Error: unknown/missing record: ' . $fpid->_value;
+          $rec_error = 'Error: unknown/missing record: ' . $client_fpid;
         }
         elseif ($param->relationData->_value || 
             $this->format['found_solr_format'] || 
@@ -944,7 +944,7 @@ class openSearch extends webServiceServer {
       $o->collection->_value->numberOfObjects->_value = 1;
       if ($rec_error) {
         $help->_value->error->_value = $rec_error;
-        $help->_value->identifier->_value = $fpid->_value;
+        $help->_value->identifier->_value = $client_fpid;
         $o->collection->_value->object[] = $help;
         unset($help);
         unset($rec_error);
@@ -955,7 +955,7 @@ class openSearch extends webServiceServer {
                                     $fedora_addi_relation,
                                     $unit_members,
                                     $param->relationData->_value,
-                                    $fpid->_value,
+                                    $client_fpid,
                                     $best_pid,
                                     $this->filter_agency,
                                     $no_of_holdings);
@@ -2779,6 +2779,7 @@ class openSearch extends webServiceServer {
     return (($this->searchable_source[$agency . '-' . $collection]) ||
             ($this->agency_type == 'Folkebibliotek' && $coll_id == '870970-basis' && $this->searchable_source[$this->agency_catalog_source]) ||
             ($agency_type == 'Forskningsbibliotek' && $this->searchable_source['870970-forsk']) ||
+            ($agency_type == 'Skolebibliotek' && $this->searchable_source['870970-skole']) ||
             (self::is_collective_collection($coll_id)) ||
             (self::is_contained_in_collection($coll_id))
     );
