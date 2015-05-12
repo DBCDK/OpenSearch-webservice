@@ -2476,15 +2476,15 @@ class openSearch extends webServiceServer {
    */
   private function get_cache_info($offset) {
     static $ret;
-    if (empty($ret)) {
-      $ret['host'] = self::value_or_default($this->config->get_value($offset . '_cache_host', 'setup'),
-                                            $this->config->get_value('cache_host', 'setup'));
-      $ret['port'] = self::value_or_default($this->config->get_value($offset . '_cache_port', 'setup'),
-                                            $this->config->get_value('cache_port', 'setup'));
-      $ret['expire'] = self::value_or_default($this->config->get_value($offset . '_cache_expire', 'setup'),
-                                              $this->config->get_value('cache_expire', 'setup'));
+    if (empty($ret[$offset])) {
+      $ret[$offset]['host'] = self::value_or_default($this->config->get_value($offset . '_cache_host', 'setup'),
+                                                     $this->config->get_value('cache_host', 'setup'));
+      $ret[$offset]['port'] = self::value_or_default($this->config->get_value($offset . '_cache_port', 'setup'),
+                                                     $this->config->get_value('cache_port', 'setup'));
+      $ret[$offset]['expire'] = self::value_or_default($this->config->get_value($offset . '_cache_expire', 'setup'),
+                                                     $this->config->get_value('cache_expire', 'setup'));
     }
-    return $ret;
+    return $ret[$offset];
   }
 
   /** \brief Extract source part of an ID 
@@ -2740,8 +2740,9 @@ class openSearch extends webServiceServer {
             $id = explode(':', $mou->nodeValue);
             $local_streams = self::fetch_valid_sources_from_stream($mou->nodeValue);
             foreach ($local_streams as $stream) {
-              if ($stream != '870970-basis') {
-                $unit_members[$sort_prio . 'x' . $stream . ':' . $id[1]] = $stream . ':' . $id[1];
+              list($agency, $collection) = self::split_record_source($stream);
+              if ($stream != '870970-basis' && self::is_valid_source($agency, $collection)) {
+                $unit_members[$sort_prio . $stream . ':' . $id[1]] = $stream . ':' . $id[1];
               }
             }
           }
@@ -2904,7 +2905,7 @@ class openSearch extends webServiceServer {
     foreach ($unit_members as $um) {
         $u_member->identifier[]->_value = $um;
     }
-    $ret->unitMembers->_value = $u_member;
+    $ret->objectsAvailable->_value = $u_member;
     if ($debug_info) $ret->queryResultExplanation->_value = $debug_info;
     //if (DEBUG_ON) var_dump($ret);
 
