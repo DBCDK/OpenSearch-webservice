@@ -416,9 +416,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>870970-basis:44082985</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
             <object>
               <dkabm:record>
@@ -824,9 +824,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>870970-basis:44319454</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
             <object>
               <dkabm:record>
@@ -1240,9 +1240,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>870970-basis:43917129</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
           </collection>
         </searchResult>
@@ -1250,8 +1250,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>140</fedoraRecordsRead>
-          <time>3.486279</time>
-          <trackingId>2015-05-11T10:03:17:505469:21232</trackingId>
+          <time>3.537629</time>
+          <trackingId>2015-05-13T08:56:02:339656:14890</trackingId>
         </statInfo>
       </result>
     </searchResponse>

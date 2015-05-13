@@ -70,9 +70,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>820010-katalog:3540389</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
           </collection>
         </searchResult>
@@ -152,9 +152,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>820010-katalog:3755325</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
           </collection>
         </searchResult>
@@ -224,9 +224,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>870970-basis:27589995</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
           </collection>
         </searchResult>
@@ -301,9 +301,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>870970-basis:27928846</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
           </collection>
         </searchResult>
@@ -381,9 +381,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>870970-basis:27694381</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
           </collection>
         </searchResult>
@@ -391,8 +391,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>18</fedoraRecordsRead>
-          <time>2.029379</time>
-          <trackingId>2015-05-11T10:02:19:098218:21240</trackingId>
+          <time>2.098369</time>
+          <trackingId>2015-05-13T08:55:02:582698:21232</trackingId>
         </statInfo>
       </result>
     </searchResponse>

@@ -18,9 +18,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>870971-tsart:34497745</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
           </collection>
           <formattedCollection>
@@ -50,9 +50,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>870970-basis:45235394</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
           </collection>
           <formattedCollection>
@@ -81,9 +81,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>870970-basis:29069654</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
             <object>
               <identifier>870970-basis:29069638</identifier>
@@ -93,9 +93,9 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>870970-basis:29069638</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
           </collection>
           <formattedCollection>
@@ -125,8 +125,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>21</fedoraRecordsRead>
-          <time>2.144236</time>
-          <trackingId>2015-05-11T10:03:02:460416:21228</trackingId>
+          <time>2.095346</time>
+          <trackingId>2015-05-13T08:55:47:409656:21234</trackingId>
         </statInfo>
       </result>
     </searchResponse>

@@ -95,12 +95,12 @@
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
-              <unitMembers>
+              <objectsAvailable>
                 <identifier>820010-katalog:ssj0000521095</identifier>
                 <identifier>820040-katalog:ebr10481819</identifier>
                 <identifier>820120-katalog:000616573</identifier>
                 <identifier>150008-academic:ebr10481819</identifier>
-              </unitMembers>
+              </objectsAvailable>
             </object>
           </collection>
         </searchResult>
@@ -108,8 +108,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>9</fedoraRecordsRead>
-          <time>1.896416</time>
-          <trackingId>2015-05-06T08:59:51:266477:16527</trackingId>
+          <time>2.07259</time>
+          <trackingId>2015-05-13T08:55:33:646859:21232</trackingId>
         </statInfo>
       </result>
     </searchResponse>
