@@ -1,6 +1,7 @@
 <pre>
 4.1
 ===
+as of revision 85576 search indexes are case insensitive
 Added identifiers from local datastream in 870970-basis to objectsAvailable - US 1624
 getObject logic concerning municipal records is rewritten to get data from the *-katalog or from localData stream in the 870970-basis object - US 1622
 ini: agency_type change from findLibrary to ?action=libraryTypeList&outputType=json&trackingId=%s for openagency 2.19 and later. Handles research-libraries being part of 870970-forsk in search profiles - US 1623
@@ -12,7 +13,7 @@ ini: syslog_id must be set when loggin to syslog - rev. 84032.
 ini: set num_found_collaps_limit = 100
 ini: _VERSION_ in dump_timer is replaced by version from ini-file - rev 84004
 use support for new openAgency call libraryTypeList - openagency 2.19 and later has this operation
-fetch cql file from solr file directory. US 1603: opensearch_cql skal distribueres og versioneres sammen med brøndens filer. 
+fetch cql file from solr file directory. US 1603: opensearch_cql skal distribueres og versioneres sammen med br&oslash;ndens filer. 
 xsd: cqlIndex as part of infoRepository. InfoCqlIndexDocs removed.
 ini: solr_file_cache_* 
 getObject can fecth up to max_manifestations (ini-file setting) records
@@ -45,7 +46,7 @@ US 1499: Udlevering af alle ln:links i én unit (fra de kilder man har adgang ti
 ini: dump_timer_ip will add the request ip to the TIMER log lines
 US 1477: check for the 870970-basis and 870970-forsk groupings
 Object in units are selected respecting a prioritized list of libraries - US 1477
-US 1477: Prioriteringsliste for hvilke objekter der skal udleveres fra en unit i stedet for at det altid er primær-objektet der udleveres 
+US 1477: Prioriteringsliste for hvilke objekter der skal udleveres fra en unit i stedet for at det altid er prim&aelig;r-objektet der udleveres 
 ini: corrected agency_types to libraryType=Alle - US 1477
 ini: agency_show_order - need openagency tag 2.17 - US 1477
 wsdl, xsd, ini: new operation info. Removed enumerations from xsd, since they are now in infoResponse
@@ -69,7 +70,7 @@ cql: handling string and word as relation modifier on =
 xsd: formatsAvailable added minoccurs="0"
 ini: introducing sort-groups - US 1376: ... supplerende sortkriterier er fast defineret
 Information about the records status is returned for search and getObject. For search it should allways 
-  be active - US 1429: Oplysning om status på en post/datastrøm når man bruger getObject
+  be active - US 1429: Oplysning om status p&aring; en post/datastr&oslash;m n&aring;r man bruger getObject
 xsd: added recordStatus (active/delete) to the object structure. 
 If the agency has a record of its own, this is selected instead of the primaryBibObject or the commenData stream for
   7xxxxx libraries - US 1427: Udlevering af et biblioteks egen post fra enhedsklynge
@@ -88,7 +89,7 @@ US 1378: Filter private fields from marc records from raw record repository
 removed userDefinedBoost
 US 1353: removed rank parameter in request. Values can now be specied as part of the sort parameter
 US 1353: rankUsed renamed to sortUsed and set to rank or sort used in request
-US 1320: Acceptance-test af opensearch webservice brug af råpostrepositorie
+US 1320: Acceptance-test af opensearch webservice brug af r&aring;postrepositorie
 
 3.1
 ===
@@ -135,7 +136,7 @@ xsd: added sortType for work_type, record_owner and article_date - US #990
 ini: rank_frequency - US #1079: udvidelse af openbib.dk - rankering
 ini: collapsing_field 
 unit.id from SOLR can be scalar or array
-Bugfix: ((røde OR blå) AND ekspres AND kattler) OR (ekspres AND kattler NOT røde) is now parsed correctly
+Bugfix: ((r&oslash;de OR bl&aring;) AND ekspres AND kattler) OR (ekspres AND kattler NOT r&oslash;de) is now parsed correctly
 Include external relations (from commonData) for relation-records included when request->relationData equals full #US 983
 xsd, getObject: error on object level. If one or more records are deleted/unknown
 ini: added relation_group_source_tab
