@@ -562,12 +562,6 @@ class openSearch extends webServiceServer {
           unset($explain);
           if ($this->collapsing_field) {
             $explain = 'No explain available when using collapsing field';
-            //foreach ($solr_arr['grouped'][$this->collapsing_field]['groups'] as $solr_idx => $solr_grp) {
-            //  if ($fpid == $solr_grp['groupValue']) {
-            //    $explain = $solr_arr['debug']['explain'][$fpid];
-            //    break;
-            //  }
-            //}
           }
           else {
             foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
@@ -822,14 +816,14 @@ class openSearch extends webServiceServer {
       $id_array[] = $fpid->_value;
       list($owner_collection, $id) = explode(':', $fpid->_value);
       list($owner, $coll) = explode('-', $owner_collection);
-      if (self::get_agency_type($owner) == 'Folkebibliotek') {
+      if (in_array(self::get_agency_type($owner), array('Folkebibliotek', 'Skolebibliotek'))) {
         $id_array[] = '870970-basis:' . $id . '-' . $owner_collection;
         $localdata_object[$fpid->_value] = '870970-basis:' . $id;
       }
     }
     foreach ($lpids as $lid) {
       $id_array[] = $this->agency . '-katalog:' . $lid->_value;
-      if (self::get_agency_type($this->agency) == 'Folkebibliotek') {
+      if (in_array(self::get_agency_type($this->agency), array('Folkebibliotek', 'Skolebibliotek'))) {
         $id_array[] = '870970-basis:' . $lid->_value;
       }
     }
@@ -1261,6 +1255,14 @@ class openSearch extends webServiceServer {
     }
     $this->watch->sums['facets'] = count($facets->facetName) . sprintf('.%03d 0', $facets->numberOfTerms->_value);
     return $ret;
+  }
+
+  /** \brief 
+   *
+   * @retval string - html doc
+   */
+  protected function showCqlFile() {
+    echo 'Use info operation to fetch information' . dirname($_SERVER['PHP_SELF']);
   }
 
   /** \brief Compares registers in cql_file with solr, using the luke request handler:
@@ -1846,6 +1848,7 @@ class openSearch extends webServiceServer {
     $hold_url = sprintf($hold_ws_url, $pid);
     $holds = $this->curl->get($hold_url);
     $this->watch->stop('holdings');
+    verbose::log(DEBUG, 'get_holdings:(' . $this->watch->splittime('holdings') . '): ' . $hold_url);
     $curl_err = $this->curl->get_status();
     if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
       verbose::log(FATAL, 'holdings_db http-error: ' . $curl_err['http_code'] . ' from: ' . $hold_url);
@@ -2233,32 +2236,18 @@ class openSearch extends webServiceServer {
   private function set_solr_filter($profile, $index = 'rec.collectionIdentifier') {
     $collection_query = $this->repository['collection_query'];
     $ret = array();
-    $found_holding = $found_basis = FALSE;
     if (is_array($profile)) {
       $this->collection_alias = self::set_collection_alias($profile);
       foreach ($profile as $p) {
         if (self::xs_boolean($p['sourceSearchable'])) {
-          $found_basis = $found_basis || ($p['sourceIdentifier'] == '870970-basis');
           if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
             $ret[] = '(' . $index . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
           }
           else {
-            $found_basis = TRUE;
-            if ($p['sourceIdentifier'] == $this->agency . '-holding') {
-              $found_holding = TRUE;
-              // TODO
-              // NOGO Cannot "inject" holdingsitem.* here.
-              //      Should be transformed in cql2solr->parse to solr join-handler and fq parameter
-              // $ret[] = '(rec.collectionIdentifier:870970-basis' . AND_OP . 'holdingsitem.agencyId=' . $this->agency . ')';
-              $p['sourceIdentifier'] = $this->agency . '-katalog';
-            }
             $ret[] = $index . ':' . $p['sourceIdentifier'];
           }
         }
       }
-    }
-    if ($found_holding && !$found_basis) {
-      $ret[] = 'rec.collectionIdentifier:870970-basis';
     }
     return implode(OR_OP, $ret);
   }
@@ -2763,6 +2752,7 @@ class openSearch extends webServiceServer {
 
   /** \brief check if a record source is contained in the search profile: searchable_source
    * - Public libraries has to be in their own catalog or as part of 870970-basis
+   * - School libraries has to be in their own catalog or as part of 870970-skole
    * - Research libraries has to be in their own catalog or any reasearch library when 870970-forsk is in the search profile
    *   "part-of"- or "contains"- collections are handled by collection_contained_in structure obtained from openAgency
    * 
@@ -2788,6 +2778,7 @@ class openSearch extends webServiceServer {
     }
     return (($this->searchable_source[$agency . '-' . $collection]) ||
             ($this->agency_type == 'Folkebibliotek' && $coll_id == '870970-basis' && $this->searchable_source[$this->agency_catalog_source]) ||
+            ($this->agency_type == 'Skolebibliotek' && $coll_id == '870970-basis' && $this->searchable_source[$this->agency_catalog_source]) ||
             ($agency_type == 'Forskningsbibliotek' && $this->searchable_source['870970-forsk']) ||
             ($agency_type == 'Skolebibliotek' && $this->searchable_source['870970-skole']) ||
             (self::is_collective_collection($coll_id)) ||
