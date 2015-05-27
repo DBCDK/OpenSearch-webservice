@@ -937,6 +937,9 @@
             <indexName>facet.dk5</indexName>
           </cqlIndex>
           <cqlIndex>
+            <indexName>facet.extraTitles</indexName>
+          </cqlIndex>
+          <cqlIndex>
             <indexName>facet.fictionSubject</indexName>
           </cqlIndex>
           <cqlIndex>
@@ -1106,9 +1109,18 @@
           </cqlIndex>
           <cqlIndex>
             <indexName>term.audienceRecommended</indexName>
+            <indexAlias>
+              <indexName>ra</indexName>
+            </indexAlias>
           </cqlIndex>
           <cqlIndex>
             <indexName>term.audienceRestricted</indexName>
+            <indexAlias>
+              <indexName>rb</indexName>
+            </indexAlias>
+            <indexAlias>
+              <indexName>rp</indexName>
+            </indexAlias>
           </cqlIndex>
           <cqlIndex>
             <indexName>term.category</indexName>
