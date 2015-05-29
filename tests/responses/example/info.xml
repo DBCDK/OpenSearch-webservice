@@ -1394,6 +1394,10 @@
           <searchCollectionIdentifier>870976-allanmeld</searchCollectionIdentifier>
         </searchCollection>
         <searchCollection>
+          <searchCollectionName>Skolebiblioteker</searchCollectionName>
+          <searchCollectionIdentifier>870970-skole</searchCollectionIdentifier>
+        </searchCollection>
+        <searchCollection>
           <searchCollectionName>Store Danske</searchCollectionName>
           <searchCollectionIdentifier>150012-leksikon</searchCollectionIdentifier>
         </searchCollection>
