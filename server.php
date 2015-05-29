@@ -461,7 +461,8 @@ class openSearch extends webServiceServer {
 // fetch display here to get sort-keys for primary objects
       $this->watch->stop('Solr_filt');
       $this->watch->start('Solr_disp');
-      $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, '*', self::xs_boolean($param->allObjects->_value), $filter_q);
+      // ignore search profile filter and fetch info from the primary object for display and sort complexkey
+      $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), '');
       $this->watch->stop('Solr_disp');
       if (is_scalar($solr_2_arr)) {
         $error = 'Internal problem: Cannot decode Solr re-search';
