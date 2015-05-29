@@ -156,6 +156,7 @@ class openSearch extends webServiceServer {
     $debug_query = $this->xs_boolean($param->queryDebug->_value);
     $this->agency_catalog_source = $this->agency . '-katalog';
     $this->agency_type = self::get_agency_type($this->agency);
+    //$this->agency_type = self::get_agency_type('300615');
 
 
     if ($us_settings = $this->repository['universal']) {
@@ -436,10 +437,6 @@ class openSearch extends webServiceServer {
           $used_search_fids[$id] = TRUE;
         }
         $work_cache_struct[$w_no] = $uid_array;
-        if (count($uid_array) >= MAX_OBJECTS_IN_WORK) {
-          verbose::log(WARNING, 'Fedora work-record: ' . $work_id . ' refered from: ' . $uid . ' contains ' . count($uid_array) . ' objects');
-          array_splice($uid_array, MAX_OBJECTS_IN_WORK);
-        }
         if ($w_no >= $start)
           $work_ids[$w_no] = $uid_array;
       }
@@ -532,6 +529,10 @@ class openSearch extends webServiceServer {
     }
     foreach ($work_ids as &$work) {
       $objects = array();
+      if (count($work) >= MAX_OBJECTS_IN_WORK) {
+        verbose::log(WARNING, 'Fedora work-record containing: ' . reset($work) . ' contains ' . count($work) . ' units. Cut work to first ' . MAX_OBJECTS_IN_WORK . ' units');
+        array_splice($work, MAX_OBJECTS_IN_WORK);
+      }
       foreach ($work as $unit_id) {
         $data_stream = self::set_data_stream_name($collection_identifier[$unit_id]);
         self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);

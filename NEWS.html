@@ -1,9 +1,10 @@
 <pre>
 4.1
 ===
+Changed logic so works are cut to max 100 (MAX_OBJECTS_IN_WORK) manifestations, after not needed manifestations are removed.
 Handle schools (Skolebiblioteker) as part of 870970-skole - US 1620: openSearch skal l&aelig;re af 870970-skole er samle-collection for skolebiblioteker 
 Handle school records as data in local datastream of 870970-basis - US 1621: Skolebiblioteksposter kan som folkebiblioteksposter, findes som lokaldatastr&oslash;m i 870970-objektet  
-as of revision 85576 search indexes are case insensitive
+As of revision 85576 search indexes are case insensitive
 Added identifiers from local datastream in 870970-basis to objectsAvailable - US 1624
 getObject logic concerning municipal records is rewritten to get data from the *-katalog or from localData stream in the 870970-basis object - US 1622
 ini: agency_type change from findLibrary to ?action=libraryTypeList&outputType=json&trackingId=%s for openagency 2.19 and later. Handles research-libraries being part of 870970-forsk in search profiles - US 1623
