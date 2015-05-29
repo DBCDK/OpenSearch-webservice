@@ -694,7 +694,8 @@ class openSearch extends webServiceServer {
                        ':: agency:' . $this->agency . 
                        ' profile:' . $param->profile->_value . 
                        ' ip:' . $_SERVER['REMOTE_ADDR'] .
-                       ' query:' . $param->query->_value . ' ' . $this->watch->dump());
+                       ' ' . str_replace(PHP_EOL, '', $this->watch->dump()) . 
+                       ' query:' . $param->query->_value . PHP_EOL);
 
     if (@ constant('PRIO')) var_dump($this->searchable_source);
     if (@ constant('PRIO')) var_dump($this->collection_contained_in);
