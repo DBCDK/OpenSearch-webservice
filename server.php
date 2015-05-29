@@ -461,7 +461,7 @@ class openSearch extends webServiceServer {
 // fetch display here to get sort-keys for primary objects
       $this->watch->stop('Solr_filt');
       $this->watch->start('Solr_disp');
-      $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), $filter_q);
+      $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, '*', self::xs_boolean($param->allObjects->_value), $filter_q);
       $this->watch->stop('Solr_disp');
       if (is_scalar($solr_2_arr)) {
         $error = 'Internal problem: Cannot decode Solr re-search';
@@ -485,7 +485,6 @@ class openSearch extends webServiceServer {
                 $u_id =  self::scalar_or_first_elem($fdoc['unit.id']);
                 if ($u_id == $w) {
                   $unit_sort_keys[$u_id] = $fdoc['sort.complexKey'] . '  ' . $u_id;
-    if (@ constant('PRIO')) var_dump($fdoc['rec.collectionIdentifier']);
                   $collection_identifier[$u_id] =  self::scalar_or_first_elem($fdoc['rec.collectionIdentifier']);
                   break 2;
                 }
