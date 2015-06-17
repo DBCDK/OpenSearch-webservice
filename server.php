@@ -487,7 +487,6 @@ class openSearch extends webServiceServer {
                 if ($u_id == $w) {
                   $unit_sort_keys[$u_id] = $fdoc['sort.complexKey'] . '  ' . $u_id;
                   $collection_identifier[$u_id] =  self::scalar_or_first_elem($fdoc['rec.collectionIdentifier']);
-                  break 2;
                 }
               }
             }
@@ -508,6 +507,7 @@ class openSearch extends webServiceServer {
     if (DEBUG_ON) echo 'solr_2_arr: ' . print_r($solr_2_arr, TRUE) . "\n";
     if (DEBUG_ON) echo 'add_queries: ' . print_r($add_queries, TRUE) . "\n";
     if (DEBUG_ON) echo 'used_search_fids: ' . print_r($used_search_fids, TRUE) . "\n";
+    if (DEBUG_ON) echo 'collection_identifier: ' . print_r($collection_identifier, TRUE) . "\n";
 
     $this->watch->stop('Build_id');
 
@@ -522,7 +522,7 @@ class openSearch extends webServiceServer {
     $collections = array();
     $rec_no = max(1, $start);
     $HOLDINGS = ' holdings ';
-    $this->agency_priority_list = self::get_agency_show_priority();
+    $this->agency_priority_list = self::fetch_agency_show_priority();
     if (@ constant('PRIO')) var_dump($collection_identifier);
     if ($debug_query) {
       $explain_keys = array_keys($solr_arr['debug']['explain']);
@@ -534,12 +534,11 @@ class openSearch extends webServiceServer {
         array_splice($work, MAX_OBJECTS_IN_WORK);
       }
       foreach ($work as $unit_id) {
-        $data_stream = self::set_data_stream_name($collection_identifier[$unit_id]);
         self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
 // test empty rels_sys $unit_rels_hierarchy = self::empty_rels_hierarchy();
 //var_dump($unit_rels_hierarchy); die();
-        list($fpid, $primary_oid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
+        list($unit_members, $fpid, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
         $sort_holdings = ' ';
         unset($no_of_holdings);
         if (self::xs_boolean($param->includeHoldingsCount->_value)) {
@@ -550,7 +549,8 @@ class openSearch extends webServiceServer {
           $sort_holdings = sprintf(' %04d ', 9999 - intval($holds['have']));
         }
         $fpid_sort_keys[$fpid] = str_replace($HOLDINGS, $sort_holdings, $unit_sort_keys[$unit_id]);
-        if ($error = self::get_fedora_raw($fpid, $fedora_result, $data_stream)) {
+        list($pid, $datastream)  = self::create_fedora_pid_and_stream($fpid, $localdata_in_pid);
+        if ($error = self::get_fedora_raw($pid, $fedora_result, $datastream)) {
           if ($missing_record) {
             $error = NULL;
             $fedora_result = sprintf($missing_record, $fpid);
@@ -758,7 +758,7 @@ class openSearch extends webServiceServer {
 
     $this->agency_catalog_source = $this->agency . '-katalog';
     $this->agency_type = self::get_agency_type($this->agency);
-    $this->agency_priority_list = self::get_agency_show_priority();
+    $this->agency_priority_list = self::fetch_agency_show_priority();
     $this->format = self::set_format($param->objectFormat, 
                                $this->config->get_value('open_format', 'setup'), 
                                $this->config->get_value('solr_format', 'setup'));
@@ -814,19 +814,19 @@ class openSearch extends webServiceServer {
       return $ret;
 
     }
+    foreach ($lpids as $lid) {
+      $fpid->_value = $this->agency_catalog_source . ':' . $lid->_value;
+      $fpids[] = $fpid;
+      unset($fpid);
+    }
     foreach ($fpids as $fpid) {
       $id_array[] = $fpid->_value;
       list($owner_collection, $id) = explode(':', $fpid->_value);
       list($owner, $coll) = explode('-', $owner_collection);
       if (in_array(self::get_agency_type($owner), array('Folkebibliotek', 'Skolebibliotek'))) {
-        $id_array[] = '870970-basis:' . $id . '-' . $owner_collection;
+        $id_array[] = '870970-basis:' . $id;
+        //$id_array[] = '870970-basis:' . $id . '-' . $owner_collection;  // Only search for localData rec.id's
         $localdata_object[$fpid->_value] = '870970-basis:' . $id;
-      }
-    }
-    foreach ($lpids as $lid) {
-      $id_array[] = $this->agency . '-katalog:' . $lid->_value;
-      if (in_array(self::get_agency_type($this->agency), array('Folkebibliotek', 'Skolebibliotek'))) {
-        $id_array[] = '870970-basis:' . $lid->_value;
       }
     }
     $this->cql2solr = new SolrQuery($this->repository, $this->config);
@@ -844,36 +844,31 @@ class openSearch extends webServiceServer {
     $solr_result = $this->curl->get($solr_q);
     $solr_2_arr[] = unserialize($solr_result);
 
-  // transform the local ids to fedora pids
-  // the 870970-basis record source is prefered over the -katalog record source if for some odd reason they both exist
-    foreach ($lpids as $lid) {
-      $best_pid->_value = $this->agency . '-katalog:' . $lid->_value;
+    foreach ($fpids as $fpid_number => $fpid) {
+      $no_direct_hit = $unit_id = $fedora_pid = $basis_pid = $basis_unit_id = '';
+      $in_collection = FALSE;
+      list($fpid_collection) = explode(':', $fpid->_value);
       foreach ($solr_2_arr as $s_2_a) {
         if ($s_2_a['response']['docs']) {
           foreach ($s_2_a['response']['docs'] as $fdoc) {
-            $p_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
-            if ($p_id == '870970-basis:' . $lid->_value) {
-              $best_pid->_value = $p_id;
-              break 2;
+            $f_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
+            if ($f_id == $fpid->_value) {
+              $unit_id =  self::scalar_or_first_elem($fdoc['unit.id']);
+              $fedora_pid = $f_id;
+              $in_collection = $in_collection || in_array($fpid_collection, $fdoc['rec.collectionIdentifier']);
+            }
+            if ($f_id == $localdata_object[$fpid->_value]) {
+              $basis_unit_id =  self::scalar_or_first_elem($fdoc['unit.id']);
+              $basis_pid = $f_id;
+              $in_collection = $in_collection || in_array($fpid_collection, $fdoc['rec.collectionIdentifier']);
             }
           }
         }
       }
-      $fpids[] = $best_pid;
-      unset($best_pid);
-    }
-    unset($unit_id);
-    foreach ($fpids as $fpid_number => $fpid) {
-      foreach ($solr_2_arr as $s_2_a) {
-        if ($s_2_a['response']['docs']) {
-          foreach ($s_2_a['response']['docs'] as $fdoc) {
-            $p_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
-            if (($p_id == $fpid->_value) || ($p_id == $localdata_object[$fpid->_value])) {
-              $unit_id =  self::scalar_or_first_elem($fdoc['unit.id']);
-              break 2;
-            }
-          }
-        }
+      if (empty($fedora_pid) && $basis_pid) {
+        $no_direct_hit = TRUE;
+        $unit_id =  $basis_unit_id;
+        $fedora_pid = $basis_pid;
       }
 
       if (!$unit_id) {  // should never happen, since the unit.id has to be present in SOLR
@@ -888,31 +883,14 @@ class openSearch extends webServiceServer {
       }
       else {
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
-        list($best_pid, $primary_oid, $unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
-        $sources = self::fetch_valid_sources_from_stream($best_pid);
-        list($fpid_collection, $fpid_local) = explode(':', $fpid->_value);
-        $data_stream = '';
-        $client_fpid = $fpid->_value;
-        if (!in_array($fpid_colection, $sources)) {
-          list($localdata_collection) = explode(':', $localdata_object[$fpid->_value]);
-          if (in_array($localdata_collection, $sources)) {
-            $data_stream = 'localData.' . $fpid_collection;
-            $fpid->_value = $localdata_object[$fpid->_value];
-          }
+        list($unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
+        list($fpid_collection, $fpid_local) = explode(':', $fedora_pid);
+        list($fedora_pid, $datastream)  = self::create_fedora_pid_and_stream(($in_collection ? $fpid->_value : $fedora_pid), $fedora_pid);
+        if (self::deleted_object($fedora_pid, $datastream)) {
+          $rec_error = 'Error: deleted record: ' . $fpid->_value;
         }
-//var_dump($filter_q);
-//var_dump($solr_2_arr); 
-//var_dump($best_pid);
-//var_dump($data_stream); 
-//var_dump($fpid->_value); 
-//var_dump($localdata_object); 
-//var_dump($sources);
-//die();
-        if (self::deleted_object($fpid->_value)) {
-          $rec_error = 'Error: deleted record: ' . $client_fpid;
-        }
-        elseif ($error = self::get_fedora_raw($fpid->_value, $fedora_result, $data_stream)) {
-          $rec_error = 'Error: unknown/missing record: ' . $client_fpid;
+        elseif ($error = self::get_fedora_raw($fedora_pid, $fedora_result, $datastream)) {
+          $rec_error = 'Error: unknown/missing record: ' . $fpid->_value;
         }
         elseif ($param->relationData->_value || 
             $this->format['found_solr_format'] || 
@@ -940,7 +918,7 @@ class openSearch extends webServiceServer {
       $o->collection->_value->numberOfObjects->_value = 1;
       if ($rec_error) {
         $help->_value->error->_value = $rec_error;
-        $help->_value->identifier->_value = $client_fpid;
+        $help->_value->identifier->_value = $fpid->_value;
         $o->collection->_value->object[] = $help;
         unset($help);
         unset($rec_error);
@@ -951,7 +929,7 @@ class openSearch extends webServiceServer {
                                     $fedora_addi_relation,
                                     $unit_members,
                                     $param->relationData->_value,
-                                    $client_fpid,
+                                    $fpid->_value,
                                     $best_pid,
                                     $this->filter_agency,
                                     $no_of_holdings);
@@ -1341,7 +1319,8 @@ class openSearch extends webServiceServer {
           @ $dom->loadXml('<?xml version="1.0" encoding="UTF-8"?' . '><marcx:record format="danMARC2" type="Bibliographic" xmlns:marcx="info:lc/xmlns/marcxchange-v1"><marcx:datafield tag="245" ind1="0" ind2="0"><marcx:subfield code="a">ERROR: Cannot read record from repository: ' . $this->repository_name . '</marcx:subfield></marcx:datafield></marcx:record>');
         }
         else {
-          $query = 'SELECT content FROM records WHERE bibliographicrecordid = \'' . $solr_doc['marc.001a'][0] . '\' AND agencyid = ' . $solr_doc['marc.001b'];
+          $agency = $solr_doc['marc.001b'] == '870970' ? '191919' : $solr_doc['marc.001b'];
+          $query = 'SELECT content FROM records WHERE bibliographicrecordid = \'' . $solr_doc['marc.001a'][0] . '\' AND agencyid = ' . $agency;
           $pg->set_query($query);
           $pg->execute();
           $row = $pg->get_row();
@@ -1352,6 +1331,18 @@ class openSearch extends webServiceServer {
         }
         $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
         self::filter_marcxchange($solr_doc['marc.001b'], $marc_obj, $this->repository['filter']);
+        if ($agency <> $solr_doc['marc.001b']) {  // substitute 191919 with 870970 hack
+          foreach ($marc_obj->record->_value->datafield as $idf => &$df) {
+            if (($df->_attributes->tag->_value == '001') && is_array($df->_value->subfield)) {
+              foreach ($df->_value->subfield as $isf => &$sf) {
+                if (($sf->_attributes->code->_value == 'b') && ($sf->_value == $agency)) {
+                  $sf->_value = $solr_doc['marc.001b'];
+                  break 2;
+                }
+              }
+            }
+          }
+        }
         $rec_pos++;
         $ret[$rec_pos]->_value->collection->_value->resultPosition->_value = $rec_pos;
         $ret[$rec_pos]->_value->collection->_value->numberOfObjects->_value = 1;
@@ -1548,6 +1539,19 @@ class openSearch extends webServiceServer {
     return $xml;
   }
 
+  /** \brief Set fedora pid to corrects objct and modify datastream according to storage scheme
+   *
+   * @param string $pid 
+   * @param string $localdata_in_pid 
+   * @retval array - of object_id, datastream
+   */
+  private function create_fedora_pid_and_stream($pid, $localdata_in_pid) {
+    if (empty($localdata_in_pid) || ($pid == $localdata_in_pid)) {
+      return array($pid, 'commonData');
+    }
+    return array($localdata_in_pid, 'localData.' . self::record_source_from_pid($pid));
+  }
+
   /** \brief return data stream name depending on collection identifier
    *  - if $collection_id (rec.collectionIdentifier) startes with 7 - dataStream: localData.$collection_id
    *  - else dataStream: commonData
@@ -1565,7 +1569,7 @@ class openSearch extends webServiceServer {
       $data_stream = 'commonData';
     }
     if (DEBUG_ON) {
-      echo 'dataStream: ' . $data_stream . PHP_EOL;
+      echo 'dataStream: ' . $collection_id . ' ' . $data_stream . PHP_EOL;
     }
     return $data_stream;
   }
@@ -2400,6 +2404,18 @@ class openSearch extends webServiceServer {
     }
   }
 
+  /** \brief return agency priority
+   * 
+   * @param string $agency 
+   * @retval integer
+   */
+  private function agency_priority($agency) {
+    if (!isset($this->agency_priority_list[$agency])) {
+      $this->agency_priority_list[$agency] = count($this->agency_priority_list) + 1;
+    }
+    return $this->agency_priority_list[$agency];
+  }
+
   /** \brief Fetch agency types from OpenAgency, cache the result, and return agency type for $agency
    *
    * @param string $agency -
@@ -2427,7 +2443,7 @@ class openSearch extends webServiceServer {
    *
    * @retval mixed - array of agencies
    */
-  private function get_agency_show_priority() {
+  private function fetch_agency_show_priority() {
     static $agency_prio;
     if (!isset($agency_prio)) {
       require_once 'OLS_class_lib/show_priority_class.php';
@@ -2497,7 +2513,7 @@ class openSearch extends webServiceServer {
     return explode('-', $record_source, 2);
   }
 
-  /** \brief Build bq (BoostQuery) as field:content^weight - so far not used
+  /** \brief Build bq (BoostQuery) as field:content^weight 
    *
    * @param mixed $boost - boost query
    * @retval string - SOLR boost string
@@ -2507,10 +2523,19 @@ class openSearch extends webServiceServer {
     if ($boost) {
       $boosts = (is_array($boost) ? $boost : array($boost));
       foreach ($boosts as $bf) {
-        $ret .= '&bq=' .
-                urlencode($bf->_value->fieldName->_value . ':"' .
-                          str_replace('"', '', $bf->_value->fieldValue->_value) . '"^' .
-                          $bf->_value->weight->_value);
+        if (empty($bf->_value->fieldValue->_value)) {
+          if (!$weight = $bf->_value->weight->_value) {
+            $weight = 1;
+          }
+          $ret .= '&bf=' .
+                  urlencode('product(' . $bf->_value->fieldName->_value . ',' . $weight . ')');
+        }
+        else {
+          $ret .= '&bq=' .
+                  urlencode($bf->_value->fieldName->_value . ':"' .
+                            str_replace('"', '', $bf->_value->fieldValue->_value) . '"^' .
+                            $bf->_value->weight->_value);
+        }
       }
     }
     return $ret;
@@ -2678,7 +2703,7 @@ class openSearch extends webServiceServer {
    */
   private function fetch_best_bib_object($u_rel, $unit_id, $fallback = TRUE) {
     $arr = self::parse_unit_for_best_agency($u_rel, $unit_id, $fallback);
-    return $arr[0];
+    return $arr[1];
   }
 
   /** \brief Parse a unit object and return the id of the agency with best priority for the agency
@@ -2693,63 +2718,67 @@ class openSearch extends webServiceServer {
       $dom = new DomDocument();
       $dom->preserveWhiteSpace = FALSE;
     }
-    $oid = $length = FALSE;
-    $unit_members = array();
+    $localdata_in_pid = $pid_870970_basis = $best_pid = FALSE;
+    $in_870970_basis = $unit_members = array();
     if (@ $dom->loadXML($u_rel)) {
       $agency_type = self::get_agency_type($this->agency);
-      $primary_oid = $dom->getElementsByTagName('hasPrimaryBibObject')->item(0)->nodeValue;
+      $primary_pid = $dom->getElementsByTagName('hasPrimaryBibObject')->item(0)->nodeValue;
       $hmou = $dom->getElementsByTagName('hasMemberOfUnit');
-      $length = $hmou->length;
+      $pids_in_unit = array();
+      foreach ($hmou as $mou) {
+        $record_source = self::record_source_from_pid($mou->nodeValue);
+        list($agency, $collection) = self::split_record_source($record_source);
+        $prio = sprintf('%05s', self::agency_priority($agency));
+        $pids_in_unit[$prio] = $mou->nodeValue;
+        if ($record_source == '870970-basis') {
+          $pid_870970_basis = $mou->nodeValue;
+          $id = explode(':', $mou->nodeValue);
+          $local_streams = self::fetch_valid_sources_from_stream($mou->nodeValue);
+          foreach ($local_streams as $stream) {
+            list($agency, $collection) = self::split_record_source($stream);
+            $prio = sprintf('%05s', self::agency_priority($agency));
+            $pids_in_unit[$prio] = $stream . ':' . $id[1];
+            $in_870970_basis[$pids_in_unit[$prio]] = TRUE;
+          }
+        }
+      }
+      ksort($pids_in_unit);
       $best_pos = count($this->agency_priority_list) + 1;
-      if (!$length && $this->unit_fallback[$unit_id] && (!$fallback || !$primary_oid->length)) {
+      if (empty($pids_in_unit) && $this->unit_fallback[$unit_id] && (!$fallback || !$primary_pid->length)) {
         $unit_fallback = TRUE;
-        unset($hmou);
         foreach ($this->unit_fallback[$unit_id] as $pid) {
-          $hmou[]->nodeValue = $pid;
+          $pids_in_unit[] = $pid;
         }
         verbose::log(ERROR, 'Empty unit: ' . $unit_id . ' - use pid from Solr instead');
       }
-      foreach ($hmou as $mou) {
-        if (@ constant('PRIO')) var_dump($mou->nodeValue);
-        $record_source = self::record_source_from_pid($mou->nodeValue);
+      foreach ($pids_in_unit as $pid_in_unit) {
+        if (@ constant('PRIO')) var_dump($pid_in_unit);
+        $record_source = self::record_source_from_pid($pid_in_unit);
         list($agency, $collection) = self::split_record_source($record_source);
         if (self::is_valid_source($agency, $collection)) {
-          if (isset($this->agency_priority_list[$agency])) {
-            $sort_prio = sprintf('%05s', $this->agency_priority_list[$agency]);
-            if (@ constant('PRIO')) var_dump($this->agency_priority_list[$agency]);
-            if ($this->agency_priority_list[$agency] < $best_pos) {
-              $oid = $mou->nodeValue;
-              $best_pos = $this->agency_priority_list[$agency];
-            }
-          }
-          elseif (!$oid) {
-            $sort_prio = sprintf('%05s', count($this->agency_priority_list) + 1);
-            $oid = $mou->nodeValue;
-          }
-          $unit_members[$sort_prio . $mou->nodeValue] = $mou->nodeValue;
-          if ($record_source == '870970-basis') {
-            $id = explode(':', $mou->nodeValue);
-            $local_streams = self::fetch_valid_sources_from_stream($mou->nodeValue);
-            foreach ($local_streams as $stream) {
-              list($agency, $collection) = self::split_record_source($stream);
-              if ($stream != '870970-basis' && self::is_valid_source($agency, $collection)) {
-                $unit_members[$sort_prio . $stream . ':' . $id[1]] = $stream . ':' . $id[1];
-              }
-            }
+          $unit_members[] = $pid_in_unit;
+          if (!$best_pid) {
+            $best_pid = $pid_in_unit;
           }
         }
       }
-      if ($unit_fallback && !$primary_oid) { 
-        $primary_oid = $oid;
+      if ($unit_fallback && !$primary_pid) { 
+        $primary_pid = $best_pid;
       }
-      if ($fallback && !$oid) {   // this is the old style 
-        $oid = $primary_oid;
-        $unit_members[] = $oid;
+      if ($fallback && !$best_pid) {   // this is the old style 
+        $best_pid = $primary_pid;
+        $unit_members[] = $best_pid;
       }
     }
-    ksort($unit_members);
-    if (@ constant('PRIO')) var_dump($oid);
-    return(array($oid, $primary_oid, $unit_members));
+    if ($in_870970_basis[$best_pid] && ($best_pid <> $pid_870970_basis)) {
+      $localdata_in_pid = $pid_870970_basis;
+    }
+    if (@ constant('PRIO')) var_dump($best_pid);
+    if (DEBUG_ON) {
+      echo 'parse_unit_for_best_agency:: best_pid: ' . $best_pid . ' primary_pid: ' . $primary_pid . 'localdata_in_pid: ' . $localdata_in_pid . 
+           ' unit_members: ' . print_r($unit_members, TRUE) . PHP_EOL;
+    }
+    return(array($unit_members, $best_pid, $localdata_in_pid, $primary_pid));
   }
 
   /** \brief check if a record source is contained in the search profile: searchable_source
@@ -3055,7 +3084,7 @@ class openSearch extends webServiceServer {
               ($rel_source = self::check_valid_internal_relation($tag->nodeValue, $this_relation, $this->search_profile))) {
             $relation_count[$this_relation]++;
             self::get_fedora_rels_hierarchy($tag->nodeValue, $rels_sys);
-            list($rel_oid, $primary_oid, $rel_unit_members) = self::parse_unit_for_best_agency($rels_sys, $tag->nodeValue, TRUE);
+            list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($rels_sys, $tag->nodeValue, TRUE);
             self::get_fedora_raw($rel_oid, $related_obj);
             if (@ !$rels_dom->loadXML($related_obj)) {
               verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from commonData into DomXml');
