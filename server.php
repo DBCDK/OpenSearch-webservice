@@ -885,7 +885,10 @@ class openSearch extends webServiceServer {
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
         list($unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
         list($fpid_collection, $fpid_local) = explode(':', $fedora_pid);
-        list($fedora_pid, $datastream)  = self::create_fedora_pid_and_stream(($in_collection ? $fpid->_value : $fedora_pid), $fedora_pid);
+        if (!$in_collection && $fedora_pid) {
+          $fpid->_value = $fedora_pid;
+        }
+        list($fedora_pid, $datastream)  = self::create_fedora_pid_and_stream($fpid->_value, $fedora_pid);
         if (self::deleted_object($fedora_pid, $datastream)) {
           $rec_error = 'Error: deleted record: ' . $fpid->_value;
         }
