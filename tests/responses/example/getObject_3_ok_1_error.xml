@@ -41,7 +41,6 @@
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
               <identifier>820010-katalog:ssj0000521095</identifier>
-              <primaryObjectIdentifier>820010-katalog:ssj0000521095</primaryObjectIdentifier>
               <recordStatus>active</recordStatus>
               <creationDate>2013-08-01</creationDate>
               <formatsAvailable>
@@ -77,7 +76,6 @@
                 <dc:language>Dansk</dc:language>
               </dkabm:record>
               <identifier>870976-anmeld:31154219</identifier>
-              <primaryObjectIdentifier>870976-anmeld:31154219</primaryObjectIdentifier>
               <recordStatus>active</recordStatus>
               <creationDate>2014-09-11</creationDate>
               <formatsAvailable>
@@ -159,7 +157,6 @@
                 <dcterms:temporal xsi:type="dkdcplus:DBCM">2000-2009</dcterms:temporal>
               </dkabm:record>
               <identifier>870970-basis:27694381</identifier>
-              <primaryObjectIdentifier>870970-basis:27694381</primaryObjectIdentifier>
               <creationDate>2009-04-01</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
@@ -177,16 +174,16 @@
             <numberOfObjects>1</numberOfObjects>
             <object>
               <error>Error: unknown/missing/inaccessible record: 778700-katalog:27694381</error>
-              <identifier>870970-basis:27694381</identifier>
+              <identifier>778700-katalog:27694381</identifier>
             </object>
           </collection>
         </searchResult>
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>14</fedoraRecordsRead>
-          <time>1.959028</time>
-          <trackingId>2015-05-13T08:54:52:762477:21240</trackingId>
+          <fedoraRecordsRead>11</fedoraRecordsRead>
+          <time>2.094809</time>
+          <trackingId>2015-06-19T09:52:47:448762:17550</trackingId>
         </statInfo>
       </result>
     </searchResponse>

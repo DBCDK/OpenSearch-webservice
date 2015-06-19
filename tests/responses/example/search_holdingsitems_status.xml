@@ -1,17 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://oss.dbc.dk/ns/opensearch">
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ac="http://biblstandard.dk/ac/namespace/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dkabm="http://biblstandard.dk/abm/namespace/dkabm/" xmlns:dkdcplus="http://biblstandard.dk/abm/namespace/dkdcplus/" xmlns:oss="http://oss.dbc.dk/ns/osstypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://oss.dbc.dk/ns/opensearch">
   <SOAP-ENV:Body>
     <searchResponse>
       <result>
-        <hitCount>0</hitCount>
-        <collectionCount>0</collectionCount>
-        <more>false</more>
+        <hitCount>2</hitCount>
+        <collectionCount>1</collectionCount>
+        <more>true</more>
+        <searchResult>
+          <collection>
+            <resultPosition>1</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <dkabm:record>
+                <ac:identifier>44273160|870970</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9780330454278</dc:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9780330441704</dc:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>No country for old men</dc:title>
+                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
+                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
+                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
+                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dkdcplus:version>New edition, Reprinted</dkdcplus:version>
+                <dc:publisher>Picador</dc:publisher>
+                <dc:date>2006</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
+                <dcterms:extent>309 sider</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
+              </dkabm:record>
+              <identifier>870970-basis:44273160</identifier>
+              <primaryObjectIdentifier>870970-basis:44273160</primaryObjectIdentifier>
+              <creationDate>2008-01-09</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870970-basis:44273160</identifier>
+              </objectsAvailable>
+            </object>
+          </collection>
+        </searchResult>
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>0</fedoraRecordsRead>
-          <time>1.793131</time>
-          <trackingId>2015-05-07T08:55:29:458904:16523</trackingId>
+          <fedoraRecordsRead>6</fedoraRecordsRead>
+          <time>1.953256</time>
+          <trackingId>2015-06-19T09:53:26:530363:17554</trackingId>
         </statInfo>
       </result>
     </searchResponse>
