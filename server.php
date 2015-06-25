@@ -654,7 +654,7 @@ class openSearch extends webServiceServer {
     }
     else {
       $this->watch->stop('Solr_hits_facets');
-      if ($n = self::get_num_found($solr_arr)) {
+      if (($n = self::get_num_found($solr_arr)) != $numFound) {
         verbose::log(TRACE, 'Modify hitcount from: ' . $numFound . ' to ' . $n);
         $numFound = $n;
       }
@@ -1066,7 +1066,7 @@ class openSearch extends webServiceServer {
     foreach ($repositories as $name => $value) {
       if ($name != 'defaults') {
         $r->repository->_value = $name;
-        self:: set_repositories($name, FALSE);
+        self::set_repositories($name, FALSE);
         $r->cqlIndexDoc->_value = $this->repository['cql_file'];
         if ($this->repository['cql_settings'] && @ $dom->loadXML($this->repository['cql_settings'])) {
           foreach ($dom->getElementsByTagName('indexInfo') as $index_info) {
@@ -1214,13 +1214,14 @@ class openSearch extends webServiceServer {
    * TODO: change xsd to include facetOffset
    */
   private function set_solr_facet_parameters($facets) {
+    $max_threads = self::value_or_default($this->config->get_value('max_facet_threads', 'setup'), 50);
     $ret = '';
     if ($facets->facetName) {
       $facet_min = 1;
       if (isset($facets->facetMinCount->_value)) {
         $facet_min = $facets->facetMinCount->_value;
       }
-      $ret .= '&facet=true&facet.threads=' . count($facets) . '&facet.limit=' . $facets->numberOfTerms->_value .  '&facet.mincount=' . $facet_min;
+      $ret .= '&facet=true&facet.threads=' . min(count($facets->facetName), $max_threads) . '&facet.limit=' . $facets->numberOfTerms->_value .  '&facet.mincount=' . $facet_min;
       if ($facet_sort = $facets->facetSort->_value) {
         $ret .= '&facet.sort=' . $facet_sort;
       }
@@ -1240,12 +1241,25 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  /** \brief 
+  /** \brief fetch a cql-file from solr and display it
    *
-   * @retval string - html doc
+   * @retval string - xml doc or error
    */
   protected function showCqlFile() {
-    echo 'Use info operation to fetch information' . dirname($_SERVER['PHP_SELF']);
+    $repositories = $this->config->get_value('repository', 'setup');
+    $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
+    $this->repository = $repositories[$repos];
+    if (!$cql = $_GET['cql']) {
+      $cql = $repository['cql_file'];
+    }
+    if ($cql && ($file = self::get_solr_file($cql))) {
+      header('Content-Type: application/xml; charset=utf-8');
+      echo $file;
+    }
+    else {
+      header('HTTP/1.0 404 Not Found');
+      echo 'Cannot locate the cql-file: ' . $cql . '<br /><br />Use info operation to check name and repostirory';
+    }
   }
 
   /** \brief Compares registers in cql_file with solr, using the luke request handler:
@@ -2778,7 +2792,7 @@ class openSearch extends webServiceServer {
     }
     if (@ constant('PRIO')) var_dump($best_pid);
     if (DEBUG_ON) {
-      echo 'parse_unit_for_best_agency:: best_pid: ' . $best_pid . ' primary_pid: ' . $primary_pid . 'localdata_in_pid: ' . $localdata_in_pid . 
+      echo 'parse_unit_for_best_agency:: best_pid: ' . $best_pid . ' primary_pid: ' . $primary_pid . ' localdata_in_pid: ' . $localdata_in_pid . 
            ' unit_members: ' . print_r($unit_members, TRUE) . PHP_EOL;
     }
     return(array($unit_members, $best_pid, $localdata_in_pid, $primary_pid));
