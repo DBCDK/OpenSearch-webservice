@@ -2792,8 +2792,11 @@ class openSearch extends webServiceServer {
     }
     if (@ constant('PRIO')) var_dump($best_pid);
     if (DEBUG_ON) {
-      echo 'parse_unit_for_best_agency:: best_pid: ' . $best_pid . ' primary_pid: ' . $primary_pid . ' localdata_in_pid: ' . $localdata_in_pid . 
-           ' unit_members: ' . print_r($unit_members, TRUE) . PHP_EOL;
+      echo 'parse_unit_for_best_agency:: best_pid: ' . $best_pid . 
+           ' primary_pid: ' . $primary_pid . 
+           ' localdata_in_pid: ' . $localdata_in_pid . 
+           ' unit_members: ' . str_replace(PHP_EOL, '', print_r($unit_members, TRUE)) . 
+           PHP_EOL;
     }
     return(array($unit_members, $best_pid, $localdata_in_pid, $primary_pid));
   }
