@@ -11,7 +11,7 @@
 ;version
 ; Note that the version is used as part of the cache key, so do not run 2 versions of the service with identical
 ; version name, unless you specificly want them to share cache
-version = 4.1
+version = 4.2
 
 ; --------------
 ; wsdl and service location for service. Used to replace __LOCATION__ in wsdl
