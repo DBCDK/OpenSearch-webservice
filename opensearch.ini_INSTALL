@@ -345,6 +345,10 @@ max_collections = 50
 max_manifestations = 200
 
 ; --------------
+; Max number of threads to use for facetting - defaults to 50
+;max_facet_threads = 50
+
+; --------------
 ; logfile for verbose output
 logfile = /tmp/opensearch.log
 ; logging to syslog is defined like:
