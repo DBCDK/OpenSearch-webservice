@@ -928,6 +928,9 @@
             <indexName>facet.creator</indexName>
           </cqlIndex>
           <cqlIndex>
+            <indexName>facet.creatorFunction</indexName>
+          </cqlIndex>
+          <cqlIndex>
             <indexName>facet.date</indexName>
           </cqlIndex>
           <cqlIndex>
@@ -1300,14 +1303,33 @@
       </infoObjectFormats>
       <infoSearchProfile>
         <searchCollection>
-          <searchCollectionName>Anmeldelser (Artikelbasen)</searchCollectionName>
+          <searchCollectionName>1001 fortællinger (steder)</searchCollectionName>
+          <searchCollectionIdentifier>150031-sted</searchCollectionIdentifier>
+        </searchCollection>
+        <searchCollection>
+          <searchCollectionName>1001 fortællinger (temaer)</searchCollectionName>
+          <searchCollectionIdentifier>150031-tema</searchCollectionIdentifier>
+        </searchCollection>
+        <searchCollection>
+          <searchCollectionName>Artikelbasens anmeldelser</searchCollectionName>
           <searchCollectionIdentifier>870971-anmeld</searchCollectionIdentifier>
+          <relationType>dbcaddi:hasOnlineAccess</relationType>
           <relationType>dbcaddi:isReviewOf</relationType>
           <relationType>dbcaddi:hasReview</relationType>
         </searchCollection>
         <searchCollection>
-          <searchCollectionName>Avisartikler (Artikelbasen)</searchCollectionName>
+          <searchCollectionName>Artikelbasens avisartikler</searchCollectionName>
           <searchCollectionIdentifier>870971-avis</searchCollectionIdentifier>
+          <relationType>dbcaddi:hasOnlineAccess</relationType>
+          <relationType>dbcaddi:continues</relationType>
+          <relationType>dbcaddi:continuedIn</relationType>
+          <relationType>dbcaddi:discusses</relationType>
+          <relationType>dbcaddi:discussedIn</relationType>
+        </searchCollection>
+        <searchCollection>
+          <searchCollectionName>Artikelbasens tidsskriftsartikler</searchCollectionName>
+          <searchCollectionIdentifier>870971-tsart</searchCollectionIdentifier>
+          <relationType>dbcaddi:hasOnlineAccess</relationType>
           <relationType>dbcaddi:continues</relationType>
           <relationType>dbcaddi:continuedIn</relationType>
           <relationType>dbcaddi:discusses</relationType>
@@ -1316,6 +1338,10 @@
         <searchCollection>
           <searchCollectionName>Bibliotekets katalog</searchCollectionName>
           <searchCollectionIdentifier>190101-katalog</searchCollectionIdentifier>
+        </searchCollection>
+        <searchCollection>
+          <searchCollectionName>Biblioteksvagten (bruges kun af Biblioteksvagten)</searchCollectionName>
+          <searchCollectionIdentifier>150024-bibvagt</searchCollectionIdentifier>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Bibzoom (albums)</searchCollectionName>
@@ -1346,13 +1372,18 @@
           <searchCollectionIdentifier>150021-fjern</searchCollectionIdentifier>
         </searchCollection>
         <searchCollection>
-          <searchCollectionName>Folkebiblioteker og Nationalbibliografi</searchCollectionName>
+          <searchCollectionName>Folkebiblioteker og Nationalbibliografi (alle 870970-poster)</searchCollectionName>
           <searchCollectionIdentifier>870970-basis</searchCollectionIdentifier>
+        </searchCollection>
+        <searchCollection>
+          <searchCollectionName>Folkebiblioteker og nationalbibliografi (for bibliotek.dk)</searchCollectionName>
+          <searchCollectionIdentifier>870970-bibdk</searchCollectionIdentifier>
           <relationType>dbcbib:isPartOfManifestation</relationType>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Forfatterweb (Artikelbasen)</searchCollectionName>
           <searchCollectionIdentifier>870971-forfweb</searchCollectionIdentifier>
+          <relationType>dbcaddi:hasOnlineAccess</relationType>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Forskningsbiblioteker</searchCollectionName>
@@ -1402,14 +1433,6 @@
           <searchCollectionIdentifier>150012-leksikon</searchCollectionIdentifier>
         </searchCollection>
         <searchCollection>
-          <searchCollectionName>Tidsskriftsartikler (Artikelbasen)</searchCollectionName>
-          <searchCollectionIdentifier>870971-tsart</searchCollectionIdentifier>
-          <relationType>dbcaddi:continues</relationType>
-          <relationType>dbcaddi:continuedIn</relationType>
-          <relationType>dbcaddi:discusses</relationType>
-          <relationType>dbcaddi:discussedIn</relationType>
-        </searchCollection>
-        <searchCollection>
           <searchCollectionName>Zinio</searchCollectionName>
           <searchCollectionIdentifier>150059-magasin</searchCollectionIdentifier>
         </searchCollection>
@@ -1418,6 +1441,7 @@
           <relationType>dbcaddi:continues</relationType>
           <relationType>dbcaddi:discussedIn</relationType>
           <relationType>dbcaddi:discusses</relationType>
+          <relationType>dbcaddi:hasOnlineAccess</relationType>
           <relationType>dbcaddi:hasReview</relationType>
           <relationType>dbcaddi:isReviewOf</relationType>
           <relationType>dbcbib:isPartOfManifestation</relationType>
