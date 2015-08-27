@@ -2743,12 +2743,12 @@ class openSearch extends webServiceServer {
       $agency_type = self::get_agency_type($this->agency);
       $primary_pid = $dom->getElementsByTagName('hasPrimaryBibObject')->item(0)->nodeValue;
       $hmou = $dom->getElementsByTagName('hasMemberOfUnit');
-      $pids_in_unit = array();
+      $priority_pids = array();
       foreach ($hmou as $mou) {
         $record_source = self::record_source_from_pid($mou->nodeValue);
         list($agency, $collection) = self::split_record_source($record_source);
         $prio = sprintf('%05s', self::agency_priority($agency));
-        $pids_in_unit[$prio] = $mou->nodeValue;
+        $priority_pids[$prio][] = $mou->nodeValue;
         if ($record_source == '870970-basis') {
           $pid_870970_basis = $mou->nodeValue;
           $id = explode(':', $mou->nodeValue);
@@ -2757,30 +2757,32 @@ class openSearch extends webServiceServer {
             if ($stream <> '870970-basis') {
               list($agency, $collection) = self::split_record_source($stream);
               $prio = sprintf('%05s', self::agency_priority($agency));
-              $pids_in_unit[$prio] = $stream . ':' . $id[1];
-              $in_870970_basis[$pids_in_unit[$prio]] = '870970-basis:' . $id[1];
+              $priority_pids[$prio][] = $stream . ':' . $id[1];
+              $in_870970_basis[$stream . ':' . $id[1]] = '870970-basis:' . $id[1];
             }
           }
         }
       }
-      ksort($pids_in_unit);
-      if (empty($pids_in_unit) && $this->unit_fallback[$unit_id] && (!$fallback || !$primary_pid->length)) {
+      ksort($priority_pids);
+      if (empty($priority_pids) && $this->unit_fallback[$unit_id] && (!$fallback || !$primary_pid->length)) {
         $unit_fallback = TRUE;
         foreach ($this->unit_fallback[$unit_id] as $pid) {
-          $pids_in_unit[] = $pid;
+          $priority_pids[] = array($pid);
         }
         verbose::log(ERROR, 'Empty unit: ' . $unit_id . ' - use pid from Solr instead');
       }
-      foreach ($pids_in_unit as $pid_in_unit) {
-        if (@ constant('PRIO')) var_dump($pid_in_unit);
-        $record_source = self::record_source_from_pid($pid_in_unit);
-        list($agency, $collection) = self::split_record_source($record_source);
-        if (self::is_valid_source($agency, $collection)) {
-          $unit_members[] = $pid_in_unit;
-          //$unit_members[] = $pid_in_unit . (self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit]) ? 'D' : 'A');     // TEST
-          //if (self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit])) die($pid_in_unit);          // TEST
-          if (!$best_pid && !self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit])) {
-            $best_pid = $pid_in_unit;
+      foreach ($priority_pids as $pids_in_unit) {
+        foreach ($pids_in_unit as $pid_in_unit) {
+          if (@ constant('PRIO')) var_dump($pid_in_unit);
+          $record_source = self::record_source_from_pid($pid_in_unit);
+          list($agency, $collection) = self::split_record_source($record_source);
+          if (self::is_valid_source($agency, $collection)) {
+            $unit_members[] = $pid_in_unit;
+            //$unit_members[] = $pid_in_unit . (self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit]) ? 'D' : 'A');     // TEST
+            //if (self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit])) die($pid_in_unit);          // TEST
+            if (!$best_pid && !self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit])) {
+              $best_pid = $pid_in_unit;
+            }
           }
         }
       }
