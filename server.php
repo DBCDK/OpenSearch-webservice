@@ -2754,10 +2754,12 @@ class openSearch extends webServiceServer {
           $id = explode(':', $mou->nodeValue);
           $local_streams = self::fetch_valid_sources_from_stream($mou->nodeValue);
           foreach ($local_streams as $stream) {
-            list($agency, $collection) = self::split_record_source($stream);
-            $prio = sprintf('%05s', self::agency_priority($agency));
-            $pids_in_unit[$prio] = $stream . ':' . $id[1];
-            $in_870970_basis[$pids_in_unit[$prio]] = '870970-basis:' . $id[1];
+            if ($stream <> '870970-basis') {
+              list($agency, $collection) = self::split_record_source($stream);
+              $prio = sprintf('%05s', self::agency_priority($agency));
+              $pids_in_unit[$prio] = $stream . ':' . $id[1];
+              $in_870970_basis[$pids_in_unit[$prio]] = '870970-basis:' . $id[1];
+            }
           }
         }
       }
