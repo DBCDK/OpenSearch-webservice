@@ -2397,6 +2397,8 @@ class openSearch extends webServiceServer {
    * @param array $profile - 
    * @retval array - of valid relations for the search profile
    */
+// TODO - valid_relation should also reflect collection_contained_in 
+//        and then check in the collection is found in admin data in fedora object
   private function set_valid_relations_and_sources($profile) {
     if (empty($this->valid_relation) && is_array($profile)) {
       foreach ($profile as $src) {
@@ -2755,12 +2757,11 @@ class openSearch extends webServiceServer {
             list($agency, $collection) = self::split_record_source($stream);
             $prio = sprintf('%05s', self::agency_priority($agency));
             $pids_in_unit[$prio] = $stream . ':' . $id[1];
-            $in_870970_basis[$pids_in_unit[$prio]] = TRUE;
+            $in_870970_basis[$pids_in_unit[$prio]] = '870970-basis:' . $id[1];
           }
         }
       }
       ksort($pids_in_unit);
-      $best_pos = count($this->agency_priority_list) + 1;
       if (empty($pids_in_unit) && $this->unit_fallback[$unit_id] && (!$fallback || !$primary_pid->length)) {
         $unit_fallback = TRUE;
         foreach ($this->unit_fallback[$unit_id] as $pid) {
@@ -2774,7 +2775,9 @@ class openSearch extends webServiceServer {
         list($agency, $collection) = self::split_record_source($record_source);
         if (self::is_valid_source($agency, $collection)) {
           $unit_members[] = $pid_in_unit;
-          if (!$best_pid) {
+          //$unit_members[] = $pid_in_unit . (self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit]) ? 'D' : 'A');     // TEST
+          //if (self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit])) die($pid_in_unit);          // TEST
+          if (!$best_pid && !self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit])) {
             $best_pid = $pid_in_unit;
           }
         }
@@ -2788,7 +2791,7 @@ class openSearch extends webServiceServer {
       }
     }
     if ($in_870970_basis[$best_pid] && ($best_pid <> $pid_870970_basis)) {
-      $localdata_in_pid = $pid_870970_basis;
+      $localdata_in_pid = $in_870970_basis[$best_pid];
     }
     if (@ constant('PRIO')) var_dump($best_pid);
     if (DEBUG_ON) {
@@ -2799,6 +2802,17 @@ class openSearch extends webServiceServer {
            PHP_EOL;
     }
     return(array($unit_members, $best_pid, $localdata_in_pid, $primary_pid));
+  }
+
+  /** \brief Read a record from fedora and tcheck if it is deleted
+   *
+   * @param string $pid - record pid
+   * @param boolean $in_870970 - in localData stream of 870970
+   * @retval boolean - TRUE if record is deleted
+   */
+  private function record_is_deleted($pid, $in_870970) {
+    self::get_fedora_raw($pid, $fedora_result, $in_870970 ? 'localData' : '');
+    return strpos($fedora_result, '<recordStatus>delete</recordStatus>');
   }
 
   /** \brief check if a record source is contained in the search profile: searchable_source
@@ -2972,7 +2986,7 @@ class openSearch extends webServiceServer {
     return $solr_arr['response']['numFound'];
   }
 
-  /** \brief extract creation date from fedora obj
+  /** \brief extract record status from fedora obj
    *
    * @param DOMDocument $dom - 
    * @retval string - record status
