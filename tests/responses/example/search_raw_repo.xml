@@ -2,15 +2,7 @@
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://oss.dbc.dk/ns/opensearch">
   <SOAP-ENV:Body>
     <searchResponse>
-      <result>
-        <hitCount>0</hitCount>
-        <collectionCount>0</collectionCount>
-        <more>false</more>
-        <statInfo>
-          <time>1.507201</time>
-          <trackingId>2015-09-02T11:05:16:694651:15643</trackingId>
-        </statInfo>
-      </result>
+      <error>No records found</error>
     </searchResponse>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
