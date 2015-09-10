@@ -2777,11 +2777,13 @@ class openSearch extends webServiceServer {
           $record_source = self::record_source_from_pid($pid_in_unit);
           list($agency, $collection) = self::split_record_source($record_source);
           if (self::is_valid_source($agency, $collection)) {
-            $unit_members[] = $pid_in_unit;
-            //$unit_members[] = $pid_in_unit . (self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit]) ? 'D' : 'A');     // TEST
-            //if (self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit])) die($pid_in_unit);          // TEST
-            if (!$best_pid && !self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit])) {
-              $best_pid = $pid_in_unit;
+            if (!self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit])) {
+              $unit_members[] = $pid_in_unit;
+              //$unit_members[] = $pid_in_unit . (self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit]) ? 'D' : 'A');     // TEST
+              //if (self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit])) die($pid_in_unit);          // TEST
+              if (!$best_pid) {
+                $best_pid = $pid_in_unit;
+              }
             }
           }
         }
@@ -2811,12 +2813,24 @@ class openSearch extends webServiceServer {
   /** \brief Read a record from fedora and tcheck if it is deleted
    *
    * @param string $pid - record pid
-   * @param boolean $in_870970 - in localData stream of 870970
+   * @param string $localdata_in_pid - in localData stream of this pid
    * @retval boolean - TRUE if record is deleted
    */
-  private function record_is_deleted($pid, $in_870970) {
-    self::get_fedora_raw($pid, $fedora_result, $in_870970 ? 'localData' : '');
-    return strpos($fedora_result, '<recordStatus>delete</recordStatus>');
+  private function record_is_deleted($pid, $localdata_in_pid) {
+    if ($localdata_in_pid) {
+      self::get_fedora_raw($localdata_in_pid, $fedora_result, 'localData.' . self::record_source_from_pid($pid));
+      if (DEBUG_ON) {
+        echo $pid . ' in ' . $localdata_in_pid . ' localData.' . self::record_source_from_pid($pid) . ' is ' . (empty($fedora_result) || strpos($fedora_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
+      }
+    }
+    else {
+      self::get_fedora_raw($pid, $fedora_result);
+      if (DEBUG_ON) {
+        echo $pid . ' is ' . (empty($fedora_result) || strpos($fedora_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
+      }
+    }
+    //if (DEBUG_ON) { echo $fedora_result . PHP_EOL; }
+    return empty($fedora_result) || strpos($fedora_result, '<recordStatus>delete</recordStatus>');
   }
 
   /** \brief check if a record source is contained in the search profile: searchable_source
