@@ -209,10 +209,10 @@ class openSearch extends webServiceServer {
       }
       $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), array());
       if ($this->repository['rawrepo']) {
-        $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $docs, in_array($this->agency, $s11_agency));
+        $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $solr_arr['response'], in_array($this->agency, $s11_agency));
       }
       else {
-        $collections = self::get_records_from_postgress($this->repository['postgress'], $docs, in_array($this->agency, $s11_agency));
+        $collections = self::get_records_from_postgress($this->repository['postgress'], $solr_arr['response'], in_array($this->agency, $s11_agency));
       }
       $this->watch->stop('postgress');
       if (is_scalar($collections)) {
@@ -792,10 +792,10 @@ class openSearch extends webServiceServer {
       foreach ($fpids as $fpid) {
         list($owner_collection, $id) = explode(':', $fpid->_value);
         list($owner, $coll) = explode('-', $owner_collection);
-        $docs['docs'][] = array('marc.001a' => array(0 => $id), 'marc.001b' => $owner);
+        $docs['docs'][] = array('marc.001a' => $id, 'marc.001b' => $owner);
       }
       foreach ($lpids as $lid) {
-        $docs['docs'][] = array('marc.001a' => array(0 => $lid->_value), 'marc.001b' => $this->agency);
+        $docs['docs'][] = array('marc.001a' => $lid->_value, 'marc.001b' => $this->agency);
       }
       $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), array());
       if ($this->repository['rawrepo']) {
@@ -1336,12 +1336,15 @@ class openSearch extends webServiceServer {
    * @retval mixed  array of collections or error string
    */
   private function get_records_from_rawrepo($rr_service, $solr_response, $s11_records_allowed) {
+    if (empty($solr_response['docs'])) {
+      return;
+    }
     $p_mask = '<?xml version="1.0" encoding="UTF-8"?' . '>' . PHP_EOL . '<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><fetchRequest xmlns="http://oss.dbc.dk/ns/rawreposervice"><records>' . PHP_EOL . '%s</records></fetchRequest></S:Body></S:Envelope>';
     $r_mask = '<record><bibliographicRecordId>%s</bibliographicRecordId><agencyId>%s</agencyId><mode>MERGED</mode><allowDeleted>true</allowDeleted><includeAgencyPrivate>true</includeAgencyPrivate></record>';
     $ret = array();
     $rec_pos = $solr_response['start'];
     foreach ($solr_response['docs'] as $solr_doc) {
-      $post .= sprintf($r_mask, $solr_doc['marc.001a'][0], $solr_doc['marc.001b']) . PHP_EOL;
+      $post .= sprintf($r_mask, self::scalar_or_first_elem($solr_doc['marc.001a']), self::scalar_or_first_elem($solr_doc['marc.001b'])) . PHP_EOL;
     }
     $this->curl->set_post(sprintf($p_mask, $post), 0); // use post here because query can be very long
     $this->curl->set_option(CURLOPT_HTTPHEADER, array('Accept:application/xml;', 'Content-Type: text/xml; charset=utf-8'), 0);
@@ -1349,32 +1352,33 @@ class openSearch extends webServiceServer {
     $this->curl->set_option(CURLOPT_POST, 0, 0);
     $dom = new DomDocument();
     @ $dom->loadXml($result);
-    $records = &$dom->getElementsByTagName('records')->item(0);
-    foreach ($solr_response['docs'] as $solr_doc) {
-      foreach ($records->getElementsByTagName('record') as $record) {
-        $id = $record->getElementsByTagName('bibliographicRecordId')->item(0)->nodeValue;
-        $agency = $record->getElementsByTagName('agencyId')->item(0)->nodeValue;
-        if ($solr_doc['marc.001a'][0] == $id && $solr_doc['marc.001b'] == $agency) {
-          $data = base64_decode($record->getElementsByTagName('data')->item(0)->nodeValue);
-          @ $dom->loadXml($data);
-          $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
-          $restricted_record = FALSE;
-          if (!$s11_records_allowed) {
-            foreach ($marc_obj->record->_value->datafield as $idf => &$df) {
-              if ($df->_attributes->tag->_value == 's11') {
-                $restricted_record = TRUE;
-                break 1;
+    if ($records = &$dom->getElementsByTagName('records')->item(0)) {
+      foreach ($solr_response['docs'] as $solr_doc) {
+        foreach ($records->getElementsByTagName('record') as $record) {
+          $id = $record->getElementsByTagName('bibliographicRecordId')->item(0)->nodeValue;
+          $agency = $record->getElementsByTagName('agencyId')->item(0)->nodeValue;
+          if (self::scalar_or_first_elem($solr_doc['marc.001a'] == $id) && self::scalar_or_first_elem($solr_doc['marc.001b']) == $agency) {
+            $data = base64_decode($record->getElementsByTagName('data')->item(0)->nodeValue);
+            @ $dom->loadXml($data);
+            $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
+            $restricted_record = FALSE;
+            if (!$s11_records_allowed) {
+              foreach ($marc_obj->record->_value->datafield as $idf => &$df) {
+                if ($df->_attributes->tag->_value == 's11') {
+                  $restricted_record = TRUE;
+                  break 1;
+                }
               }
             }
-          }
-          if (!$restricted_record) {
-            self::filter_marcxchange($solr_doc['marc.001b'], $marc_obj, $this->repository['filter']);
-            $rec_pos++;
-            $ret[$rec_pos]->_value->collection->_value->resultPosition->_value = $rec_pos;
-            $ret[$rec_pos]->_value->collection->_value->numberOfObjects->_value = 1;
-            $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_value = $marc_obj;
-            $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_namespace = $this->xmlns['marcx'];
-            break;
+            if (!$restricted_record) {
+              self::filter_marcxchange(self::scalar_or_first_elem($solr_doc['marc.001b']), $marc_obj, $this->repository['filter']);
+              $rec_pos++;
+              $ret[$rec_pos]->_value->collection->_value->resultPosition->_value = $rec_pos;
+              $ret[$rec_pos]->_value->collection->_value->numberOfObjects->_value = 1;
+              $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_value = $marc_obj;
+              $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_namespace = $this->xmlns['marcx'];
+              break;
+            }
           }
         }
       }
