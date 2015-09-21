@@ -182,7 +182,7 @@ class openSearch extends webServiceServer {
       return $ret;
     }
 
-    if ($pg_repos = $this->repository['postgress']) {
+    if ($this->repository['postgress'] || $this->repository['rawrepo']) {
       $this->watch->start('postgress');
       $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language);
       $solr_query = $this->cql2solr->parse($param->query->_value);
@@ -207,7 +207,13 @@ class openSearch extends webServiceServer {
         $error = $err;
         return $ret_error;
       }
-      $collections = self::get_records_from_postgress($pg_repos, $solr_arr['response']);
+      $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), array());
+      if ($this->repository['rawrepo']) {
+        $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $docs, in_array($this->agency, $s11_agency));
+      }
+      else {
+        $collections = self::get_records_from_postgress($this->repository['postgress'], $docs, in_array($this->agency, $s11_agency));
+      }
       $this->watch->stop('postgress');
       if (is_scalar($collections)) {
         $error = $collections;
@@ -782,7 +788,7 @@ class openSearch extends webServiceServer {
         }
       }
     }
-    if ($pg_repos = $this->repository['postgress']) {
+    if ($this->repository['postgress'] || $this->repository['rawrepo']) {
       foreach ($fpids as $fpid) {
         list($owner_collection, $id) = explode(':', $fpid->_value);
         list($owner, $coll) = explode('-', $owner_collection);
@@ -791,7 +797,13 @@ class openSearch extends webServiceServer {
       foreach ($lpids as $lid) {
         $docs['docs'][] = array('marc.001a' => array(0 => $lid->_value), 'marc.001b' => $this->agency);
       }
-      $collections = self::get_records_from_postgress($pg_repos, $docs);
+      $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), array());
+      if ($this->repository['rawrepo']) {
+        $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $docs, in_array($this->agency, $s11_agency));
+      }
+      else {
+        $collections = self::get_records_from_postgress($this->repository['postgress'], $docs, in_array($this->agency, $s11_agency));
+      }
       //var_dump($collections); die();
       if (is_scalar($collections)) {
         $error = $collections;
@@ -1315,64 +1327,72 @@ class openSearch extends webServiceServer {
     die('</body></html>');
   }
 
-  /** \brief Reads records from Raw Record Database
+  /** \brief Reads records from Raw Record Postgress Database
    *   
+   * @param string $rr_service    Address fo raw_repo service end point
    * @param array $solr_response    Response from a solr search in php object
+   * @param boolean $s11_records_allowed    restricted record
    * 
    * @retval mixed  array of collections or error string
    */
-  private function get_records_from_postgress($pg_db, $solr_response) {
-    require_once 'OLS_class_lib/pg_database_class.php';
-    $dom = new DomDocument();
+  private function get_records_from_rawrepo($rr_service, $solr_response, $s11_records_allowed) {
+    $p_mask = '<?xml version="1.0" encoding="UTF-8"?' . '>' . PHP_EOL . '<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><fetchRequest xmlns="http://oss.dbc.dk/ns/rawreposervice"><records>' . PHP_EOL . '%s</records></fetchRequest></S:Body></S:Envelope>';
+    $r_mask = '<record><bibliographicRecordId>%s</bibliographicRecordId><agencyId>%s</agencyId><mode>MERGED</mode><allowDeleted>true</allowDeleted><includeAgencyPrivate>true</includeAgencyPrivate></record>';
     $ret = array();
-    try {
-      $pg = new pg_database($pg_db);
-      $pg->open();
-      $rec_pos = $solr_response['start'];
-      foreach ($solr_response['docs'] as $solr_doc) {
-        //$solr_doc['marc.001a'][0] = '90003984'; $solr_doc['marc.001b'] = '761500';
-        if (empty($solr_doc['marc.001a']) || empty($solr_doc['marc.001b'])) {
-          verbose::log(FATAL, 'SOLR error: cannot find field marc.001a or marc.001b');
-          @ $dom->loadXml('<?xml version="1.0" encoding="UTF-8"?' . '><marcx:record format="danMARC2" type="Bibliographic" xmlns:marcx="info:lc/xmlns/marcxchange-v1"><marcx:datafield tag="245" ind1="0" ind2="0"><marcx:subfield code="a">ERROR: Cannot read record from repository: ' . $this->repository_name . '</marcx:subfield></marcx:datafield></marcx:record>');
-        }
-        else {
-          $agency = $solr_doc['marc.001b'] == '870970' ? '191919' : $solr_doc['marc.001b'];
-          $query = 'SELECT content FROM records WHERE bibliographicrecordid = \'' . $solr_doc['marc.001a'][0] . '\' AND agencyid = ' . $agency;
-          $pg->set_query($query);
-          $pg->execute();
-          $row = $pg->get_row();
-          if (empty($row)) { 
-            return 'No records found';
-          }
-          @ $dom->loadXml(base64_decode($row['content']));
-        }
-        $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
-        self::filter_marcxchange($solr_doc['marc.001b'], $marc_obj, $this->repository['filter']);
-        if ($agency <> $solr_doc['marc.001b']) {  // substitute 191919 with 870970 hack
-          foreach ($marc_obj->record->_value->datafield as $idf => &$df) {
-            if (($df->_attributes->tag->_value == '001') && is_array($df->_value->subfield)) {
-              foreach ($df->_value->subfield as $isf => &$sf) {
-                if (($sf->_attributes->code->_value == 'b') && ($sf->_value == $agency)) {
-                  $sf->_value = $solr_doc['marc.001b'];
-                  break 2;
-                }
+    $rec_pos = $solr_response['start'];
+    foreach ($solr_response['docs'] as $solr_doc) {
+      $post .= sprintf($r_mask, $solr_doc['marc.001a'][0], $solr_doc['marc.001b']) . PHP_EOL;
+    }
+    $this->curl->set_post(sprintf($p_mask, $post), 0); // use post here because query can be very long
+    $this->curl->set_option(CURLOPT_HTTPHEADER, array('Accept:application/xml;', 'Content-Type: text/xml; charset=utf-8'), 0);
+    $result = $this->curl->get($rr_service, 0);
+    $this->curl->set_option(CURLOPT_POST, 0, 0);
+    $dom = new DomDocument();
+    @ $dom->loadXml($result);
+    $records = &$dom->getElementsByTagName('records')->item(0);
+    foreach ($solr_response['docs'] as $solr_doc) {
+      foreach ($records->getElementsByTagName('record') as $record) {
+        $id = $record->getElementsByTagName('bibliographicRecordId')->item(0)->nodeValue;
+        $agency = $record->getElementsByTagName('agencyId')->item(0)->nodeValue;
+        if ($solr_doc['marc.001a'][0] == $id && $solr_doc['marc.001b'] == $agency) {
+          $data = base64_decode($record->getElementsByTagName('data')->item(0)->nodeValue);
+          @ $dom->loadXml($data);
+          $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
+          $restricted_record = FALSE;
+          if (!$s11_records_allowed) {
+            foreach ($marc_obj->record->_value->datafield as $idf => &$df) {
+              if ($df->_attributes->tag->_value == 's11') {
+                $restricted_record = TRUE;
+                break 1;
               }
             }
           }
+          if (!$restricted_record) {
+            self::filter_marcxchange($solr_doc['marc.001b'], $marc_obj, $this->repository['filter']);
+            $rec_pos++;
+            $ret[$rec_pos]->_value->collection->_value->resultPosition->_value = $rec_pos;
+            $ret[$rec_pos]->_value->collection->_value->numberOfObjects->_value = 1;
+            $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_value = $marc_obj;
+            $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_namespace = $this->xmlns['marcx'];
+            break;
+          }
         }
-        $rec_pos++;
-        $ret[$rec_pos]->_value->collection->_value->resultPosition->_value = $rec_pos;
-        $ret[$rec_pos]->_value->collection->_value->numberOfObjects->_value = 1;
-        $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_value = $marc_obj;
-        $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_namespace = $this->xmlns['marcx'];
       }
-      $pg->close();
-    }
-    catch (Exception $e) {
-      verbose::log(FATAL, 'Database error: ' . str_replace("\n", '', $e->getMessage()));
-      return 'Error fatching records from postgress in repository: ' . $this->repository_name;
     }
     return $ret;
+  }
+
+  /** \brief Reads records from Raw Record Postgress Database
+   *   
+   * OBSOLETE from datawell 3.5 - use get_records_from_rawrepo instead
+   * @param string $rr_service    Address fo raw_repo service end point
+   * @param array $solr_response    Response from a solr search in php object
+   * @param boolean $s11_records_allowed    restricted record
+   * 
+   * @retval mixed  array of collections or error string
+   */
+  private function get_records_from_postgress($pg_db, $solr_response, $s11_records_allowed) {
+    die('obsolete function - correct the inifile to use raw repo service instead');
   }
 
   /** \brief Change cql_error to string
@@ -1522,6 +1542,9 @@ class openSearch extends webServiceServer {
           }
           verbose::log(ERROR, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from SOLR - use local version. Repository: ' .  $this->repository_name);
         }
+      }
+      if (empty($this->repository['filter'])) {
+        $this->repository['filter'] = array();
       }
     }
     else {
@@ -2532,6 +2555,17 @@ class openSearch extends webServiceServer {
     return explode('-', $record_source, 2);
   }
 
+  /** \brief Split a pid in its elements
+   *
+   * @param string $pid - NNNNNN-xxxxxxx:nnnnnnn
+   * @retval list of owner, collection and record-id
+   */
+  private function split_pid($pid) {
+    list($owner_collection, $id) = explode(':', $pid, 2);
+    list($owner, $coll) = explode('-', $owner_collection, 2);
+    return array($owner, $coll, $id);
+  }
+
   /** \brief Build bq (BoostQuery) as field:content^weight 
    *
    * @param mixed $boost - boost query
@@ -2843,6 +2877,9 @@ class openSearch extends webServiceServer {
    * @param string $collection 
    * @retval boolean - TRUE is part of a source_grouping
    */
+/* TODO if holdings is present, records from 870970-basis, should oblyt be deleivered if 870970-basis is searchable, and the records has holdings
+ * so a search in holdingsitems should be done for each searchable 870970-basis record to decide if it's part of the collection for the library
+ */
   private function is_valid_source($agency, $collection) {
     $agency_type = self::get_agency_type($agency);
     $coll_id = $agency . '-' . $collection;
@@ -2868,6 +2905,27 @@ class openSearch extends webServiceServer {
             (self::is_contained_in_collection($coll_id))
     );
   }
+
+  /** \brief Check if a pid has holdings
+   *
+   * @param string $pid - collection identifier
+   * @retval integer - number of records found
+   */
+  private function has_holdings($pid) {
+    if (empty($this->repository['holding'])) {
+      return 1;
+    }
+    list($owner, $coll, $id)  = self::split_pid($pid);
+    $solr_urls[0]['url'] = $this->repository['holding'] .
+                  '?q=' . urlencode('holdingsitem.collectionId:"' . $owner . '-' . $id . '"') .
+                  '&start=1&rows=0&defType=edismax&wt=phps';
+      $solr_urls[0]['debug'] = str_replace('wt=phps', 'wt=xml', $solr_urls[0]['url']);
+      if ($err = self::do_solr($solr_urls, $solr_arr)) {
+        $error = $err;
+        return 0;
+      }
+  }
+
 
   /** \brief Check if a collectionIdentifier contains a searchable "sub collection"
    *       - 150013-palle is not a datastream on its own, but is produced from 870970-basis
@@ -3136,57 +3194,60 @@ class openSearch extends webServiceServer {
               ($rel_source = self::check_valid_internal_relation($tag->nodeValue, $this_relation, $this->search_profile))) {
             $relation_count[$this_relation]++;
             self::get_fedora_rels_hierarchy($tag->nodeValue, $rels_sys);
-            list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($rels_sys, $tag->nodeValue, TRUE);
-            self::get_fedora_raw($rel_oid, $related_obj);
-            if (@ !$rels_dom->loadXML($related_obj)) {
-              verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from commonData into DomXml');
-              $rels_dom = NULL;
-            }
-            $collection_id = self::get_element_from_admin_data($rels_dom, 'collectionIdentifier');
-            if (empty($this->valid_relation[$collection_id])) {  // handling of local data streams
-              if (DEBUG_ON) { 
-                echo 'Datastream(s): ' . implode(',', self::fetch_valid_sources_from_stream($rel_oid)) . PHP_EOL;
+            list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($rels_sys, $tag->nodeValue, FALSE);
+            if ($rel_oid) {
+              list($pid, $datastream)  = self::create_fedora_pid_and_stream($rel_oid, $localdata_in_pid);
+              self::get_fedora_raw($pid, $related_obj, $datastream);
+              if (@ !$rels_dom->loadXML($related_obj)) {
+                verbose::log(FATAL, 'Cannot load ' . $pid . ' object from commonData into DomXml');
+                $rels_dom = NULL;
               }
-              foreach (self::fetch_valid_sources_from_stream($rel_oid) as $source) {
-                if ($this->valid_relation[$source]) {
-                  if (DEBUG_ON) { 
-                    echo '--- use: ' . $source . PHP_EOL;
+              $collection_id = self::get_element_from_admin_data($rels_dom, 'collectionIdentifier');
+              if (empty($this->valid_relation[$collection_id])) {  // handling of local data streams
+                if (DEBUG_ON) { 
+                  echo 'Datastream(s): ' . implode(',', self::fetch_valid_sources_from_stream($pid)) . PHP_EOL;
+                }
+                foreach (self::fetch_valid_sources_from_stream($pid) as $source) {
+                  if ($this->valid_relation[$source]) {
+                    $collection_id = $source;
+                    if (DEBUG_ON) { 
+                      echo '--- use: ' . $source . ' rel_oid: ' . $rel_oid . ' stream: ' . self::set_data_stream_name($collection_id) . PHP_EOL;
+                    }
+                    self::get_fedora_raw($rel_oid, $related_obj, self::set_data_stream_name($collection_id));
+                    if (@ !$rels_dom->loadXML($related_obj)) {
+                      verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from ' . $source . ' into DomXml');
+                      $rels_dom = NULL;
+                    }
+                    break;
                   }
-                  $collection_id = $source;
-                  self::get_fedora_raw($rel_oid, $related_obj, self::set_data_stream_name($collection_id));
-                  if (@ !$rels_dom->loadXML($related_obj)) {
-                    verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from ' . $source . ' into DomXml');
-                    $rels_dom = NULL;
+                }
+              }
+              if (isset($this->valid_relation[$collection_id]) && self::is_searchable($tag->nodeValue, $filter)) {
+                $relation->relationType->_value = $this_relation;
+                if ($rels_type == 'uri' || $rels_type == 'full') {
+                  $relation->relationUri->_value = $rel_oid;
+                }
+                if (is_object($rels_dom) && ($rels_type == 'full')) {
+                  $rel_obj = &$relation->relationObject->_value->object->_value;
+                  $rel_obj = self::extract_record($rels_dom, $tag->nodeValue);
+                  $rel_obj->identifier->_value = $rel_oid;
+                  if ($cd = self::get_creation_date($rels_dom)) {
+                    $rel_obj->creationDate->_value = $cd;
                   }
-                  break;
+                  self::get_relations_from_datastream_domobj($ext_relations, $rel_unit_members, $rels_type);
+                  if ($ext_relations) {
+                    $rel_obj->relations->_value = $ext_relations;
+                    unset($ext_relations);
+                  }
+                  if ($fa = self::scan_for_formats($rels_dom)) {
+                    $rel_obj->formatsAvailable->_value = $fa;
+                  }
                 }
-              }
-            }
-            if (isset($this->valid_relation[$collection_id]) && self::is_searchable($tag->nodeValue, $filter)) {
-              $relation->relationType->_value = $this_relation;
-              if ($rels_type == 'uri' || $rels_type == 'full') {
-                $relation->relationUri->_value = $rel_oid;
-              }
-              if (is_object($rels_dom) && ($rels_type == 'full')) {
-                $rel_obj = &$relation->relationObject->_value->object->_value;
-                $rel_obj = self::extract_record($rels_dom, $tag->nodeValue);
-                $rel_obj->identifier->_value = $rel_oid;
-                if ($cd = self::get_creation_date($rels_dom)) {
-                  $rel_obj->creationDate->_value = $cd;
+                if ($rels_type == 'type' || $relation->relationUri->_value) {
+                  $relations->relation[]->_value = $relation;
                 }
-                self::get_relations_from_datastream_domobj($ext_relations, $rel_unit_members, $rels_type);
-                if ($ext_relations) {
-                  $rel_obj->relations->_value = $ext_relations;
-                  unset($ext_relations);
-                }
-                if ($fa = self::scan_for_formats($rels_dom)) {
-                  $rel_obj->formatsAvailable->_value = $fa;
-                }
+                unset($relation);
               }
-              if ($rels_type == 'type' || $relation->relationUri->_value) {
-                $relations->relation[]->_value = $relation;
-              }
-              unset($relation);
             }
           }
         }
