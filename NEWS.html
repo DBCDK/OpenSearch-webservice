@@ -1,13 +1,17 @@
 <pre>
 4.2
 ===
+Records from raw repo are now fetched using the raw repo content service
+ini: removed postgress as repository parameter and added rawrepo instead. 
+ini: s11_agency defining which agencies that are allowed to see records from RR containing s11 - US 1684
+US 1684: RR - poster med S11 felter skal ikke kunne søges af andre end DBC 
 Handling  deleted records. parse_unit_for_best_agency() now skips recordStatus = delete
 
 4.1.1
 ===
 Returning all available pids from unit in objectsAvailable - earlier only one from each collection was returned
 Handling of units with more than one 870970-basis object
-Handling truncation and masking usign ? and * - US 1656
+Handling truncation and masking using ? and * - US 1656
 
 4.1 patch
 ===
