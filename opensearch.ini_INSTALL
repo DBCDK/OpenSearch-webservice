@@ -98,6 +98,11 @@ xmldir = ./xml
 missing_record = <?xml version='1.0' encoding='UTF-8'?><ting:container xmlns:ting='http://www.dbc.dk/ting' xmlns:dkabm='http://biblstandard.dk/abm/namespace/dkabm/' xmlns:dc='http://purl.org/dc/elements/1.1/'><dkabm:record><dc:title>Cannot read record: %s</dc:title></dkabm:record></ting:container>
 
 ; --------------
+; agencies allowed to see records from RR (in postgress db) containing s11 field
+s11_agency[] = 100200
+s11_agency[] = 870970
+
+; --------------
 ; repository setup
 ; default repository
 default_repository = @REPOSITORY_NAME@
@@ -191,14 +196,14 @@ repository[@REPOSITORY_NAME@][filter]['870976-anmeld'][docbook]['section/title']
 
 ; Raw record repositories
 ; repository for Raw repository, an postgress base indexed by solr
-; Using "postgress" as repository parameter, will trigger the use of solr/postgress instead of normal scheme
+; Using "rawrepo" as repository parameter, will trigger the use of raw record solr core and raw repo content service
 ;repository[rawrecords][solr] = http://mysolr.dk/solr-version/select
-;repository[rawrecords][postgress] = host=mypghost.dk port=5432 dbname=my_db user=myuser password=my_password connect_timeout=1
+;repository[rawrecords][rawrepo] = http://someserver.dbc.dk/rawrepo-content/RawRepoContentService
 ;repository[rawrecords][cql_file] = rawrecord_cql.xml
 ;
 
 repository[@RAW_RECORD_REPOSITORY_NAME@][solr] = @RAW_RECORD_SOLR@
-repository[@RAW_RECORD_REPOSITORY_NAME@][postgress] = @RAW_RECORD_POSTGRESS_CREDENTIALS@
+repository[@RAW_RECORD_REPOSITORY_NAME@][rawrepo] = @RAW_RECORD_CONTENT_SERVICE@
 repository[@RAW_RECORD_REPOSITORY_NAME@][cql_file] = rawrecord_cql.xml
 repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^[a-z]'] = .
 repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^...$'] = [&]
