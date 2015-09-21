@@ -8,16 +8,16 @@
         <more>false</more>
         <facetResult/>
         <queryDebugResult>
-          <rawQueryString>phrase.creator:"mervyn peake?"</rawQueryString>
-          <queryString>phrase.creator:"mervyn peake?"</queryString>
-          <parsedQuery>(+phrase.creator:mervyn peake?)/no_coord</parsedQuery>
-          <parsedQueryString>+phrase.creator:mervyn peake?</parsedQueryString>
+          <rawQueryString>phrase.creator:mervyn\ peake?</rawQueryString>
+          <queryString>phrase.creator:mervyn\ peake?</queryString>
+          <parsedQuery>(+phrase.creator:mervyn\ peake?)/no_coord</parsedQuery>
+          <parsedQueryString>+phrase.creator:mervyn\ peake?</parsedQueryString>
         </queryDebugResult>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>0</fedoraRecordsRead>
-          <time>1.859275</time>
-          <trackingId>os:2015-03-06T11:23:16:112034:8929</trackingId>
+          <time>2.145518</time>
+          <trackingId>2015-09-21T09:36:41:397943:18688</trackingId>
         </statInfo>
       </result>
     </searchResponse>
