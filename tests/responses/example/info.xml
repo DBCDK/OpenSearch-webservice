@@ -1244,46 +1244,28 @@
           <repository>rrepo</repository>
           <cqlIndexDoc>rawrecord_cql.xml</cqlIndexDoc>
           <cqlIndex>
+            <indexName>marc.001a001b</indexName>
+          </cqlIndex>
+          <cqlIndex>
             <indexName>marc.001a</indexName>
-            <indexAlias>
-              <indexName>001a</indexName>
-            </indexAlias>
           </cqlIndex>
           <cqlIndex>
             <indexName>marc.001b</indexName>
-            <indexAlias>
-              <indexName>001b</indexName>
-            </indexAlias>
+          </cqlIndex>
+          <cqlIndex>
+            <indexName>marc.001c</indexName>
+          </cqlIndex>
+          <cqlIndex>
+            <indexName>marc.001d</indexName>
           </cqlIndex>
           <cqlIndex>
             <indexName>marc.002a</indexName>
-            <indexAlias>
-              <indexName>002a</indexName>
-            </indexAlias>
           </cqlIndex>
           <cqlIndex>
             <indexName>marc.021ae</indexName>
-            <indexAlias>
-              <indexName>021ae</indexName>
-            </indexAlias>
           </cqlIndex>
           <cqlIndex>
             <indexName>marc.022a</indexName>
-            <indexAlias>
-              <indexName>022a</indexName>
-            </indexAlias>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>analyzedId</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>created</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>id</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>modified</indexName>
           </cqlIndex>
           <cqlIndex>
             <indexName>default</indexName>
