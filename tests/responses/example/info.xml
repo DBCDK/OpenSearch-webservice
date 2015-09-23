@@ -1239,6 +1239,9 @@
           <cqlIndex>
             <indexName>holdingsitem.status</indexName>
           </cqlIndex>
+          <cqlIndex>
+            <indexName>holdingsitem.subLocation</indexName>
+          </cqlIndex>
         </infoRepository>
         <infoRepository>
           <repository>rrepo</repository>
