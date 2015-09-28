@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="explain.xsl"?>
-<explain xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://explain.z3950.org/dtd/2.0/" xsi:schemaLocation="http://explain.z3950.org/dtd/2.0/ http://explain.z3950.org/dtd/zeerex-2.0.xsd">
+<explain xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://explain.openseach.cql.dbc.dk/1.0/" xsi:schemaLocation="opesearch_explain.xsd">
   <!-- This file is part of Open Library System.
 Copyright © 2012, Dansk Bibliotekscenter a/s,  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
@@ -9,6 +9,9 @@ Open Library System is free software: you can redistribute it and/or modify it u
 Open Library System is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License along with Open Library System.  If not, see http://www.gnu.org/licenses-->
+<!--
+  Modified for opensearch purposes from http://zeerex.z3950.org/dtd/zeerex-2.0.xsd
+-->
   <serverInfo>
     <host/>
     <port/>
