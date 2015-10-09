@@ -96,6 +96,10 @@ xmldir = ./xml
 ; --------------
 ; set missing_record to handle inconsistency between solr and fedora
 missing_record = <?xml version='1.0' encoding='UTF-8'?><ting:container xmlns:ting='http://www.dbc.dk/ting' xmlns:dkabm='http://biblstandard.dk/abm/namespace/dkabm/' xmlns:dc='http://purl.org/dc/elements/1.1/'><dkabm:record><dc:title>Cannot read record: %s</dc:title></dkabm:record></ting:container>
+;
+; set missing_marc_record to handle requests for nonexisting record in rawrepo
+missing_marc_record = <?xml version='1.0' encoding='UTF-8'?><marcx:record format='danMARC2' type='Bibliographic' xmlns:marcx='info:lc/xmlns/marcxchange-v2'><marcx:datafield tag='001' ind1='0' ind2='0'><marcx:subfield code='a'>%s</marcx:subfield><marcx:subfield code='b'>%s</marcx:subfield></marcx:datafield><marcx:datafield tag='245' ind1='0' ind2='0'><marcx:subfield code='a'>Cannot find record</marcx:subfield></marcx:datafield></marcx:record>
+
 
 ; --------------
 ; agencies allowed to see records from RR (in postgress db) containing s11 field
@@ -265,6 +269,14 @@ agency_types = @AGENCY_TYPES@
 ;   agency_types = http://some.openagency/?action=showOrder&agencyId=%s&trackingId=%s
 ;
 agency_show_order = @AGENCY_SHOW_ORDER@
+
+
+; --------------
+; find Library show priority end point
+; ex:
+;   agency_rules = http://some.openagency/?action=libraryRules&agencyId=%s&trackingId=%s
+;
+agency_rules = @AGENCY_RULES@
 
 
 ; --------------
