@@ -42,6 +42,7 @@ class openSearch extends webServiceServer {
   protected $number_of_fedora_cached = 0;
   protected $agency_catalog_source = '';
   protected $agency_type = '';
+  protected $agency_rules = array();
   protected $filter_agency = '';
   protected $format = '';
   protected $which_rec_id = '';
@@ -116,6 +117,7 @@ class openSearch extends webServiceServer {
     if ($unsupported) return $ret_error;
 
     $this->agency = $param->agency->_value;
+    $this->agency_rules = self::get_agency_rules($this->agency);
     $this->filter_agency = self::set_solr_filter($this->search_profile);
     $this->holdings_include = self::set_holdings_include($this->search_profile, 'parentDocId');
     self::set_valid_relations_and_sources($this->search_profile);
@@ -364,7 +366,7 @@ class openSearch extends webServiceServer {
           verbose::log(TRACE, 'Cache hit, lines: ' . count($work_cache_struct));
         }
         else {
-          verbose::log(TRACE, 'Cache miss');
+          verbose::log(TRACE, __CLASS__ . '::'. __FUNCTION__ . ' - work_struct cache miss');
         }
       }
 
@@ -749,6 +751,7 @@ class openSearch extends webServiceServer {
       }
       else
         $agencies = $this->config->get_value('agency', 'agency');
+      $this->agency_rules = self::get_agency_rules($this->agency);
       $agencies[$this->agency] = self::set_solr_filter($this->search_profile);
       self::set_valid_relations_and_sources($this->search_profile);
       if (isset($agencies[$this->agency]))
@@ -1360,7 +1363,9 @@ class openSearch extends webServiceServer {
           $id = $record->getElementsByTagName('bibliographicRecordId')->item(0)->nodeValue;
           $agency = $record->getElementsByTagName('agencyId')->item(0)->nodeValue;
           if (self::scalar_or_first_elem($solr_doc[RR_MARC_001_A] == $id) && self::scalar_or_first_elem($solr_doc[RR_MARC_001_B]) == $agency) {
-            $data = base64_decode($record->getElementsByTagName('data')->item(0)->nodeValue);
+            if (!$data = base64_decode($record->getElementsByTagName('data')->item(0)->nodeValue)) {
+              $data = sprintf($this->config->get_value('missing_marc_record', 'setup'), $id, $agency);
+            }
             @ $dom->loadXml($data);
             $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
             $restricted_record = FALSE;
@@ -2523,6 +2528,26 @@ class openSearch extends webServiceServer {
     $profile = $profiles->get_profile($agency, $profile_name, $this->search_profile_version);
     $this->watch->stop('agency_profile');
     return (is_array($profile) ? $profile : FALSE);
+  }
+
+  /** \brief Fetch agency rules from OpenAgency, cache the result, and return agency rules for $agency
+   *
+   * @param string $agency -
+   * @retval array - agency rules
+   */
+  private function get_agency_rules($agency) {
+    static $open_agency;
+    if (!isset($open_agency)) {
+      require_once 'OLS_class_lib/open_agency_class.php';
+      $cache = self::get_cache_info('agency');
+      $open_agency = new OpenAgency($this->config->get_value('agency_rules', 'setup'), 
+                                    $cache['host'], $cache['port'], $cache['expire']);
+    }
+    $this->watch->start('agency_rules');
+    $rules = $open_agency->get_agency_rules($agency);
+    $this->watch->start('agency_rules');
+
+    return $rules;
   }
 
   /** \brief Get info for OpenAgency, solr_file cache style/setup
