@@ -1271,6 +1271,9 @@
             <indexName>marc.022a</indexName>
           </cqlIndex>
           <cqlIndex>
+            <indexName>marc.y08a</indexName>
+          </cqlIndex>
+          <cqlIndex>
             <indexName>default</indexName>
           </cqlIndex>
         </infoRepository>
