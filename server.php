@@ -2890,7 +2890,7 @@ class openSearch extends webServiceServer {
   }
 
   /** \brief check if a record source is contained in the search profile: searchable_source
-   * - Public libraries has to be in their own catalog or as part of 870970-basis
+   * - for agency_rule 'use_localdata_stream' records can be in 870970-basis localdata stream
    * - School libraries has to be in their own catalog or as part of 870970-skole
    * - Research libraries has to be in their own catalog or any reasearch library when 870970-forsk is in the search profile
    *   "part-of"- or "contains"- collections are handled by collection_contained_in structure obtained from openAgency
@@ -2917,9 +2917,9 @@ class openSearch extends webServiceServer {
            PHP_EOL;
     }
     return (($this->searchable_source[$agency . '-' . $collection]) ||
-            (self::agency_rule($agency, 'use_localdata_stream') && $coll_id == '870970-basis' && $this->searchable_source[$this->agency_catalog_source]) ||
             ($agency_type == 'Forskningsbibliotek' && $this->searchable_source['870970-forsk']) ||
             ($agency_type == 'Skolebibliotek' && $this->searchable_source['870970-skole']) ||
+            (self::agency_rule($agency, 'use_localdata_stream') && $coll_id == '870970-basis' && $this->searchable_source[$this->agency_catalog_source]) ||
             (self::is_collective_collection($coll_id)) ||
             (self::is_contained_in_collection($coll_id))
     );
