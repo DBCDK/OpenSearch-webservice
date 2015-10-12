@@ -25,7 +25,6 @@ require_once('OLS_class_lib/webServiceServer_class.php');
 require_once 'OLS_class_lib/memcache_class.php';
 require_once 'OLS_class_lib/solr_query_class.php';
 
-define('PRIO', $_REQUEST['PRIO']);
 //-----------------------------------------------------------------------------
 class openSearch extends webServiceServer {
   protected $agency;
@@ -42,7 +41,6 @@ class openSearch extends webServiceServer {
   protected $number_of_fedora_cached = 0;
   protected $agency_catalog_source = '';
   protected $agency_type = '';
-  protected $agency_rules = array();
   protected $filter_agency = '';
   protected $format = '';
   protected $which_rec_id = '';
@@ -117,7 +115,6 @@ class openSearch extends webServiceServer {
     if ($unsupported) return $ret_error;
 
     $this->agency = $param->agency->_value;
-    $this->agency_rules = self::get_agency_rules($this->agency);
     $this->filter_agency = self::set_solr_filter($this->search_profile);
     $this->holdings_include = self::set_holdings_include($this->search_profile, 'parentDocId');
     self::set_valid_relations_and_sources($this->search_profile);
@@ -533,7 +530,6 @@ class openSearch extends webServiceServer {
     $rec_no = max(1, $start);
     $HOLDINGS = ' holdings ';
     $this->agency_priority_list = self::fetch_agency_show_priority();
-    if (@ constant('PRIO')) var_dump($collection_identifier);
     if ($debug_query) {
       $explain_keys = array_keys($solr_arr['debug']['explain']);
     }
@@ -707,10 +703,6 @@ class openSearch extends webServiceServer {
                        ' ' . str_replace(PHP_EOL, '', $this->watch->dump()) . 
                        ' query:' . $param->query->_value . PHP_EOL);
 
-    if (@ constant('PRIO')) var_dump($this->searchable_source);
-    if (@ constant('PRIO')) var_dump($this->collection_contained_in);
-    if (@ constant('PRIO')) var_dump($this->agency_priority_list);
-    if (@ constant('PRIO')) die('aa');
     return $ret;
   }
 
@@ -751,7 +743,6 @@ class openSearch extends webServiceServer {
       }
       else
         $agencies = $this->config->get_value('agency', 'agency');
-      $this->agency_rules = self::get_agency_rules($this->agency);
       $agencies[$this->agency] = self::set_solr_filter($this->search_profile);
       self::set_valid_relations_and_sources($this->search_profile);
       if (isset($agencies[$this->agency]))
@@ -840,7 +831,8 @@ class openSearch extends webServiceServer {
       $id_array[] = $fpid->_value;
       list($owner_collection, $id) = explode(':', $fpid->_value);
       list($owner, $coll) = explode('-', $owner_collection);
-      if (in_array(self::get_agency_type($owner), array('Folkebibliotek', 'Skolebibliotek'))) {
+      if (self::agency_rule($owner, 'use_localdata_stream')) {
+      //if (in_array(self::get_agency_type($owner), array('Folkebibliotek', 'Skolebibliotek'))) {
         $id_array[] = '870970-basis:' . $id;
         //$id_array[] = '870970-basis:' . $id . '-' . $owner_collection;  // Only search for localData rec.id's
         $localdata_object[$fpid->_value] = '870970-basis:' . $id;
@@ -1611,9 +1603,8 @@ class openSearch extends webServiceServer {
    * @retval string
    */
   private function set_data_stream_name($collection_id) {
-    if (@ constant('PRIO')) var_dump('-----------------------');
-    if (@ constant('PRIO')) var_dump($collection_id);
-    if ($collection_id && (substr($collection_id, 0, 1) == '7')) {
+    list($agency, $collection) = self::split_record_source($record_source);
+    if ($collection_id && self::agency_rule($agency, 'use_localdata_stream')) {
       $data_stream = 'localData.' . $collection_id;
     }
     else {
@@ -2421,8 +2412,6 @@ class openSearch extends webServiceServer {
         echo 'datastreams: ' . implode('; ', $ret) . PHP_EOL;
       }
     }
-    if (@ constant('PRIO')) var_dump($pid);
-    if (@ constant('PRIO')) var_dump($ret);
     return $ret;
   }
 
@@ -2535,19 +2524,23 @@ class openSearch extends webServiceServer {
    * @param string $agency -
    * @retval array - agency rules
    */
-  private function get_agency_rules($agency) {
-    static $open_agency;
-    if (!isset($open_agency)) {
-      require_once 'OLS_class_lib/open_agency_class.php';
-      $cache = self::get_cache_info('agency');
-      $open_agency = new OpenAgency($this->config->get_value('agency_rules', 'setup'), 
-                                    $cache['host'], $cache['port'], $cache['expire']);
-    }
-    $this->watch->start('agency_rules');
-    $rules = $open_agency->get_agency_rules($agency);
-    $this->watch->start('agency_rules');
+  private function agency_rule($agency, $name) {
+    static $agency_rules = array();
+    if (empty($agency_rules[$agency])) {
+      static $open_agency;
+      if (!isset($open_agency)) {
+        require_once 'OLS_class_lib/open_agency_class.php';
+        $cache = self::get_cache_info('agency');
+        $open_agency = new OpenAgency($this->config->get_value('agency_rules', 'setup'), 
+                                      $cache['host'], $cache['port'], $cache['expire']);
+      }
+      $this->watch->start('agency_rule');
+      $rules = $open_agency->get_agency_rules($agency);
+      $this->watch->stop('agency_rule');
 
-    return $rules;
+      $agency_rules[$agency] = $rules;
+    }
+    return self::xs_boolean($agency_rules[$agency][$name]);
   }
 
   /** \brief Get info for OpenAgency, solr_file cache style/setup
@@ -2838,7 +2831,6 @@ class openSearch extends webServiceServer {
       }
       foreach ($priority_pids as $pids_in_unit) {
         foreach ($pids_in_unit as $pid_in_unit) {
-          if (@ constant('PRIO')) var_dump($pid_in_unit);
           $record_source = self::record_source_from_pid($pid_in_unit);
           list($agency, $collection) = self::split_record_source($record_source);
           if (self::is_valid_source($agency, $collection)) {
@@ -2864,7 +2856,6 @@ class openSearch extends webServiceServer {
     if ($in_870970_basis[$best_pid] && ($best_pid <> $pid_870970_basis)) {
       $localdata_in_pid = $in_870970_basis[$best_pid];
     }
-    if (@ constant('PRIO')) var_dump($best_pid);
     if (DEBUG_ON) {
       echo 'parse_unit_for_best_agency:: best_pid: ' . $best_pid . 
            ' primary_pid: ' . $primary_pid . 
@@ -2908,9 +2899,6 @@ class openSearch extends webServiceServer {
    * @param string $collection 
    * @retval boolean - TRUE is part of a source_grouping
    */
-/* TODO if holdings is present, records from 870970-basis, should oblyt be deleivered if 870970-basis is searchable, and the records has holdings
- * so a search in holdingsitems should be done for each searchable 870970-basis record to decide if it's part of the collection for the library
- */
   private function is_valid_source($agency, $collection) {
     $agency_type = self::get_agency_type($agency);
     $coll_id = $agency . '-' . $collection;
@@ -2921,6 +2909,7 @@ class openSearch extends webServiceServer {
            ' agency_type: ' . $agency_type . 
            ' agency_catalog: ' . $this->agency_catalog_source .
            ' type_catalog: ' . $this->agency_type .
+           ' use_localdata_stream: ' . (self::agency_rule($agency, 'use_localdata_stream') ? 'TRUE' : 'FALSE') . 
            ' searchable: ' . ($this->searchable_source[$coll_id] ? 'TRUE' : 'FALSE') . 
            ' searchable_source: ' . ($this->searchable_source[$this->agency_catalog_source] ? 'TRUE' : 'FALSE') .
            ' collective_coll: ' . (self::is_collective_collection($coll_id) ? 'TRUE' : 'FALSE') . 
@@ -2928,8 +2917,7 @@ class openSearch extends webServiceServer {
            PHP_EOL;
     }
     return (($this->searchable_source[$agency . '-' . $collection]) ||
-            ($this->agency_type == 'Folkebibliotek' && $coll_id == '870970-basis' && $this->searchable_source[$this->agency_catalog_source]) ||
-            ($this->agency_type == 'Skolebibliotek' && $coll_id == '870970-basis' && $this->searchable_source[$this->agency_catalog_source]) ||
+            (self::agency_rule($agency, 'use_localdata_stream') && $coll_id == '870970-basis' && $this->searchable_source[$this->agency_catalog_source]) ||
             ($agency_type == 'Forskningsbibliotek' && $this->searchable_source['870970-forsk']) ||
             ($agency_type == 'Skolebibliotek' && $this->searchable_source['870970-skole']) ||
             (self::is_collective_collection($coll_id)) ||
