@@ -4,8 +4,8 @@
     <ns1:getObjectRequest>
       <ns1:identifier>820010-katalog:ssj0000521095</ns1:identifier>
       <ns1:identifier>870976-anmeld:31154219</ns1:identifier>
-      <ns1:identifier>870970-basis:27694381</ns1:identifier>
       <ns1:identifier>778700-katalog:27694381</ns1:identifier>
+      <ns1:identifier>778700-katalog:27694380</ns1:identifier>
       <ns1:objectFormat>dkabm</ns1:objectFormat>
     </ns1:getObjectRequest>
   </SOAP-ENV:Body>
