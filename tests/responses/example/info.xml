@@ -1015,6 +1015,9 @@
             <indexName>phrase.genre</indexName>
           </cqlIndex>
           <cqlIndex>
+            <indexName>phrase.shelf</indexName>
+          </cqlIndex>
+          <cqlIndex>
             <indexName>phrase.originalTitle</indexName>
           </cqlIndex>
           <cqlIndex>
