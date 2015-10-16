@@ -157,7 +157,6 @@ class openSearch extends webServiceServer {
     $debug_query = $this->xs_boolean($param->queryDebug->_value);
     $this->agency_catalog_source = $this->agency . '-katalog';
     $this->agency_type = self::get_agency_type($this->agency);
-    //$this->agency_type = self::get_agency_type('300615');
 
 
     if ($us_settings = $this->repository['universal']) {
@@ -336,7 +335,7 @@ class openSearch extends webServiceServer {
     if ($debug_query) {
       $debug_result = self::set_debug_info($solr_arr['debug'], $this->rank_frequence_debug, $best_match_debug);
     }
-    //$facets = self::parse_for_facets($solr_arr);
+    //$facets = self::parse_for_facets($solr_arr); - moved to other solr-call
 
     $this->watch->start('Build_id');
     $work_ids = $used_search_fids = array();
@@ -350,7 +349,6 @@ class openSearch extends webServiceServer {
         $used_search_fid[$no] = TRUE;
         self::get_solr_array($solr_query['edismax'], $no, 1, '', '', '', $filter_q, '', $debug_query, $solr_arr);
         $uid =  self::get_first_solr_element($solr_arr, 'unit.id');
-        //$local_data[$uid] = $solr_arr['response']['docs']['rec.collectionIdentifier'];
         $work_ids[] = array($uid);
       }
     }
@@ -370,7 +368,6 @@ class openSearch extends webServiceServer {
       $w_no = 0;
 
       if (DEBUG_ON) print_r($search_ids);
-      //if (DEBUG_ON) print_r($local_data);
 
       for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
         $uid = &$search_ids[$s_idx];
@@ -631,7 +628,6 @@ class openSearch extends webServiceServer {
       }
       if ($this->format['found_solr_format']) {
         $this->watch->start('Solr_disp');
-        //$display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), $filter_q);
         $this->watch->stop('Solr_disp');
         self::format_solr($collections, $display_solr_arr, $work_ids, $fpid_sort_keys);
       }
@@ -651,8 +647,6 @@ class openSearch extends webServiceServer {
       }
     }
     $this->watch->start('Solr_hits_facets');
-    // obsolete - handled by collaps-settings above   
-    // $solr_query['edismax']['fq'][] = 'unit.isPrimaryObject:true';   // need some discussion to decide for or against this line
     if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', $rank_q, $facet_q, $filter_q, '', $debug_query, $solr_arr)) {
       $this->watch->stop('Solr_hits_facets');
       $error = $err;
@@ -800,7 +794,6 @@ class openSearch extends webServiceServer {
       else {
         $collections = self::get_records_from_postgress($this->repository['postgress'], $docs, in_array($this->agency, $s11_agency));
       }
-      //var_dump($collections); die();
       if (is_scalar($collections)) {
         $error = $collections;
         return $ret_error;
@@ -832,9 +825,7 @@ class openSearch extends webServiceServer {
       list($owner_collection, $id) = explode(':', $fpid->_value);
       list($owner, $coll) = explode('-', $owner_collection);
       if (self::agency_rule($owner, 'use_localdata_stream')) {
-      //if (in_array(self::get_agency_type($owner), array('Folkebibliotek', 'Skolebibliotek'))) {
         $id_array[] = '870970-basis:' . $id;
-        //$id_array[] = '870970-basis:' . $id . '-' . $owner_collection;  // Only search for localData rec.id's
         $localdata_object[$fpid->_value] = '870970-basis:' . $id;
       }
     }
@@ -844,7 +835,6 @@ class openSearch extends webServiceServer {
              '?wt=phps' .
               '&q=' . urlencode(implode(AND_OP, $chk_query['edismax']['q'])) .
               '&fq=' . $filter_q .
-              // if briefDisplay data must be fetched from primaryObject '&fq=unit.isPrimaryObject:true' . 
               '&start=0' .
               '&rows=500' .
               '&defType=edismax' .
@@ -915,8 +905,6 @@ class openSearch extends webServiceServer {
             self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
           }
           if (self::xs_boolean($param->includeHoldingsCount->_value)) {
-            //self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
-            //list($dummy, $dummy) = self::parse_unit_for_object_ids($unit_rels_hierarchy);
             $this->cql2solr = new SolrQuery($this->repository, $this->config);
             $no_of_holdings = self::get_holdings($fpid->_value);
           }
@@ -972,10 +960,6 @@ class openSearch extends webServiceServer {
     $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
     $result->statInfo->_value->trackingId->_value = $this->tracking_id;
 
-    //print_r($param);
-    //print_r($fedora_result);
-    //print_r($objects);
-    //print_r($ret); die();
     verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
                        ':: agency:' . $param->agency->_value . 
                        ' profile:' . $param->profile->_value . ' ' . $this->watch->dump());
@@ -2023,7 +2007,6 @@ class openSearch extends webServiceServer {
           $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
           $f_result = $this->curl->get($open_format_uri);
           $this->curl->set_option(CURLOPT_POST, 0, 0);
-          //$fr_obj = unserialize($f_result);
           $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['of']);
   // need to restore correct namespace
           foreach ($f_obj->formatRequest->_value->originalData as $i => &$oD) {
@@ -2989,9 +2972,6 @@ class openSearch extends webServiceServer {
     if (@ $dom->loadXML($w_rel)) {
       $res = array();
       $res[] = $uid;
-      //$hpuo = $dom->getElementsByTagName('hasPrimaryUnitObject');
-      //if ($hpuo->item(0))
-        //$res[] = $puo = $hpuo->item(0)->nodeValue;
       $r_list = $dom->getElementsByTagName('hasMemberOfWork');
       foreach ($r_list as $r) {
         if ($r->nodeValue <> $uid) $res[] = $r->nodeValue;
@@ -3058,10 +3038,6 @@ class openSearch extends webServiceServer {
     }
     $ret->objectsAvailable->_value = $u_member;
     if ($debug_info) $ret->queryResultExplanation->_value = $debug_info;
-    //if (DEBUG_ON) var_dump($ret);
-
-    //print_r($ret);
-    //exit;
 
     return $ret;
   }
@@ -3132,8 +3108,6 @@ class openSearch extends webServiceServer {
    *
    */
   private function get_relations_from_datastream_domobj(&$relations, $unit_members, $rels_type) {
-//var_dump($unit_members);
-//var_dump($this->search_profile);
     static $stream_dom;
     if (empty($stream_dom)) {
       $stream_dom = new DomDocument();
@@ -3141,7 +3115,6 @@ class openSearch extends webServiceServer {
     $dub_check = array();
     foreach ($unit_members as $member) {
       self::get_fedora_raw($member, $fedora_streams);
-//var_dump($fedora_streams);
       if (@ !$stream_dom->loadXML($fedora_streams)) {
         verbose::log(ERROR, 'Cannot load STREAMS for ' . $member . ' into DomXml');
       } 
@@ -3150,17 +3123,14 @@ class openSearch extends webServiceServer {
           $url = $link->getelementsByTagName('url')->item(0)->nodeValue;
           if (empty($dup_check[$url])) {
             $this_relation = $link->getelementsByTagName('relationType')->item(0)->nodeValue;
-//echo PHP_EOL . 'found link ' . $this_relation . PHP_EOL;
             unset($lci);
             $relation_ok = FALSE;
             foreach ($link->getelementsByTagName('collectionIdentifier') as $collection) {
-//echo PHP_EOL . 'collection: ' . $collection->nodeValue . PHP_EOL;
               $relation_ok = $relation_ok || 
                 self::check_valid_external_relation($collection->nodeValue, $this_relation, $this->search_profile);
               $lci[]->_value = $collection->nodeValue;
             }
             if ($relation_ok) {
-//echo PHP_EOL . 'relation ok' . PHP_EOL;
               if (!$relation->relationType->_value = $this_relation) {   // ????? WHY - is relationType sometimes empty?
                 $relation->relationType->_value = $link->getelementsByTagName('access')->item(0)->nodeValue;
               }
@@ -3185,7 +3155,6 @@ class openSearch extends webServiceServer {
         }
       }
     }
- //die();
   }
 
   /** \brief Handle relations comming from addi streams
@@ -3311,7 +3280,6 @@ class openSearch extends webServiceServer {
           }
           if ($record->item(0)) {
             foreach ($record->item(0)->childNodes as $tag) {
-//              if ($format_name == 'dkabm' || $tag->prefix == 'dc') {
                 if (trim($tag->nodeValue)) {
                   if ($tag->hasAttributes()) {
                     foreach ($tag->attributes as $attr) {
@@ -3325,7 +3293,6 @@ class openSearch extends webServiceServer {
                     $rec->{$tag->localName}[] = $o;
                   unset($o);
                 }
-//              }
             }
           }
           else {
@@ -3337,7 +3304,6 @@ class openSearch extends webServiceServer {
           $record = &$dom->getElementsByTagName('collection');
           if ($record->item(0)) {
             $ret->collection->_value = $this->xmlconvert->xml2obj($record->item(0), $this->xmlns['marcx']);
-            //$ret->collection->_namespace = $record->item(0)->lookupNamespaceURI('collection');
             $ret->collection->_namespace = $this->xmlns['marcx'];
             if (is_array($this->repository['filter'])) {
               self::filter_marcxchange($record_source, $ret->collection->_value, $this->repository['filter']);
@@ -3353,7 +3319,6 @@ class openSearch extends webServiceServer {
             if (is_array($this->repository['filter'])) {
               self::filter_docbook($record_source, $ret->article->_value, $this->repository['filter']);
             }
-            //print_r($ret); die();
           }
           break;
         case 'opensearchobject':
@@ -3361,7 +3326,6 @@ class openSearch extends webServiceServer {
           if ($record->item(0)) {
             $ret->object->_value = $this->xmlconvert->xml2obj($record->item(0));
             $ret->object->_namespace = $record->item(0)->lookupNamespaceURI('oso');
-            //print_r($ret); die();
           }
           break;
       }
