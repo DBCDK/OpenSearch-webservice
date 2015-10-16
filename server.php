@@ -2473,7 +2473,7 @@ class openSearch extends webServiceServer {
     }
     $this->watch->start('agency_type');
     $agency_type = $agency_types->get_agency_type($agency);
-    $this->watch->start('agency_type');
+    $this->watch->stop('agency_type');
     if ($agency_types->get_branch_type($agency) <> 'D') {
       return $agency_type;
     }
