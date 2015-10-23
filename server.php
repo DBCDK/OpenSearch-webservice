@@ -1335,35 +1335,48 @@ class openSearch extends webServiceServer {
     @ $dom->loadXml($result);
     if ($records = &$dom->getElementsByTagName('records')->item(0)) {
       foreach ($solr_response['docs'] as $solr_doc) {
+        $found_record = FALSE;
+        $solr_id = self::scalar_or_first_elem($solr_doc[RR_MARC_001_A]);
+        $solr_agency = self::scalar_or_first_elem($solr_doc[RR_MARC_001_B]);
         foreach ($records->getElementsByTagName('record') as $record) {
           $id = $record->getElementsByTagName('bibliographicRecordId')->item(0)->nodeValue;
           $agency = $record->getElementsByTagName('agencyId')->item(0)->nodeValue;
-          if (self::scalar_or_first_elem($solr_doc[RR_MARC_001_A] == $id) && self::scalar_or_first_elem($solr_doc[RR_MARC_001_B]) == $agency) {
+          if (($solr_id == $id) && ($solr_agency == $agency)) {
+            $found_record = TRUE;
             if (!$data = base64_decode($record->getElementsByTagName('data')->item(0)->nodeValue)) {
-              $data = sprintf($this->config->get_value('missing_marc_record', 'setup'), $id, $agency);
+              verbose::log(FATAL, 'Internal problem: Cannot decode record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
             }
-            @ $dom->loadXml($data);
-            $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
-            $restricted_record = FALSE;
-            if (!$s11_records_allowed) {
-              foreach ($marc_obj->record->_value->datafield as $idf => &$df) {
-                if ($df->_attributes->tag->_value == 's11') {
-                  $restricted_record = TRUE;
-                  break 1;
-                }
-              }
-            }
-            if (!$restricted_record) {
-              self::filter_marcxchange(self::scalar_or_first_elem($solr_doc[RR_MARC_001_B]), $marc_obj, $this->repository['filter']);
-              $rec_pos++;
-              $ret[$rec_pos]->_value->collection->_value->resultPosition->_value = $rec_pos;
-              $ret[$rec_pos]->_value->collection->_value->numberOfObjects->_value = 1;
-              $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_value = $marc_obj;
-              $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_namespace = $this->xmlns['marcx'];
-              break;
+            break;
+          }
+        }
+        if (!$found_record) {
+          verbose::log(ERROR, 'Internal problem: Cannot find record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
+        }
+        if (empty($data)) {
+          $data = sprintf($this->config->get_value('missing_marc_record', 'setup'), $solr_id, $solr_agency, 'Cannot read record');
+        }
+        @ $dom->loadXml($data);
+        $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
+        $restricted_record = FALSE;
+        if (!$s11_records_allowed) {
+          foreach ($marc_obj->record->_value->datafield as $idf => &$df) {
+            if ($df->_attributes->tag->_value == 's11') {
+              $restricted_record = TRUE;
+              break 1;
             }
           }
         }
+        if ($restricted_record) {
+          verbose::log(WARNING, 'Skipping restricted record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
+          @ $dom->loadXml(sprintf($this->config->get_value('missing_marc_record', 'setup'), $solr_id, $solr_agency, 'Restricted record'));
+          $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
+        }
+        self::filter_marcxchange($solr_agency, $marc_obj, $this->repository['filter']);
+        $rec_pos++;
+        $ret[$rec_pos]->_value->collection->_value->resultPosition->_value = $rec_pos;
+        $ret[$rec_pos]->_value->collection->_value->numberOfObjects->_value = 1;
+        $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_value = $marc_obj;
+        $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_namespace = $this->xmlns['marcx'];
       }
     }
     return $ret;
