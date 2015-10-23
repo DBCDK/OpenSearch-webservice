@@ -11,7 +11,7 @@
 ;version
 ; Note that the version is used as part of the cache key, so do not run 2 versions of the service with identical
 ; version name, unless you specificly want them to share cache
-version = 4.1.1
+version = 4.2.1
 
 ; --------------
 ; wsdl and service location for service. Used to replace __LOCATION__ in wsdl
@@ -98,7 +98,7 @@ xmldir = ./xml
 missing_record = <?xml version='1.0' encoding='UTF-8'?><ting:container xmlns:ting='http://www.dbc.dk/ting' xmlns:dkabm='http://biblstandard.dk/abm/namespace/dkabm/' xmlns:dc='http://purl.org/dc/elements/1.1/'><dkabm:record><dc:title>Cannot read record: %s</dc:title></dkabm:record></ting:container>
 ;
 ; set missing_marc_record to handle requests for nonexisting record in rawrepo
-missing_marc_record = <?xml version='1.0' encoding='UTF-8'?><marcx:record format='danMARC2' type='Bibliographic' xmlns:marcx='info:lc/xmlns/marcxchange-v2'><marcx:datafield tag='001' ind1='0' ind2='0'><marcx:subfield code='a'>%s</marcx:subfield><marcx:subfield code='b'>%s</marcx:subfield></marcx:datafield><marcx:datafield tag='245' ind1='0' ind2='0'><marcx:subfield code='a'>Cannot find record</marcx:subfield></marcx:datafield></marcx:record>
+missing_marc_record = <?xml version='1.0' encoding='UTF-8'?><marcx:record format='danMARC2' type='Bibliographic' xmlns:marcx='info:lc/xmlns/marcxchange-v2'><marcx:datafield tag='001' ind1='0' ind2='0'><marcx:subfield code='a'>%s</marcx:subfield><marcx:subfield code='b'>%s</marcx:subfield></marcx:datafield><marcx:datafield tag='245' ind1='0' ind2='0'><marcx:subfield code='a'>%s</marcx:subfield></marcx:datafield></marcx:record>
 
 
 ; --------------
