@@ -1,14 +1,708 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://oss.dbc.dk/ns/opensearch">
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:marcx="info:lc/xmlns/marcxchange-v1" xmlns="http://oss.dbc.dk/ns/opensearch">
   <SOAP-ENV:Body>
     <searchResponse>
       <result>
         <hitCount>44</hitCount>
-        <collectionCount>0</collectionCount>
+        <collectionCount>10</collectionCount>
         <more>true</more>
+        <searchResult>
+          <collection>
+            <resultPosition>1</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:leader>00000n    2200000   4500</marcx:leader>
+                  <marcx:datafield tag="001" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 011 314 6</marcx:subfield>
+                    <marcx:subfield code="b">870970</marcx:subfield>
+                    <marcx:subfield code="c">20000622112102</marcx:subfield>
+                    <marcx:subfield code="d">19921020</marcx:subfield>
+                    <marcx:subfield code="f">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="004" ind1="0" ind2="0">
+                    <marcx:subfield code="r">n</marcx:subfield>
+                    <marcx:subfield code="a">h</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="008" ind1="0" ind2="0">
+                    <marcx:subfield code="b">de</marcx:subfield>
+                    <marcx:subfield code="v">0</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="009" ind1="0" ind2="0">
+                    <marcx:subfield code="a">c</marcx:subfield>
+                    <marcx:subfield code="g">xx</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="100" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Emonts</marcx:subfield>
+                    <marcx:subfield code="h">Fritz</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="245" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Europäische Klavierschule</marcx:subfield>
+                    <marcx:subfield code="p">The ¤European piano method</marcx:subfield>
+                    <marcx:subfield code="p">Méthode de piano européenne</marcx:subfield>
+                    <marcx:subfield code="e">Fritz Emonts</marcx:subfield>
+                    <marcx:subfield code="f">französische Übersetzung: Pascal Huynh</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="260" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Mainz</marcx:subfield>
+                    <marcx:subfield code="b">Schott</marcx:subfield>
+                    <marcx:subfield code="c">1992-1994</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="300" ind1="0" ind2="0">
+                    <marcx:subfield code="a">3 bind</marcx:subfield>
+                    <marcx:subfield code="c">30 cm</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="504" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Klaverskole</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="508" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Tysk, engelsk og fransk tekst</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="652" ind1="0" ind2="0">
+                    <marcx:subfield code="m">78.5301</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="700" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Huynh</marcx:subfield>
+                    <marcx:subfield code="h">Pascal</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+            </object>
+          </collection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>2</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:leader>00000n    2200000   4500</marcx:leader>
+                  <marcx:datafield tag="001" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 364 334 0</marcx:subfield>
+                    <marcx:subfield code="b">870970</marcx:subfield>
+                    <marcx:subfield code="c">20010823132716</marcx:subfield>
+                    <marcx:subfield code="d">20010823</marcx:subfield>
+                    <marcx:subfield code="f">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="004" ind1="0" ind2="0">
+                    <marcx:subfield code="r">n</marcx:subfield>
+                    <marcx:subfield code="a">s</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="008" ind1="0" ind2="0">
+                    <marcx:subfield code="v">0</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="014" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 364 134 8</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="245" ind1="0" ind2="0">
+                    <marcx:subfield code="n">4</marcx:subfield>
+                    <marcx:subfield code="o">Sikkerhedskultur</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+            </object>
+          </collection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>3</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:leader>00000n    2200000   4500</marcx:leader>
+                  <marcx:datafield tag="001" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 364 320 0</marcx:subfield>
+                    <marcx:subfield code="b">870970</marcx:subfield>
+                    <marcx:subfield code="c">20130118221203</marcx:subfield>
+                    <marcx:subfield code="d">20010823</marcx:subfield>
+                    <marcx:subfield code="f">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="004" ind1="0" ind2="0">
+                    <marcx:subfield code="r">n</marcx:subfield>
+                    <marcx:subfield code="a">b</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="008" ind1="0" ind2="0">
+                    <marcx:subfield code="t">m</marcx:subfield>
+                    <marcx:subfield code="u">f</marcx:subfield>
+                    <marcx:subfield code="a">2001</marcx:subfield>
+                    <marcx:subfield code="l">dan</marcx:subfield>
+                    <marcx:subfield code="v">0</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="014" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 364 318 9</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="032" ind1="0" ind2="0">
+                    <marcx:subfield code="a">IDO200137</marcx:subfield>
+                    <marcx:subfield code="x">NET200137</marcx:subfield>
+                    <marcx:subfield code="x">DAT991304</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="245" ind1="0" ind2="0">
+                    <marcx:subfield code="g">3.1&amp;2</marcx:subfield>
+                    <marcx:subfield code="a">Økonomisk vurdering af arbejdsulykker</marcx:subfield>
+                    <marcx:subfield code="e">udarbejdet af: PricewaterhouseCoopers</marcx:subfield>
+                    <marcx:subfield code="e">forfattere: Birgitte Mogensen, Birgitte Ravn, Pall M. Rikhardsson</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="526" ind1="0" ind2="0">
+                    <marcx:subfield code="i">Hertil findes</marcx:subfield>
+                    <marcx:subfield code="t">Bilag 1</marcx:subfield>
+                    <marcx:subfield code="u">http://www.arbejdsulykker.dk/pdf/3_1_2_bilag1.pdf</marcx:subfield>
+                    <marcx:subfield code="t">Bilag 2</marcx:subfield>
+                    <marcx:subfield code="u">http://www.arbejdsulykker.dk/pdf/3_1_2_bilag2.xls</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="532" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Med litteraturhenvisninger</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="700" ind1="0" ind2="0">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="a">Mogensen</marcx:subfield>
+                    <marcx:subfield code="h">Birgitte</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="700" ind1="0" ind2="0">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="a">Ravn</marcx:subfield>
+                    <marcx:subfield code="h">Birgitte</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="700" ind1="0" ind2="0">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="a">Ríkhardsson</marcx:subfield>
+                    <marcx:subfield code="h">Páll M.</marcx:subfield>
+                    <marcx:subfield code="å">1</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="710" ind1="0" ind2="0">
+                    <marcx:subfield code="a">PricewaterhouseCoopers</marcx:subfield>
+                    <marcx:subfield code="e">firma</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="856" ind1="0" ind2="0">
+                    <marcx:subfield code="z">Adgangsmåde: Internet</marcx:subfield>
+                    <marcx:subfield code="u">http://www.arbejdsulykker.dk/pdf/met_3_1_2.pdf</marcx:subfield>
+                    <marcx:subfield code="z">Kræver læseprogrammet Acrobat Reader</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="900" ind1="0" ind2="0">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="a">Páll M. Ríkhardsson</marcx:subfield>
+                    <marcx:subfield code="z">700/1</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+            </object>
+          </collection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>4</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:leader>00000n    2200000   4500</marcx:leader>
+                  <marcx:datafield tag="001" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 011 316 2</marcx:subfield>
+                    <marcx:subfield code="b">870970</marcx:subfield>
+                    <marcx:subfield code="c">20000622113914</marcx:subfield>
+                    <marcx:subfield code="d">19921020</marcx:subfield>
+                    <marcx:subfield code="f">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="004" ind1="0" ind2="0">
+                    <marcx:subfield code="r">n</marcx:subfield>
+                    <marcx:subfield code="a">b</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="005" ind1="0" ind2="0">
+                    <marcx:subfield code="k">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="008" ind1="0" ind2="0">
+                    <marcx:subfield code="t">m</marcx:subfield>
+                    <marcx:subfield code="u">f</marcx:subfield>
+                    <marcx:subfield code="a">1992</marcx:subfield>
+                    <marcx:subfield code="l">mul</marcx:subfield>
+                    <marcx:subfield code="v">0</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="014" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 011 314 6</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="021" ind1="0" ind2="0">
+                    <marcx:subfield code="a">3-7957-5002-4</marcx:subfield>
+                    <marcx:subfield code="n">ED 7931</marcx:subfield>
+                    <marcx:subfield code="c">hf.</marcx:subfield>
+                    <marcx:subfield code="d">kr. 86.00</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="032" ind1="0" ind2="0">
+                    <marcx:subfield code="x">SFM199246</marcx:subfield>
+                    <marcx:subfield code="x">BØK199402</marcx:subfield>
+                    <marcx:subfield code="x">DAT200026</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="041" ind1="0" ind2="0">
+                    <marcx:subfield code="p">ger</marcx:subfield>
+                    <marcx:subfield code="p">eng</marcx:subfield>
+                    <marcx:subfield code="p">fre</marcx:subfield>
+                    <marcx:subfield code="d">ita</marcx:subfield>
+                    <marcx:subfield code="d">spa</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="245" ind1="0" ind2="0">
+                    <marcx:subfield code="g">Band 1</marcx:subfield>
+                    <marcx:subfield code="f">Illustration: Andrea Hoyer</marcx:subfield>
+                    <marcx:subfield code="f">englische Übersetzung: Wendy Lampa, Gerhard Weidemann</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="260" ind1="0" ind2="0">
+                    <marcx:subfield code="c">cop. 1992</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="300" ind1="0" ind2="0">
+                    <marcx:subfield code="a">88 sider</marcx:subfield>
+                    <marcx:subfield code="b">ill.</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="440" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Edition Schott</marcx:subfield>
+                    <marcx:subfield code="v">7931</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="700" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Lampa</marcx:subfield>
+                    <marcx:subfield code="h">Wendy</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="700" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Weidemann</marcx:subfield>
+                    <marcx:subfield code="h">Gerhard</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="990" ind1="0" ind2="0">
+                    <marcx:subfield code="a">SFM</marcx:subfield>
+                    <marcx:subfield code="n">72</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+            </object>
+          </collection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>5</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:leader>00000n    2200000   4500</marcx:leader>
+                  <marcx:datafield tag="001" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 039 430 7</marcx:subfield>
+                    <marcx:subfield code="b">870970</marcx:subfield>
+                    <marcx:subfield code="c">20000622113449</marcx:subfield>
+                    <marcx:subfield code="d">19930910</marcx:subfield>
+                    <marcx:subfield code="f">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="004" ind1="0" ind2="0">
+                    <marcx:subfield code="r">n</marcx:subfield>
+                    <marcx:subfield code="a">b</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="005" ind1="0" ind2="0">
+                    <marcx:subfield code="k">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="008" ind1="0" ind2="0">
+                    <marcx:subfield code="t">m</marcx:subfield>
+                    <marcx:subfield code="u">f</marcx:subfield>
+                    <marcx:subfield code="a">1993</marcx:subfield>
+                    <marcx:subfield code="l">mul</marcx:subfield>
+                    <marcx:subfield code="v">0</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="014" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 011 314 6</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="021" ind1="0" ind2="0">
+                    <marcx:subfield code="a">3-7957-5003-2</marcx:subfield>
+                    <marcx:subfield code="n">ED 7932</marcx:subfield>
+                    <marcx:subfield code="c">hf.</marcx:subfield>
+                    <marcx:subfield code="d">kr. 122.00</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="032" ind1="0" ind2="0">
+                    <marcx:subfield code="x">SFM199342</marcx:subfield>
+                    <marcx:subfield code="x">BØK199301</marcx:subfield>
+                    <marcx:subfield code="x">DAT200026</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="041" ind1="0" ind2="0">
+                    <marcx:subfield code="p">ger</marcx:subfield>
+                    <marcx:subfield code="p">eng</marcx:subfield>
+                    <marcx:subfield code="p">fre</marcx:subfield>
+                    <marcx:subfield code="p">ita</marcx:subfield>
+                    <marcx:subfield code="p">spa</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="245" ind1="0" ind2="0">
+                    <marcx:subfield code="g">Band 2</marcx:subfield>
+                    <marcx:subfield code="f">Illustration: Andrea Hoyer</marcx:subfield>
+                    <marcx:subfield code="f">englische Übersetzung: Wendy Lampa</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="260" ind1="0" ind2="0">
+                    <marcx:subfield code="c">cop. 1993</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="300" ind1="0" ind2="0">
+                    <marcx:subfield code="a">96 sider</marcx:subfield>
+                    <marcx:subfield code="b">ill.</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="440" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Edition Schott</marcx:subfield>
+                    <marcx:subfield code="v">7932</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="700" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Lampa</marcx:subfield>
+                    <marcx:subfield code="h">Wendy</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="990" ind1="0" ind2="0">
+                    <marcx:subfield code="a">SFM</marcx:subfield>
+                    <marcx:subfield code="n">72</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="991" ind1="0" ind2="0">
+                    <marcx:subfield code="o">\(Bind 1 medtaget i M-fortegnelsen 9246)\</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+            </object>
+          </collection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>6</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:leader>00000n    2200000   4500</marcx:leader>
+                  <marcx:datafield tag="001" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 069 511 0</marcx:subfield>
+                    <marcx:subfield code="b">870970</marcx:subfield>
+                    <marcx:subfield code="c">20000622112011</marcx:subfield>
+                    <marcx:subfield code="d">19940830</marcx:subfield>
+                    <marcx:subfield code="f">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="004" ind1="0" ind2="0">
+                    <marcx:subfield code="r">n</marcx:subfield>
+                    <marcx:subfield code="a">b</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="005" ind1="0" ind2="0">
+                    <marcx:subfield code="k">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="008" ind1="0" ind2="0">
+                    <marcx:subfield code="t">m</marcx:subfield>
+                    <marcx:subfield code="u">f</marcx:subfield>
+                    <marcx:subfield code="a">1994</marcx:subfield>
+                    <marcx:subfield code="l">mul</marcx:subfield>
+                    <marcx:subfield code="v">0</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="014" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 011 314 6</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="021" ind1="0" ind2="0">
+                    <marcx:subfield code="a">3-7957-5004-0</marcx:subfield>
+                    <marcx:subfield code="n">ED 7933</marcx:subfield>
+                    <marcx:subfield code="c">hf.</marcx:subfield>
+                    <marcx:subfield code="d">kr. 136.00</marcx:subfield>
+                    <marcx:subfield code="x">3-7957-5004-3</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="032" ind1="0" ind2="0">
+                    <marcx:subfield code="x">SFM199442</marcx:subfield>
+                    <marcx:subfield code="x">BØK199602</marcx:subfield>
+                    <marcx:subfield code="x">DAT200026</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="041" ind1="0" ind2="0">
+                    <marcx:subfield code="p">ger</marcx:subfield>
+                    <marcx:subfield code="p">eng</marcx:subfield>
+                    <marcx:subfield code="p">fre</marcx:subfield>
+                    <marcx:subfield code="p">ita</marcx:subfield>
+                    <marcx:subfield code="p">spa</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="245" ind1="0" ind2="0">
+                    <marcx:subfield code="g">Band 3</marcx:subfield>
+                    <marcx:subfield code="f">englische Übersetzung: Wendy Lampa</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="260" ind1="0" ind2="0">
+                    <marcx:subfield code="c">cop. 1994</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="300" ind1="0" ind2="0">
+                    <marcx:subfield code="a">112 sider</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="440" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Edition Schott</marcx:subfield>
+                    <marcx:subfield code="v">7933</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="700" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Lampa</marcx:subfield>
+                    <marcx:subfield code="h">Wendy</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="990" ind1="0" ind2="0">
+                    <marcx:subfield code="a">SFM</marcx:subfield>
+                    <marcx:subfield code="n">72</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="991" ind1="0" ind2="0">
+                    <marcx:subfield code="o">\(Bind 1-2 medtaget i M-fortegnelsen 9246 og 9342)\</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+            </object>
+          </collection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>7</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:leader>00000n    2200000   4500</marcx:leader>
+                  <marcx:datafield tag="001" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 364 243 3</marcx:subfield>
+                    <marcx:subfield code="b">870970</marcx:subfield>
+                    <marcx:subfield code="c">20010823100732</marcx:subfield>
+                    <marcx:subfield code="d">20010823</marcx:subfield>
+                    <marcx:subfield code="f">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="004" ind1="0" ind2="0">
+                    <marcx:subfield code="r">n</marcx:subfield>
+                    <marcx:subfield code="a">s</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="008" ind1="0" ind2="0">
+                    <marcx:subfield code="v">0</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="014" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 364 134 8</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="245" ind1="0" ind2="0">
+                    <marcx:subfield code="n">2</marcx:subfield>
+                    <marcx:subfield code="o">Intern sikkerhedsdokumentation og -gennemgang</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+            </object>
+          </collection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>8</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:leader>00000n    2200000   4500</marcx:leader>
+                  <marcx:datafield tag="001" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 364 246 8</marcx:subfield>
+                    <marcx:subfield code="b">870970</marcx:subfield>
+                    <marcx:subfield code="c">20130118221228</marcx:subfield>
+                    <marcx:subfield code="d">20010823</marcx:subfield>
+                    <marcx:subfield code="f">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="004" ind1="0" ind2="0">
+                    <marcx:subfield code="r">n</marcx:subfield>
+                    <marcx:subfield code="a">b</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="008" ind1="0" ind2="0">
+                    <marcx:subfield code="t">m</marcx:subfield>
+                    <marcx:subfield code="u">f</marcx:subfield>
+                    <marcx:subfield code="a">2001</marcx:subfield>
+                    <marcx:subfield code="l">dan</marcx:subfield>
+                    <marcx:subfield code="v">0</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="014" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 364 243 3</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="032" ind1="0" ind2="0">
+                    <marcx:subfield code="a">IDO200137</marcx:subfield>
+                    <marcx:subfield code="x">NET200137</marcx:subfield>
+                    <marcx:subfield code="x">DAT991304</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="245" ind1="0" ind2="0">
+                    <marcx:subfield code="g">2.1</marcx:subfield>
+                    <marcx:subfield code="a">Intern sikkerhedsdokumentation</marcx:subfield>
+                    <marcx:subfield code="e">udarbejdet af: Holstberg Management</marcx:subfield>
+                    <marcx:subfield code="e">forfatter: Anne Gram</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="526" ind1="0" ind2="0">
+                    <marcx:subfield code="i">Hertil findes</marcx:subfield>
+                    <marcx:subfield code="t">Bilag 1-8</marcx:subfield>
+                    <marcx:subfield code="u">http://www.arbejdsulykker.dk/pdf/2_1_bilag.pdf</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="700" ind1="0" ind2="0">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="a">Gram</marcx:subfield>
+                    <marcx:subfield code="h">Anne</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="710" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Holstberg Management</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="856" ind1="0" ind2="0">
+                    <marcx:subfield code="z">Adgangsmåde: Internet</marcx:subfield>
+                    <marcx:subfield code="u">http://www.arbejdsulykker.dk/pdf/met_2_1.pdf</marcx:subfield>
+                    <marcx:subfield code="z">Kræver læseprogrammet Acrobat Reader</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+            </object>
+          </collection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>9</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:leader>00000n    2200000   4500</marcx:leader>
+                  <marcx:datafield tag="001" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 364 449 5</marcx:subfield>
+                    <marcx:subfield code="b">870970</marcx:subfield>
+                    <marcx:subfield code="c">20130118221235</marcx:subfield>
+                    <marcx:subfield code="d">20010823</marcx:subfield>
+                    <marcx:subfield code="f">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="004" ind1="0" ind2="0">
+                    <marcx:subfield code="r">n</marcx:subfield>
+                    <marcx:subfield code="a">b</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="008" ind1="0" ind2="0">
+                    <marcx:subfield code="t">m</marcx:subfield>
+                    <marcx:subfield code="u">f</marcx:subfield>
+                    <marcx:subfield code="a">2001</marcx:subfield>
+                    <marcx:subfield code="l">dan</marcx:subfield>
+                    <marcx:subfield code="v">0</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="014" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 364 448 7</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="032" ind1="0" ind2="0">
+                    <marcx:subfield code="a">IDO200137</marcx:subfield>
+                    <marcx:subfield code="x">NET200137</marcx:subfield>
+                    <marcx:subfield code="x">DAT991304</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="245" ind1="0" ind2="0">
+                    <marcx:subfield code="g">8.1</marcx:subfield>
+                    <marcx:subfield code="a">Arbejdssikkerhedsanalyse</marcx:subfield>
+                    <marcx:subfield code="e">SINTEF Teknologiledelse, avd. Sikkerhet og pålitelighet</marcx:subfield>
+                    <marcx:subfield code="e">forfatter: Ragnar Rosness, Solfrid Engene Røyset</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="512" ind1="0" ind2="0">
+                    <marcx:subfield code="a">SINTEF: Stiftelsen for industriell og teknisk forskning ved Norges tekniske høgskole</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="526" ind1="0" ind2="0">
+                    <marcx:subfield code="i">Hertil findes</marcx:subfield>
+                    <marcx:subfield code="t">Bilag 1-3</marcx:subfield>
+                    <marcx:subfield code="u">http://www.arbejdsulykker.dk/pdf/8_1_bilag.pdf</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="532" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Med litteraturhenvisninger</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="700" ind1="0" ind2="0">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="a">Røyset</marcx:subfield>
+                    <marcx:subfield code="h">Solfrid Engene</marcx:subfield>
+                    <marcx:subfield code="å">1</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="700" ind1="0" ind2="0">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="a">Rosness</marcx:subfield>
+                    <marcx:subfield code="h">Ragnar</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="710" ind1="0" ind2="0">
+                    <marcx:subfield code="å">1</marcx:subfield>
+                    <marcx:subfield code="a">SINTEF</marcx:subfield>
+                    <marcx:subfield code="c">Avdeling for sikkerhet og pålitelighet</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="856" ind1="0" ind2="0">
+                    <marcx:subfield code="z">Adgangsmåde: Internet</marcx:subfield>
+                    <marcx:subfield code="u">http://www.arbejdsulykker.dk/pdf/met_8_1.pdf</marcx:subfield>
+                    <marcx:subfield code="z">Kræver læseprogrammet Acrobat Reader</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="910" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Avdeling for sikkerhet og pålitelighet, SINTEF</marcx:subfield>
+                    <marcx:subfield code="z">710/1</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="910" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Stiftelsen for industriell og teknisk forskning ved Norges tekniske høgskole</marcx:subfield>
+                    <marcx:subfield code="z">710/1(a)</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="900" ind1="0" ind2="0">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="a">Engene Røyset</marcx:subfield>
+                    <marcx:subfield code="h">Solfrid</marcx:subfield>
+                    <marcx:subfield code="z">700/1</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+            </object>
+          </collection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>10</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:leader>00000n    2200000   4500</marcx:leader>
+                  <marcx:datafield tag="001" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 364 306 5</marcx:subfield>
+                    <marcx:subfield code="b">870970</marcx:subfield>
+                    <marcx:subfield code="c">20130118221226</marcx:subfield>
+                    <marcx:subfield code="d">20010823</marcx:subfield>
+                    <marcx:subfield code="f">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="004" ind1="0" ind2="0">
+                    <marcx:subfield code="r">n</marcx:subfield>
+                    <marcx:subfield code="a">b</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="008" ind1="0" ind2="0">
+                    <marcx:subfield code="t">m</marcx:subfield>
+                    <marcx:subfield code="u">f</marcx:subfield>
+                    <marcx:subfield code="a">2001</marcx:subfield>
+                    <marcx:subfield code="l">dan</marcx:subfield>
+                    <marcx:subfield code="v">0</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="014" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2 364 243 3</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="032" ind1="0" ind2="0">
+                    <marcx:subfield code="a">IDO200137</marcx:subfield>
+                    <marcx:subfield code="x">NET200137</marcx:subfield>
+                    <marcx:subfield code="x">DAT991304</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="245" ind1="0" ind2="0">
+                    <marcx:subfield code="g">2.4</marcx:subfield>
+                    <marcx:subfield code="a">Mønsterarbejdspladsen - metode til intern sikkerhedsdokumentation</marcx:subfield>
+                    <marcx:subfield code="e">udarbejdet af: Carl Bro A/S</marcx:subfield>
+                    <marcx:subfield code="e">forfatter: Thomas Fløe Jensen</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="526" ind1="0" ind2="0">
+                    <marcx:subfield code="i">Hertil findes</marcx:subfield>
+                    <marcx:subfield code="t">Bilag 1-5</marcx:subfield>
+                    <marcx:subfield code="u">http://www.arbejdsulykker.dk/pdf/2_4_bilag.pdf</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="700" ind1="0" ind2="0">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="a">Fløe Jensen</marcx:subfield>
+                    <marcx:subfield code="h">Thomas</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="710" ind1="0" ind2="0">
+                    <marcx:subfield code="å">3</marcx:subfield>
+                    <marcx:subfield code="a">Carl Bro A/S</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="856" ind1="0" ind2="0">
+                    <marcx:subfield code="z">Adgangsmåde: Internet</marcx:subfield>
+                    <marcx:subfield code="u">http://www.arbejdsulykker.dk/pdf/met_2_4.pdf</marcx:subfield>
+                    <marcx:subfield code="z">Kræver læseprogrammet Acrobat Reader</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="910" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Bro</marcx:subfield>
+                    <marcx:subfield code="h">Carl</marcx:subfield>
+                    <marcx:subfield code="g">A/S</marcx:subfield>
+                    <marcx:subfield code="z">710/3</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="900" ind1="0" ind2="0">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="a">Jensen</marcx:subfield>
+                    <marcx:subfield code="h">Thomas Fløe</marcx:subfield>
+                    <marcx:subfield code="z">700</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+            </object>
+          </collection>
+        </searchResult>
         <statInfo>
-          <time>1.894188</time>
-          <trackingId>2015-09-23T09:14:12:014914:18589</trackingId>
+          <time>1.842372</time>
+          <trackingId>2015-10-26T09:05:57:608467:23224</trackingId>
         </statInfo>
       </result>
     </searchResponse>
