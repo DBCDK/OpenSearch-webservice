@@ -1271,6 +1271,9 @@
             <indexName>marc.021ae</indexName>
           </cqlIndex>
           <cqlIndex>
+            <indexName>marc.245a</indexName>
+          </cqlIndex>
+          <cqlIndex>
             <indexName>marc.022a</indexName>
           </cqlIndex>
           <cqlIndex>
