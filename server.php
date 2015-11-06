@@ -185,7 +185,9 @@ class openSearch extends webServiceServer {
     if ($this->repository['postgress'] || $this->repository['rawrepo']) {
       $this->watch->start('postgress');
       $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language);
+      $this->watch->start('cql');
       $solr_query = $this->cql2solr->parse($param->query->_value);
+      $this->watch->stop('cql');
       if ($solr_query['error']) {
         $error = self::cql2solr_error_to_string($solr_query['error']);
         return $ret_error;
@@ -248,13 +250,14 @@ class openSearch extends webServiceServer {
     *  if $use_work_collection is FALSE skip b) to e)
     */
 
-    $this->watch->start('Solr');
     $use_work_collection |= $sort_types[$sort[0]] == 'random';
     $key_work_struct = md5($param->query->_value . $this->repository_name . $this->filter_agency .
                            $use_work_collection .  implode('', $sort) . $rank . $boost_q . $this->config->get_inifile_hash());
 
     $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language, $this->holdings_include);
+    $this->watch->start('cql');
     $solr_query = $this->cql2solr->parse($param->query->_value);
+    $this->watch->stop('cql');
     if ($solr_query['error']) {
       $error = self::cql2solr_error_to_string($solr_query['error']);
       return $ret_error;
@@ -308,11 +311,12 @@ class openSearch extends webServiceServer {
 
     $facet_q = self::set_solr_facet_parameters($param->facets->_value);
 
-    $rows = ($start + $step_value + 100) * 2;
+    $rows = $step_value ? (($start + $step_value + 100) * 2) : 0;
 
     verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
 
     // do the query
+    $this->watch->start('Solr');
     if ($sort[0] == 'random') {
       if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, $filter_q, '', $debug_query, $solr_arr))
         $error = $err;
@@ -369,80 +373,85 @@ class openSearch extends webServiceServer {
 
       if (DEBUG_ON) print_r($search_ids);
 
-      for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
-        $uid = &$search_ids[$s_idx];
-        if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
-          $this->watch->start('Solr_add');
-          verbose::log(WARNING, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']['q']);
-          $rows *= 2;
-          if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr)) {
-            $error = $err;
-            return $ret_error;
-          }
-          else {
-            self::extract_unit_id_from_solr($solr_arr, $search_ids);
-            $numFound = self::get_num_found($solr_arr);
-          }
-          $this->watch->stop('Solr_add');
-        }
-        if (FALSE) {
-          self::get_fedora_rels_hierarchy($uid, $unit_result);
-          $unit_id = self::parse_rels_for_unit_id($unit_result);
-          if (DEBUG_ON) echo 'UR: ' . $uid . ' -> ' . $unit_id . "\n";
-          $uid = $unit_id;
-        }
-        if ($used_search_fids[$uid]) continue;
-        if (count($work_ids) >= $step_value) {
-          $more = TRUE;
-          break;
-        }
-
-        $w_no++;
-        // find relations for the record in fedora
-        // uid: id as found in solr's fedoraPid
-        if ($work_cache_struct[$w_no]) {
-          $uid_array = $work_cache_struct[$w_no];
-        }
-        else {
-          if ($use_work_collection) {
-            $this->watch->start('get_w_id');
-            self::get_fedora_rels_hierarchy($uid, $record_rels_hierarchy);
-            /* ignore the fact that there is no RELS_HIERARCHY datastream
-            */
-            $this->watch->stop('get_w_id');
-            if (DEBUG_ON) echo 'RR: ' . $record_rels_hierarchy . "\n";
-
-// test empty rels_sys $record_rels_hierarchy = self::empty_rels_hierarchy();
-            if ($work_id = self::parse_rels_for_work_id($record_rels_hierarchy)) {
-              // find other recs sharing the work-relation
-              $this->watch->start('get_fids');
-              self::get_fedora_rels_hierarchy($work_id, $work_rels_hierarchy);
-              if (DEBUG_ON) echo 'WR: ' . $work_rels_hierarchy . "\n";
-              $this->watch->stop('get_fids');
-              if (!$uid_array = self::parse_work_for_object_ids($work_rels_hierarchy, $uid)) {
-                verbose::log(FATAL, 'Fedora fetch/parse work-record: ' . $work_id . ' refered from: ' . $uid);
-                $uid_array = array($uid);
-              }
-              if (DEBUG_ON) {
-                echo 'fid: ' . $uid . ' -> ' . $work_id . " -> object(s):\n";
-                print_r($uid_array);
-              }
+      if (empty($step_value)) {
+        $more = ($numFound >= $start);
+      }
+      else {
+        for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
+          $uid = &$search_ids[$s_idx];
+          if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
+            $this->watch->start('Solr_add');
+            verbose::log(WARNING, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']['q']);
+            $rows *= 2;
+            if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr)) {
+              $error = $err;
+              return $ret_error;
             }
             else {
-              verbose::log(WARNING, 'Cannot find work_id for unit: ' . $uid);
-              $uid_array = array($uid);
+              self::extract_unit_id_from_solr($solr_arr, $search_ids);
+              $numFound = self::get_num_found($solr_arr);
             }
+            $this->watch->stop('Solr_add');
           }
-          else
-            $uid_array = array($uid);
-        }
+          if (FALSE) {
+            self::get_fedora_rels_hierarchy($uid, $unit_result);
+            $unit_id = self::parse_rels_for_unit_id($unit_result);
+            if (DEBUG_ON) echo 'UR: ' . $uid . ' -> ' . $unit_id . "\n";
+            $uid = $unit_id;
+          }
+          if ($used_search_fids[$uid]) continue;
+          if (count($work_ids) >= $step_value) {
+            $more = TRUE;
+            break;
+          }
 
-        foreach ($uid_array as $id) {
-          $used_search_fids[$id] = TRUE;
+          $w_no++;
+          // find relations for the record in fedora
+          // uid: id as found in solr's fedoraPid
+          if ($work_cache_struct[$w_no]) {
+            $uid_array = $work_cache_struct[$w_no];
+          }
+          else {
+            if ($use_work_collection) {
+              $this->watch->start('get_w_id');
+              self::get_fedora_rels_hierarchy($uid, $record_rels_hierarchy);
+              /* ignore the fact that there is no RELS_HIERARCHY datastream
+               */
+              $this->watch->stop('get_w_id');
+              if (DEBUG_ON) echo 'RR: ' . $record_rels_hierarchy . "\n";
+
+              // test empty rels_sys $record_rels_hierarchy = self::empty_rels_hierarchy();
+              if ($work_id = self::parse_rels_for_work_id($record_rels_hierarchy)) {
+                // find other recs sharing the work-relation
+                $this->watch->start('get_fids');
+                self::get_fedora_rels_hierarchy($work_id, $work_rels_hierarchy);
+                if (DEBUG_ON) echo 'WR: ' . $work_rels_hierarchy . "\n";
+                $this->watch->stop('get_fids');
+                if (!$uid_array = self::parse_work_for_object_ids($work_rels_hierarchy, $uid)) {
+                  verbose::log(FATAL, 'Fedora fetch/parse work-record: ' . $work_id . ' refered from: ' . $uid);
+                  $uid_array = array($uid);
+                }
+                if (DEBUG_ON) {
+                  echo 'fid: ' . $uid . ' -> ' . $work_id . " -> object(s):\n";
+                  print_r($uid_array);
+                }
+              }
+              else {
+                verbose::log(WARNING, 'Cannot find work_id for unit: ' . $uid);
+                $uid_array = array($uid);
+              }
+            }
+            else
+              $uid_array = array($uid);
+          }
+
+          foreach ($uid_array as $id) {
+            $used_search_fids[$id] = TRUE;
+          }
+          $work_cache_struct[$w_no] = $uid_array;
+          if ($w_no >= $start)
+            $work_ids[$w_no] = $uid_array;
         }
-        $work_cache_struct[$w_no] = $uid_array;
-        if ($w_no >= $start)
-          $work_ids[$w_no] = $uid_array;
       }
       verbose::log(TRACE, 'SOLR stat: used ' . $s_idx . ' of ' . count($search_ids) . ' rows. start: ' . $start . ' step: ' . $step_value);
     }
@@ -830,7 +839,9 @@ class openSearch extends webServiceServer {
       }
     }
     $this->cql2solr = new SolrQuery($this->repository, $this->config);
+    $this->watch->start('cql');
     $chk_query = $this->cql2solr->parse('rec.id=(' . implode(OR_OP, $id_array) . ')');
+    $this->watch->stop('cql');
     $solr_q = $this->repository['solr'] .
              '?wt=phps' .
               '&q=' . urlencode(implode(AND_OP, $chk_query['edismax']['q'])) .

@@ -1,6 +1,7 @@
 <pre>
 4.2.1
 =====
+Setting stepValue to 0, now skips some code
 Better error handling i rawrepo reading
 ini: changed content in missing_marc_record 
 
@@ -14,6 +15,7 @@ ini: removed postgress as repository parameter and added rawrepo instead. Rawrec
 ini: s11_agency defining which agencies that are allowed to see records from RR containing s11 - US 1684
 US 1684: RR - poster med S11 felter skal ikke kunne søges af andre end DBC 
 Handling  deleted records. parse_unit_for_best_agency() now skips recordStatus = delete
+Bugfix: truncation in quoted strings
 
 4.1.1
 ===
