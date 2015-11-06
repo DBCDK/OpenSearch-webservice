@@ -102,7 +102,7 @@ missing_marc_record = <?xml version='1.0' encoding='UTF-8'?><marcx:record format
 
 
 ; --------------
-; agencies allowed to see records from RR (in postgress db) containing s11 field
+; agencies allowed to see records from RR (postgress db) containing s11 field
 s11_agency[] = 100200
 s11_agency[] = 870970
 
@@ -199,7 +199,7 @@ repository[@REPOSITORY_NAME@][filter]['870976-anmeld'][docbook]['section/title']
 
 
 ; Raw record repositories
-; repository for Raw repository, an postgress base indexed by solr
+; repository for Raw repository, a sql base indexed by solr
 ; Using "rawrepo" as repository parameter, will trigger the use of raw record solr core and raw repo content service
 ;repository[rawrecords][solr] = http://mysolr.dk/solr-version/select
 ;repository[rawrecords][rawrepo] = http://someserver.dbc.dk/rawrepo-content/RawRepoContentService
@@ -246,38 +246,17 @@ agency_cache_expire = 60
 agency_timeout = 20
 
 ; --------------
-; search profile service end point
+; openAgency end point and operations
 ; ex:
-; agency_search_profile =  http://some.openagency/?action=openSearchProfile&agencyId=%s&profileVersion=%s&trackingId=%s
+; open_agency =  http://some.openagency/
 ;
-agency_search_profile = @AGENCY_SEARCH_PROFILE@
+open_agency = @AGENCY_END_POINT@
 
-
-; --------------
-; find Library service end point
-; ex:
-; agency_types = http://some.openagency/?action=findLibrary&libraryType=Alle&outputType=json&trackingId=%s
-; from openagency version 2.19 use
-; agency_types = http://some.openagency/?action=libraryTypeList&outputType=json&trackingId=%s
-;
-agency_types = @AGENCY_TYPES@
-
-
-; --------------
-; find Library show priority end point
-; ex:
-;   agency_types = http://some.openagency/?action=showOrder&agencyId=%s&trackingId=%s
-;
-agency_show_order = @AGENCY_SHOW_ORDER@
-
-
-; --------------
-; find Library show priority end point
-; ex:
-;   agency_rules = http://some.openagency/?action=libraryRules&agencyId=%s&trackingId=%s
-;
-agency_rules = @AGENCY_RULES@
-
+; open agency operations, relative to open_agency above
+agency_search_profile = ?action=openSearchProfile&agencyId=%s&profileVersion=%s&trackingId=%s
+agency_types = ?action=libraryTypeList&&outputType=json&trackingId=%s
+agency_show_order = ?action=showOrder&agencyId=%s&trackingId=%s
+agency_rules = ?action=libraryRules&agencyId=%s&trackingId=%s
 
 ; --------------
 ; holding db - return number of items in stock and number of items available for lending

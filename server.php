@@ -2475,8 +2475,7 @@ class openSearch extends webServiceServer {
     if (!isset($agency_types)) {
       require_once 'OLS_class_lib/agency_type_class.php';
       $cache = self::get_cache_info('agency');
-      $agency_types = new agency_type($this->config->get_value('agency_types', 'setup'), 
-                                      $cache['host'], $cache['port'], $cache['expire']);
+      $agency_types = new agency_type(self::agency_uri('agency_types'), $cache['host'], $cache['port'], $cache['expire']);
     }
     $this->watch->start('agency_type');
     $agency_type = $agency_types->get_agency_type($agency);
@@ -2497,8 +2496,7 @@ class openSearch extends webServiceServer {
     if (!isset($agency_prio)) {
       require_once 'OLS_class_lib/show_priority_class.php';
       $cache = self::get_cache_info('agency');
-      $agency_prio = new ShowPriority($this->config->get_value('agency_show_order', 'setup'), 
-                                      $cache['host'], $cache['port'], $cache['expire']);
+      $agency_prio = new ShowPriority(self::agency_uri('agency_show_order'), $cache['host'], $cache['port'], $cache['expire']);
     }
     $this->watch->start('agency_prio');
     $agency_list = $agency_prio->get_priority($this->agency);
@@ -2517,8 +2515,7 @@ class openSearch extends webServiceServer {
     require_once 'OLS_class_lib/search_profile_class.php';
     $cache = self::get_cache_info('agency');
     if (empty($profiles)) {
-      $profiles = new search_profiles($this->config->get_value('agency_search_profile', 'setup'), 
-                                      $cache['host'], $cache['port'], $cache['expire']);
+      $profiles = new search_profiles(self::agency_uri('agency_search_profile'), $cache['host'], $cache['port'], $cache['expire']);
     }
     $this->watch->start('agency_profile');
     $profile = $profiles->get_profile($agency, $profile_name, $this->search_profile_version);
@@ -2538,8 +2535,7 @@ class openSearch extends webServiceServer {
       if (!isset($open_agency)) {
         require_once 'OLS_class_lib/open_agency_class.php';
         $cache = self::get_cache_info('agency');
-        $open_agency = new OpenAgency($this->config->get_value('agency_rules', 'setup'), 
-                                      $cache['host'], $cache['port'], $cache['expire']);
+        $open_agency = new OpenAgency(self::agency_uri('agency_rules'), $cache['host'], $cache['port'], $cache['expire']);
       }
       $this->watch->start('agency_rule');
       $rules = $open_agency->get_agency_rules($agency);
@@ -2565,6 +2561,19 @@ class openSearch extends webServiceServer {
                                                      $this->config->get_value('cache_expire', 'setup'));
     }
     return $ret[$offset];
+  }
+
+  /** \brief Fetch full agency url for a given operation
+   *
+   * @param string $agency_op - the agency operation
+   * @retval string - agency url
+   */
+  private function agency_uri($agency_op) {
+    $url = trim($this->config->get_value($agency_op, 'setup'));
+    if (substr($url, 0, 4) != 'http') {
+      $url = $this->config->get_value('open_agency', 'setup') . $url;
+    }
+    return $url;
   }
 
   /** \brief Extract source part of an ID 
