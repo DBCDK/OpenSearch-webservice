@@ -183,7 +183,7 @@ class openSearch extends webServiceServer {
     }
 
     if ($this->repository['postgress'] || $this->repository['rawrepo']) {
-      $this->watch->start('postgress');
+      $this->watch->start('rawrepo');
       $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language);
       $this->watch->start('cql');
       $solr_query = $this->cql2solr->parse($param->query->_value);
@@ -216,7 +216,7 @@ class openSearch extends webServiceServer {
       else {
         $collections = self::get_records_from_postgress($this->repository['postgress'], $solr_arr['response'], in_array($this->agency, $s11_agency));
       }
-      $this->watch->stop('postgress');
+      $this->watch->stop('rawrepo');
       if (is_scalar($collections)) {
         $error = $collections;
         return $ret_error;
