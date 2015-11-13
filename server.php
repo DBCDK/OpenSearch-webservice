@@ -3,7 +3,7 @@
 /**
  *
  * This file is part of Open Library System.
- * Copyright © 2009, Dansk Bibliotekscenter a/s,
+ * Copyright ï¿½ 2009, Dansk Bibliotekscenter a/s,
  * Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
  *
  * Open Library System is free software: you can redistribute it and/or modify
@@ -650,7 +650,7 @@ class openSearch extends webServiceServer {
     else {
       $nfcl = intval($param->collapseHitsThreshold->_value);
     }
-    if ($nfcl >= $numFound) {
+    if ($nfcl > $numFound) {
       if ($nfcf = $this->config->get_value('num_found_collapsing_field', 'setup')) {
         $this->collapsing_field = $nfcf;
       }
