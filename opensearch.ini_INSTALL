@@ -637,6 +637,22 @@ curl_timeout = @FORMAT_CURL_TIMEOUT@
 
 ; ==============
 
+[service_registry]
+; section to set up data for registry
+
+; registry - url of the registry service
+;registry = http://registry.dbc.dk/1.2/?service=%s&operation=%s&version=%s&host=%s&port=%s&home=%s
+
+; ignore_in_url - if found in url, the operation is not send to the registry service. To filter surveilance requests
+; Remember to include this in urls in howRU section
+;ignore_in_url = surveil
+
+; frequency- one in frequency calls will be send to registry service. For frequently used services, this whould be higher than seldom used
+; since it not necesary to send info each this service is hit. Defaults to 1000
+;frequency = 1000
+
+; ==============
+
 [aaa]
 ; aaa Authentication, Access control and Accounting
 ;
@@ -752,11 +768,13 @@ showinfo[] = repository:         __repository__
 showinfo[] = rank:               __rank__
 showinfo[] = sort:               __sort__
 showinfo[] = rank_frequency:     __rank_frequency__
+showinfo[] = max_collections:    __max_collections__
+showinfo[] = max_manifestations: __max_manifestations__
 showinfo[] = </pre>
 
 ; ==============
 
 [howru]
-test[] = search&query=danmark&stepValue=1
+test[] = search&query=danmark&stepValue=1&surveil=1
 preg_match[] = hitCount
 error[] = ERROR searching for danmark
