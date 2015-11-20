@@ -1332,7 +1332,7 @@ class openSearch extends webServiceServer {
       return;
     }
     $p_mask = '<?xml version="1.0" encoding="UTF-8"?' . '>' . PHP_EOL . '<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><fetchRequest xmlns="http://oss.dbc.dk/ns/rawreposervice"><records>' . PHP_EOL . '%s</records></fetchRequest></S:Body></S:Envelope>';
-    $r_mask = '<record><bibliographicRecordId>%s</bibliographicRecordId><agencyId>%s</agencyId><mode>MERGED</mode><allowDeleted>true</allowDeleted><includeAgencyPrivate>true</includeAgencyPrivate></record>';
+    $r_mask = '<record><bibliographicRecordId>%s</bibliographicRecordId><agencyId>%s</agencyId><mode>RAW</mode><allowDeleted>true</allowDeleted><includeAgencyPrivate>true</includeAgencyPrivate></record>';
     $ret = array();
     $rec_pos = $solr_response['start'];
     foreach ($solr_response['docs'] as $solr_doc) {
@@ -1369,7 +1369,7 @@ class openSearch extends webServiceServer {
         @ $dom->loadXml($data);
         $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
         $restricted_record = FALSE;
-        if (!$s11_records_allowed) {
+        if (!$s11_records_allowed && isset($marc_obj->record->_value->datafield)) {
           foreach ($marc_obj->record->_value->datafield as $idf => &$df) {
             if ($df->_attributes->tag->_value == 's11') {
               $restricted_record = TRUE;
