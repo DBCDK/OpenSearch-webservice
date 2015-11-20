@@ -3215,7 +3215,7 @@ class openSearch extends webServiceServer {
               ($rel_source = self::check_valid_internal_relation($tag->nodeValue, $this_relation, $this->search_profile))) {
             $relation_count[$this_relation]++;
             self::get_fedora_rels_hierarchy($tag->nodeValue, $rels_sys);
-            list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($rels_sys, $tag->nodeValue, FALSE);
+            list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($rels_sys, $tag->nodeValue, TRUE);
             if ($rel_oid) {
               list($pid, $datastream)  = self::create_fedora_pid_and_stream($rel_oid, $localdata_in_pid);
               self::get_fedora_raw($pid, $related_obj, $datastream);
