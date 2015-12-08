@@ -614,8 +614,6 @@ class openSearch extends webServiceServer {
     if (DEBUG_ON) print_r($fpid_sort_keys);
     $this->watch->stop('get_recs');
 
-  // TODO: if an openFormat is specified, we need to remove data so openFormat dont format unneeded stuff
-  // But apparently, openFormat breaks when receiving an empty object
     if ($param->collectionType->_value == 'work-1') {
       foreach ($collections as &$c) {
         $collection_no = 0;
@@ -893,7 +891,7 @@ class openSearch extends webServiceServer {
       }
       else {
         self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
-        list($unit_members) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
+        list($unit_members, $dummy, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
         list($fpid_collection, $fpid_local) = explode(':', $fedora_pid);
         if (!$in_collection && $fedora_pid) {
           $fpid->_value = $fedora_pid;
@@ -941,7 +939,7 @@ class openSearch extends webServiceServer {
                                     $unit_members,
                                     $param->relationData->_value,
                                     $fpid->_value,
-                                    $best_pid,
+                                    $primary_oid,
                                     $this->filter_agency,
                                     $no_of_holdings);
       }
@@ -2237,7 +2235,7 @@ class openSearch extends webServiceServer {
   private function get_fedora($uri, $fpid, &$rec, $mandatory=TRUE) {
     $record_uri =  sprintf($uri, $fpid);
     verbose::log(TRACE, 'get_fedora: ' . $record_uri);
-    if (DEBUG_ON) echo 'Fetch record: ' . $record_uri . "\n";
+    if (DEBUG_ON) echo __FUNCTION__ . ':: ' . $record_uri . "\n";
     if ($this->cache && ($rec = $this->cache->get($record_uri))) {
       $this->number_of_fedora_cached++;
     }
@@ -2342,7 +2340,7 @@ class openSearch extends webServiceServer {
     self::set_valid_relations_and_sources($profile);
     $valid = isset($this->valid_relation[$collection][$relation]);
     if (DEBUG_ON) {
-      echo "from: $collection relation: $relation - " . ($valid ? '' : 'no ') . "go\n";
+      echo __FUNCTION__ . ":: from: $collection relation: $relation - " . ($valid ? '' : 'no ') . "go\n";
     }
     return $valid;
   }
@@ -2361,7 +2359,7 @@ class openSearch extends webServiceServer {
     foreach (self::find_record_sources_and_group_by_relation($pid, $relation) as $to_record_source) {
       $valid = isset($this->valid_relation[$to_record_source][$relation]);
       if (DEBUG_ON) {
-        echo "unit: $unit_id pid: $pid to: $to_record_source relation: $relation - " . ($valid ? '' : 'no ') . "go\n";
+        echo __FUNCTION__ . ":: unit: $unit_id pid: $pid to: $to_record_source relation: $relation - " . ($valid ? '' : 'no ') . "go\n";
       }
       if ($valid) {
         return $to_record_source;
@@ -2416,7 +2414,7 @@ class openSearch extends webServiceServer {
         }
       }
       if (DEBUG_ON) {
-        echo 'datastreams: ' . implode('; ', $ret) . PHP_EOL;
+        echo __FUNCTION__ . ':: ' . implode('; ', $ret) . PHP_EOL;
       }
     }
     return $ret;
@@ -2850,10 +2848,10 @@ class openSearch extends webServiceServer {
           $record_source = self::record_source_from_pid($pid_in_unit);
           list($agency, $collection) = self::split_record_source($record_source);
           if (self::is_valid_source($agency, $collection)) {
-            if (!self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit])) {
+            if (!self::is_deleted_record($pid_in_unit, $in_870970_basis[$pid_in_unit])) {
               $unit_members[] = $pid_in_unit;
-              //$unit_members[] = $pid_in_unit . (self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit]) ? 'D' : 'A');     // TEST
-              //if (self::record_is_deleted($pid_in_unit, $in_870970_basis[$pid_in_unit])) die($pid_in_unit);          // TEST
+              //$unit_members[] = $pid_in_unit . (self::is_deleted_record($pid_in_unit, $in_870970_basis[$pid_in_unit]) ? 'D' : 'A');     // TEST
+              //if (self::is_deleted_record($pid_in_unit, $in_870970_basis[$pid_in_unit])) die($pid_in_unit);          // TEST
               if (!$best_pid) {
                 $best_pid = $pid_in_unit;
               }
@@ -2873,7 +2871,7 @@ class openSearch extends webServiceServer {
       $localdata_in_pid = $in_870970_basis[$best_pid];
     }
     if (DEBUG_ON) {
-      echo 'parse_unit_for_best_agency:: best_pid: ' . $best_pid . 
+      echo __FUNCTION__ . ':: best_pid: ' . $best_pid . 
            ' primary_pid: ' . $primary_pid . 
            ' localdata_in_pid: ' . $localdata_in_pid . 
            ' unit_members: ' . str_replace(PHP_EOL, '', print_r($unit_members, TRUE)) . 
@@ -2888,17 +2886,17 @@ class openSearch extends webServiceServer {
    * @param string $localdata_in_pid - in localData stream of this pid
    * @retval boolean - TRUE if record is deleted
    */
-  private function record_is_deleted($pid, $localdata_in_pid) {
+  private function is_deleted_record($pid, $localdata_in_pid) {
     if ($localdata_in_pid) {
       self::get_fedora_raw($localdata_in_pid, $fedora_result, 'localData.' . self::record_source_from_pid($pid));
       if (DEBUG_ON) {
-        echo $pid . ' in ' . $localdata_in_pid . ' localData.' . self::record_source_from_pid($pid) . ' is ' . (empty($fedora_result) || strpos($fedora_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
+        echo __FUNCTION__ . ':: ' . $pid . ' in ' . $localdata_in_pid . ' localData.' . self::record_source_from_pid($pid) . ' is ' . (empty($fedora_result) || strpos($fedora_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
       }
     }
     else {
       self::get_fedora_raw($pid, $fedora_result);
       if (DEBUG_ON) {
-        echo $pid . ' is ' . (empty($fedora_result) || strpos($fedora_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
+        echo __FUNCTION__ . ':: ' . $pid . ' is ' . (empty($fedora_result) || strpos($fedora_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
       }
     }
     //if (DEBUG_ON) { echo $fedora_result . PHP_EOL; }
@@ -2919,7 +2917,7 @@ class openSearch extends webServiceServer {
     $agency_type = self::get_agency_type($agency);
     $coll_id = $agency . '-' . $collection;
     if (DEBUG_ON) {
-      echo 'is_valid_source::' . 
+      echo __FUNCTION__ . '::' . 
            ' agency: ' . $agency .
            ' collection: ' . $collection .
            ' agency_type: ' . $agency_type . 
@@ -3226,13 +3224,13 @@ class openSearch extends webServiceServer {
               $collection_id = self::get_element_from_admin_data($rels_dom, 'collectionIdentifier');
               if (empty($this->valid_relation[$collection_id])) {  // handling of local data streams
                 if (DEBUG_ON) { 
-                  echo 'Datastream(s): ' . implode(',', self::fetch_valid_sources_from_stream($pid)) . PHP_EOL;
+                  echo __FUNCTION__ . ':: Datastream(s): ' . implode(',', self::fetch_valid_sources_from_stream($pid)) . PHP_EOL;
                 }
                 foreach (self::fetch_valid_sources_from_stream($pid) as $source) {
                   if ($this->valid_relation[$source]) {
                     $collection_id = $source;
                     if (DEBUG_ON) { 
-                      echo '--- use: ' . $source . ' rel_oid: ' . $rel_oid . ' stream: ' . self::set_data_stream_name($collection_id) . PHP_EOL;
+                      echo __FUNCTION__ . ':: --- use: ' . $source . ' rel_oid: ' . $rel_oid . ' stream: ' . self::set_data_stream_name($collection_id) . PHP_EOL;
                     }
                     self::get_fedora_raw($rel_oid, $related_obj, self::set_data_stream_name($collection_id));
                     if (@ !$rels_dom->loadXML($related_obj)) {
@@ -3243,6 +3241,8 @@ class openSearch extends webServiceServer {
                   }
                 }
               }
+// TODO: find some way to check relations validity against the search profile without wasting time on a solr-search
+// TODO: pseudo-collections, like 150015-ereol, which are part of a real collection, should be allowed even when the real collection is not allowed
               if (isset($this->valid_relation[$collection_id]) && self::is_searchable($tag->nodeValue, $filter)) {
                 $relation->relationType->_value = $this_relation;
                 if ($rels_type == 'uri' || $rels_type == 'full') {
