@@ -43,13 +43,19 @@
                 <identifier>820030-katalog:836533</identifier>
               </objectsAvailable>
               <queryResultExplanation>
-0.9160638 = (MATCH) sum of:
-  0.9160638 = (MATCH) weight(term.default:old^0.1 in 44) [DefaultSimilarity], result of:
-    0.9160638 = fieldWeight in 44, product of:
-      1.4142135 = tf(freq=2.0), with freq of:
-        2.0 = termFreq=2.0
-      3.4546928 = idf(docFreq=13, maxDocs=163)
-      0.1875 = fieldNorm(doc=44)
+0.9649509 = (MATCH) sum of:
+  0.9649509 = (MATCH) weight(term.default:old^0.1 in 86) [DefaultSimilarity], result of:
+    0.9649509 = score(doc=86,freq=2.0 = termFreq=2.0
+), product of:
+      1.0000001 = queryWeight, product of:
+        0.1 = boost
+        3.6390574 = idf(docFreq=13, maxDocs=196)
+        2.7479644 = queryNorm
+      0.9649508 = fieldWeight in 86, product of:
+        1.4142135 = tf(freq=2.0), with freq of:
+          2.0 = termFreq=2.0
+        3.6390574 = idf(docFreq=13, maxDocs=196)
+        0.1875 = fieldNorm(doc=86)
 </queryResultExplanation>
             </object>
           </collection>
@@ -57,11 +63,12 @@
         <searchResult>
           <collection>
             <resultPosition>2</resultPosition>
-            <numberOfObjects>3</numberOfObjects>
+            <numberOfObjects>2</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>44082985|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">0-330-44011-X</dc:identifier>
+                <ac:identifier>44273160|870970</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9780330454278</dc:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9780330441704</dc:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
                 <dc:title>No country for old men</dc:title>
                 <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
@@ -69,126 +76,87 @@
                 <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
                 <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
                 <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dc:subject>fiction</dc:subject>
-                <dc:subject>narkotikahandel</dc:subject>
-                <dc:subject>spændingsroman</dc:subject>
+                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
                 <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dkdcplus:version>Paperback</dkdcplus:version>
+                <dkdcplus:version>New edition, Reprinted</dkdcplus:version>
                 <dc:publisher>Picador</dc:publisher>
-                <dc:date>2005</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
-              </dkabm:record>
-              <identifier>870970-basis:44082985</identifier>
-              <primaryObjectIdentifier>870970-basis:44082985</primaryObjectIdentifier>
-              <creationDate>2007-03-19</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:44082985</identifier>
-              </objectsAvailable>
-              <queryResultExplanation>
-0.6107092 = (MATCH) sum of:
-  0.6107092 = (MATCH) weight(term.default:old^0.1 in 27) [DefaultSimilarity], result of:
-    0.6107092 = fieldWeight in 27, product of:
-      1.4142135 = tf(freq=2.0), with freq of:
-        2.0 = termFreq=2.0
-      3.4546928 = idf(docFreq=13, maxDocs=163)
-      0.125 = fieldNorm(doc=27)
-</queryResultExplanation>
-            </object>
-            <object>
-              <dkabm:record>
-                <ac:identifier>44319454|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">9780330454537</dc:identifier>
-                <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>No country for old men</dc:title>
-                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dcterms:abstract>På en jagttur i det sydlige Texas finder Llewelyn Moss et par biler, fyldt med døde mænd, og en taske fyldt med kontanter. Den tidligere Vietnam-veteran, beslutter sig for at beholde pengene, men det skulle han måske ikke have gjort. Snart har han gangsterne og politiet i hælene, og en blodig jagt går i gang</dcterms:abstract>
-                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dkdcplus:version>Picador film tie-in</dkdcplus:version>
-                <dc:publisher>Picador</dc:publisher>
-                <dc:date>2005</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
-              </dkabm:record>
-              <identifier>870970-basis:44319454</identifier>
-              <primaryObjectIdentifier>870970-basis:44319454</primaryObjectIdentifier>
-              <creationDate>2008-03-03</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:44319454</identifier>
-              </objectsAvailable>
-              <queryResultExplanation>
-0.38169324 = (MATCH) sum of:
-  0.38169324 = (MATCH) weight(term.default:old^0.1 in 31) [DefaultSimilarity], result of:
-    0.38169324 = fieldWeight in 31, product of:
-      1.4142135 = tf(freq=2.0), with freq of:
-        2.0 = termFreq=2.0
-      3.4546928 = idf(docFreq=13, maxDocs=163)
-      0.078125 = fieldNorm(doc=31)
-</queryResultExplanation>
-            </object>
-            <object>
-              <dkabm:record>
-                <ac:identifier>43917129|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">1-84632-357-6</dc:identifier>
-                <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>No country for old men</dc:title>
-                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCS">gangstere</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCS">narkotika</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCS">spændende bøger</dc:subject>
-                <dcterms:abstract>På en jagttur i det sydlige Texas finder Llewelyn Moss et par biler, fyldt med døde mænd, og en taske fyldt med kontanter. Den tidligere Vietnam-veteran, beslutter sig for at beholde pengene, men det skulle han måske ikke have gjort. Snart har han gangsterne og politiet i hælene, og en blodig jagt går i gang</dcterms:abstract>
-                <dc:description>På omslaget: Unabridged books on disc</dc:description>
-                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Clipper Audio</dc:publisher>
-                <dc:publisher>Howes</dc:publisher>
-                <dc:contributor>Tom Stechschulte</dc:contributor>
                 <dc:date>2006</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Lydbog (cd)</dc:type>
-                <dc:format>7 cd'ere i 1 mappe</dc:format>
-                <dcterms:extent>ca. 7 t., 30 min</dcterms:extent>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
+                <dcterms:extent>309 sider</dcterms:extent>
                 <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
                 <dc:language>Engelsk</dc:language>
-                <dcterms:spatial xsi:type="dkdcplus:DBCS">USA</dcterms:spatial>
-                <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
               </dkabm:record>
-              <identifier>870970-basis:43917129</identifier>
-              <primaryObjectIdentifier>870970-basis:43917129</primaryObjectIdentifier>
-              <creationDate>2006-07-20</creationDate>
+              <identifier>870970-basis:44273160</identifier>
+              <primaryObjectIdentifier>870970-basis:44273160</primaryObjectIdentifier>
+              <creationDate>2008-01-09</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:43917129</identifier>
+                <identifier>870970-basis:44273160</identifier>
               </objectsAvailable>
               <queryResultExplanation>
-0.3053546 = (MATCH) sum of:
-  0.3053546 = (MATCH) weight(term.default:old^0.1 in 26) [DefaultSimilarity], result of:
-    0.3053546 = fieldWeight in 26, product of:
-      1.4142135 = tf(freq=2.0), with freq of:
-        2.0 = termFreq=2.0
-      3.4546928 = idf(docFreq=13, maxDocs=163)
-      0.0625 = fieldNorm(doc=26)
+0.4020629 = (MATCH) sum of:
+  0.4020629 = (MATCH) weight(term.default:old^0.1 in 84) [DefaultSimilarity], result of:
+    0.4020629 = score(doc=84,freq=2.0 = termFreq=2.0
+), product of:
+      1.0000001 = queryWeight, product of:
+        0.1 = boost
+        3.6390574 = idf(docFreq=13, maxDocs=196)
+        2.7479644 = queryNorm
+      0.40206283 = fieldWeight in 84, product of:
+        1.4142135 = tf(freq=2.0), with freq of:
+          2.0 = termFreq=2.0
+        3.6390574 = idf(docFreq=13, maxDocs=196)
+        0.078125 = fieldNorm(doc=84)
+</queryResultExplanation>
+            </object>
+            <object>
+              <dkabm:record>
+                <ac:identifier>43683799|870970</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">0-375-40677-8</dc:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>No country for old men</dc:title>
+                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
+                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
+                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
+                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dc:publisher>Knopf</dc:publisher>
+                <dc:date>2005</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
+                <dcterms:extent>309 sider</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
+              </dkabm:record>
+              <identifier>870970-basis:43683799</identifier>
+              <primaryObjectIdentifier>870970-basis:43683799</primaryObjectIdentifier>
+              <creationDate>2005-09-02</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870970-basis:43683799</identifier>
+                <identifier>810010-katalog:005375631</identifier>
+              </objectsAvailable>
+              <queryResultExplanation>
+0.6433006 = (MATCH) sum of:
+  0.6433006 = (MATCH) weight(term.default:old^0.1 in 79) [DefaultSimilarity], result of:
+    0.6433006 = score(doc=79,freq=2.0 = termFreq=2.0
+), product of:
+      1.0000001 = queryWeight, product of:
+        0.1 = boost
+        3.6390574 = idf(docFreq=13, maxDocs=196)
+        2.7479644 = queryNorm
+      0.64330053 = fieldWeight in 79, product of:
+        1.4142135 = tf(freq=2.0), with freq of:
+          2.0 = termFreq=2.0
+        3.6390574 = idf(docFreq=13, maxDocs=196)
+        0.125 = fieldNorm(doc=79)
 </queryResultExplanation>
             </object>
           </collection>
@@ -202,9 +170,9 @@
         </queryDebugResult>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>25</fedoraRecordsRead>
-          <time>2.304614</time>
-          <trackingId>2015-11-05T15:01:58:512224:14899</trackingId>
+          <fedoraRecordsRead>21</fedoraRecordsRead>
+          <time>1.381053</time>
+          <trackingId>2015-12-15T09:29:13:696980:16523</trackingId>
         </statInfo>
       </result>
     </searchResponse>
