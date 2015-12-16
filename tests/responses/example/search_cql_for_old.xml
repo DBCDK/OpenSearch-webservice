@@ -47,77 +47,6 @@
         <searchResult>
           <collection>
             <resultPosition>2</resultPosition>
-            <numberOfObjects>2</numberOfObjects>
-            <object>
-              <dkabm:record>
-                <ac:identifier>44273160|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">9780330454278</dc:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">9780330441704</dc:identifier>
-                <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>No country for old men</dc:title>
-                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
-                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dkdcplus:version>New edition, Reprinted</dkdcplus:version>
-                <dc:publisher>Picador</dc:publisher>
-                <dc:date>2006</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
-              </dkabm:record>
-              <identifier>870970-basis:44273160</identifier>
-              <primaryObjectIdentifier>870970-basis:44273160</primaryObjectIdentifier>
-              <creationDate>2008-01-09</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:44273160</identifier>
-              </objectsAvailable>
-            </object>
-            <object>
-              <dkabm:record>
-                <ac:identifier>43683799|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">0-375-40677-8</dc:identifier>
-                <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>No country for old men</dc:title>
-                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
-                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Knopf</dc:publisher>
-                <dc:date>2005</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
-              </dkabm:record>
-              <identifier>870970-basis:43683799</identifier>
-              <primaryObjectIdentifier>870970-basis:43683799</primaryObjectIdentifier>
-              <creationDate>2005-09-02</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:43683799</identifier>
-                <identifier>810010-katalog:005375631</identifier>
-              </objectsAvailable>
-            </object>
-          </collection>
-        </searchResult>
-        <searchResult>
-          <collection>
-            <resultPosition>3</resultPosition>
             <numberOfObjects>3</numberOfObjects>
             <object>
               <dkabm:record>
@@ -227,12 +156,83 @@
             </object>
           </collection>
         </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>3</resultPosition>
+            <numberOfObjects>2</numberOfObjects>
+            <object>
+              <dkabm:record>
+                <ac:identifier>44273160|870970</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9780330454278</dc:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9780330441704</dc:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>No country for old men</dc:title>
+                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
+                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
+                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
+                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dkdcplus:version>New edition, Reprinted</dkdcplus:version>
+                <dc:publisher>Picador</dc:publisher>
+                <dc:date>2006</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
+                <dcterms:extent>309 sider</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
+              </dkabm:record>
+              <identifier>870970-basis:44273160</identifier>
+              <primaryObjectIdentifier>870970-basis:44273160</primaryObjectIdentifier>
+              <creationDate>2008-01-09</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870970-basis:44273160</identifier>
+              </objectsAvailable>
+            </object>
+            <object>
+              <dkabm:record>
+                <ac:identifier>43683799|870970</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">0-375-40677-8</dc:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>No country for old men</dc:title>
+                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
+                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
+                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
+                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dc:publisher>Knopf</dc:publisher>
+                <dc:date>2005</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
+                <dcterms:extent>309 sider</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
+              </dkabm:record>
+              <identifier>870970-basis:43683799</identifier>
+              <primaryObjectIdentifier>870970-basis:43683799</primaryObjectIdentifier>
+              <creationDate>2005-09-02</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870970-basis:43683799</identifier>
+                <identifier>810010-katalog:005375631</identifier>
+              </objectsAvailable>
+            </object>
+          </collection>
+        </searchResult>
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>38</fedoraRecordsRead>
-          <time>1.635107</time>
-          <trackingId>2015-12-15T09:29:01:053848:4357</trackingId>
+          <time>1.587775</time>
+          <trackingId>2015-12-16T09:12:23:263325:16523</trackingId>
         </statInfo>
       </result>
     </searchResponse>
