@@ -6,50 +6,60 @@
         <hitCount>12</hitCount>
         <collectionCount>2</collectionCount>
         <more>true</more>
-        <sortUsed>rank_none</sortUsed>
+        <sortUsed>date_descending</sortUsed>
         <searchResult>
           <collection>
             <resultPosition>1</resultPosition>
             <numberOfObjects>1</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>25873262|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">0-330-44010-1</dc:identifier>
+                <ac:identifier>44859831|870970</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9780313356643</dc:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>No country for old men</dc:title>
-                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dc:title>Reading Cormac McCarthy</dc:title>
+                <dc:title xsi:type="dkdcplus:full">Reading Cormac McCarthy</dc:title>
+                <dc:title xsi:type="dkdcplus:series">The Pop Lit Book Club</dc:title>
+                <dc:creator xsi:type="dkdcplus:aut">Willard P. Greenwood</dc:creator>
+                <dc:creator xsi:type="oss:sort">Greenwood, Willard P.</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">99.4 McCarthy, Cormac</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Biografier af enkelte personer</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">Cormac McCarthy</dc:subject>
+                <dc:subject xsi:type="oss:sort">McCarthy, Cormac</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">amerikanske forfattere</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">forfattere</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">litteratur</dc:subject>
+                <dc:description>Indhold: A writer's life ; Cormac McCarthy and the genre ; The orchard keeper ; Outer dark ; Child of God ; Suttree ; Blood meridian ; All the pretty horses ; The crossing ; Citites of the plain ; No country for old men ; The road ; Dramatic works ; Today's issues ; Pop culture ; Cormac McCarthy on the internet ; Cormac McCarthy and the media ; What do I read next?</dc:description>
                 <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Picador</dc:publisher>
-                <dc:date>2005</dc:date>
+                <dkdcplus:version>1. edition</dkdcplus:version>
+                <dc:publisher>Greenwood Press</dc:publisher>
+                <dc:date>2009</dc:date>
                 <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
+                <dcterms:extent>x, 141 sider</dcterms:extent>
                 <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
-              <identifier>870970-basis:25873262</identifier>
-              <primaryObjectIdentifier>870970-basis:25873262</primaryObjectIdentifier>
-              <creationDate>2005-08-25</creationDate>
+              <identifier>870970-basis:44859831</identifier>
+              <primaryObjectIdentifier>870970-basis:44859831</primaryObjectIdentifier>
+              <creationDate>2010-06-17</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:25873262</identifier>
-                <identifier>820030-katalog:836533</identifier>
+                <identifier>870970-basis:44859831</identifier>
               </objectsAvailable>
               <queryResultExplanation>
-0.91443205 = (MATCH) sum of:
-  0.91443205 = (MATCH) weight(term.default:old^0.1 in 69) [DefaultSimilarity], result of:
-    0.91443205 = fieldWeight in 69, product of:
+0.32982823 = (MATCH) weight(term.default:old in 52) [DefaultSimilarity], result of:
+  0.32982823 = score(doc=52,freq=2.0 = termFreq=2.0
+), product of:
+    0.99999994 = queryWeight, product of:
+      3.7315807 = idf(docFreq=13, maxDocs=215)
+      0.26798293 = queryNorm
+    0.32982826 = fieldWeight in 52, product of:
       1.4142135 = tf(freq=2.0), with freq of:
         2.0 = termFreq=2.0
-      3.448539 = idf(docFreq=13, maxDocs=162)
-      0.1875 = fieldNorm(doc=69)
+      3.7315807 = idf(docFreq=13, maxDocs=215)
+      0.0625 = fieldNorm(doc=52)
 </queryResultExplanation>
             </object>
           </collection>
@@ -60,85 +70,160 @@
             <numberOfObjects>2</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>44273160|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">9780330454278</dc:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">9780330441704</dc:identifier>
+                <ac:identifier>27337368|870970</ac:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
                 <dc:title>No country for old men</dc:title>
                 <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dc:creator xsi:type="dkdcplus:drt">Joel Coen</dc:creator>
+                <dc:creator xsi:type="oss:sort">Coen, Joel</dc:creator>
+                <dc:creator xsi:type="dkdcplus:drt">Ethan Coen</dc:creator>
+                <dc:creator xsi:type="oss:sort">Coen, Ethan</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">77.7</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Spillefilm</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">gangstere</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">thriller</dc:subject>
+                <dc:subject xsi:type="dkdcplus:genre">thriller</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">vold</dc:subject>
+                <dcterms:abstract>Llewelin Moss finder en taske med to millioner dollars og beholder både taske og indhold! Men pengene stammer fra et blodigt opgør i narkokredse, og bagmændene har bestemt ikke tænkt sig at afskrive de grønne sedler</dcterms:abstract>
+                <dc:description>Originalfilmen: USA : Paramount Vantage : Miramax Films, 2007</dc:description>
+                <dc:description>Af indholdet: Special features (The making of No country for old men ; Working with the Coens ; Diary of a country sherif)</dc:description>
+                <dcterms:audience xsi:type="dkdcplus:medieraad">Mærkning: Tilladt for børn over 15 år</dcterms:audience>
                 <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dkdcplus:version>New edition, Reprinted</dkdcplus:version>
-                <dc:publisher>Picador</dc:publisher>
-                <dc:date>2006</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
+                <dc:publisher>Paramount Home Entertainment (Denmark)</dc:publisher>
+                <dc:contributor>Cormac McCarthy</dc:contributor>
+                <dc:contributor>Joel Coen</dc:contributor>
+                <dc:contributor>Ethan Coen</dc:contributor>
+                <dc:contributor>Roger Deakins</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Tommy Lee Jones</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Javier Bardem</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Josh Brolin</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Woody Harrelson</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Kelly MacDonald</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Garret Dillahunt</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Tess Harper</dc:contributor>
+                <dc:date>2008</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Dvd</dc:type>
+                <dc:format>1 dvd-video</dc:format>
+                <dcterms:extent>ca. 117 min.</dcterms:extent>
                 <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
                 <dc:language>Engelsk</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dan</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dut</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">nor</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">fin</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">swe</dc:language>
+                <dcterms:spatial xsi:type="dkdcplus:DBCS">USA</dcterms:spatial>
+                <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
               </dkabm:record>
-              <identifier>870970-basis:44273160</identifier>
-              <primaryObjectIdentifier>870970-basis:44273160</primaryObjectIdentifier>
-              <creationDate>2008-01-09</creationDate>
+              <identifier>870970-basis:27337368</identifier>
+              <primaryObjectIdentifier>870970-basis:27337368</primaryObjectIdentifier>
+              <creationDate>2008-07-16</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:44273160</identifier>
+                <identifier>870970-basis:27337368</identifier>
               </objectsAvailable>
               <queryResultExplanation>
-0.38101333 = (MATCH) sum of:
-  0.38101333 = (MATCH) weight(term.default:old^0.1 in 73) [DefaultSimilarity], result of:
-    0.38101333 = fieldWeight in 73, product of:
-      1.4142135 = tf(freq=2.0), with freq of:
-        2.0 = termFreq=2.0
-      3.448539 = idf(docFreq=13, maxDocs=162)
-      0.078125 = fieldNorm(doc=73)
+0.4081416 = (MATCH) weight(term.default:old in 100) [DefaultSimilarity], result of:
+  0.4081416 = score(doc=100,freq=4.0 = termFreq=4.0
+), product of:
+    0.99999994 = queryWeight, product of:
+      3.7315807 = idf(docFreq=13, maxDocs=215)
+      0.26798293 = queryNorm
+    0.40814164 = fieldWeight in 100, product of:
+      2.0 = tf(freq=4.0), with freq of:
+        4.0 = termFreq=4.0
+      3.7315807 = idf(docFreq=13, maxDocs=215)
+      0.0546875 = fieldNorm(doc=100)
 </queryResultExplanation>
             </object>
             <object>
               <dkabm:record>
-                <ac:identifier>43683799|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">0-375-40677-8</dc:identifier>
+                <ac:identifier>27597505|870970</ac:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
                 <dc:title>No country for old men</dc:title>
                 <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dc:creator xsi:type="dkdcplus:drt">Joel Coen</dc:creator>
+                <dc:creator xsi:type="oss:sort">Coen, Joel</dc:creator>
+                <dc:creator xsi:type="dkdcplus:drt">Ethan Coen</dc:creator>
+                <dc:creator xsi:type="oss:sort">Coen, Ethan</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">77.7</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Spillefilm</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">gangstere</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">thriller</dc:subject>
+                <dc:subject xsi:type="dkdcplus:genre">thriller</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">vold</dc:subject>
+                <dcterms:abstract>Llewelin Moss finder en taske med to millioner dollars og beholder både taske og indhold! Men pengene stammer fra et blodigt opgør i narkokredse, og bagmændene har bestemt ikke tænkt sig at afskrive de grønne sedler</dcterms:abstract>
+                <dc:description>Originalfilmen: USA : Paramount Vantage : Miramax Films, 2007</dc:description>
+                <dc:description>Af indholdet: Special features</dc:description>
+                <dcterms:audience xsi:type="dkdcplus:medieraad">Mærkning: Tilladt for børn over 15 år</dcterms:audience>
                 <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Knopf</dc:publisher>
-                <dc:date>2005</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
+                <dc:publisher>Paramount Home Entertainment (Denmark)</dc:publisher>
+                <dc:contributor>Cormac McCarthy</dc:contributor>
+                <dc:contributor>Joel Coen</dc:contributor>
+                <dc:contributor>Ethan Coen</dc:contributor>
+                <dc:contributor>Roger Deakins</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Tommy Lee Jones</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Javier Bardem</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Josh Brolin</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Woody Harrelson</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Kelly MacDonald</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Garret Dillahunt</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Tess Harper</dc:contributor>
+                <dc:date>2009</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Blu-ray</dc:type>
+                <dc:format>1 blu-ray disc, blu-ray</dc:format>
+                <dcterms:extent>2 t., 2 min.</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">mul</dc:language>
+                <dc:language>Flere sprog</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">eng</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">ger</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">spa</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">fre</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">ita</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dan</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">ger</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">gre</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">spa</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">fre</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">ita</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">hun</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dut</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">nor</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">pol</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">por</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">fin</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">swe</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">tur</dc:language>
+                <dcterms:spatial xsi:type="dkdcplus:DBCS">USA</dcterms:spatial>
+                <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
               </dkabm:record>
-              <identifier>870970-basis:43683799</identifier>
-              <primaryObjectIdentifier>870970-basis:43683799</primaryObjectIdentifier>
-              <creationDate>2005-09-02</creationDate>
+              <identifier>870970-basis:27597505</identifier>
+              <primaryObjectIdentifier>870970-basis:27597505</primaryObjectIdentifier>
+              <creationDate>2009-01-28</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:43683799</identifier>
-                <identifier>810010-katalog:005375631</identifier>
+                <identifier>870970-basis:27597505</identifier>
               </objectsAvailable>
               <queryResultExplanation>
-0.60962135 = (MATCH) sum of:
-  0.60962135 = (MATCH) weight(term.default:old^0.1 in 51) [DefaultSimilarity], result of:
-    0.60962135 = fieldWeight in 51, product of:
+0.2885997 = (MATCH) weight(term.default:old in 102) [DefaultSimilarity], result of:
+  0.2885997 = score(doc=102,freq=2.0 = termFreq=2.0
+), product of:
+    0.99999994 = queryWeight, product of:
+      3.7315807 = idf(docFreq=13, maxDocs=215)
+      0.26798293 = queryNorm
+    0.28859973 = fieldWeight in 102, product of:
       1.4142135 = tf(freq=2.0), with freq of:
         2.0 = termFreq=2.0
-      3.448539 = idf(docFreq=13, maxDocs=162)
-      0.125 = fieldNorm(doc=51)
+      3.7315807 = idf(docFreq=13, maxDocs=215)
+      0.0546875 = fieldNorm(doc=102)
 </queryResultExplanation>
             </object>
           </collection>
@@ -147,14 +232,14 @@
         <queryDebugResult>
           <rawQueryString>old</rawQueryString>
           <queryString>old</queryString>
-          <parsedQuery>(+DisjunctionMaxQuery((term.default:old^0.1)~1.0) ())/no_coord</parsedQuery>
-          <parsedQueryString>+(term.default:old^0.1)~1.0 ()</parsedQueryString>
+          <parsedQuery>(+DisjunctionMaxQuery((term.default:old)))/no_coord</parsedQuery>
+          <parsedQueryString>+(term.default:old)</parsedQueryString>
         </queryDebugResult>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>21</fedoraRecordsRead>
-          <time>1.487573</time>
-          <trackingId>2015-12-17T14:09:05:665994:4306</trackingId>
+          <fedoraRecordsRead>19</fedoraRecordsRead>
+          <time>1.474008</time>
+          <trackingId>2016-01-04T14:48:35:842331:9589</trackingId>
         </statInfo>
       </result>
     </searchResponse>

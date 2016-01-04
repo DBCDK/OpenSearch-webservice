@@ -4,7 +4,7 @@
     <open:query>old</open:query>
     <open:start>1</open:start>
     <open:stepValue>2</open:stepValue>    
-    <open:sort>rank_none</open:sort>  
+    <open:sort>date_descending</open:sort>
     <open:queryDebug>1</open:queryDebug>    
 </open:searchRequest>
 </SOAP-ENV:Body></SOAP-ENV:Envelope>

@@ -6,40 +6,47 @@
         <hitCount>12</hitCount>
         <collectionCount>3</collectionCount>
         <more>true</more>
+        <sortUsed>date_descending</sortUsed>
         <searchResult>
           <collection>
             <resultPosition>1</resultPosition>
             <numberOfObjects>1</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>25873262|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">0-330-44010-1</dc:identifier>
+                <ac:identifier>44859831|870970</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9780313356643</dc:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>No country for old men</dc:title>
-                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dc:title>Reading Cormac McCarthy</dc:title>
+                <dc:title xsi:type="dkdcplus:full">Reading Cormac McCarthy</dc:title>
+                <dc:title xsi:type="dkdcplus:series">The Pop Lit Book Club</dc:title>
+                <dc:creator xsi:type="dkdcplus:aut">Willard P. Greenwood</dc:creator>
+                <dc:creator xsi:type="oss:sort">Greenwood, Willard P.</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">99.4 McCarthy, Cormac</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Biografier af enkelte personer</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">Cormac McCarthy</dc:subject>
+                <dc:subject xsi:type="oss:sort">McCarthy, Cormac</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">amerikanske forfattere</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">forfattere</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">litteratur</dc:subject>
+                <dc:description>Indhold: A writer's life ; Cormac McCarthy and the genre ; The orchard keeper ; Outer dark ; Child of God ; Suttree ; Blood meridian ; All the pretty horses ; The crossing ; Citites of the plain ; No country for old men ; The road ; Dramatic works ; Today's issues ; Pop culture ; Cormac McCarthy on the internet ; Cormac McCarthy and the media ; What do I read next?</dc:description>
                 <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Picador</dc:publisher>
-                <dc:date>2005</dc:date>
+                <dkdcplus:version>1. edition</dkdcplus:version>
+                <dc:publisher>Greenwood Press</dc:publisher>
+                <dc:date>2009</dc:date>
                 <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
+                <dcterms:extent>x, 141 sider</dcterms:extent>
                 <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
-              <identifier>870970-basis:25873262</identifier>
-              <primaryObjectIdentifier>870970-basis:25873262</primaryObjectIdentifier>
-              <creationDate>2005-08-25</creationDate>
+              <identifier>870970-basis:44859831</identifier>
+              <primaryObjectIdentifier>870970-basis:44859831</primaryObjectIdentifier>
+              <creationDate>2010-06-17</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:25873262</identifier>
-                <identifier>820030-katalog:836533</identifier>
+                <identifier>870970-basis:44859831</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -50,67 +57,134 @@
             <numberOfObjects>2</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>44273160|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">9780330454278</dc:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">9780330441704</dc:identifier>
+                <ac:identifier>27337368|870970</ac:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
                 <dc:title>No country for old men</dc:title>
                 <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dc:creator xsi:type="dkdcplus:drt">Joel Coen</dc:creator>
+                <dc:creator xsi:type="oss:sort">Coen, Joel</dc:creator>
+                <dc:creator xsi:type="dkdcplus:drt">Ethan Coen</dc:creator>
+                <dc:creator xsi:type="oss:sort">Coen, Ethan</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">77.7</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Spillefilm</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">gangstere</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">thriller</dc:subject>
+                <dc:subject xsi:type="dkdcplus:genre">thriller</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">vold</dc:subject>
+                <dcterms:abstract>Llewelin Moss finder en taske med to millioner dollars og beholder både taske og indhold! Men pengene stammer fra et blodigt opgør i narkokredse, og bagmændene har bestemt ikke tænkt sig at afskrive de grønne sedler</dcterms:abstract>
+                <dc:description>Originalfilmen: USA : Paramount Vantage : Miramax Films, 2007</dc:description>
+                <dc:description>Af indholdet: Special features (The making of No country for old men ; Working with the Coens ; Diary of a country sherif)</dc:description>
+                <dcterms:audience xsi:type="dkdcplus:medieraad">Mærkning: Tilladt for børn over 15 år</dcterms:audience>
                 <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dkdcplus:version>New edition, Reprinted</dkdcplus:version>
-                <dc:publisher>Picador</dc:publisher>
-                <dc:date>2006</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
+                <dc:publisher>Paramount Home Entertainment (Denmark)</dc:publisher>
+                <dc:contributor>Cormac McCarthy</dc:contributor>
+                <dc:contributor>Joel Coen</dc:contributor>
+                <dc:contributor>Ethan Coen</dc:contributor>
+                <dc:contributor>Roger Deakins</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Tommy Lee Jones</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Javier Bardem</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Josh Brolin</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Woody Harrelson</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Kelly MacDonald</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Garret Dillahunt</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Tess Harper</dc:contributor>
+                <dc:date>2008</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Dvd</dc:type>
+                <dc:format>1 dvd-video</dc:format>
+                <dcterms:extent>ca. 117 min.</dcterms:extent>
                 <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
                 <dc:language>Engelsk</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dan</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dut</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">nor</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">fin</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">swe</dc:language>
+                <dcterms:spatial xsi:type="dkdcplus:DBCS">USA</dcterms:spatial>
+                <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
               </dkabm:record>
-              <identifier>870970-basis:44273160</identifier>
-              <primaryObjectIdentifier>870970-basis:44273160</primaryObjectIdentifier>
-              <creationDate>2008-01-09</creationDate>
+              <identifier>870970-basis:27337368</identifier>
+              <primaryObjectIdentifier>870970-basis:27337368</primaryObjectIdentifier>
+              <creationDate>2008-07-16</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:44273160</identifier>
+                <identifier>870970-basis:27337368</identifier>
               </objectsAvailable>
             </object>
             <object>
               <dkabm:record>
-                <ac:identifier>43683799|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">0-375-40677-8</dc:identifier>
+                <ac:identifier>27597505|870970</ac:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
                 <dc:title>No country for old men</dc:title>
                 <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dc:creator xsi:type="dkdcplus:drt">Joel Coen</dc:creator>
+                <dc:creator xsi:type="oss:sort">Coen, Joel</dc:creator>
+                <dc:creator xsi:type="dkdcplus:drt">Ethan Coen</dc:creator>
+                <dc:creator xsi:type="oss:sort">Coen, Ethan</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">77.7</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Spillefilm</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">gangstere</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">thriller</dc:subject>
+                <dc:subject xsi:type="dkdcplus:genre">thriller</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">vold</dc:subject>
+                <dcterms:abstract>Llewelin Moss finder en taske med to millioner dollars og beholder både taske og indhold! Men pengene stammer fra et blodigt opgør i narkokredse, og bagmændene har bestemt ikke tænkt sig at afskrive de grønne sedler</dcterms:abstract>
+                <dc:description>Originalfilmen: USA : Paramount Vantage : Miramax Films, 2007</dc:description>
+                <dc:description>Af indholdet: Special features</dc:description>
+                <dcterms:audience xsi:type="dkdcplus:medieraad">Mærkning: Tilladt for børn over 15 år</dcterms:audience>
                 <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Knopf</dc:publisher>
-                <dc:date>2005</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
+                <dc:publisher>Paramount Home Entertainment (Denmark)</dc:publisher>
+                <dc:contributor>Cormac McCarthy</dc:contributor>
+                <dc:contributor>Joel Coen</dc:contributor>
+                <dc:contributor>Ethan Coen</dc:contributor>
+                <dc:contributor>Roger Deakins</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Tommy Lee Jones</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Javier Bardem</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Josh Brolin</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Woody Harrelson</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Kelly MacDonald</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Garret Dillahunt</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Tess Harper</dc:contributor>
+                <dc:date>2009</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Blu-ray</dc:type>
+                <dc:format>1 blu-ray disc, blu-ray</dc:format>
+                <dcterms:extent>2 t., 2 min.</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">mul</dc:language>
+                <dc:language>Flere sprog</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">eng</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">ger</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">spa</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">fre</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">ita</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dan</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">ger</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">gre</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">spa</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">fre</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">ita</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">hun</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dut</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">nor</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">pol</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">por</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">fin</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">swe</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">tur</dc:language>
+                <dcterms:spatial xsi:type="dkdcplus:DBCS">USA</dcterms:spatial>
+                <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
               </dkabm:record>
-              <identifier>870970-basis:43683799</identifier>
-              <primaryObjectIdentifier>870970-basis:43683799</primaryObjectIdentifier>
-              <creationDate>2005-09-02</creationDate>
+              <identifier>870970-basis:27597505</identifier>
+              <primaryObjectIdentifier>870970-basis:27597505</primaryObjectIdentifier>
+              <creationDate>2009-01-28</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:43683799</identifier>
-                <identifier>810010-katalog:005375631</identifier>
+                <identifier>870970-basis:27597505</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -118,111 +192,79 @@
         <searchResult>
           <collection>
             <resultPosition>3</resultPosition>
-            <numberOfObjects>3</numberOfObjects>
+            <numberOfObjects>1</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>44082985|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">0-330-44011-X</dc:identifier>
+                <ac:identifier>27694381|870970</ac:identifier>
+                <dc:identifier>Concord 0888072312319</dc:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>No country for old men</dc:title>
-                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dc:subject>fiction</dc:subject>
-                <dc:subject>narkotikahandel</dc:subject>
-                <dc:subject>spændingsroman</dc:subject>
+                <dc:title>The curious case of Benjamin Button</dc:title>
+                <dc:title xsi:type="dkdcplus:full">The curious case of Benjamin Button : music from the motion picture</dc:title>
+                <dcterms:alternative>Score</dcterms:alternative>
+                <dcterms:alternative>Songs</dcterms:alternative>
+                <dc:subject xsi:type="dkdcplus:DK5">78.81:8</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Operaer, syngespil, operetter, revyer, skuespilmusik m.v.</dc:subject>
+                <dc:subject xsi:type="dkdcplus:genre">filmmusik - soundtracks</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">filmmusik</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">instrumental</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">jazz</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">orkester</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCO">soundtracks</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">swing</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">traditionel jazz</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCM">vokal</dc:subject>
+                <dc:description>Med små bidder af dialog fra filmen</dc:description>
                 <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dkdcplus:version>Paperback</dkdcplus:version>
-                <dc:publisher>Picador</dc:publisher>
-                <dc:date>2005</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
+                <dc:publisher>Concord Music Group</dc:publisher>
+                <dc:contributor>Bix Beiderbecke</dc:contributor>
+                <dc:contributor>Alexandre Desplat</dc:contributor>
+                <dc:contributor>David Fincher</dc:contributor>
+                <dc:contributor>De De Pierce</dc:contributor>
+                <dc:contributor>Doc Paulin</dc:contributor>
+                <dc:contributor>Frankie Trumbauer</dc:contributor>
+                <dc:contributor>Billie Pierce</dc:contributor>
+                <dc:contributor>Louis Armstrong</dc:contributor>
+                <dc:contributor>Robert Schumann</dc:contributor>
+                <dc:contributor>Sidney Bechet</dc:contributor>
+                <dc:contributor>Pérez Prado</dc:contributor>
+                <dc:contributor>Randy Kerber</dc:contributor>
+                <dc:contributor>Boswell Sisters</dc:contributor>
+                <dc:contributor>Preservation Hall Jazz Band</dc:contributor>
+                <dc:contributor>Choeur de la Cathedrale de la Rue Daru, Paris XVII</dc:contributor>
+                <dc:contributor>The Platters</dc:contributor>
+                <dc:date>2008</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Cd (musik)</dc:type>
+                <dc:format>2 cd'er</dc:format>
                 <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
                 <dc:language>Engelsk</dc:language>
+                <dc:language xsi:type="dcterms:ISO639-2">rus</dc:language>
+                <dc:language>Russisk</dc:language>
+                <dcterms:hasPart xsi:type="dkdcplus:track">We shall walk through the streets of the city</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Oistrich walk</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">That's how rhythm was born</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Freight train blues</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Basin Street blues</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">If I could be with you (one hour tonight)</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Dear old Southland</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Arabeske for klaver, C-dur, opus 18</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Out of nowhere</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Skokiaan</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">My prayer</dcterms:hasPart>
+                <dcterms:hasPart xsi:type="dkdcplus:track">Bethena</dcterms:hasPart>
+                <dcterms:spatial xsi:type="dkdcplus:DBCM">Frankrig</dcterms:spatial>
+                <dcterms:spatial xsi:type="dkdcplus:DBCM">USA</dcterms:spatial>
+                <dcterms:temporal xsi:type="dkdcplus:DBCM">1900-1999</dcterms:temporal>
+                <dcterms:temporal xsi:type="dkdcplus:DBCM">2000-2009</dcterms:temporal>
               </dkabm:record>
-              <identifier>870970-basis:44082985</identifier>
-              <primaryObjectIdentifier>870970-basis:44082985</primaryObjectIdentifier>
-              <creationDate>2007-03-19</creationDate>
+              <identifier>870970-basis:27694381</identifier>
+              <primaryObjectIdentifier>870970-basis:27694381</primaryObjectIdentifier>
+              <creationDate>2009-04-01</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:44082985</identifier>
-              </objectsAvailable>
-            </object>
-            <object>
-              <dkabm:record>
-                <ac:identifier>44319454|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">9780330454537</dc:identifier>
-                <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>No country for old men</dc:title>
-                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dcterms:abstract>På en jagttur i det sydlige Texas finder Llewelyn Moss et par biler, fyldt med døde mænd, og en taske fyldt med kontanter. Den tidligere Vietnam-veteran, beslutter sig for at beholde pengene, men det skulle han måske ikke have gjort. Snart har han gangsterne og politiet i hælene, og en blodig jagt går i gang</dcterms:abstract>
-                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dkdcplus:version>Picador film tie-in</dkdcplus:version>
-                <dc:publisher>Picador</dc:publisher>
-                <dc:date>2005</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
-              </dkabm:record>
-              <identifier>870970-basis:44319454</identifier>
-              <primaryObjectIdentifier>870970-basis:44319454</primaryObjectIdentifier>
-              <creationDate>2008-03-03</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:44319454</identifier>
-              </objectsAvailable>
-            </object>
-            <object>
-              <dkabm:record>
-                <ac:identifier>43917129|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">1-84632-357-6</dc:identifier>
-                <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>No country for old men</dc:title>
-                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCS">gangstere</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCS">narkotika</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCS">spændende bøger</dc:subject>
-                <dcterms:abstract>På en jagttur i det sydlige Texas finder Llewelyn Moss et par biler, fyldt med døde mænd, og en taske fyldt med kontanter. Den tidligere Vietnam-veteran, beslutter sig for at beholde pengene, men det skulle han måske ikke have gjort. Snart har han gangsterne og politiet i hælene, og en blodig jagt går i gang</dcterms:abstract>
-                <dc:description>På omslaget: Unabridged books on disc</dc:description>
-                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Clipper Audio</dc:publisher>
-                <dc:publisher>Howes</dc:publisher>
-                <dc:contributor>Tom Stechschulte</dc:contributor>
-                <dc:date>2006</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Lydbog (cd)</dc:type>
-                <dc:format>7 cd'ere i 1 mappe</dc:format>
-                <dcterms:extent>ca. 7 t., 30 min</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
-                <dcterms:spatial xsi:type="dkdcplus:DBCS">USA</dcterms:spatial>
-                <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
-              </dkabm:record>
-              <identifier>870970-basis:43917129</identifier>
-              <primaryObjectIdentifier>870970-basis:43917129</primaryObjectIdentifier>
-              <creationDate>2006-07-20</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:43917129</identifier>
+                <identifier>870970-basis:27694381</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -230,9 +272,9 @@
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>38</fedoraRecordsRead>
-          <time>1.820626</time>
-          <trackingId>2015-12-17T14:08:54:146183:16529</trackingId>
+          <fedoraRecordsRead>26</fedoraRecordsRead>
+          <time>1.486352</time>
+          <trackingId>2016-01-04T14:46:46:151570:22629</trackingId>
         </statInfo>
       </result>
     </searchResponse>
