@@ -6,40 +6,46 @@
         <hitCount>2</hitCount>
         <collectionCount>1</collectionCount>
         <more>true</more>
+        <sortUsed>date_descending</sortUsed>
         <searchResult>
           <collection>
             <resultPosition>1</resultPosition>
             <numberOfObjects>1</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>25873262|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">0-330-44010-1</dc:identifier>
+                <ac:identifier>005375631|810010</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">0375406778</dc:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
                 <dc:title>No country for old men</dc:title>
                 <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy (1933-)</dc:creator>
+                <dc:creator xsi:type="oss:sort">McCarthy, Cormac (1933-)</dc:creator>
+                <dc:subject xsi:type="dcterms:LCSH">Drug traffic</dc:subject>
+                <dc:subject>Psychological fiction</dc:subject>
+                <dc:subject xsi:type="dcterms:LCSH">Sheriffs</dc:subject>
+                <dc:subject>Suspense fiction</dc:subject>
+                <dc:subject xsi:type="dcterms:LCSH">Texas</dc:subject>
+                <dc:subject xsi:type="dcterms:LCSH">Treasure troves</dc:subject>
+                <dc:subject xsi:type="dcterms:LCSH">Treasure-trove</dc:subject>
                 <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Picador</dc:publisher>
+                <dkdcplus:version>4. printing</dkdcplus:version>
+                <dc:publisher>Knopf</dc:publisher>
                 <dc:date>2005</dc:date>
                 <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
+                <dcterms:extent>309 s.</dcterms:extent>
                 <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
-              <identifier>870970-basis:25873262</identifier>
-              <primaryObjectIdentifier>870970-basis:25873262</primaryObjectIdentifier>
-              <creationDate>2005-08-25</creationDate>
+              <identifier>810010-katalog:005375631</identifier>
+              <primaryObjectIdentifier>870970-basis:43683799</primaryObjectIdentifier>
+              <creationDate>2012-04-19</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:25873262</identifier>
-                <identifier>820030-katalog:836533</identifier>
+                <identifier>810010-katalog:005375631</identifier>
+                <identifier>870970-basis:43683799</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -53,8 +59,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>8</fedoraRecordsRead>
-          <time>2.058788</time>
-          <trackingId>2015-11-05T15:01:24:272247:14773</trackingId>
+          <time>0.92235</time>
+          <trackingId>2016-01-05T10:19:05:786660:9589</trackingId>
         </statInfo>
       </result>
     </searchResponse>

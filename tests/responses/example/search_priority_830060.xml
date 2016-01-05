@@ -6,40 +6,47 @@
         <hitCount>11</hitCount>
         <collectionCount>1</collectionCount>
         <more>true</more>
+        <sortUsed>date_descending</sortUsed>
         <searchResult>
           <collection>
             <resultPosition>1</resultPosition>
             <numberOfObjects>1</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>25873262|870970</ac:identifier>
-                <dc:identifier xsi:type="dkdcplus:ISBN">0-330-44010-1</dc:identifier>
+                <ac:identifier>44859831|870970</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9780313356643</dc:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>No country for old men</dc:title>
-                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:aut">Cormac McCarthy</dc:creator>
-                <dc:creator xsi:type="oss:sort">McCarthy, Cormac</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">83.8</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Amerikansk skønlitteratur</dc:subject>
-                <dcterms:abstract>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</dcterms:abstract>
+                <dc:title>Reading Cormac McCarthy</dc:title>
+                <dc:title xsi:type="dkdcplus:full">Reading Cormac McCarthy</dc:title>
+                <dc:title xsi:type="dkdcplus:series">The Pop Lit Book Club</dc:title>
+                <dc:creator xsi:type="dkdcplus:aut">Willard P. Greenwood</dc:creator>
+                <dc:creator xsi:type="oss:sort">Greenwood, Willard P.</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">99.4 McCarthy, Cormac</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Biografier af enkelte personer</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">Cormac McCarthy</dc:subject>
+                <dc:subject xsi:type="oss:sort">McCarthy, Cormac</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">amerikanske forfattere</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">forfattere</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">litteratur</dc:subject>
+                <dc:description>Indhold: A writer's life ; Cormac McCarthy and the genre ; The orchard keeper ; Outer dark ; Child of God ; Suttree ; Blood meridian ; All the pretty horses ; The crossing ; Citites of the plain ; No country for old men ; The road ; Dramatic works ; Today's issues ; Pop culture ; Cormac McCarthy on the internet ; Cormac McCarthy and the media ; What do I read next?</dc:description>
                 <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Picador</dc:publisher>
-                <dc:date>2005</dc:date>
+                <dkdcplus:version>1. edition</dkdcplus:version>
+                <dc:publisher>Greenwood Press</dc:publisher>
+                <dc:date>2009</dc:date>
                 <dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-                <dcterms:extent>309 sider</dcterms:extent>
+                <dcterms:extent>x, 141 sider</dcterms:extent>
                 <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
                 <dc:language>Engelsk</dc:language>
               </dkabm:record>
-              <identifier>870970-basis:25873262</identifier>
-              <primaryObjectIdentifier>870970-basis:25873262</primaryObjectIdentifier>
-              <creationDate>2005-08-25</creationDate>
+              <identifier>870970-basis:44859831</identifier>
+              <primaryObjectIdentifier>870970-basis:44859831</primaryObjectIdentifier>
+              <creationDate>2010-06-17</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:25873262</identifier>
-                <identifier>820030-katalog:836533</identifier>
+                <identifier>870970-basis:44859831</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -47,9 +54,9 @@
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>6</fedoraRecordsRead>
-          <time>1.842148</time>
-          <trackingId>2015-05-13T08:55:37:642429:28078</trackingId>
+          <fedoraRecordsRead>7</fedoraRecordsRead>
+          <time>0.77339</time>
+          <trackingId>2016-01-05T10:29:11:857515:22619</trackingId>
         </statInfo>
       </result>
     </searchResponse>

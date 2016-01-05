@@ -12,16 +12,16 @@
             <resultPosition>1</resultPosition>
             <numberOfObjects>1</numberOfObjects>
             <object>
-              <identifier>870970-basis:25873262</identifier>
+              <identifier>820030-katalog:836533</identifier>
               <primaryObjectIdentifier>870970-basis:25873262</primaryObjectIdentifier>
-              <creationDate>2005-08-25</creationDate>
+              <creationDate>2011-12-15</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:25873262</identifier>
                 <identifier>820030-katalog:836533</identifier>
+                <identifier>870970-basis:25873262</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -31,7 +31,7 @@
                 <accessType>physical</accessType>
                 <creator>Cormac McCarthy</creator>
                 <fedoraPid>870970-basis:25873262</fedoraPid>
-                <identifier>870970-basis:25873262</identifier>
+                <identifier>820030-katalog:836533</identifier>
                 <title>No country for old men</title>
                 <titleFull>No country for old men</titleFull>
                 <type>Bog</type>
@@ -43,9 +43,9 @@
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>6</fedoraRecordsRead>
-          <time>1.907644</time>
-          <trackingId>2015-05-13T08:56:05:983905:21234</trackingId>
+          <fedoraRecordsRead>8</fedoraRecordsRead>
+          <time>1.088058</time>
+          <trackingId>2016-01-05T10:28:13:921367:22617</trackingId>
         </statInfo>
       </result>
     </searchResponse>

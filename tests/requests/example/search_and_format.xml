@@ -8,6 +8,7 @@
       <ns1:stepValue>1</ns1:stepValue>
       <ns1:objectFormat>bibliotekdkWorkDisplay</ns1:objectFormat>
       <ns1:objectFormat>dkabm</ns1:objectFormat>
+      <ns1:sort>date_descending</ns1:sort>
     </ns1:searchRequest>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
