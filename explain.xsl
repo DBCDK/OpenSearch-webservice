@@ -2,7 +2,7 @@
 <!DOCTYPE xsl:stylesheet [
   <!ENTITY nbsp "&#160;">
 ]>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exp="http://explain.z3950.org/dtd/2.0/">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exp="http://explain.openseach.cql.dbc.dk/1.0/">
   <xsl:variable name="header">
     <tr>
       <td><b>Namespace</b></td>
