@@ -63,6 +63,7 @@ url_override[wsdl] = Wsdl
 ;url_override[RegressionTest] = RegressionTest
 ; diffCqlFileWithSolr - use &repository= in url if set
 url_override[diffCqlFileWithSolr] = diffCqlFileWithSolr
+url_override[showCqlFile] = showCqlFile
 
 ; --------------
 ; prefixes and namespaces

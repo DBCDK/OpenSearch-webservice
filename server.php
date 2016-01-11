@@ -194,7 +194,7 @@ class openSearch extends webServiceServer {
       }
       verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
       $q = implode(AND_OP, $solr_query['edismax']['q']);
-      $filter = '';
+      $filter = rawurlencode(RR_MARC_001_B . ':(870970 OR ' . $this->agency . ')');
       foreach ($solr_query['edismax']['fq'] as $fq) {
         $filter .= '&fq=' . rawurlencode($fq);
       }
@@ -789,7 +789,9 @@ class openSearch extends webServiceServer {
       foreach ($fpids as $fpid) {
         list($owner_collection, $id) = explode(':', $fpid->_value);
         list($owner, $coll) = explode('-', $owner_collection);
-        $docs['docs'][] = array(RR_MARC_001_A => $id, RR_MARC_001_B => $owner);
+        if ($owner == $this->agency || $owner == '870970' || $this->agency == '010100') {
+          $docs['docs'][] = array(RR_MARC_001_A => $id, RR_MARC_001_B => $owner);
+        }
       }
       foreach ($lpids as $lid) {
         $docs['docs'][] = array(RR_MARC_001_A => $lid->_value, RR_MARC_001_B => $this->agency);
@@ -1250,11 +1252,8 @@ class openSearch extends webServiceServer {
   protected function showCqlFile() {
     $repositories = $this->config->get_value('repository', 'setup');
     $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
-    $this->repository = $repositories[$repos];
-    if (!$cql = $_GET['cql']) {
-      $cql = $repository['cql_file'];
-    }
-    if ($cql && ($file = self::get_solr_file($cql))) {
+    self::set_repositories($repos, FALSE);
+    if ($file = $this->repository['cql_settings']) {
       header('Content-Type: application/xml; charset=utf-8');
       echo $file;
     }
