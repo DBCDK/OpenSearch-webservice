@@ -108,6 +108,11 @@ s11_agency[] = 100200
 s11_agency[] = 870970
 
 ; --------------
+; agencies allowed to search/fetch any record from RR
+all_rawrepo_agency[] = 010100
+;all_rawrepo_agency[] = 870970
+
+; --------------
 ; repository setup
 ; default repository
 default_repository = @REPOSITORY_NAME@

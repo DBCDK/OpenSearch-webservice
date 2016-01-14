@@ -1,5 +1,10 @@
 <pre>
 =====
+Limiting acces to records in rawrepo to own records or 870970-records. US 1774: Styring af adgang til poster i RR
+ini: added all_rawrepo_agency structure specifying agencies which can read any rawrepo record
+?showCqlFile takes repository as argument, like: http://opensearch.addi.dk/4.3/?showCqlFile&repository=prod
+?showCqlFile functionality restored. Use correct namespace in explain.xsl and internal function to fetch cql file from solr-server.
+Only own and 870970 records can be fetched from rawrepo - US 1774
 Records from rawrepo owned by 870970, are fetched with merging 
 Removed cql.xml files from svn repository. These files are fetched from solr files
 

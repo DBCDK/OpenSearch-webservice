@@ -194,7 +194,9 @@ class openSearch extends webServiceServer {
       }
       verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
       $q = implode(AND_OP, $solr_query['edismax']['q']);
-      $filter = rawurlencode(RR_MARC_001_B . ':(870970 OR ' . $this->agency . ')');
+      if (!in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), array()))) {
+        $filter = rawurlencode(RR_MARC_001_B . ':(870970 OR ' . $this->agency . ')');
+      }
       foreach ($solr_query['edismax']['fq'] as $fq) {
         $filter .= '&fq=' . rawurlencode($fq);
       }
@@ -789,7 +791,9 @@ class openSearch extends webServiceServer {
       foreach ($fpids as $fpid) {
         list($owner_collection, $id) = explode(':', $fpid->_value);
         list($owner, $coll) = explode('-', $owner_collection);
-        if ($owner == $this->agency || $owner == '870970' || $this->agency == '010100') {
+        if (($owner == $this->agency)
+         || ($owner == '870970')
+         || in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), array()))) {
           $docs['docs'][] = array(RR_MARC_001_A => $id, RR_MARC_001_B => $owner);
         }
       }
