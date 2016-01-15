@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:marcx="info:lc/xmlns/marcxchange-v1" xmlns="http://oss.dbc.dk/ns/opensearch">
+  <SOAP-ENV:Body>
+    <searchResponse>
+      <result>
+        <hitCount>1</hitCount>
+        <collectionCount>1</collectionCount>
+        <more>false</more>
+        <searchResult>
+          <collection>
+            <resultPosition>1</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:datafield tag="001" ind1="0" ind2="0">
+                    <marcx:subfield code="a">2589991</marcx:subfield>
+                    <marcx:subfield code="b">820010</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield tag="245" ind1="0" ind2="0">
+                    <marcx:subfield code="a">Cannot read record</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+            </object>
+          </collection>
+        </searchResult>
+        <statInfo>
+          <time>0.695105</time>
+          <trackingId>2016-01-15T10:38:29:038981:27035</trackingId>
+        </statInfo>
+      </result>
+    </searchResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
