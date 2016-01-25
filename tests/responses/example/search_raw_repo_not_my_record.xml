@@ -2,7 +2,16 @@
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://oss.dbc.dk/ns/opensearch">
   <SOAP-ENV:Body>
     <searchResponse>
-      <error>Error: Cannot fetch profile: opac for 761500</error>
+      <result>
+        <hitCount>0</hitCount>
+        <collectionCount>0</collectionCount>
+        <more>false</more>
+        <searchResult/>
+        <statInfo>
+          <time>0.63103</time>
+          <trackingId>2016-01-25T09:59:41:845241:5556</trackingId>
+        </statInfo>
+      </result>
     </searchResponse>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
