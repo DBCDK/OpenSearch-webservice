@@ -3,7 +3,7 @@
 /**
  *
  * This file is part of Open Library System.
- * Copyright � 2009, Dansk Bibliotekscenter a/s,
+ * Copyright (c) 2009, Dansk Bibliotekscenter a/s,
  * Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
  *
  * Open Library System is free software: you can redistribute it and/or modify
@@ -1613,7 +1613,7 @@ class openSearch extends webServiceServer {
    * @retval string
    */
   private function set_data_stream_name($collection_id) {
-    list($agency, $collection) = self::split_record_source($record_source);
+    list($agency, $collection) = self::split_record_source($collection_id);
     if ($collection_id && self::agency_rule($agency, 'use_localdata_stream')) {
       $data_stream = 'localData.' . $collection_id;
     }
