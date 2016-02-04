@@ -771,11 +771,12 @@ class openSearch extends webServiceServer {
                              $this->config->get_value('cache_port', 'setup'),
                              $this->config->get_value('cache_expire', 'setup'));
 
-    $fpids = is_array($param->identifier) ? $param->identifier : ($param->identifier ? array($param->identifier) : array());
-    $lpids = is_array($param->localIdentifier) ? $param->localIdentifier : ($param->localIdentifier ? array($param->localIdentifier) : array());
+    $fpids = self::as_array($param->identifier);
+    $lpids = self::as_array($param->localIdentifier);
+    $alpids = self::as_array($param->agencyAndLocalIdentifier);
 
     define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
-    if (MAX_STEP_VALUE <= count($fpids) + count($lpids)) {
+    if (MAX_STEP_VALUE <= count($fpids) + count($lpids) + count($alpids)) {
       $error = 'getObject can fetch up to ' . MAX_STEP_VALUE . ' records. ';
       return $ret_error;
     }
@@ -787,6 +788,16 @@ class openSearch extends webServiceServer {
         }
       }
     }
+    foreach ($lpids as $lid) {
+      $fpid->_value = $this->agency_catalog_source . ':' . str_replace(' ', '', $lid->_value);
+      $fpids[] = $fpid;
+      unset($fpid);
+    }
+    foreach ($alpids as $alid) {
+      $fpid->_value = $alid->_value->agency->_value . '-katalog:' . str_replace(' ', '', $alid->_value->localIdentifier->_value);
+      $fpids[] = $fpid;
+      unset($fpid);
+    }
     if ($this->repository['postgress'] || $this->repository['rawrepo']) {
       foreach ($fpids as $fpid) {
         list($owner_collection, $id) = explode(':', $fpid->_value);
@@ -796,9 +807,6 @@ class openSearch extends webServiceServer {
          || in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), array()))) {
           $docs['docs'][] = array(RR_MARC_001_A => $id, RR_MARC_001_B => $owner);
         }
-      }
-      foreach ($lpids as $lid) {
-        $docs['docs'][] = array(RR_MARC_001_A => $lid->_value, RR_MARC_001_B => $this->agency);
       }
       $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), array());
       if ($this->repository['rawrepo']) {
@@ -827,11 +835,6 @@ class openSearch extends webServiceServer {
       }
       return $ret;
 
-    }
-    foreach ($lpids as $lid) {
-      $fpid->_value = $this->agency_catalog_source . ':' . $lid->_value;
-      $fpids[] = $fpid;
-      unset($fpid);
     }
     foreach ($fpids as $fpid) {
       $id_array[] = $fpid->_value;
@@ -3411,6 +3414,14 @@ class openSearch extends webServiceServer {
       }
     }
     return $ret;
+  }
+
+  /** \brief - ensure that a parameter is an array
+   * @param misc $par
+   * @retval array 
+   */
+  private function as_array($par) {
+    return is_array($par) ? $par : ($par ? array($par) : array());
   }
 
   /** \brief - 
