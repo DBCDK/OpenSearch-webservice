@@ -34,6 +34,7 @@ You should have received a copy of the GNU Affero General Public License along w
         <xs:choice>
             <xs:element ref="os:identifier" maxOccurs="unbounded"/>
             <xs:element ref="os:localIdentifier" maxOccurs="unbounded"/>
+            <xs:element ref="os:agencyAndLocalIdentifier" maxOccurs="unbounded"/>
         </xs:choice>
         <xs:element ref="os:objectFormat" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="os:authentication" minOccurs="0"/>
@@ -134,6 +135,17 @@ You should have received a copy of the GNU Affero General Public License along w
     <xs:annotation>
       <xs:documentation xml:lang="en">Identifier of the agency using this service</xs:documentation>
     </xs:annotation>
+  </xs:element>
+  <xs:element name="agencyAndLocalIdentifier">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Owner agency and local identifier of a bibliographic record</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="os:agency"/>
+        <xs:element ref="os:localIdentifier"/>
+      </xs:sequence>
+    </xs:complexType>
   </xs:element>
   <xs:element name="allObjects" type="xs:boolean">
     <xs:annotation>
