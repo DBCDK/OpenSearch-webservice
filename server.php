@@ -794,7 +794,8 @@ class openSearch extends webServiceServer {
       unset($fpid);
     }
     foreach ($alpids as $alid) {
-      $fpid->_value = $alid->_value->agency->_value . '-katalog:' . str_replace(' ', '', $alid->_value->localIdentifier->_value);
+      $collection = ($alid->_value->agency->_value == '870970' ? 'basis' : 'katalog');
+      $fpid->_value = $alid->_value->agency->_value . '-' . $collection . ':' . str_replace(' ', '', $alid->_value->localIdentifier->_value);
       $fpids[] = $fpid;
       unset($fpid);
     }
