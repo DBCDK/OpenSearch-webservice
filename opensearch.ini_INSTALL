@@ -113,6 +113,12 @@ all_rawrepo_agency[] = 010100
 ;all_rawrepo_agency[] = 870970
 
 ; --------------
+; agency to collection identifer for getObject operation using agencyAndLocalIdentifier to identify record(s)
+; by default the collection for an agency is katalog, so only exceptions form this should be specified
+;agency_to_collection[<agency code>] = <collection name>
+agency_to_collection[870970] = basis
+
+; --------------
 ; repository setup
 ; default repository
 default_repository = @REPOSITORY_NAME@

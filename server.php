@@ -793,11 +793,16 @@ class openSearch extends webServiceServer {
       $fpids[] = $fpid;
       unset($fpid);
     }
-    foreach ($alpids as $alid) {
-      $collection = ($alid->_value->agency->_value == '870970' ? 'basis' : 'katalog');
-      $fpid->_value = $alid->_value->agency->_value . '-' . $collection . ':' . str_replace(' ', '', $alid->_value->localIdentifier->_value);
-      $fpids[] = $fpid;
-      unset($fpid);
+    if (!empty($alpids)) {
+      $agency_to_collection = self::value_or_default($this->config->get_value('agency_to_collection', 'setup'), array());
+      foreach ($alpids as $alid) {
+        if (!$collection = $agency_to_collection[$alid->_value->agency->_value]) {
+          $collection = 'katalog';
+        }
+        $fpid->_value = $alid->_value->agency->_value . '-' . $collection . ':' . str_replace(' ', '', $alid->_value->localIdentifier->_value);
+        $fpids[] = $fpid;
+        unset($fpid);
+      }
     }
     if ($this->repository['postgress'] || $this->repository['rawrepo']) {
       foreach ($fpids as $fpid) {
