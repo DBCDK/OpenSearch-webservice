@@ -1,0 +1,488 @@
+<html>
+<head>
+  <title>openSearch documentation</title>
+  <style>
+    body { margin: 0 4em 0 4em; color: 222222; background-color:F2F2F2; }
+    p {margin: 0 0 0.3em 0; }
+    p.note { font-size: 80%; color: 666666; }
+    h1 { font-size: 120%; padding-top:1.5em;}
+    h2 { font-size: 110%; }
+    a.content { text-decoration: none; }
+    dt, i { font-size:95%; color: 000000; font-weight: bolder; }
+    dt { margin:0.8em 0 0 1.2em; }
+  </style>
+</head>
+<body>
+  <h1>Contents</h1>
+  <ul>
+    <li><a class="content" href="#os_op">openSearch operationer</a></li>
+    <li><a class="content" href="#se_pa">Search parametre</a></li>
+    <li><a class="content" href="#go_pa">getObject parametre</a></li>
+    <li><a class="content" href="#in_pa">info parametre</a></li>
+    <li><a class="content" href="#faq">FAQ</a></li>
+  </ul>
+  <h1><a name="os_op">openSearch operationer</a></h1>
+  <dl>
+    <dt>search</dt>
+    <dd>
+      <p>
+        bruges til at frems&oslash;ge et interval af poster udfra en s&oslash;gning i CQL-syntax.
+      </p>
+      <p>
+        Et typisk brugsscenarie er, at der hentes fx 10 v&aelig;rker af gangen, og klienten s&aring; lader brugeren bladre sig frem igennem resultatet.
+      </p>
+      <p>
+        Et v&aelig;rk best&aring;r af en eller flere manifestationer, fx flere udgaver af samme materiale og/eller forskellige materialetyper.
+      </p>
+      <p>
+        Internt tilh&oslash;rer manifestationer en udgave-klynge, som best&aring;r af en eller flere manifestationer, 
+        der er matchet til at v&aelig;re identiske, men fx. blot katalogiseret af forskellige biblioteker.
+        For hver udgave-klynge, v&aelig;lges den h&oslash;jst prioriterede manifestation, som repr&aelig;sentant for klyngen. 
+        Derudover returneres i &lt;objectsAvailable&gt; idnumre p&aring; alle de tilg&aelig;ngelige manifestationer, der findes i klyngen.
+      </p>
+      <p>
+        Parametren <i>collectionType</i> bestemmer om servicen afleverer udgave-klynger eller v&aelig;rker.
+      </p>
+    </dd>
+    <dt>getObject</dt>
+    <dd>
+      <p>
+        bruges til at hente en eller flere poster, hvis id-numre man kender. Enten via et lokalsystems id-nummer eller et br&oslash;nd pid ("identifier" i svaret).
+      </p>
+      <p>
+        Typisk bruges operationen til at hente fulde poster med relationer, poster til en nyhedskarussel eller en post i en udgave-klynge, 
+        som ikke er den h&oslash;jst prioriterede.
+      </p>
+    </dd>
+    <dt>info</dt>
+    <dd>
+      <p>
+        bruges til at hente information om formater, ens s&oslash;geprofil, sortering og rankeringsmuligheder, 
+        brugte namespaces og tilh&oslash;rende prefixes, tilg&aelig;ngelige repositorier, s&oslash;gekoder for hvert af disse.
+      </p>
+      <p>
+        Operationen er t&aelig;nkt til de klienter, som vil verificere (eller udstille samtlige) repositorier, s&oslash;gekoder eller evt. formater automatisk. 
+        Eftersom informationen er meget statisk, kan svaret med stor fordel caches i l&aelig;ngere tid af klienten.
+      </p>
+    </dd>
+  </dl>
+  <h1><a name="se_pa">Search parametre</a></h1>
+  <dl>
+    <dt>query</dt>
+    <dd>
+      <p>
+        indeholder s&oslash;gningen i CQL. 
+        CQL (Contextual Query Language) er specificeret <a href="https://www.loc.gov/standards/sru/cql/">The Contextual Query Language</a> 
+        eller <a href="http://zing.z3950.org/cql/intro.html">A Gentle Introduction to CQL</a>
+        ... Kender man til CCL-standarden, er der kun f&aring; forskelle.
+      </p>
+      <p>
+        De s&oslash;gekoder der kan bruges, udstilles via <i>info</i> operationen. 
+        For den generelle br&oslash;nd g&aelig;lder <a href="http://www.bs.dk/publikationer/andre/praksisregler/index.htm">Praksisregler for s&oslash;geveje</a>
+      </p>
+      <p>
+        F.eks: <ul><li>"en mand der hedder ove"</li><li>ti=ove and fo=fredrik</li><li>fo=Fredrik and ti=(Ove or Britt-Marie)</li></ul>
+      </p>
+      <p>
+        S&oslash;gningen afgr&aelig;nser sammen med s&oslash;geprofilen de manifestationer, som v&aelig;rkerne i svaret opbygges af. 
+        Dette kan dog &aelig;ndres med <i>allObjects</i>
+      </p>
+    <dt>queryLanguage</dt>
+    <dd>
+      <p>
+        cqleng eller bestMatch. Som default bruges cqleng, hvorved <i>query</i> fortolkes som en CQL s&oslash;gning.
+      </p>
+      <p>
+        Fors&oslash;gsvis findes bestMatch, som udelukkende tager s&oslash;geordene og laver en lang OR s&oslash;gning p&aring; s&oslash;getermerne. 
+        Samtidigt &aelig;ndres sorteringen efter hvormange ord fra s&oslash;gningen en post indeholder.
+      </p>
+      <p>Tanken er, at dette kan bruge efter en nul-fund s&oslash;gning, ved at sende samme <i>query</i> en gang til, men s&aring; bruge bestMatch muligheden.
+      </p>
+      <p>
+        ... CQL's any operator, kan overvejes som alternativ, hvis det udelukkende er OR-liste funktionaliteten man &oslash;nsker.
+      </p>
+    </dd>
+    <dt>agency</dt>
+    <dd>
+      <p>
+        skal indeholde bibliotekets 6-cidere bibliotekskode.
+      </p>
+      <p>
+        Bestemmer prioritering af poster, bibliotekts type. 
+      </p>
+    </dd>
+    <dt>profile</dt>
+    <dd>
+      <p>
+        den s&oslash;geprofil der &oslash;nskes brugt. 
+        Hvert bibliotek, skal i <a href="vip.dbc.dk">VIP-basen</a> oprette en eller flere s&oslash;geprofiler.
+      </p>
+      <p>
+        Hver s&oslash;geprofil udpeger de kilder der s&oslash;ges i, samt hvilke relationer der skal udleveres (se mere ved <i>relationData</i>)
+      </p>
+    </dd>
+    <dt>allObjects</dt>
+    <dd>
+      <p>
+        som default, indeholder hvert v&aelig;rk kun manifestationer, som er fundet via s&oslash;gningen.
+      </p>
+      <p>
+        S&aelig;ttes denne parameter, returneres samtlige manifestation (som der er adgang til med den valgte s&oslash;geprofil) i hvert v&aelig;rk.
+      </p>
+    </dd>
+    <dt>authentication</dt>
+    <dd>
+      <p>
+        den "klassiske" netpunkts-trippel. Bruges generelt ikke, da adgang indtil videre styres af ip-kontrol.
+      </p>
+    </dd>
+    <dt>callback</dt>
+    <dd>
+      <p>
+        bruges sammen med <i>outputType</i> json, s&aring; servicens svar, bliver et funktionskald, der kan afvikles direkte i javascript.
+      </p>
+      <p class="note">
+        Der er ingen der bruger denne mulighed.
+      </p>
+    </dd>
+    <dt>collectionType</dt>
+    <dd>
+      <p>
+        "work" (default), returnerer v&aelig;rker.
+      </p>
+      <p>
+        "manifestation" sl&aring;r v&aelig;rk-visningen fra, hvorved manifestationerne hver returneres i sit eget v&aelig;rk.
+      </p>
+      <p>
+        "work-1" en special udgave af "work", hvor kun den f&oslash;rste manifestation i hvert v&aelig;rk, medtages i svaret. 
+        Klienter som laver et oversigtbillede ud fra den f&oslash;rste post i hvert v&aelig;rk, kan spare tid og belastning, ved at bruge denne mulighed.
+      </p>
+    </dd>
+    <dt>facets</dt>
+    <dd>
+      <p>
+        Best&aring;r af
+      </p>
+      <p>
+        <i>numberOfTerms</i> angiver hvor mange relationer man &oslash;nsker.
+      </p>
+      <p>
+        <i>facetSort</i> "count" (default) som sorterer facetterne efter frekvens eller "index" som sorterer facetterne alfabetisk.
+     </p>
+      <p>
+        <i>facetMinCount</i> fjerner facetter med frekvens mindre end det angivne.
+      </p>
+      <p>
+        <i>facetName</i> det register man vil have facetter p&aring; 
+        Feltet kan gentages.
+        De registre der starter med facet, er designet til at bruges som facetter, s&aring; de skal foretr&aelig;kkes.
+        Jo st&oslash;rre varians en facet har, fx. forfatter facetten, des mere belastende er den.
+      </p>
+    </dd>
+    <dt>includeHoldingsCount</dt>
+    <dd>
+      <p>
+        som default returneres ikke information og eksemplarantal. 
+        S&aelig;ttes denne, returneres "holdingsCount" og "lendingLibraries" i svaret for hver manifestation.
+      </p>
+      <p>
+        Bruges typisk i gr&aelig;nseflader der s&oslash;ger p&aring; tv&aelig;rs af mange/flere blbiotekter.
+      </p>
+    </dd>
+    <dt>collapseHitsThreshold</dt>
+    <dd>
+      <p>
+        S&oslash;geresultatet indeholder "hitCount" for s&oslash;gningen og "frequence" for facetter. 
+        Begge steder er et antal manifestationer som s&oslash;gningen har fundet og ikke klynger (eller v&aelig;rker). 
+        Ved "hitCount" under 100, laver openSearch en ekstra s&oslash;gning, som justerer "hitCount" til at v&aelig;re antal klynger. 
+        Angives <i>collapseHitsThreshold</i> &aelig;ndres denne gr&aelig;nse til det angivne.
+      </p>
+      <p>
+        Den ekstra s&oslash;gning tager en del tid, specielt hvis der er bedt om mange facetter og endnu mere, 
+        hvis nogen af disse facetter har et stort udfaldsomr&aring;de (som fx. forfatter).
+      </p>
+    </dd>
+    <dt>objectFormat</dt>
+    <dd>
+      <p>
+        info-operationen viser hvilke formater poster kan hentes i.
+        Formaterne kan opdeles i 3 typer.
+      </p>
+      <p>
+        Interne formater. 
+        Poster i br&oslash;nden gemmes i deres originale format: "marcxchange", "docbook" eller "opensearchobject". 
+        Hvilket af de 3 som findes, afh&aelig;nger af hvor de stammer fra. 
+        Derudover har de alle en "dkabm" repr&aelig;sentation.
+        I svaret findes "formatsAvailable", som angiver hvilke interne formater en post findes i.
+      </p>
+      <p>
+        S&oslash;geregister formater.
+        "briefDisplay" og "score" er formater, der opbygges af s&oslash;geresultatet alene.
+      </p>
+      <p>
+        De resterende er formater der opbygges via. openFormat. 
+        Disse skal ikke bruges med mindre det er aftalt p&aring; forh&aring;nd.
+      </p>
+    </dd>
+    <dt>outputType</dt>
+    <dd>
+      <p>
+        Som default returneres SOAP.
+      </p>
+      <p>
+        "json" - returnerer json, i <a target="badgerfish" href="http://badgerfish.ning.com/">Badgerfish</a> notation. 
+      </p>
+      <p>
+        "php" - returnerer serialiseret php.
+      </p>
+      <p>
+        "xml" - xml uden SOAP indpakning.
+      </p>
+    </dd>
+    <dt>relationData</dt>
+    <dd>
+      <p>
+        "type", "uri" or "full" - som default tom.
+        Returnerer, for hver manifestation, de relationer som den aktuelle s&oslash;geprofil har valgt.
+      </p>
+      <p>
+        "type" returnerer kun relationens type.
+      </p>
+      <p>
+        "uri" returnerer ogs&aring; adressen til det relationen peger p&aring;
+        For relationer som peger p&aring; objekter i br&oslash;nden, returneres pid'en.
+        For objekter udenfor br&oslash;nden, returneres en url til ressourcen.
+      </p>
+      <p>
+        "full" returnerer ogs&aring; den post der peges p&aring; (for relationer som peger p&aring; objekter i br&oslash;nden).
+      </p>
+    </dd>
+    <dt>repository</dt>
+    <dd>
+      <p>
+        info-operationen viser hvilke repositorier der findes og hvilket der som default bruges.
+        Hvert repositorie afgr&aelig;nser en br&oslash;nd og der kan ikke s&oslash;ges p&aring; tv&aelig;rs af disse.
+        Typisk bruges et til generel s&oslash;gning og et til katalogiseringsform&aring;l.
+      </p>
+    </dd>
+    <dt>start</dt>
+    <dd>
+      <p>
+        nummeret p&aring; det f&oslash;rste v&aelig;rk der skal returnere. 
+      </p>
+      <p>
+        Typisk henter en client 5-10 v&aelig;rker af gangen. <i>start</i> bruges sammen med <i>stepValue</i> til at hente en delm&aelig;ngde af gangen.
+      </p>
+    </dd>
+    <dt>stepValue</dt>
+    <dd>
+      <p>
+        max antal v&aelig;rker der skal returneres.
+      </p>
+    </dd>
+    <dt>userDefinedRanking</dt>
+    <dd>
+      <p>
+        Indeholder mulighed for at "designe" sin egen rankering.
+        Der kan angives et eller flere registre, samt deres tilh&oslash;rende rankerings-v&aelig;gt. 
+      </p>
+    </dd>
+    <dt>sort</dt>
+    <dd>
+      <p>
+        Kan opdeles i tre typer, rankering, sortering og random. Hvilke der er defineret kan ses ved brug af info-operationen.
+      </p>
+      <p>
+        Rankeringer har "internalType" rank, hedder typisk noget der starter med rank. 
+        Udfra forekomst og frekvens af de ord der s&oslash;ges p&aring;, udregnes en score for hver manifestation. 
+        Denne score sorteres resultatet efter. En titel rankering, vil typisk score forekomst af de s&oslash;gte ord i titler h&oslash;jt. 
+        "rank_frequency" er en speciel rankering, som ikke fremg&aring;r af info-operationen. 
+        Udfra frekvensen af ordene i s&oslash;gningen i titel, forfatter og emne, v&aelig;lges hhv. rank_main_title, rank_creator eller rank_subject.
+      </p>
+      <p>
+        Sorteringer har internalType "complexSort" (eller "basicSort"). 
+        Sorteringer indeholder typisk, prim&aelig;r, sekund&aelig;r, ... elementer, som hver is&aelig;r er stigende eller faldende. 
+        Det anbefales at man ikke bruges sorteringer af typen "basicSort".
+      <p>
+        "random" er speciel, ved at resultatet sorteres tilf&aelig;ldigt. 
+        Dette kan bruges til fx. at lave en karrrusel, som &aelig;ndres fra visning til visning.
+      </p>
+    </dd>
+    <dt>userDefinedBoost</dt>
+    <dd>
+      <p>
+        Best&aring;r af <i>fieldName</i>, <i>fieldValue</i> og <i>weight</i>. 
+        Kan bruges alene eller sammen med en rankering (se <i>sort</i>) til at booste fx. en given posttype eller sprog.
+        Der er et par eksempler i eksempel-klienten.
+      </p>
+    </dd>
+    <dt>queryDebug</dt>
+    <dd>
+      <p>
+        Medtager CQL debug-information fra s&oslash;gningen.
+      </p>
+    </dd>
+    <dt>trackingId</dt>
+    <dd>
+      <p>
+        Klientens identifikation af operationen. 
+      </p>
+      <p>
+        trackingId'et inkluderes i servicens logninger, s&aring; evt. fejlrapportering og sporing bliver nemmere.
+      </p>
+    </dd>
+  </dl>
+  <h1><a name="go_pa">getObject parametre</a></h1>
+<dl>
+    <dt>agency</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>profile</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>identifier</dt>
+    <dd>
+      <p>
+        identifier (pid) p&aring; posten.
+        Fx. 870970-basis:12345678 eller 710100-katalog:12345678
+      </p>
+      <p>
+        Bruges typisk efter en s&oslash;gning, hvorfra man kender pid'en.
+      </p>
+      <p>
+        Feltet kan gentages.
+      </p>
+    </dd>
+    <dt>localIdentifier</dt>
+    <dd>
+      <p>
+        Posten identifikation hos post-ejeren. 
+        For folkebiblioteker, faustnummer.
+      </p>
+      <p>
+        Feltet kan gentages.
+      </p>
+    </dd>
+    <dt>agencyAndLocalIdentifier</dt>
+    <dd>
+      <p>
+        Mulighed for at angive parvis post-ejer og lokal-postnummer.
+        Kan typisk bruges ifm. interurbanl&aring;n, hvor man skal have poster fra flere biblioteker.
+      </p>
+      <p>
+        Feltet kan gentages.
+      </p>
+    </dd>
+    <dt>objectFormat</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>authentication</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>callback</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>includeHoldingsCount</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>outputType</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>relationData</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>repository</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>trackingId</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+  </dl>
+  <h1><a name="in_pa">info parametre</a></h1>
+  <dl>
+    <dt>agency</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>profile</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>callback</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>outputType</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dt>trackingId</dt>
+    <dd>
+      <p>
+        Som for search-operationen.
+      </p>
+    </dd>
+    <dd>
+  </dl>
+  <p />
+  <h1><a name="faq">FAQ</a></h1>
+  <dl>
+    <dt>Hvordan virker sortering p&aring; &aring;r sammen med v&aelig;rkvisning.</dt>
+    <dd>
+      <p>
+        Sortering sker p&aring; manifestationsniveau, hvilket medf&oslash;rer, at et v&aelig;rk kan indeholde manifestationer med forskellige &aring;rstal.
+      </p>
+      <p>
+        Indeholder en s&oslash;geresultat 3 manifestationer, M2001, M2002 og M2003, med de &aring;rstal som navnene giver. 
+        M2001 og M2003 er to udgaver af samme titel og tilh&oslash;rer samme v&aelig;rk, mens M2002 tilh&oslash;rer et andet v&aelig;rk.
+        V&aelig;rket med M2001 og M2003, vil nu altid v&aelig;re f&oslash;rste v&aelig;rk, n&aring;r der sorteres p&aring; &aring;r,
+        hvad enten det er stigende eller faldende.
+      </p>
+    </dd>
+    <dt>Hvorfor er der f&aelig;rre v&aelig;rker end hitCount viser.</dt>
+    <dd>
+      <p>
+        ...
+      </p>
+    </dd>
+  </dl>
+</body>
+</html>
