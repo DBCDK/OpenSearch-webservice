@@ -1067,6 +1067,9 @@ class openSearch extends webServiceServer {
     foreach ($this->config->get_value('scan_format_table', 'setup') as $name => $value) {
       $ret->_value->objectFormat[]->_value = $value;
     }
+    foreach ($this->config->get_value('solr_format', 'setup') as $name => $value) {
+      $ret->_value->objectFormat[]->_value = $name;
+    }
     foreach ($this->config->get_value('open_format', 'setup') as $name => $value) {
       $ret->_value->objectFormat[]->_value = $name;
     }
