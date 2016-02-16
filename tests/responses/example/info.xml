@@ -1289,6 +1289,8 @@
         <objectFormat>marcxchange</objectFormat>
         <objectFormat>docbook</objectFormat>
         <objectFormat>opensearchobject</objectFormat>
+        <objectFormat>briefDisplay</objectFormat>
+        <objectFormat>score</objectFormat>
         <objectFormat>bibliotekdkWorkDisplay</objectFormat>
         <objectFormat>briefWorkDisplay</objectFormat>
         <objectFormat>refWorks</objectFormat>
