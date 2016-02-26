@@ -1360,6 +1360,10 @@
           <searchCollectionIdentifier>150008-public</searchCollectionIdentifier>
         </searchCollection>
         <searchCollection>
+          <searchCollectionName>eKurser.nu</searchCollectionName>
+          <searchCollectionIdentifier>150052-ekurser</searchCollectionIdentifier>
+        </searchCollection>
+        <searchCollection>
           <searchCollectionName>Faktalink (Artikelbasen)</searchCollectionName>
           <searchCollectionIdentifier>870971-faktalink</searchCollectionIdentifier>
         </searchCollection>
