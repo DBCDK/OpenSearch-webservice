@@ -49,10 +49,10 @@
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>150008-academic:ebr10481819</identifier>
                 <identifier>820010-katalog:ssj0000521095</identifier>
                 <identifier>820040-katalog:ebr10481819</identifier>
                 <identifier>820120-katalog:000616573</identifier>
+                <identifier>150008-academic:ebr10481819</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -185,8 +185,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>17</fedoraRecordsRead>
-          <time>1.232297</time>
-          <trackingId>2016-01-05T10:17:32:554213:22625</trackingId>
+          <time>1.410956</time>
+          <trackingId>2016-02-29T09:17:18:813976:386</trackingId>
         </statInfo>
       </result>
     </searchResponse>

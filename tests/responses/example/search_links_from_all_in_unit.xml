@@ -13,54 +13,39 @@
             <numberOfObjects>1</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>ebr10481819|150008</ac:identifier>
+                <ac:identifier>ssj0000521095|820010</ac:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9027252173</dc:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9027286795</dc:identifier>
+                <dc:identifier xsi:type="dkdcplus:ISBN">9789027252173</dc:identifier>
                 <dc:identifier xsi:type="dkdcplus:ISBN">9789027286796</dc:identifier>
-                <dc:identifier xsi:type="dcterms:URI">http://site.ebrary.com/lib/librarytitles/docDetail.action?docID=10481819</dc:identifier>
-                <ac:source>Ebrary</ac:source>
+                <dc:identifier xsi:type="dcterms:URI">http://ez.statsbiblioteket.dk:2048/login?url=http://site.ebrary.com/lib/stats/Top?id=10481819</dc:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
                 <dc:title>Becoming human</dc:title>
                 <dc:title xsi:type="dkdcplus:full">Becoming human : from pointing gestures to syntax</dc:title>
                 <dc:title xsi:type="dkdcplus:series">Advances in consciousness research ; v. 81</dc:title>
                 <dc:creator xsi:type="dkdcplus:aut">Teresa Bejarano</dc:creator>
                 <dc:creator xsi:type="oss:sort">Bejarano, Teresa</dc:creator>
-                <dc:subject xsi:type="dcterms:LCSH">Electronic books</dc:subject>
                 <dc:subject xsi:type="dcterms:LCSH">Gesture</dc:subject>
                 <dc:subject xsi:type="dcterms:LCSH">Grammar, Comparative and general -- Syntax</dc:subject>
                 <dc:subject xsi:type="dcterms:LCSH">Language acquisition</dc:subject>
                 <dc:subject xsi:type="dcterms:LCSH">Psycholinguistics</dc:subject>
-                <dc:description>section 1. Evolutionary precursors -- section 2. The basic human ability -- section 3. Specifiying some necessary requisites of language -- section 4. The origin of prediction and syntax -- section 5. Pregrammatical, theme-rheme syntax : revisiting Frege and Vygotsky -- section 6. From original to present-day prediction : links and grammatical syntax -- section 7. Syntax beyond predication</dc:description>
-                <dc:description>Electronic reproduction. Palo Alto, Calif. : ebrary, 2013. Available via World Wide Web. Access may be limited to ebrary affiliated libraries</dc:description>
+                <dc:subject>gestures</dc:subject>
+                <dc:subject>language</dc:subject>
+                <dc:subject>learning</dc:subject>
+                <dc:subject>models, animal</dc:subject>
                 <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>John Benjamins Pub. Co.</dc:publisher>
+                <dc:publisher>John Benjamins</dc:publisher>
                 <dc:date>2011</dc:date>
                 <dc:type xsi:type="dkdcplus:BibDK-Type">Ebog</dc:type>
                 <dcterms:extent>xvii, 402 s.</dcterms:extent>
                 <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
                 <dc:language>Engelsk</dc:language>
-                <dcterms:isPartOf xsi:type="dkdcplus:ISSN">1381-589X.</dcterms:isPartOf>
               </dkabm:record>
-              <identifier>150008-academic:ebr10481819</identifier>
+              <identifier>820010-katalog:ssj0000521095</identifier>
               <primaryObjectIdentifier>150008-academic:ebr10481819</primaryObjectIdentifier>
               <recordStatus>active</recordStatus>
-              <creationDate>2011-03-04</creationDate>
+              <creationDate>2013-08-01</creationDate>
               <relations>
-                <relation>
-                  <relationType>dbcaddi:hasOnlineAccess</relationType>
-                  <relationUri>http://site.ebrary.com/lib/librarytitles/docDetail.action?docID=10481819</relationUri>
-                  <linkObject>
-                    <access>free</access>
-                    <linkTo>website</linkTo>
-                    <linkCollectionIdentifier>150008-academic</linkCollectionIdentifier>
-                  </linkObject>
-                </relation>
-                <relation>
-                  <relationType>dbcaddi:hasOnlineAccess</relationType>
-                  <relationUri>http://site.ebrary.com/lib/[PROVIDERSLIBRARYID]/docDetail.action?docID=10481819</relationUri>
-                  <linkObject>
-                    <access>remote</access>
-                    <linkTo>proxy</linkTo>
-                    <linkCollectionIdentifier>150008-academic</linkCollectionIdentifier>
-                  </linkObject>
-                </relation>
                 <relation>
                   <relationType>dbcaddi:hasOnlineAccess</relationType>
                   <relationUri>http://ez.statsbiblioteket.dk:2048/login?url=http://site.ebrary.com/lib/stats/Top?id=10481819</relationUri>
@@ -88,16 +73,34 @@
                     <linkCollectionIdentifier>870970-forsk</linkCollectionIdentifier>
                   </linkObject>
                 </relation>
+                <relation>
+                  <relationType>dbcaddi:hasOnlineAccess</relationType>
+                  <relationUri>http://site.ebrary.com/lib/librarytitles/docDetail.action?docID=10481819</relationUri>
+                  <linkObject>
+                    <access>free</access>
+                    <linkTo>website</linkTo>
+                    <linkCollectionIdentifier>150008-academic</linkCollectionIdentifier>
+                  </linkObject>
+                </relation>
+                <relation>
+                  <relationType>dbcaddi:hasOnlineAccess</relationType>
+                  <relationUri>http://site.ebrary.com/lib/[PROVIDERSLIBRARYID]/docDetail.action?docID=10481819</relationUri>
+                  <linkObject>
+                    <access>remote</access>
+                    <linkTo>proxy</linkTo>
+                    <linkCollectionIdentifier>150008-academic</linkCollectionIdentifier>
+                  </linkObject>
+                </relation>
               </relations>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>150008-academic:ebr10481819</identifier>
                 <identifier>820010-katalog:ssj0000521095</identifier>
                 <identifier>820040-katalog:ebr10481819</identifier>
                 <identifier>820120-katalog:000616573</identifier>
+                <identifier>150008-academic:ebr10481819</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -106,8 +109,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>13</fedoraRecordsRead>
-          <time>1.12185</time>
-          <trackingId>2016-01-05T10:27:26:124899:22625</trackingId>
+          <time>1.143898</time>
+          <trackingId>2016-02-29T09:18:22:105110:389</trackingId>
         </statInfo>
       </result>
     </searchResponse>
