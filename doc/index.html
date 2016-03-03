@@ -176,7 +176,7 @@
         <i>facetName</i> det register man vil have facetter p&aring; 
         Feltet kan gentages.
         De registre der starter med facet, er designet til at bruges som facetter, s&aring; de skal foretr&aelig;kkes.
-        Jo st&oslash;rre varians en facet har, fx. forfatter facetten, des mere belastende er den.
+        Jo st&oslash;rre varians en facet har, fx. forfatter facetten, des l&aelig;ngere tid tager den at beregne.
       </p>
     </dd>
     <dt>includeHoldingsCount</dt>
@@ -199,7 +199,7 @@
       </p>
       <p>
         Den ekstra s&oslash;gning tager en del tid, specielt hvis der er bedt om mange facetter og endnu mere, 
-        hvis nogen af disse facetter har et stort udfaldsomr&aring;de (som fx. forfatter).
+        hvis nogen af disse facetter har stor varians (som fx. forfatter).
       </p>
     </dd>
     <dt>objectFormat</dt>
@@ -222,6 +222,9 @@
       <p>
         De resterende er formater der opbygges via. openFormat. 
         Disse skal ikke bruges med mindre det er aftalt p&aring; forh&aring;nd.
+      </p>
+      <p>
+        Feltet kan gentages.
       </p>
     </dd>
     <dt>outputType</dt>
@@ -305,7 +308,7 @@
         Det anbefales at man ikke bruges sorteringer af typen "basicSort".
       <p>
         "random" er speciel, ved at resultatet sorteres tilf&aelig;ldigt. 
-        Dette kan bruges til fx. at lave en karrrusel, som &aelig;ndres fra visning til visning.
+        Dette kan bruges til fx. at lave en emne-karrrusel, som &aelig;ndres fra visning til visning.
       </p>
     </dd>
     <dt>userDefinedBoost</dt>
@@ -471,7 +474,7 @@
         Sortering sker p&aring; manifestationsniveau, hvilket medf&oslash;rer, at et v&aelig;rk kan indeholde manifestationer med forskellige &aring;rstal.
       </p>
       <p>
-        Indeholder en s&oslash;geresultat 3 manifestationer, M2001, M2002 og M2003, med de &aring;rstal som navnene giver. 
+        Indeholder et s&oslash;geresultat 3 manifestationer, M2001, M2002 og M2003, med de &aring;rstal som navnene giver. 
         M2001 og M2003 er to udgaver af samme titel og tilh&oslash;rer samme v&aelig;rk, mens M2002 tilh&oslash;rer et andet v&aelig;rk.
         V&aelig;rket med M2001 og M2003, vil nu altid v&aelig;re f&oslash;rste v&aelig;rk, n&aring;r der sorteres p&aring; &aring;r,
         hvad enten det er stigende eller faldende.
@@ -480,7 +483,8 @@
     <dt>Hvorfor er der f&aelig;rre v&aelig;rker end hitCount viser.</dt>
     <dd>
       <p>
-        ...
+        hitCount angiver antal manifestationer i resultatet, mens visningen er baseret p&aring; v&aelig;rker.
+        I svaret angiver &lt;more&gt; om der er flere v&aelig;rker.
       </p>
     </dd>
   </dl>
