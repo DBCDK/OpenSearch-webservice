@@ -24,9 +24,11 @@
 require_once('OLS_class_lib/webServiceServer_class.php');
 require_once 'OLS_class_lib/memcache_class.php';
 require_once 'OLS_class_lib/solr_query_class.php';
+require_once 'OLS_class_lib/open_agency_v2_class.php';
 
 //-----------------------------------------------------------------------------
 class openSearch extends webServiceServer {
+  protected $open_agency;
   protected $agency;
   protected $cql2solr;
   protected $curl;
@@ -61,7 +63,7 @@ class openSearch extends webServiceServer {
 
     $this->curl = new curl();
     $this->curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 5));
-    define('AGENCY_TIMEOUT', self::value_or_default($this->config->get_value('agency_timeout', 'setup'), 10));
+    $this->open_agency = new OpenAgency($this->config->get_value('agency', 'setup'));
 
     define(DEBUG_ON, $this->debug);
     $this->tracking_id = verbose::$tracking_id;
@@ -2485,16 +2487,10 @@ class openSearch extends webServiceServer {
    * @retval mixed - agency type (string) or FALSE
    */
   private function get_agency_type($agency) {
-    static $agency_types;
-    if (!isset($agency_types)) {
-      require_once 'OLS_class_lib/agency_type_class.php';
-      $cache = self::get_cache_info('agency');
-      $agency_types = new agency_type(self::agency_uri('agency_types'), $cache['host'], $cache['port'], $cache['expire']);
-    }
     $this->watch->start('agency_type');
-    $agency_type = $agency_types->get_agency_type($agency);
+    $agency_type = $this->open_agency->get_agency_type($agency);
     $this->watch->stop('agency_type');
-    if ($agency_types->get_branch_type($agency) <> 'D') {
+    if ($this->open_agency->get_branch_type($agency) <> 'D') {
       return $agency_type;
     }
 
@@ -2506,14 +2502,8 @@ class openSearch extends webServiceServer {
    * @retval mixed - array of agencies
    */
   private function fetch_agency_show_priority() {
-    static $agency_prio;
-    if (!isset($agency_prio)) {
-      require_once 'OLS_class_lib/show_priority_class.php';
-      $cache = self::get_cache_info('agency');
-      $agency_prio = new ShowPriority(self::agency_uri('agency_show_order'), $cache['host'], $cache['port'], $cache['expire']);
-    }
     $this->watch->start('agency_prio');
-    $agency_list = $agency_prio->get_priority($this->agency);
+    $agency_list = $this->open_agency->get_show_priority($this->agency);
     $this->watch->stop('agency_prio');
     return ($agency_list ? $agency_list : array());
   }
@@ -2525,37 +2515,23 @@ class openSearch extends webServiceServer {
    * @retval mixed - profile (array) or FALSE
    */
   private function fetch_profile_from_agency($agency, $profile_name) {
-    static $profiles;
-    require_once 'OLS_class_lib/search_profile_class.php';
-    $cache = self::get_cache_info('agency');
-    if (empty($profiles)) {
-      $profiles = new search_profiles(self::agency_uri('agency_search_profile'), $cache['host'], $cache['port'], $cache['expire']);
-    }
     $this->watch->start('agency_profile');
-    $profile = $profiles->get_profile($agency, $profile_name, $this->search_profile_version);
+    $profile = $this->open_agency->get_search_profile($agency, $profile_name, $this->search_profile_version);
     $this->watch->stop('agency_profile');
     return (is_array($profile) ? $profile : FALSE);
   }
 
-  /** \brief Fetch agency rules from OpenAgency, cache the result, and return agency rules for $agency
+  /** \brief Fetch agency rules from OpenAgency and return specific agency rule
    *
    * @param string $agency -
-   * @retval array - agency rules
+   * @retval boolean - agency rules
    */
   private function agency_rule($agency, $name) {
     static $agency_rules = array();
     if (empty($agency_rules[$agency])) {
-      static $open_agency;
-      if (!isset($open_agency)) {
-        require_once 'OLS_class_lib/open_agency_class.php';
-        $cache = self::get_cache_info('agency');
-        $open_agency = new OpenAgency(self::agency_uri('agency_rules'), $cache['host'], $cache['port'], $cache['expire']);
-      }
       $this->watch->start('agency_rule');
-      $rules = $open_agency->get_agency_rules($agency);
+      $agency_rules[$agency] = $this->open_agency->get_library_rules($agency);
       $this->watch->stop('agency_rule');
-
-      $agency_rules[$agency] = $rules;
     }
     return self::xs_boolean($agency_rules[$agency][$name]);
   }
