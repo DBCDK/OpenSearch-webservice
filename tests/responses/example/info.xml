@@ -1307,6 +1307,10 @@
           <searchCollectionIdentifier>150031-tema</searchCollectionIdentifier>
         </searchCollection>
         <searchCollection>
+          <searchCollectionName>AccessScience</searchCollectionName>
+          <searchCollectionIdentifier>150066-artikler</searchCollectionIdentifier>
+        </searchCollection>
+        <searchCollection>
           <searchCollectionName>Artikelbasens anmeldelser</searchCollectionName>
           <searchCollectionIdentifier>870971-anmeld</searchCollectionIdentifier>
           <relationType>dbcaddi:hasOnlineAccess</relationType>
