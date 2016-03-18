@@ -385,6 +385,12 @@ dump_timer = opensearch(%s)
 ;dump_timer_ip = TRUE
 
 ; --------------
+; For test purposes
+; Send requests to other service(s) for test purposes (or logging of requests)
+;duplicate_request_to[] = http://some.server.dk/test_service_1/
+;duplicate_request_to[] = http://some.server.dk/test_service_2/
+
+; --------------
 ; sorting & ranking
 ; sorting and rakings are defined in the structure below
 ;
