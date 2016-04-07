@@ -908,7 +908,7 @@ You should have received a copy of the GNU Affero General Public License along w
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="os:identifier"/>
+        <xs:element ref="os:identifier" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
