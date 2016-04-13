@@ -386,7 +386,7 @@ dump_timer = opensearch(%s)
 
 ; --------------
 ; For test purposes
-; Send requests to other service(s) for test purposes (or logging of requests)
+; Send each request to other service(s) as soap-request for test purposes (or logging of requests)
 ;duplicate_request_to[] = http://some.server.dk/test_service_1/
 ;duplicate_request_to[] = http://some.server.dk/test_service_2/
 
@@ -541,6 +541,8 @@ sort[solr_date_ascending] = map(sort.date,0,0,9999) asc
 sort[solr_date_descending] = map(sort.date,2050,999999,0) desc
 sort[solr_acquisitionDate_ascending] = sort.acquisitionDate asc
 sort[solr_acquisitionDate_descending] = sort.acquisitionDate desc
+sort[solr_localAcquisitionDate_ascending] = sort.localAcquisitionDate asc
+sort[solr_localAcquisitionDate_descending] = sort.localAcquisitionDate desc
 
 sort[solr_work_type_ascending] = sort.workType asc
 sort[solr_work_type_descending] = sort.workType desc
@@ -564,6 +566,8 @@ sort[solr_dk5_descending] = sort.dk5 desc
 ;
 sort[acquisitionDate_ascending][] = solr_acquisitionDate_ascending
 sort[acquisitionDate_descending][] = solr_acquisitionDate_descending
+sort[localAcquisitionDate_ascending][] = solr_localAcquisitionDate_ascending
+sort[localAcquisitionDate_descending][] = solr_localAcquisitionDate_descending
 
 sort[article_date_ascending][] = solr_article_date_ascending
 sort[article_date_descending][] = solr_article_date_descending
