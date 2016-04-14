@@ -1726,6 +1726,20 @@
           </sortDetails>
         </infoSort>
         <infoSort>
+          <sort>solr_localAcquisitionDate_ascending</sort>
+          <internalType>basicSort</internalType>
+          <sortDetails>
+            <sort>sort.localAcquisitionDate asc</sort>
+          </sortDetails>
+        </infoSort>
+        <infoSort>
+          <sort>solr_localAcquisitionDate_descending</sort>
+          <internalType>basicSort</internalType>
+          <sortDetails>
+            <sort>sort.localAcquisitionDate desc</sort>
+          </sortDetails>
+        </infoSort>
+        <infoSort>
           <sort>solr_work_type_ascending</sort>
           <internalType>basicSort</internalType>
           <sortDetails>
@@ -1807,6 +1821,20 @@
           <internalType>complexSort</internalType>
           <sortDetails>
             <sort>solr_acquisitionDate_descending</sort>
+          </sortDetails>
+        </infoSort>
+        <infoSort>
+          <sort>localAcquisitionDate_ascending</sort>
+          <internalType>complexSort</internalType>
+          <sortDetails>
+            <sort>solr_localAcquisitionDate_ascending</sort>
+          </sortDetails>
+        </infoSort>
+        <infoSort>
+          <sort>localAcquisitionDate_descending</sort>
+          <internalType>complexSort</internalType>
+          <sortDetails>
+            <sort>solr_localAcquisitionDate_descending</sort>
           </sortDetails>
         </infoSort>
         <infoSort>
