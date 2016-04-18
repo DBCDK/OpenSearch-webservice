@@ -539,6 +539,7 @@ class openSearch extends webServiceServer {
     $collections = array();
     $rec_no = max(1, $start);
     $HOLDINGS = ' holdings ';
+    $use_sort_complex_key = in_array($this->agency, self::value_or_default($this->config->get_value('use_sort_complex_key', 'setup'), array()));
     $this->agency_priority_list = self::fetch_agency_show_priority();
     if ($debug_query) {
       $explain_keys = array_keys($solr_arr['debug']['explain']);
@@ -560,7 +561,7 @@ class openSearch extends webServiceServer {
         if (self::xs_boolean($param->includeHoldingsCount->_value)) {
           $no_of_holdings = self::get_holdings($fpid);
         }
-        if ((strpos($unit_sort_keys[$unit_id], $HOLDINGS) !== FALSE)) {
+        if ($use_sort_complex_key && (strpos($unit_sort_keys[$unit_id], $HOLDINGS) !== FALSE)) {
           $holds = isset($no_of_holdings) ? $no_of_holdings : self::get_holdings($fpid);
           $sort_holdings = sprintf(' %04d ', 9999 - intval($holds['have']));
         }
@@ -607,7 +608,7 @@ class openSearch extends webServiceServer {
       unset($sorted_work);
       $o->collection->_value->resultPosition->_value = $rec_no++;
       $o->collection->_value->numberOfObjects->_value = count($objects);
-      if (count($objects) > 1) {
+      if ($use_sort_complex_key && count($objects) > 1) {
         ksort($objects);
       }
       $o->collection->_value->object = $objects;

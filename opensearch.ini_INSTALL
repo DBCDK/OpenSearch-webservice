@@ -113,6 +113,11 @@ all_rawrepo_agency[] = 010100
 ;all_rawrepo_agency[] = 870970
 
 ; --------------
+; agencies using sort.complexKey (and holdings) to sort manifestations within work
+; Normally, only bibliotek.dk (190101) should do this
+use_sort_complex_key[] = 190101
+
+; --------------
 ; agency to collection identifer for getObject operation using agencyAndLocalIdentifier to identify record(s)
 ; by default the collection for an agency is katalog, so only exceptions form this should be specified
 ;agency_to_collection[<agency code>] = <collection name>
