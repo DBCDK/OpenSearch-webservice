@@ -848,7 +848,11 @@ class openSearch extends webServiceServer {
       $id_array[] = $fpid->_value;
       list($owner_collection, $id) = explode(':', $fpid->_value);
       list($owner, $coll) = explode('-', $owner_collection);
-      if (self::agency_rule($owner, 'use_localdata_stream')) {
+// TODO ??? only if agency-katalog is in actual search profile 
+//      if (self::agency_rule($owner, 'use_localdata_stream') 
+//         && $this->searchable_source[$this->agency_catalog_source])  // must be searchable
+//         && ($owner_collection == $this->agency_catalog_source)      // only for own collection
+      if (self::agency_rule($owner, 'use_localdata_stream')) {    
         $id_array[] = '870970-basis:' . $id;
         $localdata_object[$fpid->_value] = '870970-basis:' . $id;
       }
@@ -1959,7 +1963,7 @@ class openSearch extends webServiceServer {
               $fpid = $c->_value->collection->_value->object[$mani_no]->_value->identifier->_value;
               foreach ($solr[0]['response']['docs'] as $solr_doc) {
                 $doc_units = is_array($solr_doc['unit.id']) ? $solr_doc['unit.id'] : array($solr_doc['unit.id']);
-                if (is_array($doc_units) && in_array($unit_no, $doc_units)) {
+                if (is_array($doc_units) && in_array($unit_no, $doc_units) && ($fpid == $solr_doc['fedoraPid'])) {
                   foreach ($format_tags as $format_tag) {
                     if ($solr_doc[$format_tag] || $format_tag == 'fedora.identifier') {
                       if (strpos($format_tag, '.')) {
@@ -2688,8 +2692,10 @@ class openSearch extends webServiceServer {
       $collaps_pars = '&group=true&group.ngroups=true&group.facet=true&group.field=' . $collapsing;
     }
     $q = implode(AND_OP, $eq['q']);
-    foreach ($eq['fq'] as $fq) {
-      $filter .= '&fq=' . rawurlencode($fq);
+    if (is_array($eq['fq'])) {
+      foreach ($eq['fq'] as $fq) {
+        $filter .= '&fq=' . rawurlencode($fq);
+      }
     }
     $url = $this->repository['solr'] .
                     '?q=' . urlencode($q) .
