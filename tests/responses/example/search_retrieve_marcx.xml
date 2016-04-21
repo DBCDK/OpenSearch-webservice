@@ -224,6 +224,148 @@
                 <marcx:record format="danMARC2" type="Bibliographic">
                   <marcx:leader>00000n    2200000   4500</marcx:leader>
                   <marcx:datafield ind1="0" ind2="0" tag="001">
+                    <marcx:subfield code="a">29069638</marcx:subfield>
+                    <marcx:subfield code="b">870970</marcx:subfield>
+                    <marcx:subfield code="c">20121231180210</marcx:subfield>
+                    <marcx:subfield code="d">20111114</marcx:subfield>
+                    <marcx:subfield code="f">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="004">
+                    <marcx:subfield code="r">n</marcx:subfield>
+                    <marcx:subfield code="a">e</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="006">
+                    <marcx:subfield code="c">20120111</marcx:subfield>
+                    <marcx:subfield code="2">e</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="006">
+                    <marcx:subfield code="e">18</marcx:subfield>
+                    <marcx:subfield code="2">c</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="006">
+                    <marcx:subfield code="e">16</marcx:subfield>
+                    <marcx:subfield code="2">d</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="008">
+                    <marcx:subfield code="t">m</marcx:subfield>
+                    <marcx:subfield code="u">f</marcx:subfield>
+                    <marcx:subfield code="a">2011</marcx:subfield>
+                    <marcx:subfield code="b">gb</marcx:subfield>
+                    <marcx:subfield code="l">eng</marcx:subfield>
+                    <marcx:subfield code="q">bg</marcx:subfield>
+                    <marcx:subfield code="v">0</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="009">
+                    <marcx:subfield code="a">t</marcx:subfield>
+                    <marcx:subfield code="g">to</marcx:subfield>
+                    <marcx:subfield code="b">a</marcx:subfield>
+                    <marcx:subfield code="h">xx</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="021">
+                    <marcx:subfield code="b">Til udlån og brug på stedet</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="023">
+                    <marcx:subfield code="a">0093155141407</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="032">
+                    <marcx:subfield code="x">ACC201146</marcx:subfield>
+                    <marcx:subfield code="x">BKM201201</marcx:subfield>
+                    <marcx:subfield code="x">BKX201151</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="041">
+                    <marcx:subfield code="a">eng</marcx:subfield>
+                    <marcx:subfield code="e">dan</marcx:subfield>
+                    <marcx:subfield code="e">nor</marcx:subfield>
+                    <marcx:subfield code="e">swe</marcx:subfield>
+                    <marcx:subfield code="e">fin</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="245">
+                    <marcx:subfield code="a">Skyrim</marcx:subfield>
+                    <marcx:subfield code="U">elder scrolls 5</marcx:subfield>
+                    <marcx:subfield code="u">the ¤elder scrolls V</marcx:subfield>
+                    <marcx:subfield code="ø">Xbox 360</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="260">
+                    <marcx:subfield code="a">London</marcx:subfield>
+                    <marcx:subfield code="b">ZeniMax Europe</marcx:subfield>
+                    <marcx:subfield code="c">2011</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="300">
+                    <marcx:subfield code="n">1 dvd-rom</marcx:subfield>
+                    <marcx:subfield code="e">xbox 360</marcx:subfield>
+                    <marcx:subfield code="b">lyd, farve</marcx:subfield>
+                    <marcx:subfield code="d">1 vejledning</marcx:subfield>
+                    <marcx:subfield code="d">1 kort</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="501">
+                    <marcx:subfield code="i">Afspilningsudstyr</marcx:subfield>
+                    <marcx:subfield code="a">\Xbox 360\</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="504">
+                    <marcx:subfield code="&amp;">1</marcx:subfield>
+                    <marcx:subfield code="a">Rollespil. Sagaen om det krigshærgede fantasy-kontinent Tamriel fortsætter. Der er gået flere hundrede år siden "Oblivion". Kolossale drager, som man troede var uddøde forlængst, er begyndt at sprede død og ødelæggelse. Som efterkommer af en gammel drageslægt, skal du opklare dragernes hemmelighed. Undervejs skal du nedkæmpe nogle af dragerne og lære deres særlige angreb. Den kolossale verden ligger åben for dine fødder. Du bestemmer selv hvordan eventyret skal udfolde sig, og hvordan det skal ende!</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="505">
+                    <marcx:subfield code="a">Spil for 1 spiller</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="512">
+                    <marcx:subfield code="a">Titlen hentet fra dvd-rometiketten</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="512">
+                    <marcx:subfield code="a">Vejledning: Engelsk tekst med quickstart på dansk, norsk, svensk og finsk</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="517">
+                    <marcx:subfield code="&amp;">1</marcx:subfield>
+                    <marcx:subfield code="a">PEGI-mærkning: 18</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="517">
+                    <marcx:subfield code="&amp;">1</marcx:subfield>
+                    <marcx:subfield code="a">Fra 16 år</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="652">
+                    <marcx:subfield code="m">79.41</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="666">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="o">computerspil</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="666">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="o">rollespil</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="990">
+                    <marcx:subfield code="o">201201</marcx:subfield>
+                    <marcx:subfield code="b">m</marcx:subfield>
+                    <marcx:subfield code="b">v</marcx:subfield>
+                    <marcx:subfield code="u">nt</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="991">
+                    <marcx:subfield code="o">Ekspres 201151</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="991">
+                    <marcx:subfield code="o">Agenturholder: Nordic Game Supply</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="996">
+                    <marcx:subfield code="a">DBC</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+              <identifier>870970-basis:29069638</identifier>
+              <primaryObjectIdentifier>870970-basis:29069638</primaryObjectIdentifier>
+              <creationDate>2011-11-14</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870970-basis:29069638</identifier>
+              </objectsAvailable>
+            </object>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:leader>00000n    2200000   4500</marcx:leader>
+                  <marcx:datafield ind1="0" ind2="0" tag="001">
                     <marcx:subfield code="a">29069654</marcx:subfield>
                     <marcx:subfield code="b">870970</marcx:subfield>
                     <marcx:subfield code="c">20121231180211</marcx:subfield>
@@ -369,156 +511,14 @@
                 <identifier>870970-basis:29069654</identifier>
               </objectsAvailable>
             </object>
-            <object>
-              <marcx:collection>
-                <marcx:record format="danMARC2" type="Bibliographic">
-                  <marcx:leader>00000n    2200000   4500</marcx:leader>
-                  <marcx:datafield ind1="0" ind2="0" tag="001">
-                    <marcx:subfield code="a">29069638</marcx:subfield>
-                    <marcx:subfield code="b">870970</marcx:subfield>
-                    <marcx:subfield code="c">20121231180210</marcx:subfield>
-                    <marcx:subfield code="d">20111114</marcx:subfield>
-                    <marcx:subfield code="f">a</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="004">
-                    <marcx:subfield code="r">n</marcx:subfield>
-                    <marcx:subfield code="a">e</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="006">
-                    <marcx:subfield code="c">20120111</marcx:subfield>
-                    <marcx:subfield code="2">e</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="006">
-                    <marcx:subfield code="e">18</marcx:subfield>
-                    <marcx:subfield code="2">c</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="006">
-                    <marcx:subfield code="e">16</marcx:subfield>
-                    <marcx:subfield code="2">d</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="008">
-                    <marcx:subfield code="t">m</marcx:subfield>
-                    <marcx:subfield code="u">f</marcx:subfield>
-                    <marcx:subfield code="a">2011</marcx:subfield>
-                    <marcx:subfield code="b">gb</marcx:subfield>
-                    <marcx:subfield code="l">eng</marcx:subfield>
-                    <marcx:subfield code="q">bg</marcx:subfield>
-                    <marcx:subfield code="v">0</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="009">
-                    <marcx:subfield code="a">t</marcx:subfield>
-                    <marcx:subfield code="g">to</marcx:subfield>
-                    <marcx:subfield code="b">a</marcx:subfield>
-                    <marcx:subfield code="h">xx</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="021">
-                    <marcx:subfield code="b">Til udlån og brug på stedet</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="023">
-                    <marcx:subfield code="a">0093155141407</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="032">
-                    <marcx:subfield code="x">ACC201146</marcx:subfield>
-                    <marcx:subfield code="x">BKM201201</marcx:subfield>
-                    <marcx:subfield code="x">BKX201151</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="041">
-                    <marcx:subfield code="a">eng</marcx:subfield>
-                    <marcx:subfield code="e">dan</marcx:subfield>
-                    <marcx:subfield code="e">nor</marcx:subfield>
-                    <marcx:subfield code="e">swe</marcx:subfield>
-                    <marcx:subfield code="e">fin</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="245">
-                    <marcx:subfield code="a">Skyrim</marcx:subfield>
-                    <marcx:subfield code="U">elder scrolls 5</marcx:subfield>
-                    <marcx:subfield code="u">the ¤elder scrolls V</marcx:subfield>
-                    <marcx:subfield code="ø">Xbox 360</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="260">
-                    <marcx:subfield code="a">London</marcx:subfield>
-                    <marcx:subfield code="b">ZeniMax Europe</marcx:subfield>
-                    <marcx:subfield code="c">2011</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="300">
-                    <marcx:subfield code="n">1 dvd-rom</marcx:subfield>
-                    <marcx:subfield code="e">xbox 360</marcx:subfield>
-                    <marcx:subfield code="b">lyd, farve</marcx:subfield>
-                    <marcx:subfield code="d">1 vejledning</marcx:subfield>
-                    <marcx:subfield code="d">1 kort</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="501">
-                    <marcx:subfield code="i">Afspilningsudstyr</marcx:subfield>
-                    <marcx:subfield code="a">\Xbox 360\</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="504">
-                    <marcx:subfield code="&amp;">1</marcx:subfield>
-                    <marcx:subfield code="a">Rollespil. Sagaen om det krigshærgede fantasy-kontinent Tamriel fortsætter. Der er gået flere hundrede år siden "Oblivion". Kolossale drager, som man troede var uddøde forlængst, er begyndt at sprede død og ødelæggelse. Som efterkommer af en gammel drageslægt, skal du opklare dragernes hemmelighed. Undervejs skal du nedkæmpe nogle af dragerne og lære deres særlige angreb. Den kolossale verden ligger åben for dine fødder. Du bestemmer selv hvordan eventyret skal udfolde sig, og hvordan det skal ende!</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="505">
-                    <marcx:subfield code="a">Spil for 1 spiller</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="512">
-                    <marcx:subfield code="a">Titlen hentet fra dvd-rometiketten</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="512">
-                    <marcx:subfield code="a">Vejledning: Engelsk tekst med quickstart på dansk, norsk, svensk og finsk</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="517">
-                    <marcx:subfield code="&amp;">1</marcx:subfield>
-                    <marcx:subfield code="a">PEGI-mærkning: 18</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="517">
-                    <marcx:subfield code="&amp;">1</marcx:subfield>
-                    <marcx:subfield code="a">Fra 16 år</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="652">
-                    <marcx:subfield code="m">79.41</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="666">
-                    <marcx:subfield code="0"/>
-                    <marcx:subfield code="o">computerspil</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="666">
-                    <marcx:subfield code="0"/>
-                    <marcx:subfield code="o">rollespil</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="990">
-                    <marcx:subfield code="o">201201</marcx:subfield>
-                    <marcx:subfield code="b">m</marcx:subfield>
-                    <marcx:subfield code="b">v</marcx:subfield>
-                    <marcx:subfield code="u">nt</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="991">
-                    <marcx:subfield code="o">Ekspres 201151</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="991">
-                    <marcx:subfield code="o">Agenturholder: Nordic Game Supply</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="996">
-                    <marcx:subfield code="a">DBC</marcx:subfield>
-                  </marcx:datafield>
-                </marcx:record>
-              </marcx:collection>
-              <identifier>870970-basis:29069638</identifier>
-              <primaryObjectIdentifier>870970-basis:29069638</primaryObjectIdentifier>
-              <creationDate>2011-11-14</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:29069638</identifier>
-              </objectsAvailable>
-            </object>
           </collection>
         </searchResult>
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>21</fedoraRecordsRead>
-          <time>2.088193</time>
-          <trackingId>2015-05-13T08:55:58:033197:21329</trackingId>
+          <fedoraRecordsRead>25</fedoraRecordsRead>
+          <time>0.834969</time>
+          <trackingId>2016-04-21T09:17:58:349842:26337</trackingId>
         </statInfo>
       </result>
     </searchResponse>
