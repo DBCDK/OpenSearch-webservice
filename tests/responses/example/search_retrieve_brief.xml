@@ -74,18 +74,6 @@
             <resultPosition>3</resultPosition>
             <numberOfObjects>2</numberOfObjects>
             <object>
-              <identifier>870970-basis:29069638</identifier>
-              <primaryObjectIdentifier>870970-basis:29069638</primaryObjectIdentifier>
-              <creationDate>2011-11-14</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:29069638</identifier>
-              </objectsAvailable>
-            </object>
-            <object>
               <identifier>870970-basis:29069654</identifier>
               <primaryObjectIdentifier>870970-basis:29069654</primaryObjectIdentifier>
               <creationDate>2011-11-14</creationDate>
@@ -95,6 +83,18 @@
               </formatsAvailable>
               <objectsAvailable>
                 <identifier>870970-basis:29069654</identifier>
+              </objectsAvailable>
+            </object>
+            <object>
+              <identifier>870970-basis:29069638</identifier>
+              <primaryObjectIdentifier>870970-basis:29069638</primaryObjectIdentifier>
+              <creationDate>2011-11-14</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870970-basis:29069638</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -125,8 +125,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>25</fedoraRecordsRead>
-          <time>1.470146</time>
-          <trackingId>2016-04-21T09:17:38:576970:3003</trackingId>
+          <time>1.450815</time>
+          <trackingId>2016-04-25T09:08:04:134028:6361</trackingId>
         </statInfo>
       </result>
     </searchResponse>

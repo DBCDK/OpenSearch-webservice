@@ -12,141 +12,6 @@
             <numberOfObjects>4</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>27928846|870970</ac:identifier>
-                <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>Benjamin Buttons forunderlige liv</dc:title>
-                <dc:title xsi:type="dkdcplus:full">Benjamin Buttons forunderlige liv</dc:title>
-                <dcterms:alternative>The ¤curious case of Benjamin Button</dcterms:alternative>
-                <dc:creator xsi:type="dkdcplus:drt">David Fincher</dc:creator>
-                <dc:creator xsi:type="oss:sort">Fincher, David</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">77.7</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Spillefilm</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCS">drama</dc:subject>
-                <dc:subject xsi:type="dkdcplus:genre">drama</dc:subject>
-                <dcterms:abstract>Benjamin Button har ikke haft et helt almindeligt liv. Han blev født i en 80-årig gammel mands krop i New Orleans i 1918. I dagbogsform får vi hans forunderlige livs historie, hvor han ældes baglæns</dcterms:abstract>
-                <dc:description>Originalfilmen: USA : Warner Bros. Pictures : Paramount Pictures : Kennedy/Marshall Company, 2008</dc:description>
-                <dc:description>Disc 2: Bonus-disc</dc:description>
-                <dc:description>Af indholdet: Special features</dc:description>
-                <dcterms:audience xsi:type="dkdcplus:medieraad">Mærkning: Tilladt for børn over 11 år</dcterms:audience>
-                <dcterms:audience xsi:type="dkdcplus:age">Fra 11 år</dcterms:audience>
-                <dcterms:audience>børnematerialer</dcterms:audience>
-                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Warner Bros. Entertainment Danmark</dc:publisher>
-                <dc:contributor>David Fincher</dc:contributor>
-                <dc:contributor>Eric Roth</dc:contributor>
-                <dc:contributor>Robin Swicord</dc:contributor>
-                <dc:contributor>F. Scott Fitzgerald</dc:contributor>
-                <dc:contributor>Claudio Miranda</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Brad Pitt</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Cate Blanchett</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Taraji P. Henson</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Julia Ormond</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Jason Flemyng</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Mahershalhashbaz Ali</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Jared Harris</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Elias Koteas</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Phyllis Somerville</dc:contributor>
-                <dc:date>2009</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Blu-ray</dc:type>
-                <dc:format>2 blu-ray discs, blu-ray</dc:format>
-                <dcterms:extent>2 t., 46 min.</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">mul</dc:language>
-                <dc:language>Flere sprog</dc:language>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">ger</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">ita</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">spa</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">dut</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">chi</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">kor</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">por</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">ind</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">dan</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">fin</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">nor</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">swe</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">tha</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">tur</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
-              </dkabm:record>
-              <identifier>870970-basis:27928846</identifier>
-              <primaryObjectIdentifier>870970-basis:27928846</primaryObjectIdentifier>
-              <creationDate>2009-09-21</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:27928846</identifier>
-              </objectsAvailable>
-            </object>
-            <object>
-              <dkabm:record>
-                <ac:identifier>3540389|820010</ac:identifier>
-                <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>Benjamin Buttons forunderlige liv</dc:title>
-                <dc:title xsi:type="dkdcplus:full">Benjamin Buttons forunderlige liv</dc:title>
-                <dcterms:alternative>The ¤curious case of Benjamin Button</dcterms:alternative>
-                <dc:creator xsi:type="dkdcplus:drt">David Fincher</dc:creator>
-                <dc:creator xsi:type="oss:sort">Fincher, David</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DBCS">drama</dc:subject>
-                <dc:subject xsi:type="dkdcplus:genre">drama</dc:subject>
-                <dcterms:abstract>Benjamin Button har ikke haft et helt almindeligt liv. Han blev født i en 80-årig gammel mands krop i New Orleans i 1918. I dagbogsform får vi hans forunderlige livs historie, hvor han ældes baglæns</dcterms:abstract>
-                <dc:description>Originalfilmen: USA : Warner Bros. Pictures : Paramount Pictures : Kennedy/Marshall Company, 2008</dc:description>
-                <dc:description>Af indholdet: Commentary by director David Fincher</dc:description>
-                <dcterms:audience xsi:type="dkdcplus:medieraad">Mærkning: Tilladt for børn over 11 år</dcterms:audience>
-                <dcterms:audience xsi:type="dkdcplus:age">Fra 11 år</dcterms:audience>
-                <dcterms:audience>børnematerialer</dcterms:audience>
-                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Warner Bros. Entertainment Danmark</dc:publisher>
-                <dc:contributor>David Fincher</dc:contributor>
-                <dc:contributor>Eric Roth</dc:contributor>
-                <dc:contributor>Robin Swicord</dc:contributor>
-                <dc:contributor>F. Scott Fitzgerald</dc:contributor>
-                <dc:contributor>Claudio Miranda</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Brad Pitt</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Cate Blanchett</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Taraji P. Henson</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Julia Ormond</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Jason Flemyng</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Mahershalhashbaz Ali</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Jared Harris</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Elias Koteas</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Phyllis Somerville</dc:contributor>
-                <dc:date>2009</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Dvd</dc:type>
-                <dc:format>1 dvd-video</dc:format>
-                <dcterms:extent>ca. 2 t., 39 min.</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">mul</dc:language>
-                <dc:language>Flere sprog</dc:language>
-                <dc:language xsi:type="dkdcplus:spoken">eng</dc:language>
-                <dc:language xsi:type="dkdcplus:spoken">ita</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">ita</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">dut</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">ara</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">dan</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">fin</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">heb</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">gre</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">ice</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">nor</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">swe</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
-              </dkabm:record>
-              <identifier>820010-katalog:3540389</identifier>
-              <primaryObjectIdentifier>820010-katalog:3540389</primaryObjectIdentifier>
-              <creationDate>2009-10-11</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>820010-katalog:3540389</identifier>
-              </objectsAvailable>
-            </object>
-            <object>
-              <dkabm:record>
                 <ac:identifier>3755325|820010</ac:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
                 <dc:title>Benjamin Buttons forunderlige liv</dc:title>
@@ -219,6 +84,141 @@
               </formatsAvailable>
               <objectsAvailable>
                 <identifier>820010-katalog:3755325</identifier>
+              </objectsAvailable>
+            </object>
+            <object>
+              <dkabm:record>
+                <ac:identifier>3540389|820010</ac:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>Benjamin Buttons forunderlige liv</dc:title>
+                <dc:title xsi:type="dkdcplus:full">Benjamin Buttons forunderlige liv</dc:title>
+                <dcterms:alternative>The ¤curious case of Benjamin Button</dcterms:alternative>
+                <dc:creator xsi:type="dkdcplus:drt">David Fincher</dc:creator>
+                <dc:creator xsi:type="oss:sort">Fincher, David</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DBCS">drama</dc:subject>
+                <dc:subject xsi:type="dkdcplus:genre">drama</dc:subject>
+                <dcterms:abstract>Benjamin Button har ikke haft et helt almindeligt liv. Han blev født i en 80-årig gammel mands krop i New Orleans i 1918. I dagbogsform får vi hans forunderlige livs historie, hvor han ældes baglæns</dcterms:abstract>
+                <dc:description>Originalfilmen: USA : Warner Bros. Pictures : Paramount Pictures : Kennedy/Marshall Company, 2008</dc:description>
+                <dc:description>Af indholdet: Commentary by director David Fincher</dc:description>
+                <dcterms:audience xsi:type="dkdcplus:medieraad">Mærkning: Tilladt for børn over 11 år</dcterms:audience>
+                <dcterms:audience xsi:type="dkdcplus:age">Fra 11 år</dcterms:audience>
+                <dcterms:audience>børnematerialer</dcterms:audience>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dc:publisher>Warner Bros. Entertainment Danmark</dc:publisher>
+                <dc:contributor>David Fincher</dc:contributor>
+                <dc:contributor>Eric Roth</dc:contributor>
+                <dc:contributor>Robin Swicord</dc:contributor>
+                <dc:contributor>F. Scott Fitzgerald</dc:contributor>
+                <dc:contributor>Claudio Miranda</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Brad Pitt</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Cate Blanchett</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Taraji P. Henson</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Julia Ormond</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Jason Flemyng</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Mahershalhashbaz Ali</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Jared Harris</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Elias Koteas</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Phyllis Somerville</dc:contributor>
+                <dc:date>2009</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Dvd</dc:type>
+                <dc:format>1 dvd-video</dc:format>
+                <dcterms:extent>ca. 2 t., 39 min.</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">mul</dc:language>
+                <dc:language>Flere sprog</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">eng</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">ita</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">ita</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dut</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">ara</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dan</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">fin</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">heb</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">gre</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">ice</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">nor</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">swe</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
+              </dkabm:record>
+              <identifier>820010-katalog:3540389</identifier>
+              <primaryObjectIdentifier>820010-katalog:3540389</primaryObjectIdentifier>
+              <creationDate>2009-10-11</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>820010-katalog:3540389</identifier>
+              </objectsAvailable>
+            </object>
+            <object>
+              <dkabm:record>
+                <ac:identifier>27928846|870970</ac:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>Benjamin Buttons forunderlige liv</dc:title>
+                <dc:title xsi:type="dkdcplus:full">Benjamin Buttons forunderlige liv</dc:title>
+                <dcterms:alternative>The ¤curious case of Benjamin Button</dcterms:alternative>
+                <dc:creator xsi:type="dkdcplus:drt">David Fincher</dc:creator>
+                <dc:creator xsi:type="oss:sort">Fincher, David</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">77.7</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Spillefilm</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">drama</dc:subject>
+                <dc:subject xsi:type="dkdcplus:genre">drama</dc:subject>
+                <dcterms:abstract>Benjamin Button har ikke haft et helt almindeligt liv. Han blev født i en 80-årig gammel mands krop i New Orleans i 1918. I dagbogsform får vi hans forunderlige livs historie, hvor han ældes baglæns</dcterms:abstract>
+                <dc:description>Originalfilmen: USA : Warner Bros. Pictures : Paramount Pictures : Kennedy/Marshall Company, 2008</dc:description>
+                <dc:description>Disc 2: Bonus-disc</dc:description>
+                <dc:description>Af indholdet: Special features</dc:description>
+                <dcterms:audience xsi:type="dkdcplus:medieraad">Mærkning: Tilladt for børn over 11 år</dcterms:audience>
+                <dcterms:audience xsi:type="dkdcplus:age">Fra 11 år</dcterms:audience>
+                <dcterms:audience>børnematerialer</dcterms:audience>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dc:publisher>Warner Bros. Entertainment Danmark</dc:publisher>
+                <dc:contributor>David Fincher</dc:contributor>
+                <dc:contributor>Eric Roth</dc:contributor>
+                <dc:contributor>Robin Swicord</dc:contributor>
+                <dc:contributor>F. Scott Fitzgerald</dc:contributor>
+                <dc:contributor>Claudio Miranda</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Brad Pitt</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Cate Blanchett</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Taraji P. Henson</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Julia Ormond</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Jason Flemyng</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Mahershalhashbaz Ali</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Jared Harris</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Elias Koteas</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Phyllis Somerville</dc:contributor>
+                <dc:date>2009</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Blu-ray</dc:type>
+                <dc:format>2 blu-ray discs, blu-ray</dc:format>
+                <dcterms:extent>2 t., 46 min.</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">mul</dc:language>
+                <dc:language>Flere sprog</dc:language>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">ger</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">ita</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">spa</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dut</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">chi</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">kor</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">por</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">ind</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dan</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">fin</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">nor</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">swe</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">tha</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">tur</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
+              </dkabm:record>
+              <identifier>870970-basis:27928846</identifier>
+              <primaryObjectIdentifier>870970-basis:27928846</primaryObjectIdentifier>
+              <creationDate>2009-09-21</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870970-basis:27928846</identifier>
               </objectsAvailable>
             </object>
             <object>
@@ -432,8 +432,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>27</fedoraRecordsRead>
-          <time>0.888794</time>
-          <trackingId>2016-04-21T09:18:37:125330:3006</trackingId>
+          <time>0.880609</time>
+          <trackingId>2016-04-25T09:08:36:149258:6268</trackingId>
         </statInfo>
       </result>
     </searchResponse>
