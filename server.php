@@ -2116,21 +2116,23 @@ class openSearch extends webServiceServer {
     foreach ($filter_settings as $rs_idx => $filters) {
       if (($marc_filters = $filters['marcxchange']) && preg_match('/' . $rs_idx . '/', $record_source)) {
         @ $mrec = &$collection->record->_value;
-        foreach ($mrec->datafield as $idf => &$df) {
-          foreach ($marc_filters as $tag => $filter) {
-            if (preg_match('/' . $tag . '/', $df->_attributes->tag->_value)) {
-              if (is_array($df->_value->subfield)) {
-                foreach ($df->_value->subfield as $isf => &$sf) {
-                  if (preg_match('/' . $filter . '/', $sf->_attributes->code->_value)) {
-                    unset($mrec->datafield[$idf]->_value->subfield[$isf]);
+        if ($mrec->datafield) {
+          foreach ($mrec->datafield as $idf => &$df) {
+            foreach ($marc_filters as $tag => $filter) {
+              if (preg_match('/' . $tag . '/', $df->_attributes->tag->_value)) {
+                if (is_array($df->_value->subfield)) {
+                  foreach ($df->_value->subfield as $isf => &$sf) {
+                    if (preg_match('/' . $filter . '/', $sf->_attributes->code->_value)) {
+                      unset($mrec->datafield[$idf]->_value->subfield[$isf]);
+                    }
+                  }
+                  if (!count($df->_value->subfield)) {  // removed all subfield
+                    unset($mrec->datafield[$idf]);
                   }
                 }
-                if (!count($df->_value->subfield)) {  // removed all subfield
+                elseif (preg_match('/' . $filter . '/', $df->_value->subfield->_attributes->code->_value)) {
                   unset($mrec->datafield[$idf]);
                 }
-              }
-              elseif (preg_match('/' . $filter . '/', $df->_value->subfield->_attributes->code->_value)) {
-                unset($mrec->datafield[$idf]);
               }
             }
           }
