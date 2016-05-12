@@ -82,7 +82,7 @@ class openSearch extends webServiceServer {
   public function search($param) {
     // set some defines
     if (!$this->aaa->has_right('opensearch', 500)) {
-      $ret_error->searchResponse->_value->error->_value = 'authentication_error';
+      Object::set_value($ret_error->searchResponse->_value, 'error', 'authentication_error');
       return $ret_error;
     }
 
@@ -97,12 +97,12 @@ class openSearch extends webServiceServer {
 
 // for testing and group all
     if (count($this->aaa->aaa_ip_groups) == 1 && $this->aaa->aaa_ip_groups['all']) {
-      $param->agency->_value = '100200';
-      $param->profile->_value = 'test';
+      Object::set_value($param, 'agency', '100200');
+      Object::set_value($param, 'profile', 'test');
     }
     if (empty($param->agency->_value) && empty($param->profile->_value)) {
-      $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
-      $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
+      Object::set_value($param, 'agency', $this->config->get_value('agency_fallback', 'setup'));
+      Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
     }
     if (empty($param->agency->_value)) {
       $unsupported = 'Error: No agency in request';
@@ -175,12 +175,12 @@ class openSearch extends webServiceServer {
         self::format_records($collections);
       }
       $result = &$ret->searchResponse->_value->result->_value;
-      $result->hitCount->_value = $universal->get_hits();
-      $result->collectionCount->_value = count($collections);
-      $result->more->_value = (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false');
+      Object::set_value($result, 'hitCount', $universal->get_hits());
+      Object::set_value($result, 'collectionCount', count($collections));
+      Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
       $result->searchResult = &$collections;
-      $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
-      $result->statInfo->_value->trackingId->_value = $this->tracking_id;
+      Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
+      Object::set_value($result->statInfo->_value, 'trackingId', $this->tracking_id);
       return $ret;
     }
 
@@ -226,14 +226,14 @@ class openSearch extends webServiceServer {
         return $ret_error;
       }
       $result = &$ret->searchResponse->_value->result->_value;
-      $result->hitCount->_value = self::get_num_found($solr_arr);
-      $result->collectionCount->_value = count($collections);
-      $result->more->_value = (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false');
+      Object::set_value($result, 'hitCount', self::get_num_found($solr_arr));
+      Object::set_value($result, 'collectionCount', count($collections));
+      Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
       $result->searchResult = &$collections;
-      $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
-      $result->statInfo->_value->trackingId->_value = $this->tracking_id;
+      Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
+      Object::set_value($result->statInfo->_value, 'trackingId', $this->tracking_id);
       if ($debug_query) {
-        $result->queryDebugResult->_value = self::set_debug_info($solr_arr['debug']);
+        Object::set_value($result, 'queryDebugResult', self::set_debug_info($solr_arr['debug']));
       }
       return $ret;
     }
@@ -592,7 +592,8 @@ class openSearch extends webServiceServer {
         }
         $sort_key = $fpid_sort_keys[$fpid] . ' ' . sprintf('%04d', count($objects));
         $sorted_work[$sort_key] = $unit_id;
-        $objects[$sort_key]->_value =
+        $objects[$sort_key] = new stdClass();
+        $objects[$sort_key]->_value = 
           self::parse_fedora_object($fedora_result,
                                     $fedora_addi_relation,
                                     $unit_members,
@@ -606,13 +607,13 @@ class openSearch extends webServiceServer {
       $work = $sorted_work;
       if (DEBUG_ON) print_r($sorted_work);
       unset($sorted_work);
-      $o->collection->_value->resultPosition->_value = $rec_no++;
-      $o->collection->_value->numberOfObjects->_value = count($objects);
+      Object::set_value($o->collection->_value, 'resultPosition', $rec_no++);
+      Object::set_value($o->collection->_value, 'numberOfObjects', count($objects));
       if ($use_sort_complex_key && count($objects) > 1) {
         ksort($objects);
       }
       $o->collection->_value->object = $objects;
-      $collections[]->_value = $o;
+      Object::set($collections[], '_value', $o);
       unset($o);
     }
     if (DEBUG_ON) print_r($unit_sort_keys);
@@ -688,19 +689,19 @@ class openSearch extends webServiceServer {
     //if (DEBUG_ON) { print_r($solr_arr); die(); }
 
     $result = &$ret->searchResponse->_value->result->_value;
-    $result->hitCount->_value = $numFound;
-    $result->collectionCount->_value = count($collections);
-    $result->more->_value = ($more ? 'true' : 'false');
+    Object::set_value($result, 'hitCount', $numFound);
+    Object::set_value($result, 'collectionCount', count($collections));
+    Object::set_value($result, 'more', ($more ? 'true' : 'false'));
     self::set_sortUsed($result, $rank, $sort, $sort_types);
     $result->searchResult = $collections;
-    $result->facetResult->_value = $facets;
+    Object::set_value($result, 'facetResult', $facets);
     if ($debug_query && $debug_result) {
-      $result->queryDebugResult->_value = $debug_result;
+      Object::set_value($result, 'queryDebugResult', $debug_result);
     }
-    $result->statInfo->_value->fedoraRecordsCached->_value = $this->number_of_fedora_cached;
-    $result->statInfo->_value->fedoraRecordsRead->_value = $this->number_of_fedora_calls;
-    $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
-    $result->statInfo->_value->trackingId->_value = $this->tracking_id;
+    Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_fedora_cached);
+    Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_fedora_calls);
+    Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
+    Object::set_value($result->statInfo->_value, 'trackingId', $this->tracking_id);
 
     verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
                        ':: agency:' . $this->agency . 
@@ -737,8 +738,8 @@ class openSearch extends webServiceServer {
       return $ret_error;
     }
     if (empty($param->agency->_value) && empty($param->profile->_value)) {
-      $param->agency->_value = $this->config->get_value('agency_fallback', 'setup');
-      $param->profile->_value = $this->config->get_value('profile_fallback', 'setup');
+      Object::set_value($param, 'agency', $this->config->get_value('agency_fallback', 'setup'));
+      Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
     }
     if ($this->agency = $param->agency->_value) {
       if ($param->profile->_value) {
@@ -792,6 +793,7 @@ class openSearch extends webServiceServer {
       }
     }
     foreach ($lpids as $lid) {
+      $fpid = new stdClass();
       $fpid->_value = $this->agency_catalog_source . ':' . str_replace(' ', '', $lid->_value);
       $fpids[] = $fpid;
       unset($fpid);
@@ -802,6 +804,7 @@ class openSearch extends webServiceServer {
         if (!$collection = $agency_to_collection[$alid->_value->agency->_value]) {
           $collection = 'katalog';
         }
+        $fpid = new stdClass();
         $fpid->_value = $alid->_value->agency->_value . '-' . $collection . ':' . str_replace(' ', '', $alid->_value->localIdentifier->_value);
         $fpids[] = $fpid;
         unset($fpid);
@@ -829,18 +832,18 @@ class openSearch extends webServiceServer {
         return $ret_error;
       }
       $result = &$ret->searchResponse->_value->result->_value;
-      $result->hitCount->_value = count($collections);
-      $result->collectionCount->_value = count($collections);
-      $result->more->_value = 'false';
+      Object::set_value($result, 'hitCount', count($collections));
+      Object::set_value($result, 'collectionCount', count($collections));
+      Object::set_value($result, 'more', 'false');
       $result->searchResult = &$collections;
-      $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
-      $result->statInfo->_value->trackingId->_value = $this->tracking_id;
+      Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
+      Object::set_value($result->statInfo->_value, 'trackingId', $this->tracking_id);
       if ($debug_query) {
-        $debug_result->rawQueryString->_value = $solr_arr['debug']['rawquerystring'];
-        $debug_result->queryString->_value = $solr_arr['debug']['querystring'];
-        $debug_result->parsedQuery->_value = $solr_arr['debug']['parsedquery'];
-        $debug_result->parsedQueryString->_value = $solr_arr['debug']['parsedquery_toString'];
-        $result->queryDebugResult->_value = $debug_result;
+        Object::set_value($debug_result, 'rawQueryString', $solr_arr['debug']['rawquerystring']);
+        Object::set_value($debug_result, 'queryString', $solr_arr['debug']['querystring']);
+        Object::set_value($debug_result, 'parsedQuery', $solr_arr['debug']['parsedquery']);
+        Object::set_value($debug_result, 'parsedQueryString', $solr_arr['debug']['parsedquery_toString']);
+        Object::set_value($result, 'queryDebugResult', $debug_result);
       }
       return $ret;
 
@@ -945,17 +948,17 @@ class openSearch extends webServiceServer {
 //var_dump($unit_id);
 //var_dump($fedora_addi_relation);
 //die();
-      $o->collection->_value->resultPosition->_value = $fpid_number + 1;
-      $o->collection->_value->numberOfObjects->_value = 1;
+      Object::set_value($o->collection->_value, 'resultPosition', $fpid_number + 1);
+      Object::set_value($o->collection->_value, 'numberOfObjects', 1);
       if ($rec_error) {
-        $help->_value->error->_value = $rec_error;
-        $help->_value->identifier->_value = $fpid->_value;
+        Object::set_value($help->_value, 'error', $rec_error);
+        Object::set_value($help->_value, 'identifier', $fpid->_value);
         $o->collection->_value->object[] = $help;
         unset($help);
         unset($rec_error);
       } 
       else {
-        $o->collection->_value->object[]->_value =
+        Object::set($o->collection->_value->object[], '_value',
           self::parse_fedora_object($fedora_result,
                                     $fedora_addi_relation,
                                     $unit_members,
@@ -963,9 +966,9 @@ class openSearch extends webServiceServer {
                                     $fpid->_value,
                                     $primary_oid,
                                     $this->filter_agency,
-                                    $no_of_holdings);
+                                    $no_of_holdings));
       }
-      $collections[]->_value = $o;
+      Object::set($collections[], '_value', $o);
       unset($o);
       $id_array[] = $unit_id;
       $work_ids[$fpid_number + 1] = array($unit_id);
@@ -981,15 +984,15 @@ class openSearch extends webServiceServer {
     self::remove_unselected_formats($collections);
 
     $result = &$ret->searchResponse->_value->result->_value;
-    $result->hitCount->_value = count($collections);
-    $result->collectionCount->_value = count($collections);
-    $result->more->_value = 'false';
+    Object::set_value($result, 'hitCount', count($collections));
+    Object::set_value($result, 'collectionCount', count($collections));
+    Object::set_value($result, 'more', 'false');
     $result->searchResult = $collections;
-    $result->facetResult->_value = '';
-    $result->statInfo->_value->fedoraRecordsCached->_value = $this->number_of_fedora_cached;
-    $result->statInfo->_value->fedoraRecordsRead->_value = $this->number_of_fedora_calls;
-    $result->statInfo->_value->time->_value = $this->watch->splittime('Total');
-    $result->statInfo->_value->trackingId->_value = $this->tracking_id;
+    Object::set_value($result, 'facetResult', '');
+    Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_fedora_cached);
+    Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_fedora_calls);
+    Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
+    Object::set_value($result->statInfo->_value, 'trackingId', $this->tracking_id);
 
     verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
                        ':: agency:' . $param->agency->_value . 
@@ -1004,7 +1007,7 @@ class openSearch extends webServiceServer {
   */
   public function info($param) {
     $result = &$ret->infoResponse->_value;
-    $result->infoGeneral->_value->defaultRepository->_value = $this->config->get_value('default_repository', 'setup');
+    Object::set_value($result->infoGeneral->_value, 'defaultRepository', $this->config->get_value('default_repository', 'setup'));
     $result->infoRepositories = self::get_repository_info();
     $result->infoObjectFormats = self::get_object_format_info();
     $result->infoSearchProfile = self::get_search_profile_info($param->agency->_value, $param->profile->_value);
@@ -1034,30 +1037,30 @@ class openSearch extends webServiceServer {
   private function get_search_profile_info($agency, $profile) {
     if ($s_profile = self::fetch_profile_from_agency($agency, $profile)) {
       foreach ($s_profile as $p) {
-        $coll->searchCollectionName->_value = $p['sourceName'];
-        $coll->searchCollectionIdentifier->_value = $p['sourceIdentifier'];
+        Object::set_value($coll, 'searchCollectionName', $p['sourceName']);
+        Object::set_value($coll, 'searchCollectionIdentifier', $p['sourceIdentifier']);
         if ($p['relation'])
           foreach ($p['relation'] as $relation) {
             if ($r = $relation['rdfLabel']) {
               $all_relations[$r] = $r;
-              $rels[]->_value = $r;
+              Object::set($rels[], '_value', $r);
             }
             if ($r = $relation['rdfInverse']) {
               $all_relations[$r] = $r;
-              $rels[]->_value = $r;
+              Object::set($rels[], '_value', $r);
             }
           }
         if ($rels) {
           $coll->relationType = $rels;
           unset($rels);
         }
-        $ret->_value->searchCollection[]->_value = $coll;
+        Object::set_array_value($ret->_value, 'searchCollection', $coll);
         if (is_array($all_relations)) {
           ksort($all_relations);
           foreach ($all_relations as $rel) {
-            $rels->relationType[]->_value = $rel;
+            Object::set_array_value($rels, 'relationType', $rel);
           }
-          $ret->_value->relationTypes->_value = $rels;
+          Object::set_value($ret->_value, 'relationTypes', $rels);
           unset($rels);
         }
         unset($coll);
@@ -1072,13 +1075,13 @@ class openSearch extends webServiceServer {
    */
   private function get_object_format_info() {
     foreach ($this->config->get_value('scan_format_table', 'setup') as $name => $value) {
-      $ret->_value->objectFormat[]->_value = $value;
+      Object::set_array_value($ret->_value, 'objectFormat', $value);
     }
     foreach ($this->config->get_value('solr_format', 'setup') as $name => $value) {
-      $ret->_value->objectFormat[]->_value = $name;
+      Object::set_array_value($ret->_value, 'objectFormat', $name);
     }
     foreach ($this->config->get_value('open_format', 'setup') as $name => $value) {
-      $ret->_value->objectFormat[]->_value = $name;
+      Object::set_array_value($ret->_value, 'objectFormat', $name);
     }
     return $ret;
   }
@@ -1092,9 +1095,9 @@ class openSearch extends webServiceServer {
     $repositories = $this->config->get_value('repository', 'setup');
     foreach ($repositories as $name => $value) {
       if ($name != 'defaults') {
-        $r->repository->_value = $name;
+        Object::set_value($r, 'repository', $name);
         self::set_repositories($name, FALSE);
-        $r->cqlIndexDoc->_value = $this->repository['cql_file'];
+        Object::set_value($r, 'cqlIndexDoc', $this->repository['cql_file']);
         if ($this->repository['cql_settings'] && @ $dom->loadXML($this->repository['cql_settings'])) {
           foreach ($dom->getElementsByTagName('indexInfo') as $index_info) {
             foreach ($index_info->getElementsByTagName('index') as $index) {
@@ -1104,16 +1107,16 @@ class openSearch extends webServiceServer {
                     $idx = self::set_name_and_slop($name);
                   }
                   foreach ($map->getElementsByTagName('alias') as $alias) {
-                    $idx->indexAlias[]->_value = self::set_name_and_slop($alias);
+                    Object::set_array_value($idx, 'indexAlias', self::set_name_and_slop($alias));
                   }
-                  $r->cqlIndex[]->_value = $idx;
+                  Object::set_array_value($r, 'cqlIndex', $idx);
                   unset($idx);
                 }
               }
             }
           }
         }
-        $ret->_value->infoRepository[]->_value = $r;
+        Object::set_array_value($ret->_value, 'infoRepository', $r);
         unset($r);
       }
     }
@@ -1127,9 +1130,9 @@ class openSearch extends webServiceServer {
    */
   private function set_name_and_slop($node) {
     $prefix = $node->getAttribute('set');
-    $reg->indexName->_value = $prefix . ($prefix ? '.' : '') . $node->nodeValue;
+    Object::set_value($reg, 'indexName', $prefix . ($prefix ? '.' : '') . $node->nodeValue);
     if ($slop = $node->getAttribute('slop')) {
-      $reg->indexSlop->_value = $slop;
+      Object::set_value($reg, 'indexSlop', $slop);
     }
     return $reg;
   }
@@ -1140,9 +1143,9 @@ class openSearch extends webServiceServer {
    */
   private function get_namespace_info() {
     foreach ($this->config->get_value('xmlns', 'setup') as $prefix => $namespace) {
-      $ns->prefix->_value = $prefix;
-      $ns->uri->_value = $namespace;
-      $nss->_value->infoNameSpace[]->_value = $ns;
+      Object::set_value($ns, 'prefix', $prefix);
+      Object::set_value($ns, 'uri', $namespace);
+      Object::set_array_value($nss->_value, 'infoNameSpace', $ns);
       unset($ns);
     }
     return $nss;
@@ -1154,38 +1157,38 @@ class openSearch extends webServiceServer {
    */
   private function get_sort_info() {
     foreach ($this->config->get_value('rank', 'setup') as $name => $val) {
-      if ($help = self::collect_rank_boost($val['word_boost'])) {
-        $boost->word = $help;
+      if (isset($val['word_boost']) && ($help = self::collect_rank_boost($val['word_boost']))) {
+        Object::set($boost, 'word', $help);
       }
-      if ($help = self::collect_rank_boost($val['phrase_boost'])) {
-        $boost->phrase = $help;
+      if (isset($val['phrase_boost']) && ($help = self::collect_rank_boost($val['phrase_boost']))) {
+        Object::set($boost, 'phrase', $help);
       }
       if ($boost) {
-        $rank->sort->_value = $name;
-        $rank->internalType->_value = 'rank';
-        $rank->rankDetails->_value->tie->_value = $val['tie'];
+        Object::set_value($rank, 'sort', $name);
+        Object::set_value($rank, 'internalType', 'rank');
+        Object::set_value($rank->rankDetails->_value, 'tie', $val['tie']);
         $rank->rankDetails->_value = $boost;
-        $ret->_value->infoSort[]->_value = $rank;
+        Object::set_Array_value($ret->_value, 'infoSort', $rank);
         unset($boost);
         unset($rank);
       }
     }
     foreach ($this->config->get_value('sort', 'setup') as $name => $val) {
-        $sort->sort->_value = $name;
+        Object::set_value($sort, 'sort', $name);
         if (is_array($val)) {
-          $sort->internalType->_value = 'complexSort';
+          Object::set_value($sort, 'internalType', 'complexSort');
           foreach ($val as $simpleSort) {
-            $simple[]->_value = $simpleSort;
+            Object::set($simple[], '_value', $simpleSort);
           }
-          $sortDetails->sort = $simple;
+          Object::set($sortDetails, 'sort', $simple);
           unset($simple);
         }
         else {
-          $sort->internalType->_value = ($val == 'random' ? 'random' : 'basicSort');
-          $sortDetails->sort->_value = $val;
+          Object::set_value($sort, 'internalType', ($val == 'random' ? 'random' : 'basicSort'));
+          Object::set_value($sortDetails, 'sort', $val);
         }
-        $sort->sortDetails->_value = $sortDetails;
-        $ret->_value->infoSort[]->_value = $sort;
+        Object::set_value($sort, 'sortDetails', $sortDetails);
+        Object::set_array_value($ret->_value, 'infoSort', $sort);
         unset($sort);
         unset($sortDetails);
     }
@@ -1200,9 +1203,9 @@ class openSearch extends webServiceServer {
   private function collect_rank_boost($rank) {
     if (is_array($rank)) {
       foreach ($rank as $reg => $weight) {
-        $rw->fieldName->_value = $reg;
-        $rw->weight->_value = $weight;
-        $iaw->_value->fieldNameAndWeight[]->_value = $rw; 
+        Object::set_value($rw, 'fieldName', $reg);
+        Object::set_value($rw, 'weight', $weight);
+        Object::set_array_value($iaw->_value, 'fieldNameAndWeight', $rw);
         unset($rw);
       }
     }
@@ -1219,16 +1222,16 @@ class openSearch extends webServiceServer {
   private function set_sortUsed(&$ret, $rank, $sort, $sort_types) {
     if (isset($rank)) {
       if (substr($rank, 0, 9) != 'user_rank') {
-        $ret->sortUsed->_value = $rank;
+        Object::set_value($ret, 'sortUsed', $rank);
       }
     }
     elseif (!empty($sort)) {
       if ($key = array_search($sort, $sort_types)) {
-        $ret->sortUsed->_value = $key;
+        Object::set_value($ret, 'sortUsed', $key);
       }
       else {
         foreach ($sort as $s) {
-          $ret->sortUsed[]->_value = $s;
+          Object::set_array_value($ret, 'sortUsed', $s);
         }
       }
     }
@@ -1365,7 +1368,7 @@ class openSearch extends webServiceServer {
     $this->curl->set_option(CURLOPT_POST, 0, 0);
     $dom = new DomDocument();
     @ $dom->loadXml($result);
-    if ($records = &$dom->getElementsByTagName('records')->item(0)) {
+    if ($records = $dom->getElementsByTagName('records')->item(0)) {
       foreach ($solr_response['docs'] as $solr_doc) {
         $found_record = FALSE;
         $solr_id = self::scalar_or_first_elem($solr_doc[RR_MARC_001_A]);
@@ -1405,10 +1408,10 @@ class openSearch extends webServiceServer {
         }
         self::filter_marcxchange($solr_agency, $marc_obj, $this->repository['filter']);
         $rec_pos++;
-        $ret[$rec_pos]->_value->collection->_value->resultPosition->_value = $rec_pos;
-        $ret[$rec_pos]->_value->collection->_value->numberOfObjects->_value = 1;
-        $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_value = $marc_obj;
-        $ret[$rec_pos]->_value->collection->_value->object[0]->_value->collection->_namespace = $this->xmlns['marcx'];
+        Object::set_value($ret[$rec_pos]->_value->collection->_value, 'resultPosition', $rec_pos);
+        Object::set_value($ret[$rec_pos]->_value->collection->_value, 'numberOfObjects', 1);
+        Object::set_value($ret[$rec_pos]->_value->collection->_value->object[0]->_value, 'collection', $marc_obj);
+        Object::set_namespace($ret[$rec_pos]->_value->collection->_value->object[0]->_value, 'collection', $this->xmlns['marcx']);
       }
     }
     return $ret;
@@ -1885,7 +1888,7 @@ class openSearch extends webServiceServer {
     if (is_array($objectFormat))
       $help = $objectFormat;
     elseif (empty($objectFormat->_value))
-      $help[]->_value = 'dkabm';
+      Object::set($help[], '_value', 'dkabm');
     else
       $help[] = $objectFormat;
     foreach ($help as $of) {
@@ -1974,13 +1977,14 @@ class openSearch extends webServiceServer {
                         $tag_value = $format_tag;
                       }
                       if ($format_tag == 'fedora.identifier') {
-                        $mani->_value->$tag_value->_namespace = $solr_display_ns;
-                        $mani->_value->$tag_value->_value = $fpid;
+                        Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
+                        Object::set_value($mani->_value, $tag_value, $fpid);
                       }
                       else {
                         if (is_array($solr_doc[$format_tag])) {
                           if ($this->feature_sw[$format_tag] == 'array') {   // more than one for this
                             foreach ($solr_doc[$format_tag] as $solr_tag) {
+                              $help = new stdClass();
                               $help->_namespace = $solr_display_ns;
                               $help->_value = self::normalize_chars($solr_tag);
                               $mani->_value->{$tag_value}[] = $help;
@@ -1988,13 +1992,13 @@ class openSearch extends webServiceServer {
                             }
                           }
                           else {
-                            $mani->_value->$tag_value->_namespace = $solr_display_ns;
-                            $mani->_value->$tag_value->_value = self::normalize_chars($solr_doc[$format_tag][0]);
+                            Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
+                            Object::set_value($mani->_value, $tag_value, self::normalize_chars($solr_doc[$format_tag][0]));
                           }
                         }
                         else {
-                          $mani->_value->$tag_value->_namespace = $solr_display_ns;
-                          $mani->_value->$tag_value->_value = self::normalize_chars($solr_doc[$format_tag]);
+                          Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
+                          Object::set_value($mani->_value, $tag_value, self::normalize_chars($solr_doc[$format_tag]));
                         }
                       }
                     }
@@ -2014,8 +2018,8 @@ class openSearch extends webServiceServer {
           if (is_array($manifestation->manifestation)) {
             ksort($manifestation->manifestation);
           }
-          $c->_value->formattedCollection->_value->$format_name->_namespace = $solr_display_ns;
-          $c->_value->formattedCollection->_value->$format_name->_value = $manifestation;
+          Object::set_namespace($c->_value->formattedCollection->_value, $format_name, $solr_display_ns);
+          Object::set_value($c->_value->formattedCollection->_value, $format_name, $manifestation);
           unset($manifestation);
         }
       }
@@ -2035,18 +2039,18 @@ class openSearch extends webServiceServer {
     foreach ($this->format as $format_name => $format_arr) {
       if ($format_arr['is_open_format']) {
         if ($open_format_uri = $this->config->get_value('ws_open_format_uri', 'setup')) {
-          $f_obj->formatRequest->_namespace = $this->xmlns['of'];
-          $f_obj->formatRequest->_value->originalData = $collections;
+          Object::set_namespace($f_obj, 'formatRequest', $this->xmlns['of']);
+          Object::set($f_obj->formatRequest->_value, 'originalData', $collections);
   // need to set correct namespace
           foreach ($f_obj->formatRequest->_value->originalData as $i => &$oD) {
             $save_ns[$i] = $oD->_namespace;
             $oD->_namespace = $this->xmlns['of'];
           }
-          $f_obj->formatRequest->_value->outputFormat->_namespace = $this->xmlns['of'];
-          $f_obj->formatRequest->_value->outputFormat->_value = $format_arr['format_name'];
-          $f_obj->formatRequest->_value->outputType->_namespace = $this->xmlns['of'];
-          $f_obj->formatRequest->_value->outputType->_value = 'php';
-          $f_obj->formatRequest->_value->trackingId->_value = $this->tracking_id;
+          Object::set_namespace($f_obj->formatRequest->_value, 'outputFormat', $this->xmlns['of']);
+          Object::set_value($f_obj->formatRequest->_value, 'outputFormat', $format_arr['format_name']);
+          Object::set_namespace($f_obj->formatRequest->_value, 'outputType', $this->xmlns['of']);
+          Object::set_value($f_obj->formatRequest->_value, 'outputType', 'php');
+          Object::set_value($f_obj->formatRequest->_value, 'trackingId', $this->tracking_id);
           $f_xml = $this->objconvert->obj2soap($f_obj);
           $this->curl->set_post($f_xml);
           $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
@@ -2065,7 +2069,7 @@ class openSearch extends webServiceServer {
             $struct = key($fr_obj->formatResponse->_value);
             // if ($struct == 'error') ... 
             foreach ($collections as $idx => &$c) {
-              $c->_value->formattedCollection->_value->{$struct} = $fr_obj->formatResponse->_value->{$struct}[$idx];
+              Object::set($c->_value->formattedCollection->_value, $struct,  $fr_obj->formatResponse->_value->{$struct}[$idx]);
             }
           }
         }
@@ -2074,8 +2078,8 @@ class openSearch extends webServiceServer {
           if (empty($formatRecords)) {
             $formatRecords = new FormatRecords($this->config->get_section('format'), $this->xmlns['of'], $this->objconvert, $this->xmlconvert, $this->watch);
           }
-          $param->outputFormat->_value = $format_arr['format_name'];
-          $param->outputFormat->_namespace = $this->xmlns['of'];
+          Object::set_value($param, 'outputFormat', $format_arr['format_name']);
+          Object::set_namespace($param, 'outputFormat', $this->xmlns['of']);
           $param->originalData = $collections;
   // need to set correct namespace
           foreach ($param->originalData as $i => &$oD) {
@@ -2095,7 +2099,7 @@ class openSearch extends webServiceServer {
           else {
             $struct = key($fr_obj[0]);
             foreach ($collections as $idx => &$c) {
-              $c->_value->formattedCollection->_value->{$struct} = $fr_obj[$idx]->{$struct};
+              Object::set($c->_value->formattedCollection->_value, $struct,  $fr_obj[$idx]->{$struct});
             }
           }
         }
@@ -3043,33 +3047,33 @@ class openSearch extends webServiceServer {
     }
 
     $ret = $rec;
-    $ret->identifier->_value = $rec_id;
+    Object::set_value($ret, 'identifier', $rec_id);
     if ($primary_id) {
-      $ret->primaryObjectIdentifier->_value = $primary_id;
+      Object::set_value($ret, 'primaryObjectIdentifier', $primary_id);
     }
     if ($rs = self::get_record_status($fedora_dom)) {
-      $ret->recordStatus->_value = $rs;
+      Object::set_value($ret, 'recordStatus', $rs);
     }
     if ($cd = self::get_creation_date($fedora_dom)) {
-      $ret->creationDate->_value = $cd;
+      Object::set_value($ret, 'creationDate', $cd);
     }
 // hack
     if (empty($ret->creationDate->_value) && (strpos($rec_id, 'tsart:') || strpos($rec_id, 'avis:'))) {
       unset($holdings_count);
     }
     if (is_array($holdings_count)) {
-      $ret->holdingsCount->_value = $holdings_count['have'];
-      $ret->lendingLibraries->_value = $holdings_count['lend'];
+      Object::set_value($ret, 'holdingsCount', $holdings_count['have']);
+      Object::set_value($ret, 'lendingLibraries', $holdings_count['lend']);
     }
-    if ($relations) $ret->relations->_value = $relations;
+    if ($relations) Object::set_value($ret, 'relations', $relations);
     if ($fa = self::scan_for_formats($fedora_dom)) {
-      $ret->formatsAvailable->_value = $fa;
+      Object::set_value($ret, 'formatsAvailable', $fa);
     }
     foreach ($unit_members as $um) {
-        $u_member->identifier[]->_value = $um;
+        Object::set_array_value($u_member, 'identifier', $um);
     }
-    $ret->objectsAvailable->_value = $u_member;
-    if ($debug_info) $ret->queryResultExplanation->_value = $debug_info;
+    Object::set_value($ret, 'objectsAvailable', $u_member);
+    if ($debug_info) Object::set_value($ret, 'queryResultExplanation', $debug_info);
 
     return $ret;
   }
@@ -3095,7 +3099,7 @@ class openSearch extends webServiceServer {
    * @retval string - record status
    */
   private function get_record_status(&$dom) {
-    if ($p = &$dom->getElementsByTagName('adminData')->item(0)) {
+    if ($p = $dom->getElementsByTagName('adminData')->item(0)) {
       return $p->getElementsByTagName('recordStatus')->item(0)->nodeValue;
     }
   }
@@ -3106,7 +3110,7 @@ class openSearch extends webServiceServer {
    * @retval string - creation date
    */
   private function get_creation_date(&$dom) {
-    if ($p = &$dom->getElementsByTagName('adminData')->item(0)) {
+    if ($p = $dom->getElementsByTagName('adminData')->item(0)) {
       return $p->getElementsByTagName('creationDate')->item(0)->nodeValue;
     }
   }
@@ -3122,11 +3126,11 @@ class openSearch extends webServiceServer {
       $form_table = $this->config->get_value('scan_format_table', 'setup');
     }
 
-    if (($p = &$dom->getElementsByTagName('container')->item(0)) ||
-        ($p = &$dom->getElementsByTagName('localData')->item(0))) {
+    if (($p = $dom->getElementsByTagName('container')->item(0)) ||
+        ($p = $dom->getElementsByTagName('localData')->item(0))) {
       foreach ($p->childNodes as $tag) {
         if ($x = &$form_table[$tag->tagName])
-          $ret->format[]->_value = $x;
+          Object::set_array_value($ret, 'format', $x);
       }
     }
 
@@ -3160,27 +3164,30 @@ class openSearch extends webServiceServer {
             foreach ($link->getelementsByTagName('collectionIdentifier') as $collection) {
               $relation_ok = $relation_ok || 
                 self::check_valid_external_relation($collection->nodeValue, $this_relation, $this->search_profile);
-              $lci[]->_value = $collection->nodeValue;
+              Object::set($lci[], '_value', $collection->nodeValue);
             }
             if ($relation_ok) {
-              if (!$relation->relationType->_value = $this_relation) {   // ????? WHY - is relationType sometimes empty?
-                $relation->relationType->_value = $link->getelementsByTagName('access')->item(0)->nodeValue;
+              if (empty($this_relation)) {   // ????? WHY - is relationType sometimes empty?
+                Object::set_value($relation, 'relationType', $link->getelementsByTagName('access')->item(0)->nodeValue);
+              }
+              else {
+                Object::set_value($relation, 'relationType', $this_relation);
               }
               if ($rels_type == 'uri' || $rels_type == 'full') {
-                $relation->relationUri->_value = $url;
+                Object::set_value($relation, 'relationUri', $url);
                 if ($nv = $link->getelementsByTagName('accessType')->item(0)->nodeValue) {
-                  $relation->linkObject->_value->accessType->_value = $nv;
+                  Object::set_value($relation->linkObject->_value, 'accessType', $nv);
                 }
                 if ($nv = $link->getelementsByTagName('access')->item(0)->nodeValue) {
-                  $relation->linkObject->_value->access->_value = $nv;
+                  Object::set_value($relation->linkObject->_value, 'access', $nv);
                 }
-                $relation->linkObject->_value->linkTo->_value = $link->getelementsByTagName('linkTo')->item(0)->nodeValue;
+                Object::set_value($relation->linkObject->_value, 'linkTo', $link->getelementsByTagName('linkTo')->item(0)->nodeValue);
                 if ($lci) {
                   $relation->linkObject->_value->linkCollectionIdentifier = $lci;
                 }
               }
               $dup_check[$url] = TRUE;
-              $relations->relation[]->_value = $relation;
+              Object::set_array_value($relations, 'relation', $relation);
               unset($relation);
             }
           }
@@ -3245,28 +3252,28 @@ class openSearch extends webServiceServer {
 // TODO: find some way to check relations validity against the search profile without wasting time on a solr-search
 // TODO: pseudo-collections, like 150015-ereol, which are part of a real collection, should be allowed even when the real collection is not allowed
               if (isset($this->valid_relation[$collection_id]) && self::is_searchable($tag->nodeValue, $filter)) {
-                $relation->relationType->_value = $this_relation;
+                Object::set_value($relation, 'relationType', $this_relation);
                 if ($rels_type == 'uri' || $rels_type == 'full') {
-                  $relation->relationUri->_value = $rel_oid;
+                  Object::set_value($relation, 'relationUri', $rel_oid);
                 }
                 if (is_object($rels_dom) && ($rels_type == 'full')) {
                   $rel_obj = &$relation->relationObject->_value->object->_value;
                   $rel_obj = self::extract_record($rels_dom, $tag->nodeValue);
-                  $rel_obj->identifier->_value = $rel_oid;
+                  Object::set_value($rel_obj, 'identifier', $rel_oid);
                   if ($cd = self::get_creation_date($rels_dom)) {
-                    $rel_obj->creationDate->_value = $cd;
+                    Object::set_value($rel_obj, 'creationDate', $cd);
                   }
                   self::get_relations_from_datastream_domobj($ext_relations, $rel_unit_members, $rels_type);
                   if ($ext_relations) {
-                    $rel_obj->relations->_value = $ext_relations;
+                    Object::set_value($rel_obj, 'relations', $ext_relations);
                     unset($ext_relations);
                   }
                   if ($fa = self::scan_for_formats($rels_dom)) {
-                    $rel_obj->formatsAvailable->_value = $fa;
+                    Object::set_value($rel_obj, 'formatsAvailable', $fa);
                   }
                 }
                 if ($rels_type == 'type' || $relation->relationUri->_value) {
-                  $relations->relation[]->_value = $relation;
+                  Object::set_array_value($relations, 'relation', $relation);
                 }
                 unset($relation);
               }
@@ -3308,23 +3315,25 @@ class openSearch extends webServiceServer {
       switch ($format_name) {
         case 'dkabm':
           $rec = &$ret->record->_value;
-          $record = &$dom->getElementsByTagName('record');
+          $record = $dom->getElementsByTagName('record');
           if ($record->item(0)) {
             $ret->record->_namespace = $record->item(0)->lookupNamespaceURI('dkabm');
           }
           if ($record->item(0)) {
             foreach ($record->item(0)->childNodes as $tag) {
                 if (trim($tag->nodeValue)) {
+                  $o = new stdClass();
                   if ($tag->hasAttributes()) {
                     foreach ($tag->attributes as $attr) {
-                      $o->_attributes-> {$attr->localName}->_namespace = $record->item(0)->lookupNamespaceURI($attr->prefix);
-                      $o->_attributes-> {$attr->localName}->_value = $attr->nodeValue;
+                      Object::set_namespace($o->_attributes, $attr->localName, $record->item(0)->lookupNamespaceURI($attr->prefix));
+                      Object::set_value($o->_attributes, $attr->localName, $attr->nodeValue);
                     }
                   }
                   $o->_namespace = $record->item(0)->lookupNamespaceURI($tag->prefix);
                   $o->_value = trim($tag->nodeValue);
-                  if ($tag->localName && !($tag->localName == 'subject' && $tag->nodeValue == 'undefined'))
+                  if ($tag->localName && !($tag->localName == 'subject' && $tag->nodeValue == 'undefined')) {
                     $rec->{$tag->localName}[] = $o;
+                  }
                   unset($o);
                 }
             }
@@ -3335,10 +3344,10 @@ class openSearch extends webServiceServer {
           break;
   
         case 'marcxchange':
-          $record = &$dom->getElementsByTagName('collection');
+          $record = $dom->getElementsByTagName('collection');
           if ($record->item(0)) {
-            $ret->collection->_value = $this->xmlconvert->xml2obj($record->item(0), $this->xmlns['marcx']);
-            $ret->collection->_namespace = $this->xmlns['marcx'];
+            Object::set_value($ret, 'collection', $this->xmlconvert->xml2obj($record->item(0), $this->xmlns['marcx']));
+            Object::set_namespace($ret, 'collection', $this->xmlns['marcx']);
             if (is_array($this->repository['filter'])) {
               self::filter_marcxchange($record_source, $ret->collection->_value, $this->repository['filter']);
             }
@@ -3346,20 +3355,20 @@ class openSearch extends webServiceServer {
           break;
   
         case 'docbook':
-          $record = &$dom->getElementsByTagNameNS($this->xmlns['docbook'], 'article');
+          $record = $dom->getElementsByTagNameNS($this->xmlns['docbook'], 'article');
           if ($record->item(0)) {
-            $ret->article->_value = $this->xmlconvert->xml2obj($record->item(0));
-            $ret->article->_namespace = $record->item(0)->lookupNamespaceURI('docbook');
+            Object::set_value($ret, 'article', $this->xmlconvert->xml2obj($record->item(0)));
+            Object::set_namespace($ret, 'article', $record->item(0)->lookupNamespaceURI('docbook'));
             if (is_array($this->repository['filter'])) {
               self::filter_docbook($record_source, $ret->article->_value, $this->repository['filter']);
             }
           }
           break;
         case 'opensearchobject':
-          $record = &$dom->getElementsByTagNameNS($this->xmlns['oso'], 'object');
+          $record = $dom->getElementsByTagNameNS($this->xmlns['oso'], 'object');
           if ($record->item(0)) {
-            $ret->object->_value = $this->xmlconvert->xml2obj($record->item(0));
-            $ret->object->_namespace = $record->item(0)->lookupNamespaceURI('oso');
+            Object::set_value($ret, 'object', $this->xmlconvert->xml2obj($record->item(0)));
+            Object::set_namespace($ret, 'object', $record->item(0)->lookupNamespaceURI('oso'));
           }
           break;
       }
@@ -3394,16 +3403,16 @@ class openSearch extends webServiceServer {
   private function parse_for_facets(&$solr_arr) {
     if (is_array($solr_arr['facet_counts']['facet_fields'])) {
       foreach ($solr_arr['facet_counts']['facet_fields'] as $facet_name => $facet_field) {
-        $facet->facetName->_value = $facet_name;
+        Object::set_value($facet, 'facetName', $facet_name);
         foreach ($facet_field as $term => $freq) {
           if (isset($term) && isset($freq)) {
-            $o->frequence->_value = $freq;
-            $o->term->_value = $term;
-            $facet->facetTerm[]->_value = $o;
+            Object::set_value($o, 'frequence', $freq);
+            Object::set_value($o, 'term', $term);
+            Object::set_array_value($facet, 'facetTerm', $o);
             unset($o);
           }
         }
-        $ret->facet[]->_value = $facet;
+        Object::set_array_value($ret, 'facet', $facet);
         unset($facet);
       }
     }
@@ -3443,15 +3452,15 @@ class openSearch extends webServiceServer {
    * @retval object 
    */
   private function set_debug_info($solr_debug, $rank_freq_debug = '', $best_match_debug = '') {
-    $ret->rawQueryString->_value = $solr_debug['rawquerystring'];
-    $ret->queryString->_value = $solr_debug['querystring'];
-    $ret->parsedQuery->_value = $solr_debug['parsedquery'];
-    $ret->parsedQueryString->_value = $solr_debug['parsedquery_toString'];
+    Object::set_value($ret, 'rawQueryString', $solr_debug['rawquerystring']);
+    Object::set_value($ret, 'queryString', $solr_debug['querystring']);
+    Object::set_value($ret, 'parsedQuery', $solr_debug['parsedquery']);
+    Object::set_value($ret, 'parsedQueryString', $solr_debug['parsedquery_toString']);
     if ($best_match_debug) {
-      $ret->bestMatch->_value = $best_match_debug;
+      Object::set_value($ret, 'bestMatch', $best_match_debug);
     }
     if ($rank_freq_debug) {
-      $ret->rankFrequency->_value = $rank_freq_debug;
+      Object::set_value($ret, 'rankFrequency', $rank_freq_debug);
     }
     return $ret;
   }
