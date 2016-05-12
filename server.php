@@ -289,7 +289,7 @@ class openSearch extends webServiceServer {
       $solr_query['edismax'] = $solr_query['best_match'];
       foreach ($solr_query['best_match']['sort'] as $key => $val) {
         $sort_q .= '&' . $key . '=' . urlencode($val);
-        $best_match_debug->$key->_value = $val;
+        Object::set_value($best_match_debug, $key, $val);
       }
     }
     elseif ($sort) {
@@ -1728,7 +1728,7 @@ class openSearch extends webServiceServer {
     $max = -1;
     foreach ($guess as $idx => $g) {
       $freq = $freqs[$idx] * $g['weight'];
-      $this->rank_frequence_debug->$g['register']->_value = $freq . ' (' . $freqs[$idx] . '*' . $g['weight'] . ')';
+      Object::set_value($this->rank_frequence_debug, $g['register'], $freq . ' (' . $freqs[$idx] . '*' . $g['weight'] . ')');
       $debug_str .= $g['scheme'] . ': ' . $freq . ' (' . $freqs[$idx] . '*' . $g['weight'] . ') ';
       if ($freq > $max) {
         $ret = $g['scheme'];
@@ -1753,7 +1753,7 @@ class openSearch extends webServiceServer {
     $guess = array();
     $settings = $this->config->get_value('rank_frequency', 'setup');
     foreach ($settings as $r_idx => $setting) {
-      if ($setting['register'] && $ranks[$setting['scheme']]) {
+      if (isset($setting['register']) && $ranks[$setting['scheme']]) {
         foreach (array('agency', 'register', 'scheme', 'weight', 'filter', 'profile') as $par) {
           $guess[$r_idx][$par] = self::get_val_or_default($settings, $r_idx, $par);
         }
