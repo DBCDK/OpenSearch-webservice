@@ -50,6 +50,7 @@ class openSearch extends webServiceServer {
   protected $separate_field_query_style = TRUE; // seach as field:(a OR b) ie FALSE or (field:a OR field:b) ie TRUE
   protected $valid_relation = array(); 
   protected $searchable_source = array(); 
+  protected $searchable_forskningsbibliotek = FALSE;
   protected $collection_contained_in = array(); 
   protected $rank_frequence_debug;
   protected $collection_alias = array();
@@ -2473,6 +2474,9 @@ class openSearch extends webServiceServer {
         }
       }
 
+      $this->searchable_forskningsbibliotek = $this->searchable_source['870970-forsk'] ||
+                                              $this->searchable_source['800000-danbib'] ||
+                                              $this->searchable_source['800000-bibdk'];
       if (DEBUG_ON) {
         print_r($profile);
         echo "rels:\n"; print_r($this->valid_relation); echo "source:\n"; print_r($this->searchable_source);
@@ -2936,7 +2940,7 @@ class openSearch extends webServiceServer {
            PHP_EOL;
     }
     return (($this->searchable_source[$agency . '-' . $collection]) ||
-            ($agency_type == 'Forskningsbibliotek' && $this->searchable_source['870970-forsk']) ||
+            ($agency_type == 'Forskningsbibliotek' && $this->searchable_forskningsbibliotek) ||
             ($agency_type == 'Skolebibliotek' && $this->searchable_source['870970-skole']) ||
             (self::agency_rule($agency, 'use_localdata_stream') && $coll_id == '870970-basis' && $this->searchable_source[$this->agency_catalog_source]) ||
             (self::is_collective_collection($coll_id)) ||
