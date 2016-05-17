@@ -1334,6 +1334,10 @@
           <relationType>dbcaddi:discussedIn</relationType>
         </searchCollection>
         <searchCollection>
+          <searchCollectionName>bibliotek.dk</searchCollectionName>
+          <searchCollectionIdentifier>800000-bibdk</searchCollectionIdentifier>
+        </searchCollection>
+        <searchCollection>
           <searchCollectionName>Bibliotekets katalog</searchCollectionName>
           <searchCollectionIdentifier>190101-katalog</searchCollectionIdentifier>
         </searchCollection>
@@ -1352,6 +1356,10 @@
         <searchCollection>
           <searchCollectionName>Credo</searchCollectionName>
           <searchCollectionIdentifier>150041-credo</searchCollectionIdentifier>
+        </searchCollection>
+        <searchCollection>
+          <searchCollectionName>Danbib</searchCollectionName>
+          <searchCollectionIdentifier>800000-danbib</searchCollectionIdentifier>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Ebrary Academic Complete</searchCollectionName>
