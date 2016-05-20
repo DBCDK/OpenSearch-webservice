@@ -866,8 +866,7 @@ class openSearch extends webServiceServer {
     $this->watch->start('cql');
     $chk_query = $this->cql2solr->parse('rec.id=(' . implode(OR_OP, $id_array) . ')');
     $this->watch->stop('cql');
-    $solr_q = $this->repository['solr'] .
-             '?wt=phps' .
+    $solr_q = 'wt=phps' .
               '&q=' . urlencode(implode(AND_OP, $chk_query['edismax']['q'])) .
               '&fq=' . $filter_q .
               '&start=0' .
@@ -875,7 +874,9 @@ class openSearch extends webServiceServer {
               '&defType=edismax' .
               '&fl=rec.collectionIdentifier,fedoraPid,rec.id,unit.id,unit.isPrimaryObject' . $add_fl;
     verbose::log(TRACE, __FUNCTION__ . ':: Search for pids in Solr: ' . $solr_q);
-    $solr_result = $this->curl->get($solr_q);
+    $this->curl->set_post($solr_q); // use post here because query can be very long. curl has current 8192 as max length get url
+    $solr_result = $this->curl->get($this->repository['solr']);
+    $this->curl->set_option(CURLOPT_POST, 0);
     $solr_2_arr[] = unserialize($solr_result);
 
     foreach ($fpids as $fpid_number => $fpid) {
