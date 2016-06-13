@@ -21,8 +21,12 @@ wsdl = opensearch.wsdl
 ;service_location = opensearch.addi.dk/4.1/
 
 ; --------------
-; in_house_domain may use ?ShowInfo and use create_sample form
-in_house_domain = @MY_DOMAIN@
+; in_house_ip_list or in_house_domain may use ?ShowInfo and use create_sample form
+; Using in_house_domain uses NS lookup, to get the name of an ip and makses a reverse lookup with the name.
+; - NS lookup may take some time, so normally in_house_ip_list should be set
+; if in_house_ip_list is set, in_house_domain is ignored.
+in_house_ip_list = @MY_DOMAIN_IP_LIST@
+;in_house_domain = @MY_DOMAIN@
 
 ; set to TRUE to expose the create_sample form
 ; show_samples = 1
@@ -228,6 +232,8 @@ repository[@RAW_RECORD_REPOSITORY_NAME@][rawrepo] = @RAW_RECORD_CONTENT_SERVICE@
 repository[@RAW_RECORD_REPOSITORY_NAME@][cql_file] = rawrecord_cql.xml
 repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^[a-z]'] = .
 repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^...$'] = [&]
+
+@EXTRA_REPOSITORIES@
 
 ; Universal Search - sofar still for test only:
 ; repository for Universal Search - settings are found in [universal_search_settings] section
