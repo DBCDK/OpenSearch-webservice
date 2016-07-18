@@ -15,109 +15,6 @@
                 <marcx:record format="danMARC2" type="Bibliographic">
                   <marcx:leader>00000n    2200000   4500</marcx:leader>
                   <marcx:datafield ind1="0" ind2="0" tag="001">
-                    <marcx:subfield code="a">34497745</marcx:subfield>
-                    <marcx:subfield code="b">870971</marcx:subfield>
-                    <marcx:subfield code="c">20110414123456</marcx:subfield>
-                    <marcx:subfield code="d">20110214</marcx:subfield>
-                    <marcx:subfield code="f">a</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="004">
-                    <marcx:subfield code="r">n</marcx:subfield>
-                    <marcx:subfield code="a">i</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="008">
-                    <marcx:subfield code="t">a</marcx:subfield>
-                    <marcx:subfield code="u">f</marcx:subfield>
-                    <marcx:subfield code="a">2011</marcx:subfield>
-                    <marcx:subfield code="b">dk</marcx:subfield>
-                    <marcx:subfield code="d">y</marcx:subfield>
-                    <marcx:subfield code="l">dan</marcx:subfield>
-                    <marcx:subfield code="v">0</marcx:subfield>
-                    <marcx:subfield code="r">ap</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="009">
-                    <marcx:subfield code="a">a</marcx:subfield>
-                    <marcx:subfield code="g">xe</marcx:subfield>
-                    <marcx:subfield code="g">xx</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="016">
-                    <marcx:subfield code="a">49312229</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="032">
-                    <marcx:subfield code="a">ABU201116</marcx:subfield>
-                    <marcx:subfield code="x">IDA201116</marcx:subfield>
-                    <marcx:subfield code="a">DAR201108</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="086">
-                    <marcx:subfield code="a">Computerspil</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="245">
-                    <marcx:subfield code="a">Blandt drager og dæmoner</marcx:subfield>
-                    <marcx:subfield code="c">the Elder Scrolls V: Skyrim</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="300">
-                    <marcx:subfield code="a">S. [22-27]</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="557">
-                    <marcx:subfield code="a">Game reactor</marcx:subfield>
-                    <marcx:subfield code="j">2011</marcx:subfield>
-                    <marcx:subfield code="z">1603-6522</marcx:subfield>
-                    <marcx:subfield code="V">Nr. 0115 (2011)</marcx:subfield>
-                    <marcx:subfield code="v">Nr. 115 (2011)</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="610">
-                    <marcx:subfield code="a">Bethesda Softworks</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="652">
-                    <marcx:subfield code="m">79.41</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="666">
-                    <marcx:subfield code="0"/>
-                    <marcx:subfield code="f">computerspil</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="666">
-                    <marcx:subfield code="0"/>
-                    <marcx:subfield code="f">rollespil</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="666">
-                    <marcx:subfield code="t">Skyrim : the elder scrolls V</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="700">
-                    <marcx:subfield code="a">Eriksson</marcx:subfield>
-                    <marcx:subfield code="h">Viktor</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="856">
-                    <marcx:subfield code="z">Findes også på internettet</marcx:subfield>
-                    <marcx:subfield code="u">http://www.gamereactor.dk/magcover/dk/gamereactor_115.pdf</marcx:subfield>
-                    <marcx:subfield code="z">PDF-format</marcx:subfield>
-                  </marcx:datafield>
-                  <marcx:datafield ind1="0" ind2="0" tag="996">
-                    <marcx:subfield code="a">IDX</marcx:subfield>
-                  </marcx:datafield>
-                </marcx:record>
-              </marcx:collection>
-              <identifier>870971-tsart:34497745</identifier>
-              <primaryObjectIdentifier>870971-tsart:34497745</primaryObjectIdentifier>
-              <creationDate>2011-02-14</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870971-tsart:34497745</identifier>
-              </objectsAvailable>
-            </object>
-          </collection>
-        </searchResult>
-        <searchResult>
-          <collection>
-            <resultPosition>2</resultPosition>
-            <numberOfObjects>1</numberOfObjects>
-            <object>
-              <marcx:collection>
-                <marcx:record format="danMARC2" type="Bibliographic">
-                  <marcx:leader>00000n    2200000   4500</marcx:leader>
-                  <marcx:datafield ind1="0" ind2="0" tag="001">
                     <marcx:subfield code="a">45235394</marcx:subfield>
                     <marcx:subfield code="b">870970</marcx:subfield>
                     <marcx:subfield code="c">20120628132009</marcx:subfield>
@@ -211,6 +108,109 @@
               </formatsAvailable>
               <objectsAvailable>
                 <identifier>870970-basis:45235394</identifier>
+              </objectsAvailable>
+            </object>
+          </collection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>2</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <marcx:collection>
+                <marcx:record format="danMARC2" type="Bibliographic">
+                  <marcx:leader>00000n    2200000   4500</marcx:leader>
+                  <marcx:datafield ind1="0" ind2="0" tag="001">
+                    <marcx:subfield code="a">34497745</marcx:subfield>
+                    <marcx:subfield code="b">870971</marcx:subfield>
+                    <marcx:subfield code="c">20110414123456</marcx:subfield>
+                    <marcx:subfield code="d">20110214</marcx:subfield>
+                    <marcx:subfield code="f">a</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="004">
+                    <marcx:subfield code="r">n</marcx:subfield>
+                    <marcx:subfield code="a">i</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="008">
+                    <marcx:subfield code="t">a</marcx:subfield>
+                    <marcx:subfield code="u">f</marcx:subfield>
+                    <marcx:subfield code="a">2011</marcx:subfield>
+                    <marcx:subfield code="b">dk</marcx:subfield>
+                    <marcx:subfield code="d">y</marcx:subfield>
+                    <marcx:subfield code="l">dan</marcx:subfield>
+                    <marcx:subfield code="v">0</marcx:subfield>
+                    <marcx:subfield code="r">ap</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="009">
+                    <marcx:subfield code="a">a</marcx:subfield>
+                    <marcx:subfield code="g">xe</marcx:subfield>
+                    <marcx:subfield code="g">xx</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="016">
+                    <marcx:subfield code="a">49312229</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="032">
+                    <marcx:subfield code="a">ABU201116</marcx:subfield>
+                    <marcx:subfield code="x">IDA201116</marcx:subfield>
+                    <marcx:subfield code="a">DAR201108</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="086">
+                    <marcx:subfield code="a">Computerspil</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="245">
+                    <marcx:subfield code="a">Blandt drager og dæmoner</marcx:subfield>
+                    <marcx:subfield code="c">the Elder Scrolls V: Skyrim</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="300">
+                    <marcx:subfield code="a">S. [22-27]</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="557">
+                    <marcx:subfield code="a">Game reactor</marcx:subfield>
+                    <marcx:subfield code="j">2011</marcx:subfield>
+                    <marcx:subfield code="z">1603-6522</marcx:subfield>
+                    <marcx:subfield code="V">Nr. 0115 (2011)</marcx:subfield>
+                    <marcx:subfield code="v">Nr. 115 (2011)</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="610">
+                    <marcx:subfield code="a">Bethesda Softworks</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="652">
+                    <marcx:subfield code="m">79.41</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="666">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="f">computerspil</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="666">
+                    <marcx:subfield code="0"/>
+                    <marcx:subfield code="f">rollespil</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="666">
+                    <marcx:subfield code="t">Skyrim : the elder scrolls V</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="700">
+                    <marcx:subfield code="a">Eriksson</marcx:subfield>
+                    <marcx:subfield code="h">Viktor</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="856">
+                    <marcx:subfield code="z">Findes også på internettet</marcx:subfield>
+                    <marcx:subfield code="u">http://www.gamereactor.dk/magcover/dk/gamereactor_115.pdf</marcx:subfield>
+                    <marcx:subfield code="z">PDF-format</marcx:subfield>
+                  </marcx:datafield>
+                  <marcx:datafield ind1="0" ind2="0" tag="996">
+                    <marcx:subfield code="a">IDX</marcx:subfield>
+                  </marcx:datafield>
+                </marcx:record>
+              </marcx:collection>
+              <identifier>870971-tsart:34497745</identifier>
+              <primaryObjectIdentifier>870971-tsart:34497745</primaryObjectIdentifier>
+              <creationDate>2011-02-14</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870971-tsart:34497745</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -517,8 +517,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>25</fedoraRecordsRead>
-          <time>0.821234</time>
-          <trackingId>2016-04-25T09:08:51:968982:6274</trackingId>
+          <time>0.839023</time>
+          <trackingId>2016-07-18T09:48:34:712570:27780</trackingId>
         </statInfo>
       </result>
     </searchResponse>

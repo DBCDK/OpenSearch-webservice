@@ -328,6 +328,18 @@
             </indexAlias>
           </cqlIndex>
           <cqlIndex>
+            <indexName>dkcclphrase.mti</indexName>
+            <indexAlias>
+              <indexName>mti</indexName>
+            </indexAlias>
+          </cqlIndex>
+          <cqlIndex>
+            <indexName>dkcclphrase.mfo</indexName>
+            <indexAlias>
+              <indexName>mfo</indexName>
+            </indexAlias>
+          </cqlIndex>
+          <cqlIndex>
             <indexName>dkcclphrase.nal</indexName>
             <indexAlias>
               <indexName>nal</indexName>
@@ -1266,6 +1278,12 @@
           </cqlIndex>
           <cqlIndex>
             <indexName>marc.002a</indexName>
+          </cqlIndex>
+          <cqlIndex>
+            <indexName>marc.002b</indexName>
+          </cqlIndex>
+          <cqlIndex>
+            <indexName>marc.002c</indexName>
           </cqlIndex>
           <cqlIndex>
             <indexName>marc.021ae</indexName>
