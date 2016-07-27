@@ -946,6 +946,9 @@
             <indexName>facet.date</indexName>
           </cqlIndex>
           <cqlIndex>
+            <indexName>facet.dateFirstEdition</indexName>
+          </cqlIndex>
+          <cqlIndex>
             <indexName>facet.department</indexName>
           </cqlIndex>
           <cqlIndex>
@@ -1121,6 +1124,9 @@
           </cqlIndex>
           <cqlIndex>
             <indexName>term.acquisitionDate</indexName>
+          </cqlIndex>
+          <cqlIndex>
+            <indexName>term.dateFirstEdition</indexName>
           </cqlIndex>
           <cqlIndex>
             <indexName>term.audience</indexName>
