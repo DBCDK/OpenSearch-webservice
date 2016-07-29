@@ -12,47 +12,6 @@
             <numberOfObjects>1</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>34497745|870971</ac:identifier>
-                <dc:identifier xsi:type="dcterms:URI">http://www.gamereactor.dk/magcover/dk/gamereactor_115.pdf</dc:identifier>
-                <ac:source>Tidsskriftsartikler</ac:source>
-                <dc:title>Blandt drager og dæmoner</dc:title>
-                <dc:title xsi:type="dkdcplus:full">Blandt drager og dæmoner : the Elder Scrolls V: Skyrim</dc:title>
-                <dc:creator>Viktor Eriksson</dc:creator>
-                <dc:creator xsi:type="oss:sort">Eriksson, Viktor</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">79.41</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCF">Bethesda Softworks</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Computerspil</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCF">Skyrim : the elder scrolls V</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCF">computerspil</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCF">rollespil</dc:subject>
-                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:date>2011</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Tidsskriftsartikel</dc:type>
-                <dcterms:extent>S. 22-27</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">dan</dc:language>
-                <dc:language>Dansk</dc:language>
-                <dcterms:isPartOf>Game reactor, Nr. 115 (2011)</dcterms:isPartOf>
-                <dcterms:isPartOf xsi:type="dkdcplus:ISSN">1603-6522</dcterms:isPartOf>
-              </dkabm:record>
-              <identifier>870971-tsart:34497745</identifier>
-              <primaryObjectIdentifier>870971-tsart:34497745</primaryObjectIdentifier>
-              <creationDate>2011-02-14</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870971-tsart:34497745</identifier>
-              </objectsAvailable>
-            </object>
-          </collection>
-        </searchResult>
-        <searchResult>
-          <collection>
-            <resultPosition>2</resultPosition>
-            <numberOfObjects>1</numberOfObjects>
-            <object>
-              <dkabm:record>
                 <ac:identifier>45235394|870970</ac:identifier>
                 <dc:identifier xsi:type="dkdcplus:ISBN">9781908674036</dc:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
@@ -86,6 +45,47 @@
               </formatsAvailable>
               <objectsAvailable>
                 <identifier>870970-basis:45235394</identifier>
+              </objectsAvailable>
+            </object>
+          </collection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>2</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <dkabm:record>
+                <ac:identifier>34497745|870971</ac:identifier>
+                <dc:identifier xsi:type="dcterms:URI">http://www.gamereactor.dk/magcover/dk/gamereactor_115.pdf</dc:identifier>
+                <ac:source>Tidsskriftsartikler</ac:source>
+                <dc:title>Blandt drager og dæmoner</dc:title>
+                <dc:title xsi:type="dkdcplus:full">Blandt drager og dæmoner : the Elder Scrolls V: Skyrim</dc:title>
+                <dc:creator>Viktor Eriksson</dc:creator>
+                <dc:creator xsi:type="oss:sort">Eriksson, Viktor</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">79.41</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">Bethesda Softworks</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Computerspil</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">Skyrim : the elder scrolls V</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">computerspil</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">rollespil</dc:subject>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dc:date>2011</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Tidsskriftsartikel</dc:type>
+                <dcterms:extent>S. 22-27</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">dan</dc:language>
+                <dc:language>Dansk</dc:language>
+                <dcterms:isPartOf>Game reactor, Nr. 115 (2011)</dcterms:isPartOf>
+                <dcterms:isPartOf xsi:type="dkdcplus:ISSN">1603-6522</dcterms:isPartOf>
+              </dkabm:record>
+              <identifier>870971-tsart:34497745</identifier>
+              <primaryObjectIdentifier>870971-tsart:34497745</primaryObjectIdentifier>
+              <creationDate>2011-02-14</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870971-tsart:34497745</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -173,8 +173,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>25</fedoraRecordsRead>
-          <time>0.872192</time>
-          <trackingId>2016-07-27T08:56:29:495690:28494</trackingId>
+          <time>0.827435</time>
+          <trackingId>2016-07-29T08:38:12:402309:28488</trackingId>
         </statInfo>
       </result>
     </searchResponse>
