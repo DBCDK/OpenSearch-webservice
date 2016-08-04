@@ -567,6 +567,11 @@ sort[solr_genre_category_descending] = sort.genreCategory desc
 sort[solr_dk5_ascending] = sort.dk5 asc
 sort[solr_dk5_descending] = sort.dk5 desc
 
+sort[solr_numberInSeries_ascending] = map(sort.numberInSeries,0,0,9999) asc
+sort[solr_numberInSeries_descending] = sort.numberInSeries desc
+sort[solr_dateFirstEdition_ascending] = map(sort.dateFirstEdition,0,0,9999) asc
+sort[solr_dateFirstEdition_descending] = sort.dateFirstEdition desc
+
 ; sortgroups using sorts - allows you to create "grouped"-sorts, combining existing sorts
 ; like:
 ; sort[<group_sort_name>][] = <sort_name_1>
@@ -617,6 +622,12 @@ sort[genre_category_descending][] = solr_genre_category_descending
 
 sort[dk5_ascending][] = solr_dk5_ascending
 sort[dk5_descending][] = solr_dk5_descending
+
+sort[numberInSeries_ascending][] = solr_numberInSeries_ascending
+sort[numberInSeries_descending][] = solr_numberInSeries_descending
+
+sort[dateFirstEdition_ascending][] = solr_dateFirstEdition_ascending
+sort[dateFirstEdition_descending][] = solr_dateFirstEdition_descending
 
 ; --------------
 ; filter for rank_frequency

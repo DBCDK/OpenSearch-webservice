@@ -3153,7 +3153,7 @@ class openSearch extends webServiceServer {
     if (empty($stream_dom)) {
       $stream_dom = new DomDocument();
     }
-    $dub_check = array();
+    $dup_check = array();
     foreach ($unit_members as $member) {
       self::get_fedora_raw($member, $fedora_streams);
       if (@ !$stream_dom->loadXML($fedora_streams)) {
@@ -3162,7 +3162,9 @@ class openSearch extends webServiceServer {
       else {
         foreach ($stream_dom->getElementsByTagName('link') as $link) {
           $url = $link->getelementsByTagName('url')->item(0)->nodeValue;
-          if (empty($dup_check[$url])) {
+          $access_type = $link->getelementsByTagName('accessType')->item(0)->nodeValue;
+          // test record: 870970-basis:52087708 with 2 hasOnlineAccess with different accessType
+          if (empty($dup_check[$url . $access_type])) {
             $this_relation = $link->getelementsByTagName('relationType')->item(0)->nodeValue;
             unset($lci);
             $relation_ok = FALSE;
@@ -3180,8 +3182,8 @@ class openSearch extends webServiceServer {
               }
               if ($rels_type == 'uri' || $rels_type == 'full') {
                 Object::set_value($relation, 'relationUri', $url);
-                if ($nv = $link->getelementsByTagName('accessType')->item(0)->nodeValue) {
-                  Object::set_value($relation->linkObject->_value, 'accessType', $nv);
+                if ($access_type) {
+                  Object::set_value($relation->linkObject->_value, 'accessType', $access_type);
                 }
                 if ($nv = $link->getelementsByTagName('access')->item(0)->nodeValue) {
                   Object::set_value($relation->linkObject->_value, 'access', $nv);
@@ -3191,7 +3193,7 @@ class openSearch extends webServiceServer {
                   $relation->linkObject->_value->linkCollectionIdentifier = $lci;
                 }
               }
-              $dup_check[$url] = TRUE;
+              $dup_check[$url . $access_type] = TRUE;
               Object::set_array_value($relations, 'relation', $relation);
               unset($relation);
             }
