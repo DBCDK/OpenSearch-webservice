@@ -121,12 +121,12 @@ You should have received a copy of the GNU Affero General Public License along w
       </xs:choice>
     </xs:complexType>
   </xs:element>
-  <xs:element name="access" type="os:accessType">
+  <xs:element name="access" type="xs:string">
     <xs:annotation>
       <xs:documentation xml:lang="en">How to access the linked to resource (e.g. if it is free or not)</xs:documentation>
     </xs:annotation>
   </xs:element>
-  <xs:element name="accessType" type="os:accessTypeType">
+  <xs:element name="accessType" type="xs:string">
     <xs:annotation>
       <xs:documentation xml:lang="en">Whether the access is to e.g. streaming or download</xs:documentation>
     </xs:annotation>
@@ -532,7 +532,7 @@ You should have received a copy of the GNU Affero General Public License along w
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="linkTo" type="os:linkToType">
+  <xs:element name="linkTo" type="xs:string">
     <xs:annotation>
       <xs:documentation xml:lang="en">What the link point so, e.g. a website.</xs:documentation>
     </xs:annotation>
@@ -955,22 +955,6 @@ You should have received a copy of the GNU Affero General Public License along w
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:simpleType name="accessType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="free"/>
-      <xs:enumeration value="openurl"/>
-      <xs:enumeration value="onsite"/>
-      <xs:enumeration value="remote"/>
-      <xs:enumeration value="uni-c"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="accessTypeType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="download"/>
-      <xs:enumeration value="rest"/>
-      <xs:enumeration value="streaming"/>
-    </xs:restriction>
-  </xs:simpleType>
   <xs:simpleType name="collectionTypeType">
     <xs:annotation>
       <xs:documentation xml:lang="en">The types of collections that the service can return.</xs:documentation>
@@ -1021,15 +1005,6 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:enumeration value="complexSort"/>
       <xs:enumeration value="random"/>
       <xs:enumeration value="rank"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="linkToType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="file"/>
-      <xs:enumeration value="linkresolver"/>
-      <xs:enumeration value="proxy"/>
-      <xs:enumeration value="webservice"/>
-      <xs:enumeration value="website"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="objectFormatType">
