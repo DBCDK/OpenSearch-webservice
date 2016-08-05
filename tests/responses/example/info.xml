@@ -1840,6 +1840,34 @@
           </sortDetails>
         </infoSort>
         <infoSort>
+          <sort>solr_numberInSeries_ascending</sort>
+          <internalType>basicSort</internalType>
+          <sortDetails>
+            <sort>map(sort.numberInSeries,0,0,9999) asc</sort>
+          </sortDetails>
+        </infoSort>
+        <infoSort>
+          <sort>solr_numberInSeries_descending</sort>
+          <internalType>basicSort</internalType>
+          <sortDetails>
+            <sort>sort.numberInSeries desc</sort>
+          </sortDetails>
+        </infoSort>
+        <infoSort>
+          <sort>solr_dateFirstEdition_ascending</sort>
+          <internalType>basicSort</internalType>
+          <sortDetails>
+            <sort>map(sort.dateFirstEdition,0,0,9999) asc</sort>
+          </sortDetails>
+        </infoSort>
+        <infoSort>
+          <sort>solr_dateFirstEdition_descending</sort>
+          <internalType>basicSort</internalType>
+          <sortDetails>
+            <sort>sort.dateFirstEdition desc</sort>
+          </sortDetails>
+        </infoSort>
+        <infoSort>
           <sort>acquisitionDate_ascending</sort>
           <internalType>complexSort</internalType>
           <sortDetails>
@@ -1991,6 +2019,34 @@
           <internalType>complexSort</internalType>
           <sortDetails>
             <sort>solr_dk5_descending</sort>
+          </sortDetails>
+        </infoSort>
+        <infoSort>
+          <sort>numberInSeries_ascending</sort>
+          <internalType>complexSort</internalType>
+          <sortDetails>
+            <sort>solr_numberInSeries_ascending</sort>
+          </sortDetails>
+        </infoSort>
+        <infoSort>
+          <sort>numberInSeries_descending</sort>
+          <internalType>complexSort</internalType>
+          <sortDetails>
+            <sort>solr_numberInSeries_descending</sort>
+          </sortDetails>
+        </infoSort>
+        <infoSort>
+          <sort>dateFirstEdition_ascending</sort>
+          <internalType>complexSort</internalType>
+          <sortDetails>
+            <sort>solr_dateFirstEdition_ascending</sort>
+          </sortDetails>
+        </infoSort>
+        <infoSort>
+          <sort>dateFirstEdition_descending</sort>
+          <internalType>complexSort</internalType>
+          <sortDetails>
+            <sort>solr_dateFirstEdition_descending</sort>
           </sortDetails>
         </infoSort>
       </infoSorts>
