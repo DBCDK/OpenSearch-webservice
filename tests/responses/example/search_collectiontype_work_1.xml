@@ -12,7 +12,7 @@
             <numberOfObjects>4</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>27589995|870970</ac:identifier>
+                <ac:identifier>3755325|820010</ac:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
                 <dc:title>Benjamin Buttons forunderlige liv</dc:title>
                 <dc:title xsi:type="dkdcplus:full">Benjamin Buttons forunderlige liv</dc:title>
@@ -25,7 +25,8 @@
                 <dc:subject xsi:type="dkdcplus:genre">drama</dc:subject>
                 <dcterms:abstract>Benjamin Button har ikke haft et helt almindeligt liv. Han blev født i en 80-årig gammel mands krop i New Orleans i 1918. I dagbogsform får vi hans forunderlige livs historie, hvor han ældes baglæns</dcterms:abstract>
                 <dc:description>Originalfilmen: USA : Warner Bros. Pictures : Paramount Pictures : Kennedy/Marshall Company, 2008</dc:description>
-                <dc:description>Af indholdet: Commentary by director David Fincher</dc:description>
+                <dc:description>Disc 2: Bonus-disc</dc:description>
+                <dc:description>Af indholdet: Special features</dc:description>
                 <dcterms:audience xsi:type="dkdcplus:medieraad">Mærkning: Tilladt for børn over 11 år</dcterms:audience>
                 <dcterms:audience xsi:type="dkdcplus:age">Fra 11 år</dcterms:audience>
                 <dcterms:audience>børnematerialer</dcterms:audience>
@@ -46,34 +47,43 @@
                 <dc:contributor xsi:type="dkdcplus:act">Elias Koteas</dc:contributor>
                 <dc:contributor xsi:type="dkdcplus:act">Phyllis Somerville</dc:contributor>
                 <dc:date>2009</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Dvd</dc:type>
-                <dc:format>1 dvd-video</dc:format>
-                <dcterms:extent>ca. 2 t., 39 min.</dcterms:extent>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Blu-ray</dc:type>
+                <dc:format>2 blu-ray discs, blu-ray</dc:format>
+                <dcterms:extent>2 t., 46 min.</dcterms:extent>
                 <dc:language xsi:type="dcterms:ISO639-2">mul</dc:language>
                 <dc:language>Flere sprog</dc:language>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">eng</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">ger</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">ita</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">spa</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">por</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">tha</dc:language>
+                <dc:language xsi:type="dkdcplus:spoken">tur</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">ger</dc:language>
                 <dc:language xsi:type="dkdcplus:subtitles">ita</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">spa</dc:language>
                 <dc:language xsi:type="dkdcplus:subtitles">dut</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">ara</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">chi</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">kor</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">por</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">ind</dc:language>
                 <dc:language xsi:type="dkdcplus:subtitles">dan</dc:language>
                 <dc:language xsi:type="dkdcplus:subtitles">fin</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">heb</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">gre</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">ice</dc:language>
                 <dc:language xsi:type="dkdcplus:subtitles">nor</dc:language>
                 <dc:language xsi:type="dkdcplus:subtitles">swe</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">tha</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">tur</dc:language>
                 <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
               </dkabm:record>
-              <identifier>870970-basis:27589995</identifier>
-              <primaryObjectIdentifier>870970-basis:27589995</primaryObjectIdentifier>
-              <creationDate>2009-01-23</creationDate>
+              <identifier>820010-katalog:3755325</identifier>
+              <primaryObjectIdentifier>820010-katalog:3755325</primaryObjectIdentifier>
+              <creationDate>2010-06-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:27589995</identifier>
+                <identifier>820010-katalog:3755325</identifier>
               </objectsAvailable>
             </object>
             <object>
@@ -93,8 +103,8 @@
               </formatsAvailable>
             </object>
             <object>
-              <identifier>820010-katalog:3755325</identifier>
-              <creationDate>2010-06-14</creationDate>
+              <identifier>870970-basis:27589995</identifier>
+              <creationDate>2009-01-23</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
@@ -186,8 +196,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>27</fedoraRecordsRead>
-          <time>0.885542</time>
-          <trackingId>2016-04-28T09:13:34:986823:6265</trackingId>
+          <time>0.96982</time>
+          <trackingId>2016-08-15T08:45:07:989097:18938</trackingId>
         </statInfo>
       </result>
     </searchResponse>
