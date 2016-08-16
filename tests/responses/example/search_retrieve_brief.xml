@@ -6,7 +6,6 @@
         <hitCount>4</hitCount>
         <collectionCount>3</collectionCount>
         <more>false</more>
-        <sortUsed>date_descending</sortUsed>
         <searchResult>
           <collection>
             <resultPosition>1</resultPosition>
@@ -75,18 +74,6 @@
             <resultPosition>3</resultPosition>
             <numberOfObjects>2</numberOfObjects>
             <object>
-              <identifier>870970-basis:29069654</identifier>
-              <primaryObjectIdentifier>870970-basis:29069654</primaryObjectIdentifier>
-              <creationDate>2011-11-14</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:29069654</identifier>
-              </objectsAvailable>
-            </object>
-            <object>
               <identifier>870970-basis:29069638</identifier>
               <primaryObjectIdentifier>870970-basis:29069638</primaryObjectIdentifier>
               <creationDate>2011-11-14</creationDate>
@@ -96,6 +83,18 @@
               </formatsAvailable>
               <objectsAvailable>
                 <identifier>870970-basis:29069638</identifier>
+              </objectsAvailable>
+            </object>
+            <object>
+              <identifier>870970-basis:29069654</identifier>
+              <primaryObjectIdentifier>870970-basis:29069654</primaryObjectIdentifier>
+              <creationDate>2011-11-14</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870970-basis:29069654</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -126,8 +125,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>25</fedoraRecordsRead>
-          <time>1.661713</time>
-          <trackingId>2016-07-29T08:38:09:000069:10585</trackingId>
+          <time>1.662666</time>
+          <trackingId>2016-08-16T08:44:27:977161:18943</trackingId>
         </statInfo>
       </result>
     </searchResponse>

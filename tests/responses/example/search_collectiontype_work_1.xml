@@ -12,7 +12,7 @@
             <numberOfObjects>4</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>3755325|820010</ac:identifier>
+                <ac:identifier>27928846|870970</ac:identifier>
                 <ac:source>Bibliotekskatalog</ac:source>
                 <dc:title>Benjamin Buttons forunderlige liv</dc:title>
                 <dc:title xsi:type="dkdcplus:full">Benjamin Buttons forunderlige liv</dc:title>
@@ -52,13 +52,8 @@
                 <dcterms:extent>2 t., 46 min.</dcterms:extent>
                 <dc:language xsi:type="dcterms:ISO639-2">mul</dc:language>
                 <dc:language>Flere sprog</dc:language>
-                <dc:language xsi:type="dkdcplus:spoken">eng</dc:language>
-                <dc:language xsi:type="dkdcplus:spoken">ger</dc:language>
-                <dc:language xsi:type="dkdcplus:spoken">ita</dc:language>
-                <dc:language xsi:type="dkdcplus:spoken">spa</dc:language>
-                <dc:language xsi:type="dkdcplus:spoken">por</dc:language>
-                <dc:language xsi:type="dkdcplus:spoken">tha</dc:language>
-                <dc:language xsi:type="dkdcplus:spoken">tur</dc:language>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
                 <dc:language xsi:type="dkdcplus:subtitles">ger</dc:language>
                 <dc:language xsi:type="dkdcplus:subtitles">ita</dc:language>
                 <dc:language xsi:type="dkdcplus:subtitles">spa</dc:language>
@@ -75,15 +70,15 @@
                 <dc:language xsi:type="dkdcplus:subtitles">tur</dc:language>
                 <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
               </dkabm:record>
-              <identifier>820010-katalog:3755325</identifier>
-              <primaryObjectIdentifier>820010-katalog:3755325</primaryObjectIdentifier>
-              <creationDate>2010-06-14</creationDate>
+              <identifier>870970-basis:27928846</identifier>
+              <primaryObjectIdentifier>870970-basis:27928846</primaryObjectIdentifier>
+              <creationDate>2009-09-21</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>820010-katalog:3755325</identifier>
+                <identifier>870970-basis:27928846</identifier>
               </objectsAvailable>
             </object>
             <object>
@@ -95,8 +90,8 @@
               </formatsAvailable>
             </object>
             <object>
-              <identifier>870970-basis:27928846</identifier>
-              <creationDate>2009-09-21</creationDate>
+              <identifier>820010-katalog:3755325</identifier>
+              <creationDate>2010-06-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
@@ -196,8 +191,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>27</fedoraRecordsRead>
-          <time>0.96982</time>
-          <trackingId>2016-08-15T08:45:07:989097:18938</trackingId>
+          <time>0.887206</time>
+          <trackingId>2016-08-16T08:43:27:361699:18940</trackingId>
         </statInfo>
       </result>
     </searchResponse>
