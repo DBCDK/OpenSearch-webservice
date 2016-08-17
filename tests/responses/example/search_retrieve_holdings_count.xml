@@ -6,6 +6,7 @@
         <hitCount>5</hitCount>
         <collectionCount>2</collectionCount>
         <more>false</more>
+        <sortUsed>date_descending</sortUsed>
         <searchResult>
           <collection>
             <resultPosition>1</resultPosition>
@@ -383,8 +384,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>27</fedoraRecordsRead>
-          <time>0.972298</time>
-          <trackingId>2016-08-16T08:42:49:894070:18943</trackingId>
+          <time>1.815672</time>
+          <trackingId>2016-08-17T09:25:33:691118:22512</trackingId>
         </statInfo>
       </result>
     </searchResponse>
