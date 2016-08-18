@@ -370,7 +370,7 @@
                     <marcx:subfield code="a">29069654</marcx:subfield>
                     <marcx:subfield code="b">870970</marcx:subfield>
                     <marcx:subfield code="c">20121231180211</marcx:subfield>
-                    <marcx:subfield code="d">20111114</marcx:subfield>
+                    <marcx:subfield code="d">20111115</marcx:subfield>
                     <marcx:subfield code="f">a</marcx:subfield>
                   </marcx:datafield>
                   <marcx:datafield ind1="0" ind2="0" tag="004">
@@ -503,7 +503,7 @@
               </marcx:collection>
               <identifier>870970-basis:29069654</identifier>
               <primaryObjectIdentifier>870970-basis:29069654</primaryObjectIdentifier>
-              <creationDate>2011-11-14</creationDate>
+              <creationDate>2011-11-15</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
