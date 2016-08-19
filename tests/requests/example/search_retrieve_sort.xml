@@ -3,7 +3,7 @@
   <SOAP-ENV:Body>
     <ns1:searchRequest>
       <ns1:query>dkcclphrase.lti="no country for old men"</ns1:query>
-      <os:objectFormat>briefDisplay</os:objectFormat>
+      <ns1:objectFormat>briefDisplay</ns1:objectFormat>
       <ns1:start>1</ns1:start>
       <ns1:stepValue>1</ns1:stepValue>
       <ns1:sort>acquisitionDate_ascending</ns1:sort>
