@@ -1063,6 +1063,12 @@
             <indexName>phrase.titleSeries</indexName>
           </cqlIndex>
           <cqlIndex>
+            <indexName>sort.creator</indexName>
+          </cqlIndex>
+          <cqlIndex>
+            <indexName>sort.title</indexName>
+          </cqlIndex>
+          <cqlIndex>
             <indexName>phrase.type</indexName>
           </cqlIndex>
           <cqlIndex>
