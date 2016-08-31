@@ -1084,7 +1084,13 @@
             <indexName>scanphrase.creator</indexName>
           </cqlIndex>
           <cqlIndex>
+            <indexName>scanphrase.invCreator</indexName>
+          </cqlIndex>
+          <cqlIndex>
             <indexName>scanphrase.mainCreator</indexName>
+          </cqlIndex>
+          <cqlIndex>
+            <indexName>scanphrase.invMainCreator</indexName>
           </cqlIndex>
           <cqlIndex>
             <indexName>scanphrase.mainTitle</indexName>
