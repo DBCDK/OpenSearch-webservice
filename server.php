@@ -1041,6 +1041,7 @@ class openSearch extends webServiceServer {
       foreach ($s_profile as $p) {
         Object::set_value($coll, 'searchCollectionName', $p['sourceName']);
         Object::set_value($coll, 'searchCollectionIdentifier', $p['sourceIdentifier']);
+        Object::set_value($coll, 'searchCollectionIsSearched', self::xs_boolean($p['sourceSearchable']) ? 'true' : 'false');
         if ($p['relation'])
           foreach ($p['relation'] as $relation) {
             if ($r = $relation['rdfLabel']) {
@@ -1054,9 +1055,13 @@ class openSearch extends webServiceServer {
           }
         if ($rels) {
           $coll->relationType = $rels;
-          unset($rels);
         }
-        Object::set_array_value($ret->_value, 'searchCollection', $coll);
+        if ($rels || self::xs_boolean($p['sourceSearchable'])) {
+          Object::set_array_value($ret->_value, 'searchCollection', $coll);
+        }
+        unset($rels);
+        unset($coll);
+      }
         if (is_array($all_relations)) {
           ksort($all_relations);
           foreach ($all_relations as $rel) {
@@ -1065,8 +1070,6 @@ class openSearch extends webServiceServer {
           Object::set_value($ret->_value, 'relationTypes', $rels);
           unset($rels);
         }
-        unset($coll);
-      }
     }
     return $ret;
   }
@@ -1515,11 +1518,11 @@ class openSearch extends webServiceServer {
       else {
           $add_q =  $this->which_rec_id . ':(' . $add_query . ')';
       }
+      $chk_query = $this->cql2solr->parse($query);
       if ($all_objects) {
-        $chk_query['edismax']['q'][] =  $add_q;
+        $chk_query['edismax']['q'] =  array($add_q);
       }
       else {
-        $chk_query = $this->cql2solr->parse($query);
         if ($add_query) {
           $chk_query['edismax']['q'][] =  $add_q;
         }
@@ -1534,7 +1537,7 @@ class openSearch extends webServiceServer {
       $solr_parm .= '&fl=rec.collectionIdentifier,unit.isPrimaryObject,unit.id,sort.complexKey' . $add_field_list;
       verbose::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
       if (DEBUG_ON) {
-        echo 'post_array: ' . $$solr_url['url'] . PHP_EOL;
+        echo 'post_array: ' . $solr_url['url'] . PHP_EOL;
       }
 
       $this->curl->set_post($solr_parm, 0); // use post here because query can be very long

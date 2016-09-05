@@ -715,6 +715,7 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:sequence>
         <xs:element ref="os:searchCollectionName"/>
         <xs:element ref="os:searchCollectionIdentifier"/>
+        <xs:element ref="os:searchCollectionIsSearched"/>
         <xs:element ref="os:relationType" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
@@ -725,6 +726,11 @@ You should have received a copy of the GNU Affero General Public License along w
     </xs:annotation>
   </xs:element>
   <xs:element name="searchCollectionName" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Name of collection as seen in VIP.</xs:documentation>
+    </xs:annotation>
+  </xs:element>  
+  <xs:element name="searchCollectionIsSearched" type="xs:boolean">
     <xs:annotation>
       <xs:documentation xml:lang="en">Name of collection as seen in VIP.</xs:documentation>
     </xs:annotation>
