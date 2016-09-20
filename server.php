@@ -118,8 +118,10 @@ class openSearch extends webServiceServer {
     if ($unsupported) return $ret_error;
 
     $this->agency = $param->agency->_value;
+    $this->agency_catalog_source = $this->agency . '-katalog';
     $this->filter_agency = self::set_solr_filter($this->search_profile);
-    $this->holdings_include = self::set_holdings_include($this->search_profile, 'parentDocId');
+    //$this->holdings_include = self::set_holdings_include($this->search_profile, 'parentDocId');
+    $this->split_holdings_include = self::split_collections_for_holdingsitem($this->search_profile);
     self::set_valid_relations_and_sources($this->search_profile);
 
     $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
@@ -259,7 +261,7 @@ class openSearch extends webServiceServer {
     $key_work_struct = md5($param->query->_value . $this->repository_name . $this->filter_agency .
                            $use_work_collection .  implode('', $sort) . $rank . $boost_q . $this->config->get_inifile_hash());
 
-    $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language, $this->holdings_include);
+    $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language, $this->split_holdings_include);
     $this->watch->start('cql');
     $solr_query = $this->cql2solr->parse($param->query->_value);
     $this->watch->stop('cql');
@@ -766,7 +768,6 @@ class openSearch extends webServiceServer {
 
     $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
-    $this->agency_catalog_source = $this->agency . '-katalog';
     $this->agency_type = self::get_agency_type($this->agency);
     $this->agency_priority_list = self::fetch_agency_show_priority();
     $this->format = self::set_format($param->objectFormat, 
@@ -906,13 +907,13 @@ class openSearch extends webServiceServer {
         $fedora_pid = $basis_pid;
       }
 
-      if (!$unit_id) {  // should never happen, since the unit.id has to be present in SOLR
-// TODO: This should break the flow and return an error. The records has to be searchable with the chosen search profile
-//       Consider if this will break some systems since getObject once could get all objects in the repository.
+/* if not searchable, the records is not there
+      if (!$unit_id) { 
         verbose::log(WARNING, 'getObject:: Cannot find unit for ' . $fpid->_value . ' in SOLR');
         self::get_fedora_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
         $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
       }
+*/
       if (!$unit_id) {
         $rec_error = 'Error: unknown/missing/inaccessible record: ' . $fpid->_value;
       }
@@ -2302,6 +2303,25 @@ class openSearch extends webServiceServer {
    * @param string $index - the index to match collection identifiers against
    * @retval string - the SOLR filter query that represent the profile
    */
+  private function split_collections_for_holdingsitem($profile, $index = 'rec.collectionIdentifier') {
+    $filtered_collections = $normal_collections = array();
+    if (is_array($profile)) {
+      foreach ($profile as $p) {
+        if (self::xs_boolean($p['sourceSearchable'])) {
+          if ($p['sourceIdentifier'] == $this->agency_catalog_source || $p['sourceIdentifier'] == '870970-basis') {
+            $filtered_collections[] = $p['sourceIdentifier'];
+          }
+          else {
+            $normal_collections[] = $p['sourceIdentifier'];
+          }
+        }
+      }
+    }
+    return 
+      ($normal_collections ? $index . ':(' . implode(' OR ', $normal_collections) . ') OR ' : '') .
+      ($filtered_collections ? '(' . $index . ':(' . implode(' OR ', $filtered_collections) . ') AND %s)' : '%s');
+  }
+
   private function set_holdings_include($profile, $index) {
     $colls = array();
     if (is_array($profile)) {
@@ -2712,10 +2732,13 @@ class openSearch extends webServiceServer {
         $filter .= '&fq=' . rawurlencode($fq);
       }
     }
+    if (is_array($eq['handler_var'])) {
+      $handler_var = '&' . implode('&', $eq['handler_var']);
+    }
     $url = $this->repository['solr'] .
                     '?q=' . urlencode($q) .
                     '&fq=' . $filter .
-                    '&start=' . $start .  $sort . $rank . $boost . $facets .  $collaps_pars .
+                    '&start=' . $start .  $sort . $rank . $boost . $facets .  $collaps_pars . $handler_var .
                     '&defType=edismax';
     $debug_url = $url . '&fl=fedoraPid,unit.id&rows=1&debugQuery=on';
     $url .= '&fl=fedoraPid,unit.id&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');

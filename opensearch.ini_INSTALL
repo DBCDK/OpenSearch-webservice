@@ -173,12 +173,12 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 ; Could be in opensearch_cql.xml a line like
 ;   <name set="holdingsitem" searchHandler="holding" filter="1">accessionDate</name>
 ; would use a setting like the lines below
-;repository[myrepos][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId fromIndex=holdings-items-index defType=edismax} %s__COLLECTION_INCLUDE__
-;repository[myrepos][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId fromIndex=holdings-items-index defType=edismax} %s__COLLECTION_INCLUDE__%22
+;repository[myrepos][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId fromIndex=holdings-items-index defType=edismax v=%s}
+;repository[myrepos][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId fromIndex=holdings-items-index defType=edismax v=%s}%22
 ; the filter attribute controls if the join operation shold go to fq (filter query) or q (query) solr parameter
 
-repository[@REPOSITORY_NAME@][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId fromIndex=@HOLDINGS_ITEMS_INDEX@ defType=edismax} %s__COLLECTION_INCLUDE__
-repository[@REPOSITORY_NAME@][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId fromIndex=@HOLDINGS_ITEMS_INDEX@ defType=edismax} %s__COLLECTION_INCLUDE__%22
+repository[@REPOSITORY_NAME@][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId fromIndex=@HOLDINGS_ITEMS_INDEX@ defType=edismax v=%s}
+repository[@REPOSITORY_NAME@][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId fromIndex=@HOLDINGS_ITEMS_INDEX@ defType=edismax v=%s}%22
 
 ; collection query filter
 ; Filtering on the collectionIdentifiers specified by the search profile
