@@ -57,6 +57,7 @@ class openSearch extends webServiceServer {
   protected $agency_priority_list = array();  // prioritised list af agencies for the actual agency
   protected $unit_fallback = array();     // if fedora is updated and solr is not, this is used to find some record from the old unit
   protected $feature_sw = array();
+  protected $add_collection_with_relation_to_filter = FALSE;
 
 
   public function __construct() {
@@ -163,7 +164,7 @@ class openSearch extends webServiceServer {
     $this->agency_catalog_source = $this->agency . '-katalog';
     $this->agency_type = self::get_agency_type($this->agency);
 
-
+// for future use ...  var_dump($this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Folkebibliotek')); die();
     if ($us_settings = $this->repository['universal']) {
       require_once 'OLS_class_lib/universal_search_class.php';
       $this->watch->start('UniSea');
@@ -643,8 +644,6 @@ class openSearch extends webServiceServer {
         self::format_records($collections);
       }
       if ($this->format['found_solr_format']) {
-        $this->watch->start('Solr_disp');
-        $this->watch->stop('Solr_disp');
         self::format_solr($collections, $display_solr_arr, $work_ids, $fpid_sort_keys);
       }
       self::remove_unselected_formats($collections);
@@ -745,6 +744,7 @@ class openSearch extends webServiceServer {
       Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
     }
     if ($this->agency = $param->agency->_value) {
+      // $this->add_collection_with_relation_to_filter  = TRUE; // Add this to expand getObject to "all" collections
       if ($param->profile->_value) {
         if (!($this->search_profile = self::fetch_profile_from_agency($this->agency, $param->profile->_value))) {
           $error = 'Error: Cannot fetch profile: ' . $param->profile->_value . ' for ' . $this->agency;
@@ -2304,15 +2304,22 @@ class openSearch extends webServiceServer {
    * @retval string - the SOLR filter query that represent the profile
    */
   private function split_collections_for_holdingsitem($profile, $index = 'rec.collectionIdentifier') {
+    $collection_query = $this->repository['collection_query'];
     $filtered_collections = $normal_collections = array();
     if (is_array($profile)) {
+      $this->collection_alias = self::set_collection_alias($profile);
       foreach ($profile as $p) {
-        if (self::xs_boolean($p['sourceSearchable'])) {
+        if (self::xs_boolean($p['sourceSearchable']) || ($this->add_collection_with_relation_to_filter  && count($p['relation']))) {
           if ($p['sourceIdentifier'] == $this->agency_catalog_source || $p['sourceIdentifier'] == '870970-basis') {
             $filtered_collections[] = $p['sourceIdentifier'];
           }
           else {
-            $normal_collections[] = $p['sourceIdentifier'];
+            if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
+              $normal_collections[] = '(' . $index . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
+            }
+            else {
+              $normal_collections[] = $p['sourceIdentifier'];
+            }
           }
         }
       }
@@ -2346,7 +2353,7 @@ class openSearch extends webServiceServer {
     if (is_array($profile)) {
       $this->collection_alias = self::set_collection_alias($profile);
       foreach ($profile as $p) {
-        if (self::xs_boolean($p['sourceSearchable'])) {
+        if (self::xs_boolean($p['sourceSearchable']) || ($this->add_collection_with_relation_to_filter  && count($p['relation']))) {
           if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
             $ret[] = '(' . $index . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
           }
