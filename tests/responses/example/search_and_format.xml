@@ -45,78 +45,17 @@
             </object>
           </collection>
           <formattedCollection>
-            <of:workDisplay>
-              <of:manifestation of:schemaType="Book">
-                <of:work>
-                  <of:title>
-                    <of:titleFull of:htmlClass="titleMain" of:schema="name">No country for old men</of:titleFull>
-                    <of:titleSpecific>No country for old men</of:titleSpecific>
-                  </of:title>
-                  <of:creators>
-                    <of:creator of:className="link">
-                      <of:searchCode of:phrase="phrase.creator">"Cormac McCarthy"</of:searchCode>
-                      <of:display of:schema="creator">Cormac McCarthy</of:display>
-                    </of:creator>
-                  </of:creators>
-                  <of:description>
-                    <of:language>
-                      <of:languageElement>Engelsk</of:languageElement>
-                    </of:language>
-                    <of:abstract>
-                      <of:abstractElement>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</of:abstractElement>
-                    </of:abstract>
-                    <of:aboutAuthor>
-                      <of:aboutAuthorElement of:className="link">
-                        <of:searchCode of:phrase="phrase.subject">"Cormac McCarthy"</of:searchCode>
-                        <of:display>Cormac McCarthy</of:display>
-                      </of:aboutAuthorElement>
-                    </of:aboutAuthor>
-                  </of:description>
-                </of:work>
-                <of:adminData>
-                  <of:pid>870970-basis:43683799</of:pid>
-                  <of:messageCategory>0</of:messageCategory>
-                  <of:requestButton>true</of:requestButton>
-                  <of:typeGroup>literature</of:typeGroup>
-                  <of:orsOrderMaterialType>monograph</of:orsOrderMaterialType>
-                  <of:specifyArticleData>false</of:specifyArticleData>
-                </of:adminData>
-                <of:main>
-                  <of:details>
-                    <of:abstract>
-                      <of:abstractElement>I ørkenen nær Rio Grande opdager en mand på antilopejagt, at en narkohandel tilsyneladende er gået galt. Naturligvis tager han de 2 millioner dollars, som ligger på stedet, men så nemt går det ikke, og snart jages han desperat af både politi og diverse narkobander</of:abstractElement>
-                    </of:abstract>
-                    <of:format of:punctuation=" ; " of:schema="numberOfPages">309 sider</of:format>
-                    <of:shelf>
-                      <of:shelfClassification of:className="link">
-                        <of:searchCode of:word="dkcclterm.dk">83.8</of:searchCode>
-                        <of:display>83.8</of:display>
-                      </of:shelfClassification>
-                    </of:shelf>
-                    <of:originals>Originaludgave: 2005</of:originals>
-                    <of:identifiersISBN>
-                      <of:identifier of:schema="isbn">0-375-40677-8</of:identifier>
-                    </of:identifiersISBN>
-                    <of:language>
-                      <of:languageElement>Engelsk</of:languageElement>
-                    </of:language>
-                  </of:details>
-                  <of:publicationDetails>
-                    <of:publisher of:punctuation=", " of:schema="publisher">Knopf</of:publisher>
-                    <of:publicationYear of:schema="datePublished">2005</of:publicationYear>
-                  </of:publicationDetails>
-                  <of:type of:punctuation=" + ">Bog</of:type>
-                </of:main>
-              </of:manifestation>
-            </of:workDisplay>
+            <of:bibliotekdkWorkDisplay>
+              <of:error>HTTP error 404 . formatting record</of:error>
+            </of:bibliotekdkWorkDisplay>
           </formattedCollection>
         </searchResult>
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>8</fedoraRecordsRead>
-          <time>1.261557</time>
-          <trackingId>2016-07-18T09:48:03:449962:27767</trackingId>
+          <time>1.035536</time>
+          <trackingId>2016-09-27T14:03:42:606833:16058</trackingId>
         </statInfo>
       </result>
     </searchResponse>
