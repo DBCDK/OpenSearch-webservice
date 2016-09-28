@@ -744,7 +744,7 @@ class openSearch extends webServiceServer {
       Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
     }
     if ($this->agency = $param->agency->_value) {
-      // $this->add_collection_with_relation_to_filter  = TRUE; // Add this to expand getObject to "all" collections
+      $this->add_collection_with_relation_to_filter  = TRUE; // Add this to expand getObject to "all" collections
       if ($param->profile->_value) {
         if (!($this->search_profile = self::fetch_profile_from_agency($this->agency, $param->profile->_value))) {
           $error = 'Error: Cannot fetch profile: ' . $param->profile->_value . ' for ' . $this->agency;
