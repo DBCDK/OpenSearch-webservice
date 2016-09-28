@@ -2763,7 +2763,7 @@ class openSearch extends webServiceServer {
     foreach ($urls as $no => $url) {
       verbose::log(TRACE, 'Query: ' . $url['url']);
       verbose::log(DEBUG, 'Query: ' . $url['debug']);
-      $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/plain; charset=utf-8'), $no);
+      $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'), $no);
       $this->curl->set_url($url['url'], $no);
     }
     $solr_results = $this->curl->get();
