@@ -51,6 +51,7 @@ class openSearch extends webServiceServer {
   protected $valid_relation = array(); 
   protected $searchable_source = array(); 
   protected $searchable_forskningsbibliotek = FALSE;
+  protected $search_filter_for_800000 = array();  // set when collection 800000-danbib or 800000-bibdk are searchable
   protected $collection_contained_in = array(); 
   protected $rank_frequence_debug;
   protected $collection_alias = array();
@@ -124,6 +125,7 @@ class openSearch extends webServiceServer {
     //$this->holdings_include = self::set_holdings_include($this->search_profile, 'parentDocId');
     $this->split_holdings_include = self::split_collections_for_holdingsitem($this->search_profile);
     self::set_valid_relations_and_sources($this->search_profile);
+    self::set_search_filters_for_800000_collection();
 
     $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
@@ -264,7 +266,11 @@ class openSearch extends webServiceServer {
 
     $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language, $this->split_holdings_include);
     $this->watch->start('cql');
-    $solr_query = $this->cql2solr->parse($param->query->_value);
+    if ($param->skipFilter->_value == '1')
+      $solr_query = $this->cql2solr->parse($param->query->_value);
+    else
+      $solr_query = $this->cql2solr->parse($param->query->_value, $this->search_filter_for_800000);
+//var_dump($solr_query); var_dump($this->split_holdings_include); var_dump($this->search_filter_for_800000); die();
     $this->watch->stop('cql');
     if ($solr_query['error']) {
       $error = self::cql2solr_error_to_string($solr_query['error']);
@@ -755,6 +761,7 @@ class openSearch extends webServiceServer {
         $agencies = $this->config->get_value('agency', 'agency');
       $agencies[$this->agency] = self::set_solr_filter($this->search_profile);
       self::set_valid_relations_and_sources($this->search_profile);
+      self::set_search_filters_for_800000_collection();
       if (isset($agencies[$this->agency]))
         $this->filter_agency = $agencies[$this->agency];
       else {
@@ -2513,6 +2520,27 @@ class openSearch extends webServiceServer {
         echo "rels:\n"; print_r($this->valid_relation); echo "source:\n"; print_r($this->searchable_source);
       }
     }
+  }
+
+  private function set_search_filters_for_800000_collection() {
+    static $part_of_bib_dk = array();
+    static $use_holding = array();
+    foreach ($this->searchable_source as $source => $searchable) {
+      $searchable = true;
+      if (($source == '800000-bibdk') && $searchable) {
+         if (empty($part_of_bib_dk)) $part_of_bib_dk = $this->open_agency->get_libraries_by_rule('part_of_bibliotek_dk', 1, 'Forskningsbibliotek');
+         if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
+    
+      }
+      if (($source == '800000-danbib') && $searchable) {
+         if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
+      }
+    }
+    if ($part_of_bib_dk || $use_holding) {
+      verbose::log(DEBUG, 'Filter 800000 part_of_bib_dk:: ' . count($part_of_bib_dk) . ' use_holding: ' . count($use_holding));
+      // TEST $this->search_filter_for_800000 = 'holdingsitem.agencyId=(' . implode(' OR ', array_slice($part_of_bib_dk + $use_holding, 0, 3)) . ')';
+      $this->search_filter_for_800000 = 'holdingsitem.agencyId:(' . implode(' OR ', $part_of_bib_dk + $use_holding) . ')';
+    }  
   }
 
   /** \brief return agency priority
