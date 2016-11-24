@@ -125,7 +125,7 @@ class openSearch extends webServiceServer {
     //$this->holdings_include = self::set_holdings_include($this->search_profile, 'parentDocId');
     $this->split_holdings_include = self::split_collections_for_holdingsitem($this->search_profile);
     self::set_valid_relations_and_sources($this->search_profile);
-    self::set_search_filters_for_800000_collection();
+    self::set_search_filters_for_800000_collection($param->forceFilter->_value);
 
     $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
@@ -266,7 +266,7 @@ class openSearch extends webServiceServer {
 
     $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language, $this->split_holdings_include);
     $this->watch->start('cql');
-    if ($param->skipFilter->_value == '1')
+    if ($param->skipFilter->_value == '1')    // for test
       $solr_query = $this->cql2solr->parse($param->query->_value);
     else
       $solr_query = $this->cql2solr->parse($param->query->_value, $this->search_filter_for_800000);
@@ -2522,11 +2522,11 @@ class openSearch extends webServiceServer {
     }
   }
 
-  private function set_search_filters_for_800000_collection() {
+  private function set_search_filters_for_800000_collection($test_force_filter = false) {
     static $part_of_bib_dk = array();
     static $use_holding = array();
     foreach ($this->searchable_source as $source => $searchable) {
-      $searchable = true;
+      $searchable = $test_force_filter || $searchable;     // for testing purposes
       if (($source == '800000-bibdk') && $searchable) {
          if (empty($part_of_bib_dk)) $part_of_bib_dk = $this->open_agency->get_libraries_by_rule('part_of_bibliotek_dk', 1, 'Forskningsbibliotek');
          if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
