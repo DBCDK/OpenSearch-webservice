@@ -2762,13 +2762,14 @@ class openSearch extends webServiceServer {
       $collaps_pars = '&group=true&group.ngroups=true&group.facet=true&group.field=' . $collapsing;
     }
     $q = implode(AND_OP, $eq['q']);
+    if (is_array($eq['handler_var'])) {
+      $handler_var = '&' . implode('&', $eq['handler_var']);
+      $filter = '';  // search profile collection filter is done via fq parm created with handler_var
+    }
     if (is_array($eq['fq'])) {
       foreach ($eq['fq'] as $fq) {
         $filter .= '&fq=' . rawurlencode($fq);
       }
-    }
-    if (is_array($eq['handler_var'])) {
-      $handler_var = '&' . implode('&', $eq['handler_var']);
     }
     $url = $this->repository['solr'] .
                     '?q=' . urlencode($q) .
