@@ -3291,11 +3291,13 @@ class openSearch extends webServiceServer {
     if (empty($stream_dom)) {
       $stream_dom = new DomDocument();
     }
+// get all records
     foreach ($unit_members as $idx => $member) {
       $raw_urls[$idx] = self::record_repo_url('fedora_get_raw', $member);
     }
     $repo_res = self::read_record_repo_all_urls($raw_urls);
 
+// loop through records
     $dup_check = array();
     foreach ($unit_members as $idx => $member) {
       if (@ !$stream_dom->loadXML($repo_res[$idx])) {
@@ -3362,9 +3364,8 @@ class openSearch extends webServiceServer {
       return;
     }
 
-// TODO - split into two loops. First to read records and next to build relation-answer-block
-
-    $relation_count = array();
+// Read hierarchy records
+    $hierarchy_urls = array();
     foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
       if ($tag->nodeType == XML_ELEMENT_NODE) {
         if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
@@ -3374,67 +3375,84 @@ class openSearch extends webServiceServer {
         if (($relation_count[$this_relation] < MAX_IDENTICAL_RELATIONS) &&
             ($rel_source = self::check_valid_internal_relation($tag->nodeValue, $this_relation, $this->search_profile))) {
           $relation_count[$this_relation]++;
-          self::read_record_repo_rels_hierarchy($tag->nodeValue, $rels_sys);
-          list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($rels_sys, $tag->nodeValue, TRUE);
-          if ($rel_oid) {
-            list($pid, $datastream)  = self::create_fedora_pid_and_stream($rel_oid, $localdata_in_pid);
-            self::read_record_repo_raw($pid, $related_obj, $datastream);
+          $u_relations[$tag->nodeValue] = $this_relation;
+          $hierarchy_urls[$tag->nodeValue] = self::record_repo_url('fedora_get_rels_hierarchy', $tag->nodeValue);
+        }
+      }
+    }
+    $hierarchy_recs = self::read_record_repo_all_urls($hierarchy_urls);
+
+// find best record and read it
+    $raw_urls = array();
+    foreach ($hierarchy_recs as $unit_id => $hierarchy_rec) {
+      $unit_info[$unit_id] = self::parse_unit_for_best_agency($hierarchy_rec, $unit_id, TRUE);
+      list($dummy, $rel_oid) = $unit_info[$unit_id];
+      if ($rel_oid) {
+        list($pid, $datastream)  = self::create_fedora_pid_and_stream($rel_oid, $localdata_in_pid);
+        $unit_info[$unit_id][] = $pid;
+        $raw_urls[$unit_id] = self::record_repo_url('fedora_get_raw', $pid, $datastream);
+      }
+    }
+    $raw_recs = self::read_record_repo_all_urls($raw_urls);
+//var_dump($u_relations); var_dump($hierarchy_recs); var_dump($raw_recs); die();
+
+// loop records and build result
+    foreach ($raw_recs as $unit_id => $related_obj) {
+      list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid, $pid) = $unit_info[$unit_id];
+      if (@ !$rels_dom->loadXML($related_obj)) {
+        verbose::log(FATAL, 'Cannot load ' . $pid . ' object from commonData into DomXml');
+        $rels_dom = NULL;
+      }
+      $collection_id = self::get_element_from_admin_data($rels_dom, 'collectionIdentifier');
+      if (empty($this->valid_relation[$collection_id])) {  // handling of local data streams
+        if (DEBUG_ON) {
+          echo __FUNCTION__ . ':: Datastream(s): ' . implode(',', self::fetch_valid_sources_from_stream($pid)) . PHP_EOL;
+        }
+        foreach (self::fetch_valid_sources_from_stream($pid) as $source) {
+          if ($this->valid_relation[$source]) {
+            $collection_id = $source;
+            if (DEBUG_ON) {
+              echo __FUNCTION__ . ':: --- use: ' . $source . ' rel_oid: ' . $rel_oid . ' stream: ' . self::set_data_stream_name($collection_id) . PHP_EOL;
+            }
+            self::read_record_repo_raw($rel_oid, $related_obj, self::set_data_stream_name($collection_id));
             if (@ !$rels_dom->loadXML($related_obj)) {
-              verbose::log(FATAL, 'Cannot load ' . $pid . ' object from commonData into DomXml');
+              verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from ' . $source . ' into DomXml');
               $rels_dom = NULL;
             }
-            $collection_id = self::get_element_from_admin_data($rels_dom, 'collectionIdentifier');
-            if (empty($this->valid_relation[$collection_id])) {  // handling of local data streams
-              if (DEBUG_ON) { 
-                echo __FUNCTION__ . ':: Datastream(s): ' . implode(',', self::fetch_valid_sources_from_stream($pid)) . PHP_EOL;
-              }
-              foreach (self::fetch_valid_sources_from_stream($pid) as $source) {
-                if ($this->valid_relation[$source]) {
-                  $collection_id = $source;
-                  if (DEBUG_ON) { 
-                    echo __FUNCTION__ . ':: --- use: ' . $source . ' rel_oid: ' . $rel_oid . ' stream: ' . self::set_data_stream_name($collection_id) . PHP_EOL;
-                  }
-                  self::read_record_repo_raw($rel_oid, $related_obj, self::set_data_stream_name($collection_id));
-                  if (@ !$rels_dom->loadXML($related_obj)) {
-                    verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from ' . $source . ' into DomXml');
-                    $rels_dom = NULL;
-                  }
-                  break;
-                }
-              }
-            }
-            // TODO: find some way to check relations validity against the search profile without wasting time on a solr-search
-            // TODO: pseudo-collections, like 150015-ereol, which are part of a real collection, should be allowed even when the real collection is not allowed
-            if (isset($this->valid_relation[$collection_id]) && self::is_searchable($tag->nodeValue, $filter)) {
-              Object::set_value($relation, 'relationType', $this_relation);
-              if ($rels_type == 'uri' || $rels_type == 'full') {
-                Object::set_value($relation, 'relationUri', $rel_oid);
-              }
-              if (is_object($rels_dom) && ($rels_type == 'full')) {
-                $rel_obj = &$relation->relationObject->_value->object->_value;
-                $rel_obj = self::extract_record($rels_dom, $tag->nodeValue);
-                Object::set_value($rel_obj, 'identifier', $rel_oid);
-                if ($cd = self::get_creation_date($rels_dom)) {
-                  Object::set_value($rel_obj, 'creationDate', $cd);
-                }
-                self::get_relations_from_datastream_domobj($ext_relations, $rel_unit_members, $rels_type);
-                if ($ext_relations) {
-                  Object::set_value($rel_obj, 'relations', $ext_relations);
-                  unset($ext_relations);
-                }
-                if ($fa = self::scan_for_formats($rels_dom)) {
-                  Object::set_value($rel_obj, 'formatsAvailable', $fa);
-                }
-              }
-              if ($rels_type == 'type' || $relation->relationUri->_value) {
-                Object::set_array_value($relations, 'relation', $relation);
-              }
-              unset($relation);
-            }
+            break;
           }
         }
       }
-    }  // foreach ...
+// TODO: find some way to check relations validity against the search profile without wasting time on a solr-search
+// TODO: pseudo-collections, like 150015-ereol, which are part of a real collection, should be allowed even when the real collection is not allowed
+      if (isset($this->valid_relation[$collection_id]) && self::is_searchable($unit_id, $filter)) {
+        Object::set_value($relation, 'relationType', $u_relations[$unit_id]);
+        if ($rels_type == 'uri' || $rels_type == 'full') {
+          Object::set_value($relation, 'relationUri', $rel_oid);
+        }
+        if (is_object($rels_dom) && ($rels_type == 'full')) {
+          $rel_obj = &$relation->relationObject->_value->object->_value;
+          $rel_obj = self::extract_record($rels_dom, $unit_id);
+          Object::set_value($rel_obj, 'identifier', $rel_oid);
+          if ($cd = self::get_creation_date($rels_dom)) {
+            Object::set_value($rel_obj, 'creationDate', $cd);
+          }
+          self::get_relations_from_datastream_domobj($ext_relations, $rel_unit_members, $rels_type);
+          if ($ext_relations) {
+            Object::set_value($rel_obj, 'relations', $ext_relations);
+            unset($ext_relations);
+          }
+          if ($fa = self::scan_for_formats($rels_dom)) {
+            Object::set_value($rel_obj, 'formatsAvailable', $fa);
+          }
+        }
+        if ($rels_type == 'type' || $relation->relationUri->_value) {
+          Object::set_array_value($relations, 'relation', $relation);
+        }
+        unset($relation);
+      }
+
+    }
   }
 
   /** \brief gets a given element from the adminData part
