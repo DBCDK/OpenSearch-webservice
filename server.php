@@ -36,17 +36,16 @@ class openSearch extends webServiceServer {
   protected $search_profile;
   protected $search_profile_version = 3;
   protected $repository_name;
-  protected $repository; // array containing solr and fedora uri's
+  protected $repository; // array containing solr and record_repo uri's
   protected $tracking_id; 
   protected $query_language = 'cqleng'; 
-  protected $number_of_fedora_calls = 0;
-  protected $number_of_fedora_cached = 0;
+  protected $number_of_record_repo_calls = 0;
+  protected $number_of_record_repo_cached = 0;
   protected $agency_catalog_source = '';
   protected $agency_type = '';
   protected $filter_agency = '';
   protected $format = '';
   protected $which_rec_id = '';
-  protected $collapsing_field = FALSE;  // if used, defined in ini-file
   protected $separate_field_query_style = TRUE; // seach as field:(a OR b) ie FALSE or (field:a OR field:b) ie TRUE
   protected $valid_relation = array(); 
   protected $searchable_source = array(); 
@@ -56,9 +55,12 @@ class openSearch extends webServiceServer {
   protected $rank_frequence_debug;
   protected $collection_alias = array();
   protected $agency_priority_list = array();  // prioritised list af agencies for the actual agency
-  protected $unit_fallback = array();     // if fedora is updated and solr is not, this is used to find some record from the old unit
+  protected $unit_fallback = array();     // if record_repo is updated and solr is not, this is used to find some record from the old unit
   protected $feature_sw = array();
   protected $add_collection_with_relation_to_filter = FALSE;
+  protected $unit_id_field;
+  protected $fedora_pid_field;
+  protected $work_id_field;
 
 
   public function __construct() {
@@ -67,6 +69,9 @@ class openSearch extends webServiceServer {
     $this->curl = new curl();
     $this->curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 5));
     $this->open_agency = new OpenAgency($this->config->get_value('agency', 'setup'));
+    $this->unit_id_field = self::value_or_default($this->config->get_value('field_unit_id', 'setup'), 'unit.id');
+    $this->fedora_pid_field = self::value_or_default($this->config->get_value('field_fedora_pid', 'setup'), 'fedoraPid');
+    $this->work_id_field = self::value_or_default($this->config->get_value('field_work_id', 'setup'), 'rec.workId');
 
     define(DEBUG_ON, $this->debug);
     $this->tracking_id = verbose::$tracking_id;
@@ -129,9 +134,6 @@ class openSearch extends webServiceServer {
 
     $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
-    if ($ufc = $this->config->get_value('collapsing_field', 'setup')) {
-      $this->collapsing_field = $ufc;
-    }
     $use_work_collection = ($param->collectionType->_value <> 'manifestation');
     if ($use_work_collection) {
       define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_collections', 'setup'), 50));
@@ -254,14 +256,14 @@ class openSearch extends webServiceServer {
     *  e) if allObject is not set, do a new search combining the users search
     *     with an or'ed list of the unit-ids in the active objects and
     *     remove the unit-ids not found in the result \n
-    *  f) Read full records from fedora for objects in result or fetch display-fields
+    *  f) Read full records from record_repo for objects in result or fetch display-fields
     *     from solr, depending on the selected format \n
     *
     *  if $use_work_collection is FALSE skip b) to e)
     */
 
     $use_work_collection |= $sort_types[$sort[0]] == 'random';
-    $key_work_struct = md5($param->query->_value . $this->repository_name . $this->filter_agency .
+    $key_work_struct = md5($param->query->_value . $this->repository_name . $this->filter_agency . self::xs_boolean($param->allObjects->_value) . 
                            $use_work_collection .  implode('', $sort) . $rank . $boost_q . $this->config->get_inifile_hash());
 
     $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language, $this->split_holdings_include);
@@ -325,7 +327,7 @@ class openSearch extends webServiceServer {
 
     $facet_q = self::set_solr_facet_parameters($param->facets->_value);
 
-    $rows = $step_value ? (($start + $step_value + 100) * 2) : 0;
+    $rows = $step_value ? (($start + $step_value + 100) * 2)  + 100 : 0;
 
     verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
 
@@ -339,10 +341,10 @@ class openSearch extends webServiceServer {
       }
     }
     else {
-      if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr))
+      if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, $facet_q, $filter_q, $boost_q, $debug_query, $solr_arr))
         $error = $err;
       else {
-        self::extract_unit_id_from_solr($solr_arr, $search_ids);
+        self::extract_ids_from_solr($solr_arr, $solr_work_ids);
         $numFound = self::get_num_found($solr_arr);
       }
     }
@@ -366,7 +368,7 @@ class openSearch extends webServiceServer {
         } while (isset($used_search_fid[$no]));
         $used_search_fid[$no] = TRUE;
         self::get_solr_array($solr_query['edismax'], $no, 1, '', '', '', $filter_q, '', $debug_query, $solr_arr);
-        $uid =  self::get_first_solr_element($solr_arr, 'unit.id');
+        $uid =  self::get_first_solr_element($solr_arr, $this->unit_id_field);
         $work_ids[] = array($uid);
       }
     }
@@ -374,177 +376,64 @@ class openSearch extends webServiceServer {
       $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
                                $this->config->get_value('cache_port', 'setup'),
                                $this->config->get_value('cache_expire', 'setup'));
+      $work_cache_struct = array();
       if (empty($_GET['skipCache'])) {
         if ($work_cache_struct = $this->cache->get($key_work_struct)) {
           verbose::log(TRACE, 'Cache hit, lines: ' . count($work_cache_struct));
         }
         else {
+          $work_cache_struct = array();
           verbose::log(TRACE, __CLASS__ . '::'. __FUNCTION__ . ' - work_struct cache miss');
         }
       }
 
-      $w_no = 0;
-
-      if (DEBUG_ON) print_r($search_ids);
+      if (DEBUG_ON) print_r($solr_work_ids);
 
       if (empty($step_value)) {
-        $more = ($numFound >= $start);
+        $more = ($numFound >= $start);   // no need to find records, only hit count is returned and maybe facets
       }
       else {
-        for ($s_idx = 0; isset($search_ids[$s_idx]); $s_idx++) {
-          $uid = &$search_ids[$s_idx];
-          if (!isset($search_ids[$s_idx+1]) && count($search_ids) < $numFound) {
-            $this->watch->start('Solr_add');
-            verbose::log(WARNING, 'To few search_ids fetched from solr. Query: ' . $solr_query['edismax']['q']);
-            $rows *= 2;
-            if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr)) {
-              $error = $err;
-              return $ret_error;
-            }
-            else {
-              self::extract_unit_id_from_solr($solr_arr, $search_ids);
-              $numFound = self::get_num_found($solr_arr);
-            }
-            $this->watch->stop('Solr_add');
-          }
-          if (FALSE) {
-            self::get_fedora_rels_hierarchy($uid, $unit_result);
-            $unit_id = self::parse_rels_for_unit_id($unit_result);
-            if (DEBUG_ON) echo 'UR: ' . $uid . ' -> ' . $unit_id . "\n";
-            $uid = $unit_id;
-          }
-          if ($used_search_fids[$uid]) continue;
-          if (count($work_ids) >= $step_value) {
-            $more = TRUE;
-            break;
-          }
-
-          $w_no++;
-          // find relations for the record in fedora
-          // uid: id as found in solr's fedoraPid
-          if ($work_cache_struct[$w_no]) {
-            $uid_array = $work_cache_struct[$w_no];
-          }
-          else {
-            if ($use_work_collection) {
-              $this->watch->start('get_w_id');
-              self::get_fedora_rels_hierarchy($uid, $record_rels_hierarchy);
-              /* ignore the fact that there is no RELS_HIERARCHY datastream
-               */
-              $this->watch->stop('get_w_id');
-              if (DEBUG_ON) echo 'RR: ' . $record_rels_hierarchy . "\n";
-
-              // test empty rels_sys $record_rels_hierarchy = self::empty_rels_hierarchy();
-              if ($work_id = self::parse_rels_for_work_id($record_rels_hierarchy)) {
-                // find other recs sharing the work-relation
-                $this->watch->start('get_fids');
-                self::get_fedora_rels_hierarchy($work_id, $work_rels_hierarchy);
-                if (DEBUG_ON) echo 'WR: ' . $work_rels_hierarchy . "\n";
-                $this->watch->stop('get_fids');
-                if (!$uid_array = self::parse_work_for_object_ids($work_rels_hierarchy, $uid)) {
-                  verbose::log(FATAL, 'Fedora fetch/parse work-record: ' . $work_id . ' refered from: ' . $uid);
-                  $uid_array = array($uid);
-                }
-                if (DEBUG_ON) {
-                  echo 'fid: ' . $uid . ' -> ' . $work_id . " -> object(s):\n";
-                  print_r($uid_array);
-                }
-              }
-              else {
-                verbose::log(WARNING, 'Cannot find work_id for unit: ' . $uid);
-                $uid_array = array($uid);
-              }
-            }
-            else
-              $uid_array = array($uid);
-          }
-
-          foreach ($uid_array as $id) {
-            $used_search_fids[$id] = TRUE;
-          }
-          $work_cache_struct[$w_no] = $uid_array;
-          if ($w_no >= $start)
-            $work_ids[$w_no] = $uid_array;
+  // private function build_work_struct_from_solr(&$work_cache_struct, &$work_struct, &$more, &$work_ids, $edismax, $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, $all_objects, $num_found, $debug_query) {
+        if ($err = self::build_work_struct_from_solr($work_cache_struct, $work_ids, $more, $solr_work_ids, $solr_query['edismax'], $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, self::xs_boolean($param->allObjects->_value), $numFound, $debug_query)) {
+          $error = $err;
+          return $ret_error;
         }
       }
-      verbose::log(TRACE, 'SOLR stat: used ' . $s_idx . ' of ' . count($search_ids) . ' rows. start: ' . $start . ' step: ' . $step_value);
     }
-
-    if (count($work_ids) < $step_value && count($search_ids) < $numFound) {
-      verbose::log(WARNING, 'To few search_ids found in solr. Query: ' . $solr_query['edismax']['q']);
-    }
-
-    // check if the search result contains the ids
-    // allObject=0 - remove objects not included in the search result
-    // allObject=1 & agency - remove objects not included in agency
-    //
-    if (DEBUG_ON) echo 'work_ids: ' . print_r($work_ids, TRUE) . "\n";
-
-    define('MAX_QUERY_ELEMENTS', 950);
-    if ($work_ids && $numFound && $use_work_collection && $step_value) {
-      $add_queries = self::make_add_queries($work_ids);
-      $this->watch->start('Solr_filt');
-      $solr_2_arr = self::do_add_queries($add_queries, $param->query->_value, self::xs_boolean($param->allObjects->_value), $filter_q);
-// fetch display here to get sort-keys for primary objects
-      $this->watch->stop('Solr_filt');
-      $this->watch->start('Solr_disp');
-      // ignore search profile filter and fetch info from the primary object for display and sort complexkey
-      $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), '');
-      $this->watch->stop('Solr_disp');
-      if (is_scalar($solr_2_arr)) {
-        $error = 'Internal problem: Cannot decode Solr re-search';
-        return $ret_error;
-      }
-      foreach ($work_ids as $w_no => $w_list) {
-        if (count($w_list) > 0) {
-          $hit_fid_array = array();
-          foreach ($w_list as $w) {
-            foreach ($solr_2_arr as $s_2_a) {
-              foreach ($s_2_a['response']['docs'] as $fdoc) {
-                $u_id =  self::scalar_or_first_elem($fdoc['unit.id']);
-                if ($u_id == $w) {
-                  $hit_fid_array[$u_id] = $u_id;
-                  break 2;
-                }
-              }
-            }
-            foreach ($display_solr_arr as $d_s_a) {
-              foreach ($d_s_a['response']['docs'] as $fdoc) {
-                $u_id =  self::scalar_or_first_elem($fdoc['unit.id']);
-                if ($u_id == $w) {
-                  $unit_sort_keys[$u_id] = $fdoc['sort.complexKey'] . '  ' . $u_id;
-                  $collection_identifier[$u_id] =  self::scalar_or_first_elem($fdoc['rec.collectionIdentifier']);
-                }
-              }
-            }
-          }
-          if (empty($hit_fid_array)) {
-            verbose::log(ERROR, 'Re-search: Cannot find any of ' . implode(',', $w_list) . ' in unit.id');
-            $work_ids[$w_no] = array($w_list[0]);
-          }
-          else {
-            $work_ids[$w_no] = $hit_fid_array;
-          }
-        }
-      }
-      if (DEBUG_ON) echo 'work_ids after research: ' . print_r($work_ids, TRUE) . "\n";
-    }
-
-    if (DEBUG_ON) echo 'txt: ' . $txt . "\n";
-    if (DEBUG_ON) echo 'solr_2_arr: ' . print_r($solr_2_arr, TRUE) . "\n";
-    if (DEBUG_ON) echo 'add_queries: ' . print_r($add_queries, TRUE) . "\n";
-    if (DEBUG_ON) echo 'used_search_fids: ' . print_r($used_search_fids, TRUE) . "\n";
-    if (DEBUG_ON) echo 'collection_identifier: ' . print_r($collection_identifier, TRUE) . "\n";
-
     $this->watch->stop('Build_id');
 
-    if ($this->cache)
-      $this->cache->set($key_work_struct, $work_cache_struct);
+    if (count($work_ids) < $step_value && count($solr_work_ids) < $numFound) {
+      verbose::log(WARNING, 'To few search_ids found in solr. Query: ' . implode(AND_OP, $solr_query['edismax']['q']));
+    }
 
-    $missing_record = $this->config->get_value('missing_record', 'setup');
+    if (DEBUG_ON) echo 'work_ids: ' . print_r($work_ids, TRUE) . "\n";
+
+// fetch data to sort_keys and (if needed) sorl display format(s)
+    $q_unit = array();
+    foreach ($work_ids as $work) {
+      foreach ($work as $unit_id) {
+        $q_unit[] =  '"' . $unit_id . '"';
+      }
+    }
+    $add_queries = array($this->unit_id_field . ':(' . implode(OR_OP, $q_unit) . ')');
+    $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), '');
+        foreach ($display_solr_arr as $d_s_a) {
+          foreach ($d_s_a['response']['docs'] as $fdoc) {
+            $u_id =  self::scalar_or_first_elem($fdoc[$this->unit_id_field]);
+            $unit_sort_keys[$u_id] = $fdoc['sort.complexKey'] . '  ' . $u_id;
+          }
+        }
+//var_dump($add_queries); var_dump($display_solr_arr); var_dump($unit_sort_keys); die();
+    define('MAX_QUERY_ELEMENTS', 950);
+
+    if ($this->cache) {
+      verbose::log(TRACE, 'Cache set, lines: ' . count($work_cache_struct));
+      $this->cache->set($key_work_struct, $work_cache_struct);
+    }
 
     // work_ids now contains the work-records and the fedoraPids they consist of
     // now fetch the records for each work/collection
+    // TODO Change to two loops to fetch records in parallel
     $this->watch->start('get_recs');
     $collections = array();
     $rec_no = max(1, $start);
@@ -554,18 +443,39 @@ class openSearch extends webServiceServer {
     if ($debug_query) {
       $explain_keys = array_keys($solr_arr['debug']['explain']);
     }
-    foreach ($work_ids as &$work) {
-      $objects = array();
+
+    // fetch all addi and hierarchi records for all units in work_ids
+    foreach ($work_ids as $idx => &$work) {
       if (count($work) >= MAX_OBJECTS_IN_WORK) {
-        verbose::log(WARNING, 'Fedora work-record containing: ' . reset($work) . ' contains ' . count($work) . ' units. Cut work to first ' . MAX_OBJECTS_IN_WORK . ' units');
+        verbose::log(WARNING, 'record_repo work-record containing: ' . reset($work) . ' contains ' . count($work) . ' units. Cut work to first ' . MAX_OBJECTS_IN_WORK . ' units');
         array_splice($work, MAX_OBJECTS_IN_WORK);
       }
       foreach ($work as $unit_id) {
-        self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
-        self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
-// test empty rels_sys $unit_rels_hierarchy = self::empty_rels_hierarchy();
-//var_dump($unit_rels_hierarchy); die();
-        list($unit_members, $fpid, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
+        $repo_urls[$unit_id . '-addi'] = self::record_repo_url('fedora_get_rels_addi', $unit_id);
+        $repo_urls[$unit_id . '-hierarchy'] = self::record_repo_url('fedora_get_rels_hierarchy', $unit_id);
+      }
+    }
+    $repo_res = self::read_record_repo_all_urls($repo_urls);
+    //var_dump($repo_urls); var_dump($res_map); var_dump($repo_res); die();
+
+    // find and read root best record in unit's
+    foreach ($work_ids as &$work) {
+      foreach ($work as $unit_id) {
+        $unit_rels_hierarchy = $repo_res[$unit_id . '-hierarchy'];
+        $unit_info[$unit_id] = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
+        list($unit_members, $fpid, $localdata_in_pid, $primary_oid) = $unit_info[$unit_id];
+        list($pid, $datastream)  = self::create_fedora_pid_and_stream($fpid, $localdata_in_pid);
+        $raw_urls[$unit_id] = self::record_repo_url('fedora_get_raw', $pid, $datastream);
+      }
+    }
+    $raw_res = self::read_record_repo_all_urls($raw_urls);
+//var_dump($raw_urls); var_dump($raw_res); die();
+
+    // find number og holding, sort_key and include relations
+    foreach ($work_ids as &$work) {
+      $objects = array();
+      foreach ($work as $unit_id) {
+        list($unit_members, $fpid, $localdata_in_pid, $primary_oid) = $unit_info[$unit_id];
         $sort_holdings = ' ';
         unset($no_of_holdings);
         if (self::xs_boolean($param->includeHoldingsCount->_value)) {
@@ -576,27 +486,12 @@ class openSearch extends webServiceServer {
           $sort_holdings = sprintf(' %04d ', 9999 - intval($holds['have']));
         }
         $fpid_sort_keys[$fpid] = str_replace($HOLDINGS, $sort_holdings, $unit_sort_keys[$unit_id]);
-        list($pid, $datastream)  = self::create_fedora_pid_and_stream($fpid, $localdata_in_pid);
-        if ($error = self::get_fedora_raw($pid, $fedora_result, $datastream)) {
-          if ($missing_record) {
-            $error = NULL;
-            $fedora_result = sprintf($missing_record, $fpid);
-          }
-          else {
-            return $ret_error;
-          }
-        }
         if ($debug_query) {
           unset($explain);
-          if ($this->collapsing_field) {
-            $explain = 'No explain available when using collapsing field';
-          }
-          else {
-            foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
-              if ($unit_id == $solr_rec['unit.id']) {
-                $explain = $solr_arr['debug']['explain'][$explain_keys[$solr_idx]];
-                break;
-              }
+          foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
+            if ($unit_id == $solr_rec[$this->unit_id_field]) {
+              $explain = $solr_arr['debug']['explain'][$explain_keys[$solr_idx]];
+              break;
             }
           }
         }
@@ -604,8 +499,8 @@ class openSearch extends webServiceServer {
         $sorted_work[$sort_key] = $unit_id;
         $objects[$sort_key] = new stdClass();
         $objects[$sort_key]->_value = 
-          self::parse_fedora_object($fedora_result,
-                                    $fedora_addi_relation,
+          self::parse_record_repo_object($raw_res[$unit_id],
+                                    $repo_res[$unit_id . '-addi'],
                                     $unit_members,
                                     $param->relationData->_value,
                                     $fpid,
@@ -655,30 +550,7 @@ class openSearch extends webServiceServer {
       self::remove_unselected_formats($collections);
     }
 
-// try to get a better hitCount by looking for primaryObjects only 
-    if (is_null($param->collapseHitsThreshold->_value) || ($param->collapseHitsThreshold->_value == 'default')) {
-      $nfcl = intval($this->config->get_value('num_found_collaps_limit', 'setup'));
-    }
-    else {
-      $nfcl = intval($param->collapseHitsThreshold->_value);
-    }
-    if ($nfcl > $numFound) {
-      if ($nfcf = $this->config->get_value('num_found_collapsing_field', 'setup')) {
-        $this->collapsing_field = $nfcf;
-      }
-    }
-    $this->watch->start('Solr_hits_facets');
-    if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', $rank_q, $facet_q, $filter_q, '', $debug_query, $solr_arr)) {
-      $this->watch->stop('Solr_hits_facets');
-      $error = $err;
-      return $ret_error;
-    }
-    else {
-      $this->watch->stop('Solr_hits_facets');
-      if (($n = self::get_num_found($solr_arr)) != $numFound) {
-        verbose::log(TRACE, 'Modify hitcount from: ' . $numFound . ' to ' . $n);
-        $numFound = $n;
-      }
+    if ($facet_q) {
       $facets = self::parse_for_facets($solr_arr);
     }
 
@@ -706,8 +578,8 @@ class openSearch extends webServiceServer {
     if ($debug_query && $debug_result) {
       Object::set_value($result, 'queryDebugResult', $debug_result);
     }
-    Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_fedora_cached);
-    Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_fedora_calls);
+    Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
+    Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
     Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
     Object::set_value($result->statInfo->_value, 'trackingId', $this->tracking_id);
 
@@ -880,7 +752,7 @@ class openSearch extends webServiceServer {
               '&start=0' .
               '&rows=500' .
               '&defType=edismax' .
-              '&fl=rec.collectionIdentifier,fedoraPid,rec.id,unit.id,unit.isPrimaryObject' . $add_fl;
+              '&fl=rec.collectionIdentifier,' . $this->fedora_pid_field . ',rec.id,' . $this->unit_id_field . ',unit.isPrimaryObject' . $add_fl;
     verbose::log(TRACE, __FUNCTION__ . ':: Search for pids in Solr: ' . $solr_q);
     $this->curl->set_post($solr_q); // use post here because query can be very long. curl has current 8192 as max length get url
     $solr_result = $this->curl->get($this->repository['solr']);
@@ -894,14 +766,14 @@ class openSearch extends webServiceServer {
       foreach ($solr_2_arr as $s_2_a) {
         if ($s_2_a['response']['docs']) {
           foreach ($s_2_a['response']['docs'] as $fdoc) {
-            $f_id =  self::scalar_or_first_elem($fdoc['fedoraPid']);
+            $f_id =  self::scalar_or_first_elem($fdoc[$this->fedora_pid_field]);
             if ($f_id == $fpid->_value) {
-              $unit_id =  self::scalar_or_first_elem($fdoc['unit.id']);
+              $unit_id =  self::scalar_or_first_elem($fdoc[$this->unit_id_field]);
               $fedora_pid = $f_id;
               $in_collection = $in_collection || in_array($fpid_collection, $fdoc['rec.collectionIdentifier']);
             }
             if ($f_id == $localdata_object[$fpid->_value]) {
-              $basis_unit_id =  self::scalar_or_first_elem($fdoc['unit.id']);
+              $basis_unit_id =  self::scalar_or_first_elem($fdoc[$this->unit_id_field]);
               $basis_pid = $f_id;
               $in_collection = $in_collection || in_array($fpid_collection, $fdoc['rec.collectionIdentifier']);
             }
@@ -917,7 +789,7 @@ class openSearch extends webServiceServer {
 /* if not searchable, the records is not there
       if (!$unit_id) { 
         verbose::log(WARNING, 'getObject:: Cannot find unit for ' . $fpid->_value . ' in SOLR');
-        self::get_fedora_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
+        self::read_record_repo_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
         $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
       }
 */
@@ -925,28 +797,28 @@ class openSearch extends webServiceServer {
         $rec_error = 'Error: unknown/missing/inaccessible record: ' . $fpid->_value;
       }
       else {
-        self::get_fedora_rels_hierarchy($unit_id, $unit_rels_hierarchy);
+        self::read_record_repo_rels_hierarchy($unit_id, $unit_rels_hierarchy);
         list($unit_members, $dummy, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
         list($fpid_collection, $fpid_local) = explode(':', $fedora_pid);
         if (!$in_collection && $fedora_pid) {
           $fpid->_value = $fedora_pid;
         }
         list($fedora_pid, $datastream)  = self::create_fedora_pid_and_stream($fpid->_value, $fedora_pid);
-        if (self::deleted_object($fedora_pid, $datastream)) {
+        if (self::deleted_object($fedora_pid)) {
           $rec_error = 'Error: deleted record: ' . $fpid->_value;
         }
-        elseif ($error = self::get_fedora_raw($fedora_pid, $fedora_result, $datastream)) {
+        elseif ($error = self::read_record_repo_raw($fedora_pid, $fedora_result, $datastream)) {
           $rec_error = 'Error: unknown/missing record: ' . $fpid->_value;
         }
         elseif ($param->relationData->_value || 
             $this->format['found_solr_format'] || 
             self::xs_boolean($param->includeHoldingsCount->_value)) {
           if (empty($unit_id)) {
-            self::get_fedora_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
+            self::read_record_repo_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
             $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
           }
           if ($param->relationData->_value) {
-            self::get_fedora_rels_addi($unit_id, $fedora_addi_relation);
+            self::read_record_repo_rels_addi($unit_id, $fedora_addi_relation);
           }
           if (self::xs_boolean($param->includeHoldingsCount->_value)) {
             $this->cql2solr = new SolrQuery($this->repository, $this->config);
@@ -969,7 +841,7 @@ class openSearch extends webServiceServer {
       } 
       else {
         Object::set($o->collection->_value->object[], '_value',
-          self::parse_fedora_object($fedora_result,
+          self::parse_record_repo_object($fedora_result,
                                     $fedora_addi_relation,
                                     $unit_members,
                                     $param->relationData->_value,
@@ -999,8 +871,8 @@ class openSearch extends webServiceServer {
     Object::set_value($result, 'more', 'false');
     $result->searchResult = $collections;
     Object::set_value($result, 'facetResult', '');
-    Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_fedora_cached);
-    Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_fedora_calls);
+    Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
+    Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
     Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
     Object::set_value($result->statInfo->_value, 'trackingId', $this->tracking_id);
 
@@ -1029,6 +901,66 @@ class openSearch extends webServiceServer {
     return $ret;
   }
   /*******************************************************************************/
+
+  /** \brief Isolation of creation of work structure for caching
+  *
+  * @param - way to many
+  * 
+  * parameters to a solr-search should be isolated in a class object - refactor one day
+  */
+  private function build_work_struct_from_solr(&$work_cache_struct, &$work_struct, &$more, &$work_ids, $edismax, $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, $all_objects, $num_found, $debug_query) {
+    for ($w_idx = 0; isset($work_ids[$w_idx]); $w_idx++) {
+      $struct_id = $work_ids[$w_idx][$this->work_id_field] . ($use_work_collection ? '' : '-' . $work_ids[$w_idx][$this->unit_id_field]);     
+      if ($work_cache_struct[$struct_id]) continue;
+      $work_cache_struct[$struct_id] = $use_work_collection ? array() : array($work_ids[$w_idx][$this->unit_id_field]);
+      if (count($work_cache_struct) >= ($start + $step_value)) {
+        $more = TRUE;
+        verbose::log(TRACE, 'SOLR stat: used ' . $s_idx . ' of ' . count($work_ids) . ' rows. start: ' . $start . ' step: ' . $step_value);
+        break;
+      }
+      if (!isset($work_ids[$w_idx + 1]) && count($work_ids) < $num_found) {
+        $this->watch->start('Solr_add');
+        verbose::log(WARNING, 'To few search_ids fetched from solr. Query: ' . implode(AND_OP, $edismax['q']) . ' idx: ' . $w_idx);
+        $rows *= 2;
+        if ($err = self::get_solr_array($edismax, 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr)) {
+          return $err;
+        }
+        else {
+          self::extract_ids_from_solr($solr_arr, $work_ids);
+        }
+        $this->watch->stop('Solr_add');
+      }
+    }
+    $work_slice = array_slice($work_cache_struct, ($start - 1), $step_value);
+    if ($use_work_collection && $step_value) {
+      foreach ($work_slice as $w_id => $w_list) {
+        if (empty($w_list)) {
+          $search_w[] = '"' . $w_id . '"';
+        }
+      }
+      if (is_array($search_w)) {
+        if ($all_objects) {
+          $edismax['q'] = array();
+        }
+        $edismax['q'][] = $this->work_id_field . ':(' . implode(OR_OP, $search_w) . ')';
+        if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_q, '', $debug_query, $solr_arr)) {
+          return $err;
+        }
+        foreach ($solr_arr['response']['docs'] as $fdoc) {
+          $unit_id = $fdoc[$this->unit_id_field];
+          $work_id = $fdoc[$this->work_id_field];
+          if (!in_array($unit_id, $work_slice[$work_id])) {
+            $work_slice[$work_id][] = $work_cache_struct[$work_id][] = $unit_id;
+          }
+        }
+      }
+      $pos = $start;
+      foreach ($work_slice as $work) {
+        $work_struct[$pos++] = $work;
+      }
+    }
+    //var_dump($edismax); var_dump($add_q); var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
+  }
 
   /** \brief for testing to return empty rels hierarchy records
    * 
@@ -1459,36 +1391,6 @@ class openSearch extends webServiceServer {
     return $str;
   }
 
-  /** \brief split into multiple solr-searches each containing less than MAX_QUERY_ELEMENTS elements
-   *
-   * @param array $work_ids
-   * @retval array - of SOLR search string
-   */
-  private function make_add_queries($work_ids) {
-    $block_idx = $no_bool = 0;
-    $no_of_rows = 1;
-    $add_queries[$block_idx] = '';
-    $this->which_rec_id = 'unit.id';
-    foreach ($work_ids as $w_no => $w) {
-      if ($add_queries[$block_idx] && ($no_bool + count($w)) > MAX_QUERY_ELEMENTS) {
-        $block_idx++;
-        $no_bool = 0;
-      }
-      foreach ($w as $id) {
-        $id = str_replace(':', '\:', $id);
-        if ($this->separate_field_query_style) {
-          $add_queries[$block_idx] .= (empty($add_queries[$block_idx]) ? '' : OR_OP) . $this->which_rec_id . ':' . $id;
-        }
-        else {
-          $add_queries[$block_idx] .= (empty($add_queries[$block_idx]) ? '' : OR_OP) . $id;
-        }
-        $no_bool++;
-        $no_of_rows++;
-      }
-    }
-    return $add_queries;
-  }
-
   /** \brief Create solr array with records valid for the search-profile and parameters. 
    *         If solr_formats is asked for, build list of fields to ask for
    *
@@ -1542,7 +1444,7 @@ class openSearch extends webServiceServer {
       $q = $chk_query['edismax'];
       $solr_url = self::create_solr_url($q, 0, 999999, $filter_q);
       list($solr_host, $solr_parm) = explode('?', $solr_url['url'], 2);
-      $solr_parm .= '&fl=rec.collectionIdentifier,unit.isPrimaryObject,unit.id,sort.complexKey' . $add_field_list;
+      $solr_parm .= '&fl=rec.collectionIdentifier,unit.isPrimaryObject,' . $this->unit_id_field . ',sort.complexKey' . $add_field_list;
       verbose::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
       if (DEBUG_ON) {
         echo 'post_array: ' . $solr_url['url'] . PHP_EOL;
@@ -1802,12 +1704,7 @@ class openSearch extends webServiceServer {
    * @retval mixed
    */
   private function get_first_solr_element($solr_arr, $element) {
-    if ($this->collapsing_field) {
-      $solr_docs = &$solr_arr['grouped'][$this->collapsing_field]['groups'][0]['doclist']['docs'];
-    }
-    else {
-      $solr_docs = &$solr_arr['response']['docs'];
-    }
+    $solr_docs = &$solr_arr['response']['docs'];
     return self::scalar_or_first_elem($solr_docs[0][$element]);
   }
 
@@ -1817,22 +1714,8 @@ class openSearch extends webServiceServer {
    * @retval integer
    */
   private function get_num_found($solr_arr) {
-    if ($this->collapsing_field) {
-      return self::get_num_grouped($solr_arr);
-    }
-    else {
-      return self::get_num_response($solr_arr);
-    }
+    return self::get_num_response($solr_arr);
   }
-
-  /** \brief extract grouped from SOLR structure
-   *
-   * @param array $solr_arr
-   * @retval integer
-   */
-  private function get_num_grouped($solr_arr) {
-    return $solr_arr['grouped'][$this->collapsing_field]['ngroups'];
-  } 
 
   /** \brief extract numFound from SOLR structure
    *
@@ -1843,38 +1726,28 @@ class openSearch extends webServiceServer {
     return $solr_arr['response']['numFound'];
   } 
 
-  /** \brief Encapsules extraction of unit.id's from the solr result
-   *       - stores unit-id and the corresponding fedorePid in unit_fallback
+  /** \brief Encapsules extraction of ids (unit.id or workid) solr result
+   *       - stores id and the corresponding fedorePid in unit_fallback
    *
    * @param array $solr_arr
    * @param array $search_ids - contains the result
    */
-  private function extract_unit_id_from_solr($solr_arr, &$search_ids) {
+  private function extract_ids_from_solr($solr_arr, &$search_ids) {
+    $solr_fields = array($this->unit_id_field, $this->work_id_field);
     static $u_err = 0;
     $search_ids = array();
-    if ($this->collapsing_field) {
-      $solr_groups = &$solr_arr['grouped'][$this->collapsing_field]['groups'];
-      foreach ($solr_groups as &$gdoc) {
-        if ($uid = $gdoc['doclist']['docs'][0]['unit.id']) {
-          $search_ids[] = self::scalar_or_first_elem($uid);
-          $this->unit_fallback[self::scalar_or_first_elem($uid)][] = self::scalar_or_first_elem($gdoc['doclist']['docs'][0]['fedoraPid']);
+    $solr_docs = &$solr_arr['response']['docs'];
+    foreach ($solr_docs as &$fdoc) {
+      $ids = array();
+      foreach ($solr_fields as $fld) {
+        if ($id = $fdoc[$fld]) {
+          $ids[$fld] = self::scalar_or_first_elem($id);
         }
         elseif (++$u_err < 10) {
-          verbose::log(FATAL, 'Missing unit.id in solr_result. Record no: ' . (count($search_ids) + $u_err));
+          verbose::log(FATAL, 'Missing ' . $fld . ' in solr_result. Record no: ' . (count($search_ids) + $u_err));
         }
       }
-    }
-    else {
-      $solr_docs = &$solr_arr['response']['docs'];
-      foreach ($solr_docs as &$fdoc) {
-        if ($uid = $fdoc['unit.id']) {
-          $search_ids[] = self::scalar_or_first_elem($uid);
-          $this->unit_fallback[self::scalar_or_first_elem($uid)][] = self::scalar_or_first_elem($fdoc['fedoraPid']);
-        }
-        elseif (++$u_err < 10) {
-          verbose::log(FATAL, 'Missing unit.id in solr_result. Record no: ' . (count($search_ids) + $u_err));
-        }
-      }
+      $search_ids[] = $ids;
     }
   }
 
@@ -1979,8 +1852,8 @@ class openSearch extends webServiceServer {
             if (is_array($solr[0]['response']['docs'])) {
               $fpid = $c->_value->collection->_value->object[$mani_no]->_value->identifier->_value;
               foreach ($solr[0]['response']['docs'] as $solr_doc) {
-                $doc_units = is_array($solr_doc['unit.id']) ? $solr_doc['unit.id'] : array($solr_doc['unit.id']);
-                if (is_array($doc_units) && in_array($unit_no, $doc_units) && ($fpid == $solr_doc['fedoraPid'])) {
+                $doc_units = is_array($solr_doc[$this->unit_id_field]) ? $solr_doc[$this->unit_id_field] : array($solr_doc[$this->unit_id_field]);
+                if (is_array($doc_units) && in_array($unit_no, $doc_units) && ($fpid == $solr_doc[$this->fedora_pid_field])) {
                   foreach ($format_tags as $format_tag) {
                     if ($solr_doc[$format_tag] || $format_tag == 'fedora.identifier') {
                       if (strpos($format_tag, '.')) {
@@ -2194,99 +2067,102 @@ class openSearch extends webServiceServer {
     }
   }
 
-  /** \brief Check whether an object i deleted or not
+  /** \brief Create record_repo url from settings and given id
+   *
+   * @param string $type - type of record_repo operation
+   * @param string $id - id of record_repo record to fetch
+   * @retval string
+   */
+  private function record_repo_url($type, $id, $datastream_id = '') {
+    $uri = $datastream_id ? str_replace('commonData', $datastream_id, $this->repository[$type]) : $this->repository[$type];
+    return sprintf($uri, $id);
+  }
+
+  /** \brief Check whether an object is deleted or not
    *
    * @param string $fpid - the pid to fetch
    * @param string $datastream_id - 
    * @retval boolean 
    */
-  private function deleted_object($fpid, $datastream_id = 'commonData') {
+  private function deleted_object($fpid) {
     static $dom;
     $state = '';
-    if ($obj_url = $this->repository['fedora_get_object_profile']) {
-      self::get_fedora($obj_url, $fpid, $obj_rec);
-      if ($obj_rec) {
-        if (empty($dom))
-          $dom = new DomDocument();
-        $dom->preserveWhiteSpace = FALSE;
-        if (@ $dom->loadXML($obj_rec))
-          $state = $dom->getElementsByTagName('objState')->item(0)->nodeValue;
-      }
+    self::read_record_repo(self::record_repo_url('fedora_get_object_profile', $fpid), $obj_rec);
+    if ($obj_rec) {
+      if (empty($dom))
+        $dom = new DomDocument();
+      $dom->preserveWhiteSpace = FALSE;
+      if (@ $dom->loadXML($obj_rec))
+        $state = $dom->getElementsByTagName('objState')->item(0)->nodeValue;
     }
     return $state == 'D';
   }
 
-  /** \brief Fetch a raw record from fedora
+  /** \brief Fetch a raw record from record_repo
    *
    * @param string $fpid - the pid to fetch
-   * @param string $fedora_xml - the record is returned
+   * @param string $record_repo_xml - the record is returned
    * @param string $datastream_id - 
    * @retval mixed - error or NULL
    */
-  private function get_fedora_raw($fpid, &$fedora_xml, $datastream_id = 'commonData') {
-    $uri = $this->repository['fedora_get_raw'];
-    if ($datastream_id && ($datastream_id <> 'commonData')) {
-      $uri = str_replace('commonData', $datastream_id, $uri);
-    }
-    return self::get_fedora($uri, $fpid, $fedora_xml);
+  private function read_record_repo_raw($fpid, &$record_repo_xml, $datastream_id = 'commonData') {
+    return self::read_record_repo(self::record_repo_url('fedora_get_raw', $fpid, $datastream_id), $record_repo_xml);
   }
 
-  /** \brief Fetch a rels_addi record from fedora
+  /** \brief Fetch a rels_addi record from record_repo
    *
    * @param string $fpid - the pid to fetch
-   * @param string $fedora_addi_xml - the record is returned
+   * @param string $record_repo_addi_xml - the record is returned
    * @retval mixed - error, FALSE or NULL
    */
-  private function get_fedora_rels_addi($fpid, &$fedora_addi_xml) {
+  private function read_record_repo_rels_addi($fpid, &$record_repo_addi_xml) {
     if ($this->repository['fedora_get_rels_addi']) {
-      return self::get_fedora($this->repository['fedora_get_rels_addi'], $fpid, $fedora_addi_xml, FALSE);
+      return self::read_record_repo(self::record_repo_url('fedora_get_rels_addi', $fpid), $record_repo_addi_xml, FALSE);
     }
     else {
       return FALSE;
     }
   }
 
-  /** \brief Fetch a rels_hierarchy record from fedora
+  /** \brief Fetch a rels_hierarchy record from record_repo
    *
    * @param string $fpid - the pid to fetch
-   * @param string $fedora_hierarchy_xml - the record is returned
+   * @param string $record_repo_hierarchy_xml - the record is returned
    * @retval mixed - error or NULL
    */
-  private function get_fedora_rels_hierarchy($fpid, &$fedora_hierarchy_xml) {
-    return self::get_fedora($this->repository['fedora_get_rels_hierarchy'], $fpid, $fedora_hierarchy_xml);
+  private function read_record_repo_rels_hierarchy($fpid, &$record_repo_hierarchy_xml) {
+    return self::read_record_repo(self::record_repo_url('fedora_get_rels_hierarchy', $fpid), $record_repo_hierarchy_xml);
   }
 
-  /** \brief Fetch datastreams for a record from fedora
+  /** \brief Fetch datastreams for a record from record_repo
    *
    * @param string $fpid - the pid to fetch
-   * @param string $fedora_xml - the record is returned
+   * @param string $record_repo_xml - the record is returned
    * @retval mixed - error or NULL
    */
-  private function get_fedora_datastreams($fpid, &$fedora_xml) {
-    return self::get_fedora($this->repository['fedora_get_datastreams'], $fpid, $fedora_xml);
+  private function read_record_repo_datastreams($fpid, &$record_repo_xml) {
+    return self::read_record_repo(self::record_repo_url('fedora_get_datastreams', $fpid), $record_repo_xml);
   }
 
-  /** \brief Setup call to fedora and execute it. The record is cached.
+  /** \brief Setup call to record_repo and execute it. The record is cached.
    *
-   * @param string $uri - the fedora uri
-   * @param string $fpid - the pid to fetch
+   * @param string $uri - the record_repo uri
    * @param string $rec - the record is returned
    * @param boolean $mandatory - how to handle a missing record/error
    * @retval mixed - error or NULL
    */
-  private function get_fedora($uri, $fpid, &$rec, $mandatory=TRUE) {
-    $record_uri =  sprintf($uri, $fpid);
-    verbose::log(TRACE, 'get_fedora: ' . $record_uri);
+  private function read_record_repo($record_uri, &$rec, $mandatory=TRUE) {
+    verbose::log(TRACE, 'read_record_repo: ' . $record_uri);
     if (DEBUG_ON) echo __FUNCTION__ . ':: ' . $record_uri . "\n";
     if ($this->cache && ($rec = $this->cache->get($record_uri))) {
-      $this->number_of_fedora_cached++;
+      $this->number_of_record_repo_cached++;
     }
     else {
-      $this->number_of_fedora_calls++;
+      $this->number_of_record_repo_calls++;
       $this->curl->set_authentication('fedoraAdmin', 'fedoraAdmin');
-      $this->watch->start('fedora');
+      $this->watch->start('record_repo');
       $rec = self::normalize_chars($this->curl->get($record_uri));
-      $this->watch->stop('fedora');
+      $this->watch->stop('record_repo');
       $curl_err = $this->curl->get_status();
       if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
         $rec = '';
@@ -2294,14 +2170,51 @@ class openSearch extends webServiceServer {
           if ($curl_err['http_code'] == 404) {
             return 'record_not_found';
           }
-          verbose::log(FATAL, 'Fedora http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri);
-          return 'Error: Cannot fetch record: ' . $fpid . ' - http-error: ' . $curl_err['http_code'];
+          verbose::log(FATAL, 'record_repo http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri);
+          return 'Error: Cannot fetch record: ' . $record_uri . ' - http-error: ' . $curl_err['http_code'];
         }
       }
       if ($this->cache) $this->cache->set($record_uri, $rec);
     }
-    // else verbose::log(TRACE, 'Fedora cache hit for ' . $fpid);
+    // else verbose::log(TRACE, 'record_repo cache hit for ' . $fpid);
     return;
+  }
+
+  /** \brief Get multiple urls and return result in structure with the same indices
+   *
+   * @param array $urls - 
+   * @retval array 
+   */
+  private function read_record_repo_all_urls($urls) {
+    $ret = array();
+    if (empty($urls)) $urls = array();
+    $res_map = array_keys($urls);
+    $no = 0;
+    foreach ($urls as $key => $uri) {
+      verbose::log(TRACE, 'read_record_repo: ' . $uri);
+      if (DEBUG_ON) echo __FUNCTION__ . ':: ' . $uri . "\n";
+      if ($this->cache && ($ret[$key] = $this->cache->get($uri))) {
+        $this->number_of_record_repo_cached++;
+      }
+      else {
+        $this->number_of_record_repo_calls++;
+        $last_no = $no;
+        $this->curl->set_url($uri, $no);
+      }
+      $no++;
+    }
+    if (isset($last_no)) {
+      $this->watch->start('record_repo');
+      $recs = $this->curl->get();
+      $this->watch->stop('record_repo');
+      $this->curl->close();
+      if (!is_array($recs)) $recs = array($last_no => $recs);
+      foreach ($recs as $no => $rec) {
+        if ($this->cache) $this->cache->set($urls[$res_map[$no]], $rec);
+        $ret[$res_map[$no]] = $rec;
+      }
+    }
+    return $ret;
   }
 
   /** \brief Build search to include collections without holdings
@@ -2422,7 +2335,7 @@ class openSearch extends webServiceServer {
    */
   private function check_valid_internal_relation($unit_id, $relation, $profile) {
     self::set_valid_relations_and_sources($profile);
-    self::get_fedora_rels_hierarchy($unit_id, $rels_hierarchy);
+    self::read_record_repo_rels_hierarchy($unit_id, $rels_hierarchy);
     $pid = self::fetch_best_bib_object($rels_hierarchy, $unit_id);
     foreach (self::find_record_sources_and_group_by_relation($pid, $relation) as $to_record_source) {
       $valid = isset($this->valid_relation[$to_record_source][$relation]);
@@ -2472,7 +2385,7 @@ class openSearch extends webServiceServer {
       $dom = new DomDocument();
       $dom->preserveWhiteSpace = FALSE;
     }
-    self::get_fedora_datastreams($pid, $ds_xml);
+    self::read_record_repo_datastreams($pid, $ds_xml);
     $ret = array();
     if (@ $dom->loadXML($ds_xml)) {
       foreach ($dom->getElementsByTagName('datastream') as $tag) {
@@ -2494,7 +2407,7 @@ class openSearch extends webServiceServer {
    * @retval array - of valid relations for the search profile
    */
 // TODO - valid_relation should also reflect collection_contained_in 
-//        and then check in the collection is found in admin data in fedora object
+//        and then check in the collection is found in admin data in record_repo object
   private function set_valid_relations_and_sources($profile) {
     if (empty($this->valid_relation) && is_array($profile)) {
       foreach ($profile as $src) {
@@ -2713,7 +2626,7 @@ class openSearch extends webServiceServer {
    * @retval string - error if any, NULL otherwise
    */
   private function get_solr_array($q, $start, $rows, $sort, $rank, $facets, $filter, $boost, $debug, &$solr_arr) {
-    $solr_urls[0] = self::create_solr_url($q, $start, $rows, $filter, $sort, $rank, $facets, $boost, $debug, $this->collapsing_field);
+    $solr_urls[0] = self::create_solr_url($q, $start, $rows, $filter, $sort, $rank, $facets, $boost, $debug);
     return self::do_solr($solr_urls, $solr_arr);
   }
 
@@ -2754,13 +2667,9 @@ class openSearch extends webServiceServer {
    * @param string $facets - facets-string
    * @param string $boost - boost query (so far empty)
    * @param string $debug - include SOLR debug info
-   * @param string $collapsing - field to collapse on or empty
    * @retval array - then SOLR url and url for debug purposes
    */
-  private function create_solr_url($eq, $start, $rows, $filter, $sort='', $rank='', $facets='', $boost='', $debug=FALSE, $collapsing=FALSE) {
-    if ($collapsing) {
-      $collaps_pars = '&group=true&group.ngroups=true&group.facet=true&group.field=' . $collapsing;
-    }
+  private function create_solr_url($eq, $start, $rows, $filter, $sort='', $rank='', $facets='', $boost='', $debug=FALSE) {
     $q = implode(AND_OP, $eq['q']);
     if (is_array($eq['handler_var'])) {
       $handler_var = '&' . implode('&', $eq['handler_var']);
@@ -2774,10 +2683,10 @@ class openSearch extends webServiceServer {
     $url = $this->repository['solr'] .
                     '?q=' . urlencode($q) .
                     '&fq=' . $filter .
-                    '&start=' . $start .  $sort . $rank . $boost . $facets .  $collaps_pars . $handler_var .
+                    '&start=' . $start .  $sort . $rank . $boost . $facets .  $handler_var .
                     '&defType=edismax';
-    $debug_url = $url . '&fl=fedoraPid,unit.id&rows=1&debugQuery=on';
-    $url .= '&fl=fedoraPid,unit.id&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
+    $debug_url = $url . '&fl=' . $this->fedora_pid_field . ',' . $this->unit_id_field . ',' . $this->work_id_field . '&rows=1&debugQuery=on';
+    $url .= '&fl=' . $this->fedora_pid_field . ',' . $this->unit_id_field . ',' . $this->work_id_field . '&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
 
     return array('url' => $url, 'debug' => $debug_url);
   }
@@ -2952,7 +2861,7 @@ class openSearch extends webServiceServer {
     return(array($unit_members, $best_pid, $localdata_in_pid, $primary_pid));
   }
 
-  /** \brief Read a record from fedora and tcheck if it is deleted
+  /** \brief Read a record from record_repo and tcheck if it is deleted
    *
    * @param string $pid - record pid
    * @param string $localdata_in_pid - in localData stream of this pid
@@ -2960,19 +2869,19 @@ class openSearch extends webServiceServer {
    */
   private function is_deleted_record($pid, $localdata_in_pid) {
     if ($localdata_in_pid) {
-      self::get_fedora_raw($localdata_in_pid, $fedora_result, 'localData.' . self::record_source_from_pid($pid));
+      self::read_record_repo_raw($localdata_in_pid, $record_repo_result, 'localData.' . self::record_source_from_pid($pid));
       if (DEBUG_ON) {
-        echo __FUNCTION__ . ':: ' . $pid . ' in ' . $localdata_in_pid . ' localData.' . self::record_source_from_pid($pid) . ' is ' . (empty($fedora_result) || strpos($fedora_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
+        echo __FUNCTION__ . ':: ' . $pid . ' in ' . $localdata_in_pid . ' localData.' . self::record_source_from_pid($pid) . ' is ' . (empty($record_repo_result) || strpos($record_repo_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
       }
     }
     else {
-      self::get_fedora_raw($pid, $fedora_result);
+      self::read_record_repo_raw($pid, $record_repo_result);
       if (DEBUG_ON) {
-        echo __FUNCTION__ . ':: ' . $pid . ' is ' . (empty($fedora_result) || strpos($fedora_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
+        echo __FUNCTION__ . ':: ' . $pid . ' is ' . (empty($record_repo_result) || strpos($record_repo_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
       }
     }
-    //if (DEBUG_ON) { echo $fedora_result . PHP_EOL; }
-    return empty($fedora_result) || strpos($fedora_result, '<recordStatus>delete</recordStatus>');
+    //if (DEBUG_ON) { echo $record_repo_result . PHP_EOL; }
+    return empty($record_repo_result) || strpos($record_repo_result, '<recordStatus>delete</recordStatus>');
   }
 
   /** \brief check if a record source is contained in the search profile: searchable_source
@@ -3083,10 +2992,10 @@ class openSearch extends webServiceServer {
     }
   }
 
-  /** \brief Parse a fedora object and extract record and relations
+  /** \brief Parse a record_repo object and extract record and relations
    *
-   * @param string $fedora_xml      - the bibliographic record from fedora
-   * @param DOMDocument $fedora_addi_obj - corresponding relation object
+   * @param string $record_repo_xml      - the bibliographic record from record_repo
+   * @param DOMDocument $record_repo_addi_obj - corresponding relation object
    * @param array $unit_members     - list of unit members contained by the search profile
    * @param string $rels_type       - level for returning relations
    * @param string $rec_id          - record id of the record
@@ -3095,22 +3004,27 @@ class openSearch extends webServiceServer {
    * @param object $debug_info      -
    * @retval object - record object in a collection object
    */
-  private function parse_fedora_object(&$fedora_xml, $fedora_addi_obj, $unit_members, $rels_type, $rec_id, $primary_id, $filter, $holdings_count, $debug_info='') {
-    static $fedora_dom;
-    if (empty($fedora_dom)) {
-      $fedora_dom = new DomDocument();
-      $fedora_dom->preserveWhiteSpace = FALSE;
+  private function parse_record_repo_object(&$record_repo_xml, $record_repo_addi_obj, $unit_members, $rels_type, $rec_id, $primary_id, $filter, $holdings_count, $debug_info='') {
+    static $record_repo_dom;
+    $missing_record = $this->config->get_value('missing_record', 'setup');
+    if (empty($record_repo_dom)) {
+      $record_repo_dom = new DomDocument();
+      $record_repo_dom->preserveWhiteSpace = FALSE;
     }
-    if (@ !$fedora_dom->loadXML($fedora_xml)) {
+    if (@ !$record_repo_dom->loadXML($record_repo_xml)) {
       verbose::log(FATAL, 'Cannot load recid ' . $rec_id . ' into DomXml');
-      return;
+      if ($missing_record) {
+        $record_repo_dom->loadXML(sprintf($missing_record, $rec_id));
+      }
+      else
+        return;
     }
 
-    $rec = self::extract_record($fedora_dom, $rec_id);
+    $rec = self::extract_record($record_repo_dom, $rec_id);
 
     if (in_array($rels_type, array('type', 'uri', 'full'))) {
       self::get_relations_from_datastream_domobj($relations, $unit_members, $rels_type);
-      self::get_relations_from_addi_stream($relations, $fedora_addi_obj, $rels_type, $filter);
+      self::get_relations_from_addi_stream($relations, $record_repo_addi_obj, $rels_type, $filter);
     }
 
     $ret = $rec;
@@ -3118,10 +3032,10 @@ class openSearch extends webServiceServer {
     if ($primary_id) {
       Object::set_value($ret, 'primaryObjectIdentifier', $primary_id);
     }
-    if ($rs = self::get_record_status($fedora_dom)) {
+    if ($rs = self::get_record_status($record_repo_dom)) {
       Object::set_value($ret, 'recordStatus', $rs);
     }
-    if ($cd = self::get_creation_date($fedora_dom)) {
+    if ($cd = self::get_creation_date($record_repo_dom)) {
       Object::set_value($ret, 'creationDate', $cd);
     }
 // hack
@@ -3133,7 +3047,7 @@ class openSearch extends webServiceServer {
       Object::set_value($ret, 'lendingLibraries', $holdings_count['lend']);
     }
     if ($relations) Object::set_value($ret, 'relations', $relations);
-    if ($fa = self::scan_for_formats($fedora_dom)) {
+    if ($fa = self::scan_for_formats($record_repo_dom)) {
       Object::set_value($ret, 'formatsAvailable', $fa);
     }
     foreach ($unit_members as $um) {
@@ -3156,11 +3070,11 @@ class openSearch extends webServiceServer {
     return TRUE;
     if (empty($filter_q)) return TRUE;
 
-    self::get_solr_array('unit.id:' . str_replace(':', '\:', $unit_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
+    self::get_solr_array($this->unit_id_field . ':' . str_replace(':', '\:', $unit_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
     return $solr_arr['response']['numFound'];
   }
 
-  /** \brief extract record status from fedora obj
+  /** \brief extract record status from record_repo obj
    *
    * @param DOMDocument $dom - 
    * @retval string - record status
@@ -3171,7 +3085,7 @@ class openSearch extends webServiceServer {
     }
   }
 
-  /** \brief extract creation date from fedora obj
+  /** \brief extract creation date from record_repo obj
    *
    * @param DOMDocument $dom - 
    * @retval string - creation date
@@ -3215,10 +3129,16 @@ class openSearch extends webServiceServer {
     if (empty($stream_dom)) {
       $stream_dom = new DomDocument();
     }
+// get all records
+    foreach ($unit_members as $idx => $member) {
+      $raw_urls[$idx] = self::record_repo_url('fedora_get_raw', $member);
+    }
+    $repo_res = self::read_record_repo_all_urls($raw_urls);
+
+// loop through records
     $dup_check = array();
-    foreach ($unit_members as $member) {
-      self::get_fedora_raw($member, $fedora_streams);
-      if (@ !$stream_dom->loadXML($fedora_streams)) {
+    foreach ($unit_members as $idx => $member) {
+      if (@ !$stream_dom->loadXML($repo_res[$idx])) {
         verbose::log(ERROR, 'Cannot load STREAMS for ' . $member . ' into DomXml');
       } 
       else {
@@ -3268,88 +3188,108 @@ class openSearch extends webServiceServer {
   /** \brief Handle relations comming from addi streams
    *
    * @param object $relations - the structure to contain the relations found
-   * @param string $fedora_addi_xml - an addi document from fedora
+   * @param string $record_repo_addi_xml - an addi document from record_repo
    * @param string $rels_type - level for returning relations (type, uri, full)
    * @param string $filter - agency filter
    */
-  private function get_relations_from_addi_stream(&$relations, $fedora_addi_xml, $rels_type, $filter) {
+  private function get_relations_from_addi_stream(&$relations, $record_repo_addi_xml, $rels_type, $filter) {
     static $rels_dom;
     if (empty($rels_dom)) {
       $rels_dom = new DomDocument();
     }
-    @ $rels_dom->loadXML($fedora_addi_xml);
-    if ($rels_dom->getElementsByTagName('Description')->item(0)) {
-      $relation_count = array();
-      foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
-        if ($tag->nodeType == XML_ELEMENT_NODE) {
-          if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
-            $this_relation = $rel_prefix . ':' . $tag->localName;
-          else
-            $this_relation = $tag->localName;
-          if (($relation_count[$this_relation] < MAX_IDENTICAL_RELATIONS) &&
-              ($rel_source = self::check_valid_internal_relation($tag->nodeValue, $this_relation, $this->search_profile))) {
-            $relation_count[$this_relation]++;
-            self::get_fedora_rels_hierarchy($tag->nodeValue, $rels_sys);
-            list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($rels_sys, $tag->nodeValue, TRUE);
-            if ($rel_oid) {
-              list($pid, $datastream)  = self::create_fedora_pid_and_stream($rel_oid, $localdata_in_pid);
-              self::get_fedora_raw($pid, $related_obj, $datastream);
-              if (@ !$rels_dom->loadXML($related_obj)) {
-                verbose::log(FATAL, 'Cannot load ' . $pid . ' object from commonData into DomXml');
-                $rels_dom = NULL;
-              }
-              $collection_id = self::get_element_from_admin_data($rels_dom, 'collectionIdentifier');
-              if (empty($this->valid_relation[$collection_id])) {  // handling of local data streams
-                if (DEBUG_ON) { 
-                  echo __FUNCTION__ . ':: Datastream(s): ' . implode(',', self::fetch_valid_sources_from_stream($pid)) . PHP_EOL;
-                }
-                foreach (self::fetch_valid_sources_from_stream($pid) as $source) {
-                  if ($this->valid_relation[$source]) {
-                    $collection_id = $source;
-                    if (DEBUG_ON) { 
-                      echo __FUNCTION__ . ':: --- use: ' . $source . ' rel_oid: ' . $rel_oid . ' stream: ' . self::set_data_stream_name($collection_id) . PHP_EOL;
-                    }
-                    self::get_fedora_raw($rel_oid, $related_obj, self::set_data_stream_name($collection_id));
-                    if (@ !$rels_dom->loadXML($related_obj)) {
-                      verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from ' . $source . ' into DomXml');
-                      $rels_dom = NULL;
-                    }
-                    break;
-                  }
-                }
-              }
-// TODO: find some way to check relations validity against the search profile without wasting time on a solr-search
-// TODO: pseudo-collections, like 150015-ereol, which are part of a real collection, should be allowed even when the real collection is not allowed
-              if (isset($this->valid_relation[$collection_id]) && self::is_searchable($tag->nodeValue, $filter)) {
-                Object::set_value($relation, 'relationType', $this_relation);
-                if ($rels_type == 'uri' || $rels_type == 'full') {
-                  Object::set_value($relation, 'relationUri', $rel_oid);
-                }
-                if (is_object($rels_dom) && ($rels_type == 'full')) {
-                  $rel_obj = &$relation->relationObject->_value->object->_value;
-                  $rel_obj = self::extract_record($rels_dom, $tag->nodeValue);
-                  Object::set_value($rel_obj, 'identifier', $rel_oid);
-                  if ($cd = self::get_creation_date($rels_dom)) {
-                    Object::set_value($rel_obj, 'creationDate', $cd);
-                  }
-                  self::get_relations_from_datastream_domobj($ext_relations, $rel_unit_members, $rels_type);
-                  if ($ext_relations) {
-                    Object::set_value($rel_obj, 'relations', $ext_relations);
-                    unset($ext_relations);
-                  }
-                  if ($fa = self::scan_for_formats($rels_dom)) {
-                    Object::set_value($rel_obj, 'formatsAvailable', $fa);
-                  }
-                }
-                if ($rels_type == 'type' || $relation->relationUri->_value) {
-                  Object::set_array_value($relations, 'relation', $relation);
-                }
-                unset($relation);
-              }
+    @ $rels_dom->loadXML($record_repo_addi_xml);
+    if (!$rels_dom->getElementsByTagName('Description')->item(0)) {
+      return;
+    }
+
+// Read hierarchy records
+    $hierarchy_urls = array();
+    foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
+      if ($tag->nodeType == XML_ELEMENT_NODE) {
+        if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
+          $this_relation = $rel_prefix . ':' . $tag->localName;
+        else
+          $this_relation = $tag->localName;
+        if (($relation_count[$this_relation] < MAX_IDENTICAL_RELATIONS) &&
+            ($rel_source = self::check_valid_internal_relation($tag->nodeValue, $this_relation, $this->search_profile))) {
+          $relation_count[$this_relation]++;
+          $u_relations[$tag->nodeValue] = $this_relation;
+          $hierarchy_urls[$tag->nodeValue] = self::record_repo_url('fedora_get_rels_hierarchy', $tag->nodeValue);
+        }
+      }
+    }
+    $hierarchy_recs = self::read_record_repo_all_urls($hierarchy_urls);
+
+// find best record and read it
+    $raw_urls = array();
+    foreach ($hierarchy_recs as $unit_id => $hierarchy_rec) {
+      $unit_info[$unit_id] = self::parse_unit_for_best_agency($hierarchy_rec, $unit_id, TRUE);
+      list($dummy, $rel_oid) = $unit_info[$unit_id];
+      if ($rel_oid) {
+        list($pid, $datastream)  = self::create_fedora_pid_and_stream($rel_oid, $localdata_in_pid);
+        $unit_info[$unit_id][] = $pid;
+        $raw_urls[$unit_id] = self::record_repo_url('fedora_get_raw', $pid, $datastream);
+      }
+    }
+    $raw_recs = self::read_record_repo_all_urls($raw_urls);
+//var_dump($u_relations); var_dump($hierarchy_recs); var_dump($raw_recs); die();
+
+// loop records and build result
+    foreach ($raw_recs as $unit_id => $related_obj) {
+      list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid, $pid) = $unit_info[$unit_id];
+      if (@ !$rels_dom->loadXML($related_obj)) {
+        verbose::log(FATAL, 'Cannot load ' . $pid . ' object from commonData into DomXml');
+        $rels_dom = NULL;
+      }
+      $collection_id = self::get_element_from_admin_data($rels_dom, 'collectionIdentifier');
+      if (empty($this->valid_relation[$collection_id])) {  // handling of local data streams
+        if (DEBUG_ON) {
+          echo __FUNCTION__ . ':: Datastream(s): ' . implode(',', self::fetch_valid_sources_from_stream($pid)) . PHP_EOL;
+        }
+        foreach (self::fetch_valid_sources_from_stream($pid) as $source) {
+          if ($this->valid_relation[$source]) {
+            $collection_id = $source;
+            if (DEBUG_ON) {
+              echo __FUNCTION__ . ':: --- use: ' . $source . ' rel_oid: ' . $rel_oid . ' stream: ' . self::set_data_stream_name($collection_id) . PHP_EOL;
             }
+            self::read_record_repo_raw($rel_oid, $related_obj, self::set_data_stream_name($collection_id));
+            if (@ !$rels_dom->loadXML($related_obj)) {
+              verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from ' . $source . ' into DomXml');
+              $rels_dom = NULL;
+            }
+            break;
           }
         }
-      }  // foreach ...
+      }
+// TODO: find some way to check relations validity against the search profile without wasting time on a solr-search
+// TODO: pseudo-collections, like 150015-ereol, which are part of a real collection, should be allowed even when the real collection is not allowed
+      if (isset($this->valid_relation[$collection_id]) && self::is_searchable($unit_id, $filter)) {
+        Object::set_value($relation, 'relationType', $u_relations[$unit_id]);
+        if ($rels_type == 'uri' || $rels_type == 'full') {
+          Object::set_value($relation, 'relationUri', $rel_oid);
+        }
+        if (is_object($rels_dom) && ($rels_type == 'full')) {
+          $rel_obj = &$relation->relationObject->_value->object->_value;
+          $rel_obj = self::extract_record($rels_dom, $unit_id);
+          Object::set_value($rel_obj, 'identifier', $rel_oid);
+          if ($cd = self::get_creation_date($rels_dom)) {
+            Object::set_value($rel_obj, 'creationDate', $cd);
+          }
+          self::get_relations_from_datastream_domobj($ext_relations, $rel_unit_members, $rels_type);
+          if ($ext_relations) {
+            Object::set_value($rel_obj, 'relations', $ext_relations);
+            unset($ext_relations);
+          }
+          if ($fa = self::scan_for_formats($rels_dom)) {
+            Object::set_value($rel_obj, 'formatsAvailable', $fa);
+          }
+        }
+        if ($rels_type == 'type' || $relation->relationUri->_value) {
+          Object::set_array_value($relations, 'relation', $relation);
+        }
+        unset($relation);
+      }
+
     }
   }
 

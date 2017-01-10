@@ -11,7 +11,7 @@
 ;version
 ; Note that the version is used as part of the cache key, so do not run 2 versions of the service with identical
 ; version name, unless you specificly want them to share cache
-version = 4.4
+version = 4.5
 
 ; --------------
 ; wsdl and service location for service. Used to replace __LOCATION__ in wsdl
@@ -52,6 +52,12 @@ soapAction[info] = infoRequest
 ; display.xxxx set to array will return all display.xxxx as array for objectFormats defined below in solr_format[]
 ; for display.creator this would be like
 ; feature_switch[display.creator] = array 
+
+; --------------
+; Setting of field names in Solr - default is as specified here
+;field_unit_id = unit.iid
+;field_fedora_pid = fedoraPid
+;field_work_id = rec.workId
 
 ; --------------
 ; url_override
@@ -314,17 +320,6 @@ open_format[marc21ToDm2][format] = marc21ToDm2
 ;solr_format[briefDisplay][format] = display.accessType,display.creator,fedoraPid,rec.id,fedora.identifier,display.language,display.partOf,display.title,display.titleFull,display.type,display.workType
 solr_format[briefDisplay][format] = display.accessType,display.creator,fedoraPid,fedora.identifier,display.language,display.partOf,display.title,display.titleFull,display.dependentTitle,display.type,display.workType,display.multiVolumeType
 solr_format[score][format] = score
-
-; --------------
-; if solr's field collapsing should be used, define the collapsing field here
-; performs poorly on large sets
-; if collapsing_field is set, the 2 num_found_collaps* are ignored
-; collapsing_field = fedoraPid
-
-; Use collapsing field for modifying hit count when prelimary hit count is below hit_count_collaps_limit
-; if collapsing_field above is set, these 2 parameters are ignored
-num_found_collaps_limit = 100
-num_found_collapsing_field = fedoraPid
 
 ; --------------
 ; default search_profile setting
