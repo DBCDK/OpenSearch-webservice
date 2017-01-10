@@ -416,7 +416,9 @@ class openSearch extends webServiceServer {
       }
     }
     $add_queries = array($this->unit_id_field . ':(' . implode(OR_OP, $q_unit) . ')');
+    $this->watch->start('Solr');
     $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), '');
+    $this->watch->stop('Solr');
         foreach ($display_solr_arr as $d_s_a) {
           foreach ($d_s_a['response']['docs'] as $fdoc) {
             $u_id =  self::scalar_or_first_elem($fdoc[$this->unit_id_field]);
@@ -434,7 +436,6 @@ class openSearch extends webServiceServer {
     // work_ids now contains the work-records and the fedoraPids they consist of
     // now fetch the records for each work/collection
     // TODO Change to two loops to fetch records in parallel
-    $this->watch->start('get_recs');
     $collections = array();
     $rec_no = max(1, $start);
     $HOLDINGS = ' holdings ';
@@ -523,7 +524,6 @@ class openSearch extends webServiceServer {
     }
     if (DEBUG_ON) print_r($unit_sort_keys);
     if (DEBUG_ON) print_r($fpid_sort_keys);
-    $this->watch->stop('get_recs');
 
     if ($param->collectionType->_value == 'work-1') {
       foreach ($collections as &$c) {
@@ -923,12 +923,13 @@ class openSearch extends webServiceServer {
         verbose::log(WARNING, 'To few search_ids fetched from solr. Query: ' . implode(AND_OP, $edismax['q']) . ' idx: ' . $w_idx);
         $rows *= 2;
         if ($err = self::get_solr_array($edismax, 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr)) {
+          $this->watch->stop('Solr_add');
           return $err;
         }
         else {
+          $this->watch->stop('Solr_add');
           self::extract_ids_from_solr($solr_arr, $work_ids);
         }
-        $this->watch->stop('Solr_add');
       }
     }
     $work_slice = array_slice($work_cache_struct, ($start - 1), $step_value);
@@ -1212,7 +1213,6 @@ class openSearch extends webServiceServer {
         $ret .= '&facet.field=' . $facets->facetName->_value;
       }
     }
-    $this->watch->sums['facets'] = count($facets->facetName) . sprintf('.%03d 0', $facets->numberOfTerms->_value);
     return $ret;
   }
 
