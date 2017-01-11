@@ -346,6 +346,9 @@ class openSearch extends webServiceServer {
       else {
         self::extract_ids_from_solr($solr_arr, $solr_work_ids);
         $numFound = self::get_num_found($solr_arr);
+        if ($numFound && !count($solr_work_ids)) {
+          $error = 'Internal error: Cannot extract any id\'s from solr';
+        }
       }
     }
     $this->watch->stop('Solr');
@@ -915,7 +918,7 @@ class openSearch extends webServiceServer {
       $work_cache_struct[$struct_id] = $use_work_collection ? array() : array($work_ids[$w_idx][$this->unit_id_field]);
       if (count($work_cache_struct) >= ($start + $step_value)) {
         $more = TRUE;
-        verbose::log(TRACE, 'SOLR stat: used ' . $s_idx . ' of ' . count($work_ids) . ' rows. start: ' . $start . ' step: ' . $step_value);
+        verbose::log(TRACE, 'SOLR stat: used ' . $w_idx . ' of ' . count($work_ids) . ' rows. start: ' . $start . ' step: ' . $step_value);
         break;
       }
       if (!isset($work_ids[$w_idx + 1]) && count($work_ids) < $num_found) {
@@ -1743,8 +1746,11 @@ class openSearch extends webServiceServer {
         if ($id = $fdoc[$fld]) {
           $ids[$fld] = self::scalar_or_first_elem($id);
         }
-        elseif (++$u_err < 10) {
-          verbose::log(FATAL, 'Missing ' . $fld . ' in solr_result. Record no: ' . (count($search_ids) + $u_err));
+        else {
+          if (++$u_err < 10) {
+            verbose::log(FATAL, 'Missing ' . $fld . ' in solr_result. Record no: ' . (count($search_ids) + $u_err));
+          }
+          break 2;
         }
       }
       $search_ids[] = $ids;
