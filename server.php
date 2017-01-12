@@ -901,667 +901,14 @@ class openSearch extends webServiceServer {
                        ' profile:' . $param->profile->_value . ' ' . $this->watch->dump());
     return $ret;
   }
-  /*******************************************************************************/
 
-  /** \brief Isolation of creation of work structure for caching
-  *
-  * @param - way to many
-  * 
-  * parameters to a solr-search should be isolated in a class object - refactor one day
-  */
-  private function build_work_struct_from_solr(&$work_cache_struct, &$work_struct, &$more, &$work_ids, $edismax, $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, $all_objects, $num_found, $debug_query) {
-    for ($w_idx = 0; isset($work_ids[$w_idx]); $w_idx++) {
-      $struct_id = $work_ids[$w_idx][$this->work_id_field] . ($use_work_collection ? '' : '-' . $work_ids[$w_idx][$this->unit_id_field]);     
-      if ($work_cache_struct[$struct_id]) continue;
-      $work_cache_struct[$struct_id] = $use_work_collection ? array() : array($work_ids[$w_idx][$this->unit_id_field]);
-      if (count($work_cache_struct) >= ($start + $step_value)) {
-        $more = TRUE;
-        verbose::log(TRACE, 'SOLR stat: used ' . $w_idx . ' of ' . count($work_ids) . ' rows. start: ' . $start . ' step: ' . $step_value);
-        break;
-      }
-      if (!isset($work_ids[$w_idx + 1]) && count($work_ids) < $num_found) {
-        $this->watch->start('Solr_add');
-        verbose::log(WARNING, 'To few search_ids fetched from solr. Query: ' . implode(AND_OP, $edismax['q']) . ' idx: ' . $w_idx);
-        $rows *= 2;
-        if ($err = self::get_solr_array($edismax, 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr)) {
-          $this->watch->stop('Solr_add');
-          return $err;
-        }
-        else {
-          $this->watch->stop('Solr_add');
-          self::extract_ids_from_solr($solr_arr, $work_ids);
-        }
-      }
-    }
-    $work_slice = array_slice($work_cache_struct, ($start - 1), $step_value);
-    if ($use_work_collection && $step_value) {
-      foreach ($work_slice as $w_id => $w_list) {
-        if (empty($w_list)) {
-          $search_w[] = '"' . $w_id . '"';
-        }
-      }
-      if (is_array($search_w)) {
-        if ($all_objects) {
-          $edismax['q'] = array();
-        }
-        $edismax['q'][] = $this->work_id_field . ':(' . implode(OR_OP, $search_w) . ')';
-        if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_q, '', $debug_query, $solr_arr)) {
-          return $err;
-        }
-        foreach ($solr_arr['response']['docs'] as $fdoc) {
-          $unit_id = $fdoc[$this->unit_id_field];
-          $work_id = $fdoc[$this->work_id_field];
-          if (!in_array($unit_id, $work_slice[$work_id])) {
-            $work_slice[$work_id][] = $work_cache_struct[$work_id][] = $unit_id;
-          }
-        }
-      }
-    }
-    $pos = $start;
-    foreach ($work_slice as $work) {
-      $work_struct[$pos++] = $work;
-    }
-    //var_dump($edismax); var_dump($add_q); var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
-  }
+  /**/
+  /************************************* private ******************************************/
+  /**/
 
-  /** \brief for testing to return empty rels hierarchy records
-   * 
-   * @retval object - xml string
-   */
-  private function empty_rels_hierarchy() {
-    return '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description rdf:about="info:fedora/unit:16765541"></rdf:Description></rdf:RDF>';
-  }
-
-  /** \brief Get information about search profile (info operation)
-   * 
-   * @param string $agency 
-   * @param string $profile 
-   * @retval object - the user profile
-   */
-  private function get_search_profile_info($agency, $profile) {
-    if ($s_profile = self::fetch_profile_from_agency($agency, $profile)) {
-      foreach ($s_profile as $p) {
-        Object::set_value($coll, 'searchCollectionName', $p['sourceName']);
-        Object::set_value($coll, 'searchCollectionIdentifier', $p['sourceIdentifier']);
-        Object::set_value($coll, 'searchCollectionIsSearched', self::xs_boolean($p['sourceSearchable']) ? 'true' : 'false');
-        if ($p['relation'])
-          foreach ($p['relation'] as $relation) {
-            if ($r = $relation['rdfLabel']) {
-              $all_relations[$r] = $r;
-              Object::set($rels[], '_value', $r);
-            }
-            if ($r = $relation['rdfInverse']) {
-              $all_relations[$r] = $r;
-              Object::set($rels[], '_value', $r);
-            }
-          }
-        if ($rels) {
-          $coll->relationType = $rels;
-        }
-        if ($rels || self::xs_boolean($p['sourceSearchable'])) {
-          Object::set_array_value($ret->_value, 'searchCollection', $coll);
-        }
-        unset($rels);
-        unset($coll);
-      }
-        if (is_array($all_relations)) {
-          ksort($all_relations);
-          foreach ($all_relations as $rel) {
-            Object::set_array_value($rels, 'relationType', $rel);
-          }
-          Object::set_value($ret->_value, 'relationTypes', $rels);
-          unset($rels);
-        }
-    }
-    return $ret;
-  }
-
-  /** \brief Get information about object formats from config (info operation)
-   * 
-   * @retval object 
-   */
-  private function get_object_format_info() {
-    foreach ($this->config->get_value('scan_format_table', 'setup') as $name => $value) {
-      Object::set_array_value($ret->_value, 'objectFormat', $value);
-    }
-    foreach ($this->config->get_value('solr_format', 'setup') as $name => $value) {
-      Object::set_array_value($ret->_value, 'objectFormat', $name);
-    }
-    foreach ($this->config->get_value('open_format', 'setup') as $name => $value) {
-      Object::set_array_value($ret->_value, 'objectFormat', $name);
-    }
-    return $ret;
-  }
-
-  /** \brief Get information about repositories from config (info operation)
-   * 
-   * @retval object 
-   */
-  private function get_repository_info() {
-    $dom = new DomDocument();
-    $repositories = $this->config->get_value('repository', 'setup');
-    foreach ($repositories as $name => $value) {
-      if ($name != 'defaults') {
-        Object::set_value($r, 'repository', $name);
-        self::set_repositories($name, FALSE);
-        Object::set_value($r, 'cqlIndexDoc', $this->repository['cql_file']);
-        if ($this->repository['cql_settings'] && @ $dom->loadXML($this->repository['cql_settings'])) {
-          foreach ($dom->getElementsByTagName('indexInfo') as $index_info) {
-            foreach ($index_info->getElementsByTagName('index') as $index) {
-              foreach ($index->getElementsByTagName('map') as $map) {
-                if ($map->getAttribute('hidden') !== '1') {
-                  foreach ($map->getElementsByTagName('name') as $name) {
-                    $idx = self::set_name_and_slop($name);
-                  }
-                  foreach ($map->getElementsByTagName('alias') as $alias) {
-                    Object::set_array_value($idx, 'indexAlias', self::set_name_and_slop($alias));
-                  }
-                  Object::set_array_value($r, 'cqlIndex', $idx);
-                  unset($idx);
-                }
-              }
-            }
-          }
-        }
-        Object::set_array_value($ret->_value, 'infoRepository', $r);
-        unset($r);
-      }
-    }
-    return $ret;
-  }
-
-  /** \brief Get info from dom node (info operation)
-   * 
-   * @param domNode $node
-   * @retval object 
-   */
-  private function set_name_and_slop($node) {
-    $prefix = $node->getAttribute('set');
-    Object::set_value($reg, 'indexName', $prefix . ($prefix ? '.' : '') . $node->nodeValue);
-    if ($slop = $node->getAttribute('slop')) {
-      Object::set_value($reg, 'indexSlop', $slop);
-    }
-    return $reg;
-  }
-
-  /** \brief Get information about namespaces from config (info operation)
-   * 
-   * @retval object 
-   */
-  private function get_namespace_info() {
-    foreach ($this->config->get_value('xmlns', 'setup') as $prefix => $namespace) {
-      Object::set_value($ns, 'prefix', $prefix);
-      Object::set_value($ns, 'uri', $namespace);
-      Object::set_array_value($nss->_value, 'infoNameSpace', $ns);
-      unset($ns);
-    }
-    return $nss;
-  }
-
-  /** \brief Get information about sorting and ranking from config (info operation)
-   * 
-   * @retval object 
-   */
-  private function get_sort_info() {
-    foreach ($this->config->get_value('rank', 'setup') as $name => $val) {
-      if (isset($val['word_boost']) && ($help = self::collect_rank_boost($val['word_boost']))) {
-        Object::set($boost, 'word', $help);
-      }
-      if (isset($val['phrase_boost']) && ($help = self::collect_rank_boost($val['phrase_boost']))) {
-        Object::set($boost, 'phrase', $help);
-      }
-      if ($boost) {
-        Object::set_value($rank, 'sort', $name);
-        Object::set_value($rank, 'internalType', 'rank');
-        Object::set_value($rank->rankDetails->_value, 'tie', $val['tie']);
-        $rank->rankDetails->_value = $boost;
-        Object::set_Array_value($ret->_value, 'infoSort', $rank);
-        unset($boost);
-        unset($rank);
-      }
-    }
-    foreach ($this->config->get_value('sort', 'setup') as $name => $val) {
-        Object::set_value($sort, 'sort', $name);
-        if (is_array($val)) {
-          Object::set_value($sort, 'internalType', 'complexSort');
-          foreach ($val as $simpleSort) {
-            Object::set($simple[], '_value', $simpleSort);
-          }
-          Object::set($sortDetails, 'sort', $simple);
-          unset($simple);
-        }
-        else {
-          Object::set_value($sort, 'internalType', ($val == 'random' ? 'random' : 'basicSort'));
-          Object::set_value($sortDetails, 'sort', $val);
-        }
-        Object::set_value($sort, 'sortDetails', $sortDetails);
-        Object::set_array_value($ret->_value, 'infoSort', $sort);
-        unset($sort);
-        unset($sortDetails);
-    }
-    return $ret;
-  }
-
-  /** \brief return one rank entry (info operation)
-   * 
-   * @param array $rank 
-   * @retval object 
-   */
-  private function collect_rank_boost($rank) {
-    if (is_array($rank)) {
-      foreach ($rank as $reg => $weight) {
-        Object::set_value($rw, 'fieldName', $reg);
-        Object::set_value($rw, 'weight', $weight);
-        Object::set_array_value($iaw->_value, 'fieldNameAndWeight', $rw);
-        unset($rw);
-      }
-    }
-    return $iaw;
-  }
-
-  /** \brief sets sortUsed if rank or sort is used
-   * 
-   * @param object $ret - modified
-   * @param string $rank
-   * @param string $sort
-   * @param array $sort_types
-   */
-  private function set_sortUsed(&$ret, $rank, $sort, $sort_types) {
-    if (isset($rank)) {
-      if (substr($rank, 0, 9) != 'user_rank') {
-        Object::set_value($ret, 'sortUsed', $rank);
-      }
-    }
-    elseif (!empty($sort)) {
-      if ($key = array_search($sort, $sort_types)) {
-        Object::set_value($ret, 'sortUsed', $key);
-      }
-      else {
-        foreach ($sort as $s) {
-          Object::set_array_value($ret, 'sortUsed', $s);
-        }
-      }
-    }
-  }
-
-  /** \brief Set the parameters to solr facets
-   *
-   * @param object $facets - the facet paramaters from the request
-   * @retval string - facet part of solr url
-   */
-  private function set_solr_facet_parameters($facets) {
-    $max_threads = self::value_or_default($this->config->get_value('max_facet_threads', 'setup'), 50);
-    $ret = '';
-    if ($facets->facetName) {
-      $facet_min = 1;
-      if (isset($facets->facetMinCount->_value)) {
-        $facet_min = $facets->facetMinCount->_value;
-      }
-      $ret .= '&facet=true&facet.threads=' . min(count($facets->facetName), $max_threads) . '&facet.limit=' . $facets->numberOfTerms->_value .  '&facet.mincount=' . $facet_min;
-      if ($facet_sort = $facets->facetSort->_value) {
-        $ret .= '&facet.sort=' . $facet_sort;
-      }
-      if ($facet_offset = $facets->facetOffset->_value) {
-        $ret .= '&facet.offset=' . $facet_offset;
-      }
-      if (is_array($facets->facetName)) {
-        foreach ($facets->facetName as $facet_name) {
-          $ret .= '&facet.field=' . $facet_name->_value;
-        }
-      }
-      elseif (is_scalar($facets->facetName->_value)) {
-        $ret .= '&facet.field=' . $facets->facetName->_value;
-      }
-    }
-    return $ret;
-  }
-
-  /** \brief fetch a cql-file from solr and display it
-   *
-   * @retval string - xml doc or error
-   */
-  protected function showCqlFile() {
-    $repositories = $this->config->get_value('repository', 'setup');
-    $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
-    self::set_repositories($repos, FALSE);
-    if ($file = $this->repository['cql_settings']) {
-      header('Content-Type: application/xml; charset=utf-8');
-      echo $file;
-    }
-    else {
-      header('HTTP/1.0 404 Not Found');
-      echo 'Cannot locate the cql-file: ' . $cql . '<br /><br />Use info operation to check name and repostirory';
-    }
-  }
-
-  /** \brief Compares registers in cql_file with solr, using the luke request handler:
-   *   http://wiki.apache.org/solr/LukeRequestHandler
-   *
-   * @retval string - html doc
-   */
-  protected function diffCqlFileWithSolr() {
-    if ($error = self::set_repositories($_REQUEST['repository'])) {
-      die('Error setting repository: ' . $error);
-    }
-    $luke_url = $this->repository['solr'];
-    if (empty($luke_url)) {
-      die('Cannot find url to solr for repository');
-    }
-    $luke = $this->config->get_value('solr_luke', 'setup');
-    foreach ($luke as $from => $to) {
-      $luke_url = str_replace($from, $to, $luke_url);
-    }
-    $luke_result = json_decode($this->curl->get($luke_url));
-    if (!$luke_result) {
-      die('Cannot fetch register info from solr: ' . $luke_url);
-    }
-    $luke_fields = &$luke_result->fields;
-    $dom = new DomDocument();
-    $dom->loadXML($this->repository['cql_settings']) || die('Cannot read cql_file: ' . $this->repository['cql_file']);
-
-    foreach ($dom->getElementsByTagName('indexInfo') as $info_item) {
-      foreach ($info_item->getElementsByTagName('index') as $index_item) {
-        if ($map_item = $index_item->getElementsByTagName('map')->item(0)) {
-          if ($name_item = $map_item->getElementsByTagName('name')->item(0)) {
-            if (!$name_item->hasAttribute('searchHandler') && ($name_item->getAttribute('set') !== 'cql')) {
-              $full_name = $name_item->getAttribute('set').'.'.$name_item->nodeValue;
-              if ($luke_fields->$full_name) {
-                unset($luke_fields->$full_name);
-              } 
-              else {
-                $cql_regs[] = $full_name;
-              } 
-            } 
-          } 
-        }
-      }
-    }
-
-    echo '<html><body><h1>Found in ' . $this->repository['cql_file'] . ' but not in Solr for repository ' . $this->repository_name . '</h1>';
-    foreach ($cql_regs as $cr)
-      echo $cr . '</br>';
-    echo '</br><h1>Found in Solr but not in ' . $this->repository['cql_file'] . ' for repository ' . $this->repository_name . '</h1>';
-    foreach ($luke_fields as $lf => $obj)
-      echo $lf . '</br>';
-    
-    die('</body></html>');
-  }
-
-  /** \brief Reads records from Raw Record Postgress Database
-   *   
-   * @param string $rr_service    Address fo raw_repo service end point
-   * @param array $solr_response    Response from a solr search in php object
-   * @param boolean $s11_records_allowed    restricted record
-   * 
-   * @retval mixed  array of collections or error string
-   */
-  private function get_records_from_rawrepo($rr_service, $solr_response, $s11_records_allowed) {
-    if (empty($solr_response['docs'])) {
-      return;
-    }
-    $p_mask = '<?xml version="1.0" encoding="UTF-8"?' . '>' . PHP_EOL . '<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><fetchRequest xmlns="http://oss.dbc.dk/ns/rawreposervice"><records>' . PHP_EOL . '%s</records></fetchRequest></S:Body></S:Envelope>';
-    $r_mask = '<record><bibliographicRecordId>%s</bibliographicRecordId><agencyId>%s</agencyId><mode>%s</mode><allowDeleted>true</allowDeleted><includeAgencyPrivate>true</includeAgencyPrivate></record>';
-    $ret = array();
-    $rec_pos = $solr_response['start'];
-    foreach ($solr_response['docs'] as $solr_doc) {
-      $bib = self::scalar_or_first_elem($solr_doc[RR_MARC_001_B]);
-      $post .= sprintf($r_mask, self::scalar_or_first_elem($solr_doc[RR_MARC_001_A]), $bib, ($bib == '870970' ? 'MERGED' : 'RAW')) . PHP_EOL;
-    }
-    $this->curl->set_post(sprintf($p_mask, $post), 0); // use post here because query can be very long
-    $this->curl->set_option(CURLOPT_HTTPHEADER, array('Accept:application/xml;', 'Content-Type: text/xml; charset=utf-8'), 0);
-    $result = $this->curl->get($rr_service, 0);
-    $this->curl->set_option(CURLOPT_POST, 0, 0);
-    $dom = new DomDocument();
-    @ $dom->loadXml($result);
-    if ($records = $dom->getElementsByTagName('records')->item(0)) {
-      foreach ($solr_response['docs'] as $solr_doc) {
-        $found_record = FALSE;
-        $solr_id = self::scalar_or_first_elem($solr_doc[RR_MARC_001_A]);
-        $solr_agency = self::scalar_or_first_elem($solr_doc[RR_MARC_001_B]);
-        foreach ($records->getElementsByTagName('record') as $record) {
-          $id = self::get_dom_element($record, 'bibliographicRecordId');
-          $agency = self::get_dom_element($record, 'agencyId');
-          if (($solr_id == $id) && ($solr_agency == $agency)) {
-            $found_record = TRUE;
-            if (!$data = base64_decode(self::get_dom_element($record, 'data'))) {
-              verbose::log(FATAL, 'Internal problem: Cannot decode record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
-            }
-            break;
-          }
-        }
-        if (!$found_record) {
-          verbose::log(ERROR, 'Internal problem: Cannot find record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
-        }
-        if (empty($data)) {
-          $data = sprintf($this->config->get_value('missing_marc_record', 'setup'), $solr_id, $solr_agency, 'Cannot read record');
-        }
-        @ $dom->loadXml($data);
-        $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
-        $restricted_record = FALSE;
-        if (!$s11_records_allowed && isset($marc_obj->record->_value->datafield)) {
-          foreach ($marc_obj->record->_value->datafield as $idf => &$df) {
-            if ($df->_attributes->tag->_value == 's11') {
-              $restricted_record = TRUE;
-              break 1;
-            }
-          }
-        }
-        if ($restricted_record) {
-          verbose::log(WARNING, 'Skipping restricted record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
-          @ $dom->loadXml(sprintf($this->config->get_value('missing_marc_record', 'setup'), $solr_id, $solr_agency, 'Restricted record'));
-          $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
-        }
-        self::filter_marcxchange($solr_agency, $marc_obj, $this->repository['filter']);
-        $rec_pos++;
-        Object::set_value($ret[$rec_pos]->_value->collection->_value, 'resultPosition', $rec_pos);
-        Object::set_value($ret[$rec_pos]->_value->collection->_value, 'numberOfObjects', 1);
-        Object::set_value($ret[$rec_pos]->_value->collection->_value->object[0]->_value, 'collection', $marc_obj);
-        Object::set_namespace($ret[$rec_pos]->_value->collection->_value->object[0]->_value, 'collection', $this->xmlns['marcx']);
-      }
-    }
-    return $ret;
-  }
-
-  /** \brief Reads records from Raw Record Postgress Database
-   *   
-   * OBSOLETE from datawell 3.5 - use get_records_from_rawrepo instead
-   * @param string $rr_service    Address fo raw_repo service end point
-   * @param array $solr_response    Response from a solr search in php object
-   * @param boolean $s11_records_allowed    restricted record
-   * 
-   * @retval mixed  array of collections or error string
-   */
-  private function get_records_from_postgress($pg_db, $solr_response, $s11_records_allowed) {
-    die('obsolete function - correct the inifile to use raw repo service instead');
-  }
-
-  /** \brief Change cql_error to string
-   *
-   * @param array $solr_error
-   * @retval string
-   */
-  private function cql2solr_error_to_string($solr_error) {
-    $str = '';
-    foreach (array('no' => '|: ', 'description' => '', 'details' => ' (|)', 'pos' => ' at pos ') as $tag => $txt) {
-      list($pre, $post) = explode('|', $txt);
-      if ($solr_error[0][$tag]) {
-        $str .= $pre . $solr_error[0][$tag]. $post;
-      }
-    }
-    return $str;
-  }
-
-  /** \brief Create solr array with records valid for the search-profile and parameters. 
-   *         If solr_formats is asked for, build list of fields to ask for
-   *
-   * @param array $add_queries
-   * @param string $query 
-   * @param boolean $all_objects 
-   * @param string $filter_q 
-   * @retval mixed - error string or SOLR array
-   */
-  private function do_add_queries_and_fetch_solr_data_fields($add_queries, $query, $all_objects, $filter_q) {
-    if ($this->format['found_solr_format']) {
-      foreach ($this->format as $f) {
-        if ($f['is_solr_format']) {
-          $add_fl .= ',' . $f['format_name'];
-        }
-      }
-    }
-    return self::do_add_queries($add_queries, $query, $all_objects, $filter_q, $add_fl);
-  }
-
-  /** \brief Create solr array with records valid for the search-profile and parameters. If needed fetch data for display as well
-   *
-   * @param array $add_queries
-   * @param string $query 
-   * @param boolean $all_objects 
-   * @param string $filter_q 
-   * @param string $add_field_list - list of extra fields to return, like display_*
-   * @retval mixed - error string or SOLR array
-   */
-  private function do_add_queries($add_queries, $query, $all_objects, $filter_q, $add_field_list='') {
-    foreach ($add_queries as $add_idx => $add_query) {
-      if ($this->separate_field_query_style) {
-          $add_q =  '(' . $add_query . ')';
-      }
-      else {
-          $add_q =  $this->which_rec_id . ':(' . $add_query . ')';
-      }
-      $chk_query = $this->cql2solr->parse($query);
-      if ($all_objects) {
-        $chk_query['edismax']['q'] =  array($add_q);
-      }
-      else {
-        if ($add_query) {
-          $chk_query['edismax']['q'][] =  $add_q;
-        }
-      }
-      if ($chk_query['error']) {
-        $error = $chk_query['error'];
-        return $ret_error;
-      }
-      $q = $chk_query['edismax'];
-      $solr_url = self::create_solr_url($q, 0, 999999, $filter_q);
-      list($solr_host, $solr_parm) = explode('?', $solr_url['url'], 2);
-      $solr_parm .= '&fl=rec.collectionIdentifier,unit.isPrimaryObject,' . $this->unit_id_field . ',sort.complexKey' . $add_field_list;
-      verbose::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
-      if (DEBUG_ON) {
-        echo 'post_array: ' . $solr_url['url'] . PHP_EOL;
-      }
-
-      $this->curl->set_post($solr_parm, 0); // use post here because query can be very long
-      $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'), 0);
-      $solr_result = $this->curl->get($solr_host, 0);
-// remember to clear POST 
-      $this->curl->set_option(CURLOPT_POST, 0, 0);
-      if (!($solr_arr[$add_idx] = unserialize($solr_result))) {
-        verbose::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
-        return 'Internal problem: Cannot decode Solr re-search';
-      }
-    }
-    return $solr_arr;
-  }
-
-  /** \brief Sets this->repository from user parameter or defaults to ini-file setup
-   *
-   * @param string $repository 
-   * @param boolean $cql_file_mandatory 
-   * @retval mixed - error or NULL
-   */
-  private function set_repositories($repository, $cql_file_mandatory = TRUE) {
-    $repositories = $this->config->get_value('repository', 'setup');
-    if (!$this->repository_name = $repository) {
-      $this->repository_name = $this->config->get_value('default_repository', 'setup');
-    }
-    if ($this->repository = $repositories[$this->repository_name]) {
-      foreach ($repositories['defaults'] as $key => $url_par) {
-        if (empty($this->repository[$key])) {
-          $this->repository[$key] = (substr($key, 0, 7) == 'fedora_') ? $this->repository['fedora'] . $url_par : $url_par;
-        }
-      }
-      if ($cql_file_mandatory && empty($this->repository['cql_file'])) {
-        verbose::log(FATAL, 'cql_file not defined for repository: ' .  $this->repository_name);
-        return 'Error: cql_file not defined for repository: '  . $this->repository_name;
-      }
-      if ($this->repository['cql_file']) {
-        if (!$this->repository['cql_settings'] = self::get_solr_file($this->repository['cql_file'])) {
-          if (!$this->repository['cql_settings'] = @ file_get_contents($this->repository['cql_file'])) {
-            verbose::log(FATAL, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from local directory. Repository: ' .  $this->repository_name);
-            return 'Error: Cannot find cql_file for repository: '  . $this->repository_name;
-          }
-          verbose::log(ERROR, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from SOLR - use local version. Repository: ' .  $this->repository_name);
-        }
-      }
-      if (empty($this->repository['filter'])) {
-        $this->repository['filter'] = array();
-      }
-    }
-    else {
-      return 'Error: Unknown repository: ' . $this->repository_name;
-    }
-  }
-
-  /** \brief fetch a file from the solr file directory
-   *
-   * @param string $name 
-   * @retval string (xml)
-   */
-  private function get_solr_file($name) {
-    static $solr_file_cache;
-    $file_url = $this->repository['solr'];
-    $file = $this->config->get_value('solr_file', 'setup');
-    foreach ($file as $from => $to) {
-      $file_url = str_replace($from, $to, $file_url);
-    }
-    $solr_file_url = sprintf($file_url, $name);
-    if (empty($solr_file_cache)) {
-      $cache = self::get_cache_info('solr_file');
-      $solr_file_cache = new cache($cache['host'], $cache['port'], $cache['expire']);
-    }
-    if (!$xml = $solr_file_cache->get($solr_file_url)) {
-      $xml = $this->curl->get($solr_file_url);
-      if ($this->curl->get_status('http_code') != 200) {
-        return FALSE;
-      }
-      $solr_file_cache->set($solr_file_url, $xml);
-    }
-    return $xml;
-  }
-
-  /** \brief Set fedora pid to corrects objct and modify datastream according to storage scheme
-   *
-   * @param string $pid 
-   * @param string $localdata_in_pid 
-   * @retval array - of object_id, datastream
-   */
-  private function create_fedora_pid_and_stream($pid, $localdata_in_pid) {
-    if (empty($localdata_in_pid) || ($pid == $localdata_in_pid)) {
-      return array($pid, 'commonData');
-    }
-    return array($localdata_in_pid, 'localData.' . self::record_source_from_pid($pid));
-  }
-
-  /** \brief return data stream name depending on collection identifier
-   *  - if $collection_id (rec.collectionIdentifier) startes with 7 - dataStream: localData.$collection_id
-   *  - else dataStream: commonData
-   *
-   * @param string $collection_id 
-   * @retval string
-   */
-  private function set_data_stream_name($collection_id) {
-    list($agency, $collection) = self::split_record_source($collection_id);
-    if ($collection_id && self::agency_rule($agency, 'use_localdata_stream')) {
-      $data_stream = 'localData.' . $collection_id;
-    }
-    else {
-      $data_stream = 'commonData';
-    }
-    if (DEBUG_ON) {
-      echo 'dataStream: ' . $collection_id . ' ' . $data_stream . PHP_EOL;
-    }
-    return $data_stream;
-  }
+  /**/
+  /*********** input handling functions  ***********/
+  /**/
 
   /** \brief parse input for rank parameters
    *
@@ -1628,124 +975,6 @@ class openSearch extends webServiceServer {
     }
   }
 
-  /** \brief Selects a ranking scheme depending on some register frequency lookups
-   *
-   * @param array $solr_query - the parsed user query
-   * @param array $ranks - list of defined rankings
-   * @param string $user_filter - filter query as set by users profile
-   *
-   * @retval string - the ranking scheme with highest number of hits
-   *
-   */
-  private function guess_rank($solr_query, $ranks, $user_filter) {
-    $guess = self::set_guesses($ranks, $user_filter);
-    $freqs = self::get_register_freqency($solr_query['edismax'], $guess);
-    $max = -1;
-    foreach ($guess as $idx => $g) {
-      $freq = $freqs[$idx] * $g['weight'];
-      Object::set_value($this->rank_frequence_debug, $g['register'], $freq . ' (' . $freqs[$idx] . '*' . $g['weight'] . ')');
-      $debug_str .= $g['scheme'] . ': ' . $freq . ' (' . $freqs[$idx] . '*' . $g['weight'] . ') ';
-      if ($freq > $max) {
-        $ret = $g['scheme'];
-        $max = $freq;
-      }
-    }
-    verbose::log(DEBUG, 'Rank frequency set to ' . $ret . '. ' . $debug_str);
-    return $ret;
-
-  }
-
-  /** \brief Set the guess-structure for the registers to search
-   *
-   * @param array $ranks - list of defined rankings
-   * @param string $user_filter - filter query as set by users profile
-   *
-   * @retval array - list of registers to search and the ranking to use
-   *
-   */
-  private function set_guesses($ranks, $user_filter) {
-    static $filters = array();
-    $guess = array();
-    $settings = $this->config->get_value('rank_frequency', 'setup');
-    foreach ($settings as $r_idx => $setting) {
-      if (isset($setting['register']) && $ranks[$setting['scheme']]) {
-        foreach (array('agency', 'register', 'scheme', 'weight', 'filter', 'profile') as $par) {
-          $guess[$r_idx][$par] = self::get_val_or_default($settings, $r_idx, $par);
-        }
-      }
-    }
-    $filters['user_profile'] = $user_filter;
-    foreach ($guess as $idx => $g) {
-      if (empty($filters[$g['profile']])) {
-        if (! $filters[$g['profile']] = self::set_solr_filter(self::fetch_profile_from_agency($g['agency'], $g['profile']))) {
-          $filters[$g['profile']] = $user_filter;
-        }
-      }
-      $guess[$idx]['filter'] = array(rawurlencode($g['filter']), $filters[$g['profile']]);
-    }
-    return $guess;
-  }
-
-  /** \brief Encapsules how to get the data from the first element
-   *
-   * @param array $solr_arr
-   * @param string $element
-   * @retval mixed
-   */
-  private function get_first_solr_element($solr_arr, $element) {
-    $solr_docs = &$solr_arr['response']['docs'];
-    return self::scalar_or_first_elem($solr_docs[0][$element]);
-  }
-
-  /** \brief Encapsules how to get hit count from the solr result
-   *
-   * @param array $solr_arr
-   * @retval integer
-   */
-  private function get_num_found($solr_arr) {
-    return $solr_arr['response']['numFound'];
-  }
-
-  /** \brief Encapsules extraction of ids (unit.id or workid) solr result
-   *       - stores id and the corresponding fedorePid in unit_fallback
-   *
-   * @param array $solr_arr
-   * @param array $search_ids - contains the result
-   */
-  private function extract_ids_from_solr($solr_arr, &$search_ids) {
-    $solr_fields = array($this->unit_id_field, $this->work_id_field);
-    static $u_err = 0;
-    $search_ids = array();
-    $solr_docs = &$solr_arr['response']['docs'];
-    foreach ($solr_docs as &$fdoc) {
-      $ids = array();
-      foreach ($solr_fields as $fld) {
-        if ($id = $fdoc[$fld]) {
-          $ids[$fld] = self::scalar_or_first_elem($id);
-        }
-        else {
-          if (++$u_err < 10) {
-            verbose::log(FATAL, 'Missing ' . $fld . ' in solr_result. Record no: ' . (count($search_ids) + $u_err));
-          }
-          break 2;
-        }
-      }
-      $search_ids[] = $ids;
-    }
-  }
-
-  /** \brief Return first element of array or the element for scalar vars
-   *
-   * @param mixed $mixed
-   * @retval mixed
-   */
-  private function scalar_or_first_elem($mixed) {
-    if (is_array($mixed) || is_object($mixed)) {
-      return reset($mixed);
-    }
-    return $mixed;
-  }
-
   /** \brief decides which formats to include in result and how the should be build
    *
    * @param mixed $objectFormat
@@ -1782,38 +1011,228 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  /** \brief Fetch holding from extern web service
+  /** \brief Build Solr filter_query parm
    *
-   * @param string $pid
-   * @retval array - of 'have' and 'lend'
+   * @param array $profile - the users search profile
+   * @param string $index - the index to filter (search) for collection identifiers
+   * @retval string - the SOLR filter query that represent the profile
    */
-  private function get_holdings($pid) {
-    static $hold_ws_url;
-    static $dom;
-    if (empty($hold_ws_url)) {
-      $hold_ws_url = $this->config->get_value('holdings_db', 'setup');
+  private function set_solr_filter($profile, $index = 'rec.collectionIdentifier') {
+    $collection_query = $this->repository['collection_query'];
+    $ret = array();
+    if (is_array($profile)) {
+      $this->collection_alias = self::set_collection_alias($profile);
+      foreach ($profile as $p) {
+        if (self::xs_boolean($p['sourceSearchable']) || ($this->add_collection_with_relation_to_filter  && count($p['relation']))) {
+          if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
+            $ret[] = '(' . $index . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
+          }
+          else {
+            $ret[] = $index . ':' . $p['sourceIdentifier'];
+          }
+        }
+      }
     }
-    $this->watch->start('holdings');
-    $hold_url = sprintf($hold_ws_url, $pid);
-    $holds = $this->curl->get($hold_url);
-    $this->watch->stop('holdings');
-    verbose::log(DEBUG, 'get_holdings:(' . $this->watch->splittime('holdings') . '): ' . $hold_url);
-    $curl_err = $this->curl->get_status();
-    if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
-      verbose::log(FATAL, 'holdings_db http-error: ' . $curl_err['http_code'] . ' from: ' . $hold_url);
-      $holds = array('have' => 0, 'lend' => 0);
+    return implode(OR_OP, $ret);
+  }
+
+  /** \brief set search_filter_for_800000
+   *
+   * @param boolean $test_force_filter 
+   */
+  private function set_search_filters_for_800000_collection($test_force_filter = false) {
+    static $part_of_bib_dk = array();
+    static $use_holding = array();
+    foreach ($this->searchable_source as $source => $searchable) {
+      $searchable = $test_force_filter || $searchable;     // for testing purposes
+      if (($source == '800000-bibdk') && $searchable) {
+         if (empty($part_of_bib_dk)) $part_of_bib_dk = $this->open_agency->get_libraries_by_rule('part_of_bibliotek_dk', 1, 'Forskningsbibliotek');
+         if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
+    
+      }
+      if (($source == '800000-danbib') && $searchable) {
+         if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
+      }
+    }
+    if ($part_of_bib_dk || $use_holding) {
+      verbose::log(DEBUG, 'Filter 800000 part_of_bib_dk:: ' . count($part_of_bib_dk) . ' use_holding: ' . count($use_holding));
+      // TEST $this->search_filter_for_800000 = 'holdingsitem.agencyId=(' . implode(' OR ', array_slice($part_of_bib_dk + $use_holding, 0, 3)) . ')';
+      $this->search_filter_for_800000 = 'holdingsitem.agencyId:(' . implode(' OR ', $part_of_bib_dk + $use_holding) . ')';
+    }  
+  }
+
+  /** \brief Build bq (BoostQuery) as field:content^weight 
+   *
+   * @param mixed $boost - boost query
+   * @retval string - SOLR boost string
+   */
+  private static function boostUrl($boost) {
+    $ret = '';
+    if ($boost) {
+      $boosts = (is_array($boost) ? $boost : array($boost));
+      foreach ($boosts as $bf) {
+        if (empty($bf->_value->fieldValue->_value)) {
+          if (!$weight = $bf->_value->weight->_value) {
+            $weight = 1;
+          }
+          $ret .= '&bf=' .
+                  urlencode('product(' . $bf->_value->fieldName->_value . ',' . $weight . ')');
+        }
+        else {
+          $ret .= '&bq=' .
+                  urlencode($bf->_value->fieldName->_value . ':"' .
+                            str_replace('"', '', $bf->_value->fieldValue->_value) . '"^' .
+                            $bf->_value->weight->_value);
+        }
+      }
+    }
+    return $ret;
+  }
+
+  /** \brief Build search to include collections without holdings
+   *
+   * @param array $profile - the users search profile
+   * @param string $index - the index to match collection identifiers against
+   * @retval string - the SOLR filter query that represent the profile
+   */
+  private function split_collections_for_holdingsitem($profile, $index = 'rec.collectionIdentifier') {
+    $collection_query = $this->repository['collection_query'];
+    $filtered_collections = $normal_collections = array();
+    if (is_array($profile)) {
+      $this->collection_alias = self::set_collection_alias($profile);
+      foreach ($profile as $p) {
+        if (self::xs_boolean($p['sourceSearchable']) || ($this->add_collection_with_relation_to_filter  && count($p['relation']))) {
+          if ($p['sourceIdentifier'] == $this->agency_catalog_source || $p['sourceIdentifier'] == '870970-basis') {
+            $filtered_collections[] = $p['sourceIdentifier'];
+          }
+          else {
+            if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
+              $normal_collections[] = '(' . $index . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
+            }
+            else {
+              $normal_collections[] = $p['sourceIdentifier'];
+            }
+          }
+        }
+      }
+    }
+    return 
+      ($normal_collections ? $index . ':(' . implode(' OR ', $normal_collections) . ') OR ' : '') .
+      ($filtered_collections ? '(' . $index . ':(' . implode(' OR ', $filtered_collections) . ') AND %s)' : '%s');
+  }
+
+  /** \brief Set list of collection alias' depending on the user search profile
+   * - in repository: ['collection_alias']['870876-anmeld'] = '870976-allanmeld';
+   * 
+   * @param array $profile - the users search profile
+   * @retval array - collection alias'
+   */
+  private function set_collection_alias($profile) {
+    $collection_alias = array();
+    $alias = is_array($this->repository['collection_alias']) ? array_flip($this->repository['collection_alias']) : array();
+    foreach ($profile as $p) {
+      if (self::xs_boolean($p['sourceSearchable'])) {
+        $si = $p['sourceIdentifier'];
+        if (empty($alias[$si])) {
+          $collection_alias[$si] = $si;
+        }
+        elseif (empty($collection_alias[$alias[$si]])) {
+          $collection_alias[$alias[$si]] = $si;
+        }
+      }
+    }
+    return $collection_alias;
+  }
+
+
+  /** \brief Sets this->repository from user parameter or defaults to ini-file setup
+   *
+   * @param string $repository 
+   * @param boolean $cql_file_mandatory 
+   * @retval mixed - error or NULL
+   */
+  private function set_repositories($repository, $cql_file_mandatory = TRUE) {
+    $repositories = $this->config->get_value('repository', 'setup');
+    if (!$this->repository_name = $repository) {
+      $this->repository_name = $this->config->get_value('default_repository', 'setup');
+    }
+    if ($this->repository = $repositories[$this->repository_name]) {
+      foreach ($repositories['defaults'] as $key => $url_par) {
+        if (empty($this->repository[$key])) {
+          $this->repository[$key] = (substr($key, 0, 7) == 'fedora_') ? $this->repository['fedora'] . $url_par : $url_par;
+        }
+      }
+      if ($cql_file_mandatory && empty($this->repository['cql_file'])) {
+        verbose::log(FATAL, 'cql_file not defined for repository: ' .  $this->repository_name);
+        return 'Error: cql_file not defined for repository: '  . $this->repository_name;
+      }
+      if ($this->repository['cql_file']) {
+        if (!$this->repository['cql_settings'] = self::get_solr_file($this->repository['cql_file'])) {
+          if (!$this->repository['cql_settings'] = @ file_get_contents($this->repository['cql_file'])) {
+            verbose::log(FATAL, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from local directory. Repository: ' .  $this->repository_name);
+            return 'Error: Cannot find cql_file for repository: '  . $this->repository_name;
+          }
+          verbose::log(ERROR, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from SOLR - use local version. Repository: ' .  $this->repository_name);
+        }
+      }
+      if (empty($this->repository['filter'])) {
+        $this->repository['filter'] = array();
+      }
     }
     else {
-      if (empty($dom)) {
-        $dom = new DomDocument();
-      }
-      $dom->preserveWhiteSpace = FALSE;
-      if (@ $dom->loadXML($holds)) {
-        $holds = array('have' => self::get_dom_element($dom, 'librariesHave'),
-                       'lend' => self::get_dom_element($dom, 'librariesLend'));
+      return 'Error: Unknown repository: ' . $this->repository_name;
+    }
+  }
+
+
+  /**/
+  /* output handling functions  */
+  /**/
+
+  /** \brief sets sortUsed if rank or sort is used
+   * 
+   * @param object $ret - modified
+   * @param string $rank
+   * @param string $sort
+   * @param array $sort_types
+   */
+  private function set_sortUsed(&$ret, $rank, $sort, $sort_types) {
+    if (isset($rank)) {
+      if (substr($rank, 0, 9) != 'user_rank') {
+        Object::set_value($ret, 'sortUsed', $rank);
       }
     }
-    return $holds;
+    elseif (!empty($sort)) {
+      if ($key = array_search($sort, $sort_types)) {
+        Object::set_value($ret, 'sortUsed', $key);
+      }
+      else {
+        foreach ($sort as $s) {
+          Object::set_array_value($ret, 'sortUsed', $s);
+        }
+      }
+    }
+  }
+
+  /** \brief Helper function to set debug info
+   *  
+   * @param array $solr_debug - debuginfo from SOLR
+   * @param object $rank_freq_debug - info about frequencies from ranking
+   * @param object $best_match_debug - info about best match parameters
+   * @retval object 
+   */
+  private function set_debug_info($solr_debug, $rank_freq_debug = '', $best_match_debug = '') {
+    Object::set_value($ret, 'rawQueryString', $solr_debug['rawquerystring']);
+    Object::set_value($ret, 'queryString', $solr_debug['querystring']);
+    Object::set_value($ret, 'parsedQuery', $solr_debug['parsedquery']);
+    Object::set_value($ret, 'parsedQueryString', $solr_debug['parsedquery_toString']);
+    if ($best_match_debug) {
+      Object::set_value($ret, 'bestMatch', $best_match_debug);
+    }
+    if ($rank_freq_debug) {
+      Object::set_value($ret, 'rankFrequency', $rank_freq_debug);
+    }
+    return $ret;
   }
 
   /** \brief Pick tags from solr result and create format
@@ -1977,6 +1396,21 @@ class openSearch extends webServiceServer {
     $this->watch->stop('format');
   }
 
+  /** \brief Remove not asked for formats from result
+   *
+   * @param array $collections - the structure is modified
+   */
+  private function remove_unselected_formats(&$collections) {
+    foreach ($collections as $idx => &$c) {
+      foreach ($c->_value->collection->_value->object as &$o) {
+        if (!$this->format['dkabm']['user_selected'])
+          unset($o->_value->record);
+        if (!$this->format['marcxchange']['user_selected'])
+          unset($o->_value->collection);
+      }
+    }
+  }
+
   /** \brief Remove private/internal subfields from the marcxchange record
    * If all subfields in a field are removed, the field is removed as well
    * Controlled by the repository filter structure set in the services ini-file
@@ -2035,19 +1469,613 @@ class openSearch extends webServiceServer {
     }
   }
 
-  /** \brief Remove not asked for formats from result
+
+  /**/
+  /*********** Solr related functions ***********/
+  /**/
+
+
+  /** \brief Set the parameters to solr facets
    *
-   * @param array $collections - the structure is modified
+   * @param object $facets - the facet paramaters from the request
+   * @retval string - facet part of solr url
    */
-  private function remove_unselected_formats(&$collections) {
-    foreach ($collections as $idx => &$c) {
-      foreach ($c->_value->collection->_value->object as &$o) {
-        if (!$this->format['dkabm']['user_selected'])
-          unset($o->_value->record);
-        if (!$this->format['marcxchange']['user_selected'])
-          unset($o->_value->collection);
+  private function set_solr_facet_parameters($facets) {
+    $max_threads = self::value_or_default($this->config->get_value('max_facet_threads', 'setup'), 50);
+    $ret = '';
+    if ($facets->facetName) {
+      $facet_min = 1;
+      if (isset($facets->facetMinCount->_value)) {
+        $facet_min = $facets->facetMinCount->_value;
+      }
+      $ret .= '&facet=true&facet.threads=' . min(count($facets->facetName), $max_threads) . '&facet.limit=' . $facets->numberOfTerms->_value .  '&facet.mincount=' . $facet_min;
+      if ($facet_sort = $facets->facetSort->_value) {
+        $ret .= '&facet.sort=' . $facet_sort;
+      }
+      if ($facet_offset = $facets->facetOffset->_value) {
+        $ret .= '&facet.offset=' . $facet_offset;
+      }
+      if (is_array($facets->facetName)) {
+        foreach ($facets->facetName as $facet_name) {
+          $ret .= '&facet.field=' . $facet_name->_value;
+        }
+      }
+      elseif (is_scalar($facets->facetName->_value)) {
+        $ret .= '&facet.field=' . $facets->facetName->_value;
       }
     }
+    return $ret;
+  }
+
+  /** \brief Change cql_error to string
+   *
+   * @param array $solr_error
+   * @retval string
+   */
+  private function cql2solr_error_to_string($solr_error) {
+    $str = '';
+    foreach (array('no' => '|: ', 'description' => '', 'details' => ' (|)', 'pos' => ' at pos ') as $tag => $txt) {
+      list($pre, $post) = explode('|', $txt);
+      if ($solr_error[0][$tag]) {
+        $str .= $pre . $solr_error[0][$tag]. $post;
+      }
+    }
+    return $str;
+  }
+
+  /** \brief Create solr array with records valid for the search-profile and parameters. 
+   *         If solr_formats is asked for, build list of fields to ask for
+   *
+   * @param array $add_queries
+   * @param string $query 
+   * @param boolean $all_objects 
+   * @param string $filter_q 
+   * @retval mixed - error string or SOLR array
+   */
+  private function do_add_queries_and_fetch_solr_data_fields($add_queries, $query, $all_objects, $filter_q) {
+    if ($this->format['found_solr_format']) {
+      foreach ($this->format as $f) {
+        if ($f['is_solr_format']) {
+          $add_fl .= ',' . $f['format_name'];
+        }
+      }
+    }
+    return self::do_add_queries($add_queries, $query, $all_objects, $filter_q, $add_fl);
+  }
+
+  /** \brief Create solr array with records valid for the search-profile and parameters. If needed fetch data for display as well
+   *
+   * @param array $add_queries
+   * @param string $query 
+   * @param boolean $all_objects 
+   * @param string $filter_q 
+   * @param string $add_field_list - list of extra fields to return, like display_*
+   * @retval mixed - error string or SOLR array
+   */
+  private function do_add_queries($add_queries, $query, $all_objects, $filter_q, $add_field_list='') {
+    foreach ($add_queries as $add_idx => $add_query) {
+      if ($this->separate_field_query_style) {
+          $add_q =  '(' . $add_query . ')';
+      }
+      else {
+          $add_q =  $this->which_rec_id . ':(' . $add_query . ')';
+      }
+      $chk_query = $this->cql2solr->parse($query);
+      if ($all_objects) {
+        $chk_query['edismax']['q'] =  array($add_q);
+      }
+      else {
+        if ($add_query) {
+          $chk_query['edismax']['q'][] =  $add_q;
+        }
+      }
+      if ($chk_query['error']) {
+        $error = $chk_query['error'];
+        return $ret_error;
+      }
+      $q = $chk_query['edismax'];
+      $solr_url = self::create_solr_url($q, 0, 999999, $filter_q);
+      list($solr_host, $solr_parm) = explode('?', $solr_url['url'], 2);
+      $solr_parm .= '&fl=rec.collectionIdentifier,unit.isPrimaryObject,' . $this->unit_id_field . ',sort.complexKey' . $add_field_list;
+      verbose::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
+      if (DEBUG_ON) {
+        echo 'post_array: ' . $solr_url['url'] . PHP_EOL;
+      }
+
+      $this->curl->set_post($solr_parm, 0); // use post here because query can be very long
+      $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'), 0);
+      $solr_result = $this->curl->get($solr_host, 0);
+// remember to clear POST 
+      $this->curl->set_option(CURLOPT_POST, 0, 0);
+      if (!($solr_arr[$add_idx] = unserialize($solr_result))) {
+        verbose::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
+        return 'Internal problem: Cannot decode Solr re-search';
+      }
+    }
+    return $solr_arr;
+  }
+
+  /** \brief Encapsules how to get the data from the first element
+   *
+   * @param array $solr_arr
+   * @param string $element
+   * @retval mixed
+   */
+  private function get_first_solr_element($solr_arr, $element) {
+    $solr_docs = &$solr_arr['response']['docs'];
+    return self::scalar_or_first_elem($solr_docs[0][$element]);
+  }
+
+  /** \brief Encapsules how to get hit count from the solr result
+   *
+   * @param array $solr_arr
+   * @retval integer
+   */
+  private function get_num_found($solr_arr) {
+    return $solr_arr['response']['numFound'];
+  }
+
+  /** \brief Encapsules extraction of ids (unit.id or workid) solr result
+   *       - stores id and the corresponding fedorePid in unit_fallback
+   *
+   * @param array $solr_arr
+   * @param array $search_ids - contains the result
+   */
+  private function extract_ids_from_solr($solr_arr, &$search_ids) {
+    $solr_fields = array($this->unit_id_field, $this->work_id_field);
+    static $u_err = 0;
+    $search_ids = array();
+    $solr_docs = &$solr_arr['response']['docs'];
+    foreach ($solr_docs as &$fdoc) {
+      $ids = array();
+      foreach ($solr_fields as $fld) {
+        if ($id = $fdoc[$fld]) {
+          $ids[$fld] = self::scalar_or_first_elem($id);
+        }
+        else {
+          if (++$u_err < 10) {
+            verbose::log(FATAL, 'Missing ' . $fld . ' in solr_result. Record no: ' . (count($search_ids) + $u_err));
+          }
+          break 2;
+        }
+      }
+      $search_ids[] = $ids;
+    }
+  }
+
+  /** \brief fetch a result from SOLR
+   *
+   * @param array $q - the extended solr query structure
+   * @param integer $start - number of first (starting from 1) record
+   * @param integer $rows - (maximum) number of records to return
+   * @param string $sort - sorting scheme 
+   * @param string $rank - ranking sceme
+   * @param string $facets - facets-string
+   * @param string $filter - the users search profile
+   * @param string $boost - boost query (so far empty)
+   * @param string $debug - include SOLR debug info
+   * @param array $solr_arr - result from SOLR
+   * @retval string - error if any, NULL otherwise
+   */
+  private function get_solr_array($q, $start, $rows, $sort, $rank, $facets, $filter, $boost, $debug, &$solr_arr) {
+    $solr_urls[0] = self::create_solr_url($q, $start, $rows, $filter, $sort, $rank, $facets, $boost, $debug);
+    return self::do_solr($solr_urls, $solr_arr);
+  }
+
+  /** \brief fetch hit count for each register in a given list
+   *
+   * @param array $eq - the edismax part of the parsed user query
+   * @param array $guess - registers, filters, ... to get frequence for
+   *
+   * @reval array - hitcount for each register
+   */
+  private function get_register_freqency($eq, $guess) {
+    $q = implode(OR_OP, $eq['q']);
+    foreach ($eq['fq'] as $fq) {
+      $filter .= '&fq=' . rawurlencode($fq);
+    }
+    foreach ($guess as $idx => $g) {
+      $filter = implode('&fq=', $g['filter']);
+      $solr_urls[]['url'] = $this->repository['solr'] .  
+                            '?q=' . $g['register'] . '%3A(' . urlencode($q) .  ')&fq=' . $filter .  '&start=1&rows=0&wt=phps';
+      $ret[$idx] = 0;
+    }
+    $err = self::do_solr($solr_urls, $solr_arr);
+    $n = 0;
+    foreach ($guess as $idx => $g) {
+      $ret[$idx] = self::get_num_found($solr_arr[$n++]);
+    }
+    return $ret;
+  }
+
+  /** \brief build a solr url from a variety of parameters (and an url for debugging)
+   *
+   * @param array $eq - the extended solr query structure
+   * @param integer $start - number of first (starting from 1) record
+   * @param integer $rows - (maximum) number of records to return
+   * @param string $filter - the users search profile
+   * @param string $sort - sorting scheme 
+   * @param string $rank - ranking sceme
+   * @param string $facets - facets-string
+   * @param string $boost - boost query (so far empty)
+   * @param string $debug - include SOLR debug info
+   * @retval array - then SOLR url and url for debug purposes
+   */
+  private function create_solr_url($eq, $start, $rows, $filter, $sort='', $rank='', $facets='', $boost='', $debug=FALSE) {
+    $q = implode(AND_OP, $eq['q']);
+    if (is_array($eq['handler_var'])) {
+      $handler_var = '&' . implode('&', $eq['handler_var']);
+      $filter = '';  // search profile collection filter is done via fq parm created with handler_var
+    }
+    if (is_array($eq['fq'])) {
+      foreach ($eq['fq'] as $fq) {
+        $filter .= '&fq=' . rawurlencode($fq);
+      }
+    }
+    $url = $this->repository['solr'] .
+                    '?q=' . urlencode($q) .
+                    '&fq=' . $filter .
+                    '&start=' . $start .  $sort . $rank . $boost . $facets .  $handler_var .
+                    '&defType=edismax';
+    $debug_url = $url . '&fl=' . $this->fedora_pid_field . ',' . $this->unit_id_field . ',' . $this->work_id_field . '&rows=1&debugQuery=on';
+    $url .= '&fl=' . $this->fedora_pid_field . ',' . $this->unit_id_field . ',' . $this->work_id_field . '&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
+
+    return array('url' => $url, 'debug' => $debug_url);
+  }
+
+  /** \brief send one or more requests to Solr
+   *
+   * @param array $urls - the url(s) to send to SOLR
+   * @param array $solr_arr - result from SOLR
+   * @retval string - error if any, NULL otherwise
+   */
+  private function do_solr($urls, &$solr_arr) {
+    foreach ($urls as $no => $url) {
+      verbose::log(TRACE, 'Query: ' . $url['url']);
+      if ($url['debug']) verbose::log(DEBUG, 'Query: ' . $url['debug']);
+      $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'), $no);
+      $this->curl->set_url($url['url'], $no);
+    }
+    $this->watch->start('solr');
+    $solr_results = $this->curl->get();
+    $this->curl->close();
+    $this->watch->stop('solr');
+    if (empty($solr_results))
+      return 'Internal problem: No answer from Solr';
+    if (count($urls) > 1) {
+      foreach ($solr_results as &$solr_result) {
+        if (!$solr_arr[] = unserialize($solr_result)) {
+          return 'Internal problem: Cannot decode Solr result';
+        }
+      }
+    }
+    elseif (!$solr_arr = unserialize($solr_results)) {
+      return 'Internal problem: Cannot decode Solr result';
+    }
+    elseif ($err = $solr_arr['error']) {
+      verbose::log(FATAL, 'Solr result in error: (' . $err['code'] . ') ' . preg_replace('/\s+/', ' ', $err['msg']));
+      return 'Internal problem: Solr result contains error';
+    }
+  }
+
+  /** \brief Selects a ranking scheme depending on some register frequency lookups
+   *
+   * @param array $solr_query - the parsed user query
+   * @param array $ranks - list of defined rankings
+   * @param string $user_filter - filter query as set by users profile
+   *
+   * @retval string - the ranking scheme with highest number of hits
+   *
+   */
+  private function guess_rank($solr_query, $ranks, $user_filter) {
+    $guess = self::set_guesses($ranks, $user_filter);
+    $freqs = self::get_register_freqency($solr_query['edismax'], $guess);
+    $max = -1;
+    foreach ($guess as $idx => $g) {
+      $freq = $freqs[$idx] * $g['weight'];
+      Object::set_value($this->rank_frequence_debug, $g['register'], $freq . ' (' . $freqs[$idx] . '*' . $g['weight'] . ')');
+      $debug_str .= $g['scheme'] . ': ' . $freq . ' (' . $freqs[$idx] . '*' . $g['weight'] . ') ';
+      if ($freq > $max) {
+        $ret = $g['scheme'];
+        $max = $freq;
+      }
+    }
+    verbose::log(DEBUG, 'Rank frequency set to ' . $ret . '. ' . $debug_str);
+    return $ret;
+
+  }
+
+  /** \brief Set the guess-structure for the registers to search
+   *
+   * @param array $ranks - list of defined rankings
+   * @param string $user_filter - filter query as set by users profile
+   *
+   * @retval array - list of registers to search and the ranking to use
+   *
+   */
+  private function set_guesses($ranks, $user_filter) {
+    static $filters = array();
+    $guess = array();
+    $settings = $this->config->get_value('rank_frequency', 'setup');
+    foreach ($settings as $r_idx => $setting) {
+      if (isset($setting['register']) && $ranks[$setting['scheme']]) {
+        foreach (array('agency', 'register', 'scheme', 'weight', 'filter', 'profile') as $par) {
+          $guess[$r_idx][$par] = self::get_val_or_default($settings, $r_idx, $par);
+        }
+      }
+    }
+    $filters['user_profile'] = $user_filter;
+    foreach ($guess as $idx => $g) {
+      if (empty($filters[$g['profile']])) {
+        if (! $filters[$g['profile']] = self::set_solr_filter(self::fetch_profile_from_agency($g['agency'], $g['profile']))) {
+          $filters[$g['profile']] = $user_filter;
+        }
+      }
+      $guess[$idx]['filter'] = array(rawurlencode($g['filter']), $filters[$g['profile']]);
+    }
+    return $guess;
+  }
+
+  /** \brief fetch a file from the solr file directory
+   *
+   * @param string $name 
+   * @retval string (xml)
+   */
+  private function get_solr_file($name) {
+    static $solr_file_cache;
+    $file_url = $this->repository['solr'];
+    $file = $this->config->get_value('solr_file', 'setup');
+    foreach ($file as $from => $to) {
+      $file_url = str_replace($from, $to, $file_url);
+    }
+    $solr_file_url = sprintf($file_url, $name);
+    if (empty($solr_file_cache)) {
+      $cache = self::get_cache_info('solr_file');
+      $solr_file_cache = new cache($cache['host'], $cache['port'], $cache['expire']);
+    }
+    if (!$xml = $solr_file_cache->get($solr_file_url)) {
+      $xml = $this->curl->get($solr_file_url);
+      if ($this->curl->get_status('http_code') != 200) {
+        return FALSE;
+      }
+      $solr_file_cache->set($solr_file_url, $xml);
+    }
+    return $xml;
+  }
+
+
+
+  /**/
+  /*********** misc functions ***********/
+  /**/
+
+  /** \brief Isolation of creation of work structure for caching
+  *
+  * @param - way to many
+  * 
+  * Parameters to a solr-search should be isolated in a class object - refactor one day
+  */
+  private function build_work_struct_from_solr(&$work_cache_struct, &$work_struct, &$more, &$work_ids, $edismax, $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, $all_objects, $num_found, $debug_query) {
+    for ($w_idx = 0; isset($work_ids[$w_idx]); $w_idx++) {
+      $struct_id = $work_ids[$w_idx][$this->work_id_field] . ($use_work_collection ? '' : '-' . $work_ids[$w_idx][$this->unit_id_field]);     
+      if ($work_cache_struct[$struct_id]) continue;
+      $work_cache_struct[$struct_id] = $use_work_collection ? array() : array($work_ids[$w_idx][$this->unit_id_field]);
+      if (count($work_cache_struct) >= ($start + $step_value)) {
+        $more = TRUE;
+        verbose::log(TRACE, 'SOLR stat: used ' . $w_idx . ' of ' . count($work_ids) . ' rows. start: ' . $start . ' step: ' . $step_value);
+        break;
+      }
+      if (!isset($work_ids[$w_idx + 1]) && count($work_ids) < $num_found) {
+        $this->watch->start('Solr_add');
+        verbose::log(WARNING, 'To few search_ids fetched from solr. Query: ' . implode(AND_OP, $edismax['q']) . ' idx: ' . $w_idx);
+        $rows *= 2;
+        if ($err = self::get_solr_array($edismax, 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr)) {
+          $this->watch->stop('Solr_add');
+          return $err;
+        }
+        else {
+          $this->watch->stop('Solr_add');
+          self::extract_ids_from_solr($solr_arr, $work_ids);
+        }
+      }
+    }
+    $work_slice = array_slice($work_cache_struct, ($start - 1), $step_value);
+    if ($use_work_collection && $step_value) {
+      foreach ($work_slice as $w_id => $w_list) {
+        if (empty($w_list)) {
+          $search_w[] = '"' . $w_id . '"';
+        }
+      }
+      if (is_array($search_w)) {
+        if ($all_objects) {
+          $edismax['q'] = array();
+        }
+        $edismax['q'][] = $this->work_id_field . ':(' . implode(OR_OP, $search_w) . ')';
+        if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_q, '', $debug_query, $solr_arr)) {
+          return $err;
+        }
+        foreach ($solr_arr['response']['docs'] as $fdoc) {
+          $unit_id = $fdoc[$this->unit_id_field];
+          $work_id = $fdoc[$this->work_id_field];
+          if (!in_array($unit_id, $work_slice[$work_id])) {
+            $work_slice[$work_id][] = $work_cache_struct[$work_id][] = $unit_id;
+          }
+        }
+      }
+    }
+    $pos = $start;
+    foreach ($work_slice as $work) {
+      $work_struct[$pos++] = $work;
+    }
+    //var_dump($edismax); var_dump($add_q); var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
+  }
+
+  /** \brief Reads records from Raw Record Postgress Database
+   *   
+   * @param string $rr_service    Address fo raw_repo service end point
+   * @param array $solr_response    Response from a solr search in php object
+   * @param boolean $s11_records_allowed    restricted record
+   * 
+   * @retval mixed  array of collections or error string
+   */
+  private function get_records_from_rawrepo($rr_service, $solr_response, $s11_records_allowed) {
+    if (empty($solr_response['docs'])) {
+      return;
+    }
+    $p_mask = '<?xml version="1.0" encoding="UTF-8"?' . '>' . PHP_EOL . '<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><fetchRequest xmlns="http://oss.dbc.dk/ns/rawreposervice"><records>' . PHP_EOL . '%s</records></fetchRequest></S:Body></S:Envelope>';
+    $r_mask = '<record><bibliographicRecordId>%s</bibliographicRecordId><agencyId>%s</agencyId><mode>%s</mode><allowDeleted>true</allowDeleted><includeAgencyPrivate>true</includeAgencyPrivate></record>';
+    $ret = array();
+    $rec_pos = $solr_response['start'];
+    foreach ($solr_response['docs'] as $solr_doc) {
+      $bib = self::scalar_or_first_elem($solr_doc[RR_MARC_001_B]);
+      $post .= sprintf($r_mask, self::scalar_or_first_elem($solr_doc[RR_MARC_001_A]), $bib, ($bib == '870970' ? 'MERGED' : 'RAW')) . PHP_EOL;
+    }
+    $this->curl->set_post(sprintf($p_mask, $post), 0); // use post here because query can be very long
+    $this->curl->set_option(CURLOPT_HTTPHEADER, array('Accept:application/xml;', 'Content-Type: text/xml; charset=utf-8'), 0);
+    $result = $this->curl->get($rr_service, 0);
+    $this->curl->set_option(CURLOPT_POST, 0, 0);
+    $dom = new DomDocument();
+    @ $dom->loadXml($result);
+    if ($records = $dom->getElementsByTagName('records')->item(0)) {
+      foreach ($solr_response['docs'] as $solr_doc) {
+        $found_record = FALSE;
+        $solr_id = self::scalar_or_first_elem($solr_doc[RR_MARC_001_A]);
+        $solr_agency = self::scalar_or_first_elem($solr_doc[RR_MARC_001_B]);
+        foreach ($records->getElementsByTagName('record') as $record) {
+          $id = self::get_dom_element($record, 'bibliographicRecordId');
+          $agency = self::get_dom_element($record, 'agencyId');
+          if (($solr_id == $id) && ($solr_agency == $agency)) {
+            $found_record = TRUE;
+            if (!$data = base64_decode(self::get_dom_element($record, 'data'))) {
+              verbose::log(FATAL, 'Internal problem: Cannot decode record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
+            }
+            break;
+          }
+        }
+        if (!$found_record) {
+          verbose::log(ERROR, 'Internal problem: Cannot find record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
+        }
+        if (empty($data)) {
+          $data = sprintf($this->config->get_value('missing_marc_record', 'setup'), $solr_id, $solr_agency, 'Cannot read record');
+        }
+        @ $dom->loadXml($data);
+        $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
+        $restricted_record = FALSE;
+        if (!$s11_records_allowed && isset($marc_obj->record->_value->datafield)) {
+          foreach ($marc_obj->record->_value->datafield as $idf => &$df) {
+            if ($df->_attributes->tag->_value == 's11') {
+              $restricted_record = TRUE;
+              break 1;
+            }
+          }
+        }
+        if ($restricted_record) {
+          verbose::log(WARNING, 'Skipping restricted record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
+          @ $dom->loadXml(sprintf($this->config->get_value('missing_marc_record', 'setup'), $solr_id, $solr_agency, 'Restricted record'));
+          $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
+        }
+        self::filter_marcxchange($solr_agency, $marc_obj, $this->repository['filter']);
+        $rec_pos++;
+        Object::set_value($ret[$rec_pos]->_value->collection->_value, 'resultPosition', $rec_pos);
+        Object::set_value($ret[$rec_pos]->_value->collection->_value, 'numberOfObjects', 1);
+        Object::set_value($ret[$rec_pos]->_value->collection->_value->object[0]->_value, 'collection', $marc_obj);
+        Object::set_namespace($ret[$rec_pos]->_value->collection->_value->object[0]->_value, 'collection', $this->xmlns['marcx']);
+      }
+    }
+    return $ret;
+  }
+
+  /** \brief Reads records from Raw Record Postgress Database
+   *   
+   * OBSOLETE from datawell 3.5 - use get_records_from_rawrepo instead
+   * @param string $rr_service    Address fo raw_repo service end point
+   * @param array $solr_response    Response from a solr search in php object
+   * @param boolean $s11_records_allowed    restricted record
+   * 
+   * @retval mixed  array of collections or error string
+   */
+  private function get_records_from_postgress($pg_db, $solr_response, $s11_records_allowed) {
+    die('obsolete function - correct the inifile to use raw repo service instead');
+  }
+
+  /** \brief Set fedora pid to corrects objct and modify datastream according to storage scheme
+   *
+   * @param string $pid 
+   * @param string $localdata_in_pid 
+   * @retval array - of object_id, datastream
+   */
+  private function create_fedora_pid_and_stream($pid, $localdata_in_pid) {
+    if (empty($localdata_in_pid) || ($pid == $localdata_in_pid)) {
+      return array($pid, 'commonData');
+    }
+    return array($localdata_in_pid, 'localData.' . self::record_source_from_pid($pid));
+  }
+
+  /** \brief return data stream name depending on collection identifier
+   *  - if $collection_id (rec.collectionIdentifier) startes with 7 - dataStream: localData.$collection_id
+   *  - else dataStream: commonData
+   *
+   * @param string $collection_id 
+   * @retval string
+   */
+  private function set_data_stream_name($collection_id) {
+    list($agency, $collection) = self::split_record_source($collection_id);
+    if ($collection_id && self::agency_rule($agency, 'use_localdata_stream')) {
+      $data_stream = 'localData.' . $collection_id;
+    }
+    else {
+      $data_stream = 'commonData';
+    }
+    if (DEBUG_ON) {
+      echo 'dataStream: ' . $collection_id . ' ' . $data_stream . PHP_EOL;
+    }
+    return $data_stream;
+  }
+
+  /** \brief Return first element of array or the element for scalar vars
+   *
+   * @param mixed $mixed
+   * @retval mixed
+   */
+  private function scalar_or_first_elem($mixed) {
+    if (is_array($mixed) || is_object($mixed)) {
+      return reset($mixed);
+    }
+    return $mixed;
+  }
+
+  /** \brief Fetch holding from extern web service
+   *
+   * @param string $pid
+   * @retval array - of 'have' and 'lend'
+   */
+  private function get_holdings($pid) {
+    static $hold_ws_url;
+    static $dom;
+    if (empty($hold_ws_url)) {
+      $hold_ws_url = $this->config->get_value('holdings_db', 'setup');
+    }
+    $this->watch->start('holdings');
+    $hold_url = sprintf($hold_ws_url, $pid);
+    $holds = $this->curl->get($hold_url);
+    $this->watch->stop('holdings');
+    verbose::log(DEBUG, 'get_holdings:(' . $this->watch->splittime('holdings') . '): ' . $hold_url);
+    $curl_err = $this->curl->get_status();
+    if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
+      verbose::log(FATAL, 'holdings_db http-error: ' . $curl_err['http_code'] . ' from: ' . $hold_url);
+      $holds = array('have' => 0, 'lend' => 0);
+    }
+    else {
+      if (empty($dom)) {
+        $dom = new DomDocument();
+      }
+      $dom->preserveWhiteSpace = FALSE;
+      if (@ $dom->loadXML($holds)) {
+        $holds = array('have' => self::get_dom_element($dom, 'librariesHave'),
+                       'lend' => self::get_dom_element($dom, 'librariesLend'));
+      }
+    }
+    return $holds;
   }
 
   /** \brief Create record_repo url from settings and given id
@@ -2200,87 +2228,6 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  /** \brief Build search to include collections without holdings
-   *
-   * @param array $profile - the users search profile
-   * @param string $index - the index to match collection identifiers against
-   * @retval string - the SOLR filter query that represent the profile
-   */
-  private function split_collections_for_holdingsitem($profile, $index = 'rec.collectionIdentifier') {
-    $collection_query = $this->repository['collection_query'];
-    $filtered_collections = $normal_collections = array();
-    if (is_array($profile)) {
-      $this->collection_alias = self::set_collection_alias($profile);
-      foreach ($profile as $p) {
-        if (self::xs_boolean($p['sourceSearchable']) || ($this->add_collection_with_relation_to_filter  && count($p['relation']))) {
-          if ($p['sourceIdentifier'] == $this->agency_catalog_source || $p['sourceIdentifier'] == '870970-basis') {
-            $filtered_collections[] = $p['sourceIdentifier'];
-          }
-          else {
-            if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
-              $normal_collections[] = '(' . $index . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
-            }
-            else {
-              $normal_collections[] = $p['sourceIdentifier'];
-            }
-          }
-        }
-      }
-    }
-    return 
-      ($normal_collections ? $index . ':(' . implode(' OR ', $normal_collections) . ') OR ' : '') .
-      ($filtered_collections ? '(' . $index . ':(' . implode(' OR ', $filtered_collections) . ') AND %s)' : '%s');
-  }
-
-  /** \brief Build Solr filter_query parm
-   *
-   * @param array $profile - the users search profile
-   * @param string $index - the index to filter (search) for collection identifiers
-   * @retval string - the SOLR filter query that represent the profile
-   */
-  private function set_solr_filter($profile, $index = 'rec.collectionIdentifier') {
-    $collection_query = $this->repository['collection_query'];
-    $ret = array();
-    if (is_array($profile)) {
-      $this->collection_alias = self::set_collection_alias($profile);
-      foreach ($profile as $p) {
-        if (self::xs_boolean($p['sourceSearchable']) || ($this->add_collection_with_relation_to_filter  && count($p['relation']))) {
-          if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
-            $ret[] = '(' . $index . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
-          }
-          else {
-            $ret[] = $index . ':' . $p['sourceIdentifier'];
-          }
-        }
-      }
-    }
-    return implode(OR_OP, $ret);
-  }
-
-  /** \brief Set list of collection alias' depending on the user search profile
-   * - in repository: ['collection_alias']['870876-anmeld'] = '870976-allanmeld';
-   * 
-   * @param array $profile - the users search profile
-   * @retval array - collection alias'
-   */
-  private function set_collection_alias($profile) {
-    $collection_alias = array();
-    $alias = is_array($this->repository['collection_alias']) ? array_flip($this->repository['collection_alias']) : array();
-    foreach ($profile as $p) {
-      if (self::xs_boolean($p['sourceSearchable'])) {
-        $si = $p['sourceIdentifier'];
-        if (empty($alias[$si])) {
-          $collection_alias[$si] = $si;
-        }
-        elseif (empty($collection_alias[$alias[$si]])) {
-          $collection_alias[$alias[$si]] = $si;
-        }
-      }
-    }
-    return $collection_alias;
-  }
-
-
   /** \brief Check an external relation against the search_profile
    *
    * @param string $collection - 
@@ -2404,27 +2351,6 @@ class openSearch extends webServiceServer {
         echo "rels:\n"; print_r($this->valid_relation); echo "source:\n"; print_r($this->searchable_source);
       }
     }
-  }
-
-  private function set_search_filters_for_800000_collection($test_force_filter = false) {
-    static $part_of_bib_dk = array();
-    static $use_holding = array();
-    foreach ($this->searchable_source as $source => $searchable) {
-      $searchable = $test_force_filter || $searchable;     // for testing purposes
-      if (($source == '800000-bibdk') && $searchable) {
-         if (empty($part_of_bib_dk)) $part_of_bib_dk = $this->open_agency->get_libraries_by_rule('part_of_bibliotek_dk', 1, 'Forskningsbibliotek');
-         if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
-    
-      }
-      if (($source == '800000-danbib') && $searchable) {
-         if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
-      }
-    }
-    if ($part_of_bib_dk || $use_holding) {
-      verbose::log(DEBUG, 'Filter 800000 part_of_bib_dk:: ' . count($part_of_bib_dk) . ' use_holding: ' . count($use_holding));
-      // TEST $this->search_filter_for_800000 = 'holdingsitem.agencyId=(' . implode(' OR ', array_slice($part_of_bib_dk + $use_holding, 0, 3)) . ')';
-      $this->search_filter_for_800000 = 'holdingsitem.agencyId:(' . implode(' OR ', $part_of_bib_dk + $use_holding) . ')';
-    }  
   }
 
   /** \brief return agency priority
@@ -2552,149 +2478,6 @@ class openSearch extends webServiceServer {
     list($owner_collection, $id) = explode(':', $pid, 2);
     list($owner, $coll) = explode('-', $owner_collection, 2);
     return array($owner, $coll, $id);
-  }
-
-  /** \brief Build bq (BoostQuery) as field:content^weight 
-   *
-   * @param mixed $boost - boost query
-   * @retval string - SOLR boost string
-   */
-  private static function boostUrl($boost) {
-    $ret = '';
-    if ($boost) {
-      $boosts = (is_array($boost) ? $boost : array($boost));
-      foreach ($boosts as $bf) {
-        if (empty($bf->_value->fieldValue->_value)) {
-          if (!$weight = $bf->_value->weight->_value) {
-            $weight = 1;
-          }
-          $ret .= '&bf=' .
-                  urlencode('product(' . $bf->_value->fieldName->_value . ',' . $weight . ')');
-        }
-        else {
-          $ret .= '&bq=' .
-                  urlencode($bf->_value->fieldName->_value . ':"' .
-                            str_replace('"', '', $bf->_value->fieldValue->_value) . '"^' .
-                            $bf->_value->weight->_value);
-        }
-      }
-    }
-    return $ret;
-  }
-
-  /** \brief fetch a result from SOLR
-   *
-   * @param array $q - the extended solr query structure
-   * @param integer $start - number of first (starting from 1) record
-   * @param integer $rows - (maximum) number of records to return
-   * @param string $sort - sorting scheme 
-   * @param string $rank - ranking sceme
-   * @param string $facets - facets-string
-   * @param string $filter - the users search profile
-   * @param string $boost - boost query (so far empty)
-   * @param string $debug - include SOLR debug info
-   * @param array $solr_arr - result from SOLR
-   * @retval string - error if any, NULL otherwise
-   */
-  private function get_solr_array($q, $start, $rows, $sort, $rank, $facets, $filter, $boost, $debug, &$solr_arr) {
-    $solr_urls[0] = self::create_solr_url($q, $start, $rows, $filter, $sort, $rank, $facets, $boost, $debug);
-    return self::do_solr($solr_urls, $solr_arr);
-  }
-
-  /** \brief fetch hit count for each register in a given list
-   *
-   * @param array $eq - the edismax part of the parsed user query
-   * @param array $guess - registers, filters, ... to get frequence for
-   *
-   * @reval array - hitcount for each register
-   */
-  private function get_register_freqency($eq, $guess) {
-    $q = implode(OR_OP, $eq['q']);
-    foreach ($eq['fq'] as $fq) {
-      $filter .= '&fq=' . rawurlencode($fq);
-    }
-    foreach ($guess as $idx => $g) {
-      $filter = implode('&fq=', $g['filter']);
-      $solr_urls[]['url'] = $this->repository['solr'] .  
-                            '?q=' . $g['register'] . '%3A(' . urlencode($q) .  ')&fq=' . $filter .  '&start=1&rows=0&wt=phps';
-      $ret[$idx] = 0;
-    }
-    $err = self::do_solr($solr_urls, $solr_arr);
-    $n = 0;
-    foreach ($guess as $idx => $g) {
-      $ret[$idx] = self::get_num_found($solr_arr[$n++]);
-    }
-    return $ret;
-  }
-
-  /** \brief build a solr url from a variety of parameters (and an url for debugging)
-   *
-   * @param array $eq - the extended solr query structure
-   * @param integer $start - number of first (starting from 1) record
-   * @param integer $rows - (maximum) number of records to return
-   * @param string $filter - the users search profile
-   * @param string $sort - sorting scheme 
-   * @param string $rank - ranking sceme
-   * @param string $facets - facets-string
-   * @param string $boost - boost query (so far empty)
-   * @param string $debug - include SOLR debug info
-   * @retval array - then SOLR url and url for debug purposes
-   */
-  private function create_solr_url($eq, $start, $rows, $filter, $sort='', $rank='', $facets='', $boost='', $debug=FALSE) {
-    $q = implode(AND_OP, $eq['q']);
-    if (is_array($eq['handler_var'])) {
-      $handler_var = '&' . implode('&', $eq['handler_var']);
-      $filter = '';  // search profile collection filter is done via fq parm created with handler_var
-    }
-    if (is_array($eq['fq'])) {
-      foreach ($eq['fq'] as $fq) {
-        $filter .= '&fq=' . rawurlencode($fq);
-      }
-    }
-    $url = $this->repository['solr'] .
-                    '?q=' . urlencode($q) .
-                    '&fq=' . $filter .
-                    '&start=' . $start .  $sort . $rank . $boost . $facets .  $handler_var .
-                    '&defType=edismax';
-    $debug_url = $url . '&fl=' . $this->fedora_pid_field . ',' . $this->unit_id_field . ',' . $this->work_id_field . '&rows=1&debugQuery=on';
-    $url .= '&fl=' . $this->fedora_pid_field . ',' . $this->unit_id_field . ',' . $this->work_id_field . '&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
-
-    return array('url' => $url, 'debug' => $debug_url);
-  }
-
-  /** \brief send one or more requests to Solr
-   *
-   * @param array $urls - the url(s) to send to SOLR
-   * @param array $solr_arr - result from SOLR
-   * @retval string - error if any, NULL otherwise
-   */
-  private function do_solr($urls, &$solr_arr) {
-    foreach ($urls as $no => $url) {
-      verbose::log(TRACE, 'Query: ' . $url['url']);
-      if ($url['debug']) verbose::log(DEBUG, 'Query: ' . $url['debug']);
-      $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'), $no);
-      $this->curl->set_url($url['url'], $no);
-    }
-    $this->watch->start('solr');
-    $solr_results = $this->curl->get();
-    $this->curl->close();
-    $this->watch->stop('solr');
-    if (empty($solr_results))
-      return 'Internal problem: No answer from Solr';
-    if (count($urls) > 1) {
-      foreach ($solr_results as &$solr_result) {
-        if (!$solr_arr[] = unserialize($solr_result)) {
-          return 'Internal problem: Cannot decode Solr result';
-        }
-      }
-    }
-    elseif (!$solr_arr = unserialize($solr_results)) {
-      return 'Internal problem: Cannot decode Solr result';
-    }
-    elseif ($err = $solr_arr['error']) {
-      verbose::log(FATAL, 'Solr result in error: (' . $err['code'] . ') ' . preg_replace('/\s+/', ' ', $err['msg']));
-      return 'Internal problem: Solr result contains error';
-    }
   }
 
   /** \brief Parse a rels-ext record and extract the unit id
@@ -3445,25 +3228,271 @@ class openSearch extends webServiceServer {
     return (strtolower($str) == 'true' || $str == 1);
   }
 
-  /** \brief Helper function to set debug info
-   *  
-   * @param array $solr_debug - debuginfo from SOLR
-   * @param object $rank_freq_debug - info about frequencies from ranking
-   * @param object $best_match_debug - info about best match parameters
-   * @retval object 
+
+  /**/
+  /************************************ Info helper functions *******************************************/
+  /**/
+
+  /** \brief Get information about search profile (info operation)
+   * 
+   * @param string $agency 
+   * @param string $profile 
+   * @retval object - the user profile
    */
-  private function set_debug_info($solr_debug, $rank_freq_debug = '', $best_match_debug = '') {
-    Object::set_value($ret, 'rawQueryString', $solr_debug['rawquerystring']);
-    Object::set_value($ret, 'queryString', $solr_debug['querystring']);
-    Object::set_value($ret, 'parsedQuery', $solr_debug['parsedquery']);
-    Object::set_value($ret, 'parsedQueryString', $solr_debug['parsedquery_toString']);
-    if ($best_match_debug) {
-      Object::set_value($ret, 'bestMatch', $best_match_debug);
-    }
-    if ($rank_freq_debug) {
-      Object::set_value($ret, 'rankFrequency', $rank_freq_debug);
+  private function get_search_profile_info($agency, $profile) {
+    if ($s_profile = self::fetch_profile_from_agency($agency, $profile)) {
+      foreach ($s_profile as $p) {
+        Object::set_value($coll, 'searchCollectionName', $p['sourceName']);
+        Object::set_value($coll, 'searchCollectionIdentifier', $p['sourceIdentifier']);
+        Object::set_value($coll, 'searchCollectionIsSearched', self::xs_boolean($p['sourceSearchable']) ? 'true' : 'false');
+        if ($p['relation'])
+          foreach ($p['relation'] as $relation) {
+            if ($r = $relation['rdfLabel']) {
+              $all_relations[$r] = $r;
+              Object::set($rels[], '_value', $r);
+            }
+            if ($r = $relation['rdfInverse']) {
+              $all_relations[$r] = $r;
+              Object::set($rels[], '_value', $r);
+            }
+          }
+        if ($rels) {
+          $coll->relationType = $rels;
+        }
+        if ($rels || self::xs_boolean($p['sourceSearchable'])) {
+          Object::set_array_value($ret->_value, 'searchCollection', $coll);
+        }
+        unset($rels);
+        unset($coll);
+      }
+        if (is_array($all_relations)) {
+          ksort($all_relations);
+          foreach ($all_relations as $rel) {
+            Object::set_array_value($rels, 'relationType', $rel);
+          }
+          Object::set_value($ret->_value, 'relationTypes', $rels);
+          unset($rels);
+        }
     }
     return $ret;
+  }
+
+  /** \brief Get information about object formats from config (info operation)
+   * 
+   * @retval object 
+   */
+  private function get_object_format_info() {
+    foreach ($this->config->get_value('scan_format_table', 'setup') as $name => $value) {
+      Object::set_array_value($ret->_value, 'objectFormat', $value);
+    }
+    foreach ($this->config->get_value('solr_format', 'setup') as $name => $value) {
+      Object::set_array_value($ret->_value, 'objectFormat', $name);
+    }
+    foreach ($this->config->get_value('open_format', 'setup') as $name => $value) {
+      Object::set_array_value($ret->_value, 'objectFormat', $name);
+    }
+    return $ret;
+  }
+
+  /** \brief Get information about repositories from config (info operation)
+   * 
+   * @retval object 
+   */
+  private function get_repository_info() {
+    $dom = new DomDocument();
+    $repositories = $this->config->get_value('repository', 'setup');
+    foreach ($repositories as $name => $value) {
+      if ($name != 'defaults') {
+        Object::set_value($r, 'repository', $name);
+        self::set_repositories($name, FALSE);
+        Object::set_value($r, 'cqlIndexDoc', $this->repository['cql_file']);
+        if ($this->repository['cql_settings'] && @ $dom->loadXML($this->repository['cql_settings'])) {
+          foreach ($dom->getElementsByTagName('indexInfo') as $index_info) {
+            foreach ($index_info->getElementsByTagName('index') as $index) {
+              foreach ($index->getElementsByTagName('map') as $map) {
+                if ($map->getAttribute('hidden') !== '1') {
+                  foreach ($map->getElementsByTagName('name') as $name) {
+                    $idx = self::set_name_and_slop($name);
+                  }
+                  foreach ($map->getElementsByTagName('alias') as $alias) {
+                    Object::set_array_value($idx, 'indexAlias', self::set_name_and_slop($alias));
+                  }
+                  Object::set_array_value($r, 'cqlIndex', $idx);
+                  unset($idx);
+                }
+              }
+            }
+          }
+        }
+        Object::set_array_value($ret->_value, 'infoRepository', $r);
+        unset($r);
+      }
+    }
+    return $ret;
+  }
+
+  /** \brief Get info from dom node (info operation)
+   * 
+   * @param domNode $node
+   * @retval object 
+   */
+  private function set_name_and_slop($node) {
+    $prefix = $node->getAttribute('set');
+    Object::set_value($reg, 'indexName', $prefix . ($prefix ? '.' : '') . $node->nodeValue);
+    if ($slop = $node->getAttribute('slop')) {
+      Object::set_value($reg, 'indexSlop', $slop);
+    }
+    return $reg;
+  }
+
+  /** \brief Get information about namespaces from config (info operation)
+   * 
+   * @retval object 
+   */
+  private function get_namespace_info() {
+    foreach ($this->config->get_value('xmlns', 'setup') as $prefix => $namespace) {
+      Object::set_value($ns, 'prefix', $prefix);
+      Object::set_value($ns, 'uri', $namespace);
+      Object::set_array_value($nss->_value, 'infoNameSpace', $ns);
+      unset($ns);
+    }
+    return $nss;
+  }
+
+  /** \brief Get information about sorting and ranking from config (info operation)
+   * 
+   * @retval object 
+   */
+  private function get_sort_info() {
+    foreach ($this->config->get_value('rank', 'setup') as $name => $val) {
+      if (isset($val['word_boost']) && ($help = self::collect_rank_boost($val['word_boost']))) {
+        Object::set($boost, 'word', $help);
+      }
+      if (isset($val['phrase_boost']) && ($help = self::collect_rank_boost($val['phrase_boost']))) {
+        Object::set($boost, 'phrase', $help);
+      }
+      if ($boost) {
+        Object::set_value($rank, 'sort', $name);
+        Object::set_value($rank, 'internalType', 'rank');
+        Object::set_value($rank->rankDetails->_value, 'tie', $val['tie']);
+        $rank->rankDetails->_value = $boost;
+        Object::set_Array_value($ret->_value, 'infoSort', $rank);
+        unset($boost);
+        unset($rank);
+      }
+    }
+    foreach ($this->config->get_value('sort', 'setup') as $name => $val) {
+        Object::set_value($sort, 'sort', $name);
+        if (is_array($val)) {
+          Object::set_value($sort, 'internalType', 'complexSort');
+          foreach ($val as $simpleSort) {
+            Object::set($simple[], '_value', $simpleSort);
+          }
+          Object::set($sortDetails, 'sort', $simple);
+          unset($simple);
+        }
+        else {
+          Object::set_value($sort, 'internalType', ($val == 'random' ? 'random' : 'basicSort'));
+          Object::set_value($sortDetails, 'sort', $val);
+        }
+        Object::set_value($sort, 'sortDetails', $sortDetails);
+        Object::set_array_value($ret->_value, 'infoSort', $sort);
+        unset($sort);
+        unset($sortDetails);
+    }
+    return $ret;
+  }
+
+  /** \brief return one rank entry (info operation)
+   * 
+   * @param array $rank 
+   * @retval object 
+   */
+  private function collect_rank_boost($rank) {
+    if (is_array($rank)) {
+      foreach ($rank as $reg => $weight) {
+        Object::set_value($rw, 'fieldName', $reg);
+        Object::set_value($rw, 'weight', $weight);
+        Object::set_array_value($iaw->_value, 'fieldNameAndWeight', $rw);
+        unset($rw);
+      }
+    }
+    return $iaw;
+  }
+
+  /**/
+  /************************************ protected functions called from url *******************************************/
+  /**/
+
+  /** \brief fetch a cql-file from solr and display it
+   *
+   * @retval string - xml doc or error
+   */
+  protected function showCqlFile() {
+    $repositories = $this->config->get_value('repository', 'setup');
+    $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
+    self::set_repositories($repos, FALSE);
+    if ($file = $this->repository['cql_settings']) {
+      header('Content-Type: application/xml; charset=utf-8');
+      echo $file;
+    }
+    else {
+      header('HTTP/1.0 404 Not Found');
+      echo 'Cannot locate the cql-file: ' . $cql . '<br /><br />Use info operation to check name and repostirory';
+    }
+  }
+
+  /** \brief Compares registers in cql_file with solr, using the luke request handler:
+   *   http://wiki.apache.org/solr/LukeRequestHandler
+   *
+   * @retval string - html doc
+   */
+  protected function diffCqlFileWithSolr() {
+    if ($error = self::set_repositories($_REQUEST['repository'])) {
+      die('Error setting repository: ' . $error);
+    }
+    $luke_url = $this->repository['solr'];
+    if (empty($luke_url)) {
+      die('Cannot find url to solr for repository');
+    }
+    $luke = $this->config->get_value('solr_luke', 'setup');
+    foreach ($luke as $from => $to) {
+      $luke_url = str_replace($from, $to, $luke_url);
+    }
+    $luke_result = json_decode($this->curl->get($luke_url));
+    if (!$luke_result) {
+      die('Cannot fetch register info from solr: ' . $luke_url);
+    }
+    $luke_fields = &$luke_result->fields;
+    $dom = new DomDocument();
+    $dom->loadXML($this->repository['cql_settings']) || die('Cannot read cql_file: ' . $this->repository['cql_file']);
+
+    foreach ($dom->getElementsByTagName('indexInfo') as $info_item) {
+      foreach ($info_item->getElementsByTagName('index') as $index_item) {
+        if ($map_item = $index_item->getElementsByTagName('map')->item(0)) {
+          if ($name_item = $map_item->getElementsByTagName('name')->item(0)) {
+            if (!$name_item->hasAttribute('searchHandler') && ($name_item->getAttribute('set') !== 'cql')) {
+              $full_name = $name_item->getAttribute('set').'.'.$name_item->nodeValue;
+              if ($luke_fields->$full_name) {
+                unset($luke_fields->$full_name);
+              } 
+              else {
+                $cql_regs[] = $full_name;
+              } 
+            } 
+          } 
+        }
+      }
+    }
+
+    echo '<html><body><h1>Found in ' . $this->repository['cql_file'] . ' but not in Solr for repository ' . $this->repository_name . '</h1>';
+    foreach ($cql_regs as $cr)
+      echo $cr . '</br>';
+    echo '</br><h1>Found in Solr but not in ' . $this->repository['cql_file'] . ' for repository ' . $this->repository_name . '</h1>';
+    foreach ($luke_fields as $lf => $obj)
+      echo $lf . '</br>';
+    
+    die('</body></html>');
   }
 
 }
