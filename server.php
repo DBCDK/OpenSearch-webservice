@@ -1905,8 +1905,8 @@ class openSearch extends webServiceServer {
             }
             unset($mani);
           }
-// need to loop thru objects to put data correct
-          if (is_array($manifestation->manifestation)) {
+// need to sort objects to put data correct
+          if (is_array($manifestation->manifestation) && count($manifestation->manifestation) > 1) {
             ksort($manifestation->manifestation);
           }
           Object::set_namespace($c->_value->formattedCollection->_value, $format_name, $solr_display_ns);
