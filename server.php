@@ -398,7 +398,6 @@ class openSearch extends webServiceServer {
         $more = ($numFound >= $start);   // no need to find records, only hit count is returned and maybe facets
       }
       else {
-  // private function build_work_struct_from_solr(&$work_cache_struct, &$work_struct, &$more, &$work_ids, $edismax, $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, $all_objects, $num_found, $debug_query) {
         if ($err = self::build_work_struct_from_solr($work_cache_struct, $work_ids, $more, $solr_work_ids, $solr_query['edismax'], $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, self::xs_boolean($param->allObjects->_value), $numFound, $debug_query)) {
           $error = $err;
           return $ret_error;
@@ -519,7 +518,7 @@ class openSearch extends webServiceServer {
       unset($sorted_work);
       Object::set_value($o->collection->_value, 'resultPosition', $rec_no++);
       Object::set_value($o->collection->_value, 'numberOfObjects', count($objects));
-      if ($use_sort_complex_key && count($objects) > 1) {
+      if (count($objects) > 1) {
         ksort($objects);
       }
       $o->collection->_value->object = $objects;

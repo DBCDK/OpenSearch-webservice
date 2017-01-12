@@ -123,7 +123,7 @@ all_rawrepo_agency[] = 010100
 ;all_rawrepo_agency[] = 870970
 
 ; --------------
-; agencies using sort.complexKey (and holdings) to sort manifestations within work
+; agencies fetching holdings to include in sort.complexKey used sort manifestations within work
 ; Normally, only bibliotek.dk (190101) should do this
 use_sort_complex_key[] = 190101
 
