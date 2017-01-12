@@ -344,10 +344,12 @@ class openSearch extends webServiceServer {
       if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, $facet_q, $filter_q, $boost_q, $debug_query, $solr_arr))
         $error = $err;
       else {
-        self::extract_ids_from_solr($solr_arr, $solr_work_ids);
         $numFound = self::get_num_found($solr_arr);
-        if ($numFound && !count($solr_work_ids)) {
-          $error = 'Internal error: Cannot extract any id\'s from solr';
+        if ($step_value && $numFound) {
+          self::extract_ids_from_solr($solr_arr, $solr_work_ids);
+          if (!count($solr_work_ids)) {
+            $error = 'Internal error: Cannot extract any id\'s from solr';
+          }
         }
       }
     }
@@ -438,7 +440,6 @@ class openSearch extends webServiceServer {
 
     // work_ids now contains the work-records and the fedoraPids they consist of
     // now fetch the records for each work/collection
-    // TODO Change to two loops to fetch records in parallel
     $collections = array();
     $rec_no = max(1, $start);
     $HOLDINGS = ' holdings ';
@@ -1190,7 +1191,6 @@ class openSearch extends webServiceServer {
    *
    * @param object $facets - the facet paramaters from the request
    * @retval string - facet part of solr url
-   * TODO: change xsd to include facetOffset
    */
   private function set_solr_facet_parameters($facets) {
     $max_threads = self::value_or_default($this->config->get_value('max_facet_threads', 'setup'), 50);
@@ -2706,7 +2706,7 @@ class openSearch extends webServiceServer {
   private function do_solr($urls, &$solr_arr) {
     foreach ($urls as $no => $url) {
       verbose::log(TRACE, 'Query: ' . $url['url']);
-      verbose::log(DEBUG, 'Query: ' . $url['debug']);
+      if ($url['debug']) verbose::log(DEBUG, 'Query: ' . $url['debug']);
       $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'), $no);
       $this->curl->set_url($url['url'], $no);
     }
