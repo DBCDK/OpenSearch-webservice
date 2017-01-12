@@ -332,7 +332,7 @@ class openSearch extends webServiceServer {
     verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
 
     // do the query
-    $this->watch->start('Solr');
+    $this->watch->start('Solr_ids');
     if ($sort[0] == 'random') {
       if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, $filter_q, '', $debug_query, $solr_arr))
         $error = $err;
@@ -353,7 +353,7 @@ class openSearch extends webServiceServer {
         }
       }
     }
-    $this->watch->stop('Solr');
+    $this->watch->stop('Solr_ids');
 
     if ($error) return $ret_error;
 
@@ -420,9 +420,9 @@ class openSearch extends webServiceServer {
       }
     }
     $add_queries = array($this->unit_id_field . ':(' . implode(OR_OP, $q_unit) . ')');
-    $this->watch->start('Solr');
+    $this->watch->start('Solr_disp');
     $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), '');
-    $this->watch->stop('Solr');
+    $this->watch->stop('Solr_disp');
         foreach ($display_solr_arr as $d_s_a) {
           foreach ($d_s_a['response']['docs'] as $fdoc) {
             $u_id =  self::scalar_or_first_elem($fdoc[$this->unit_id_field]);
@@ -958,10 +958,10 @@ class openSearch extends webServiceServer {
           }
         }
       }
-      $pos = $start;
-      foreach ($work_slice as $work) {
-        $work_struct[$pos++] = $work;
-      }
+    }
+    $pos = $start;
+    foreach ($work_slice as $work) {
+      $work_struct[$pos++] = $work;
     }
     //var_dump($edismax); var_dump($add_q); var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
   }
@@ -2709,8 +2709,10 @@ class openSearch extends webServiceServer {
       $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'), $no);
       $this->curl->set_url($url['url'], $no);
     }
+    $this->watch->start('solr');
     $solr_results = $this->curl->get();
     $this->curl->close();
+    $this->watch->stop('solr');
     if (empty($solr_results))
       return 'Internal problem: No answer from Solr';
     if (count($urls) > 1) {
