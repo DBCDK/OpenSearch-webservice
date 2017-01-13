@@ -490,7 +490,7 @@ class openSearch extends webServiceServer {
         }
         if ($use_sort_complex_key && (strpos($unit_sort_keys[$unit_id], $HOLDINGS) !== FALSE)) {
           $holds = isset($no_of_holdings) ? $no_of_holdings : self::get_holdings($fpid);
-          $sort_holdings = sprintf(' %04d ', 9999 - intval($holds['have']));
+          $sort_holdings = sprintf(' %04d ', 9999 - intval($holds['lend']));
         }
         $fpid_sort_keys[$fpid] = str_replace($HOLDINGS, $sort_holdings, $unit_sort_keys[$unit_id]);
         if ($debug_query) {
