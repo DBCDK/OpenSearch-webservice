@@ -631,17 +631,12 @@ class openSearch extends webServiceServer {
           return $ret_error;
         }
       }
-      else
-        $agencies = $this->config->get_value('agency', 'agency');
-      $agencies[$this->agency] = self::set_solr_filter($this->search_profile);
-      self::set_valid_relations_and_sources($this->search_profile);
-      self::set_search_filters_for_800000_collection();
-      if (isset($agencies[$this->agency]))
-        $this->filter_agency = $agencies[$this->agency];
-      else {
+      if (!$this->filter_agency = self::set_solr_filter($this->search_profile)) {
         $error = 'Error: Unknown agency: ' . $this->agency;
         return $ret_error;
       }
+      self::set_valid_relations_and_sources($this->search_profile);
+      self::set_search_filters_for_800000_collection();
     }
     if ($this->filter_agency) {
       $filter_q = rawurlencode($this->filter_agency);
