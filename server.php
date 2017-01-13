@@ -902,13 +902,13 @@ class openSearch extends webServiceServer {
     return $ret;
   }
 
-  /**/
-  /************************************* private ******************************************/
-  /**/
+  /*
+   ************************************* private ******************************************
+   */
 
-  /**/
-  /*********** input handling functions  ***********/
-  /**/
+  /*************************************************
+   *********** input handling functions  ***********
+   *************************************************/
 
   /** \brief parse input for rank parameters
    *
@@ -1185,9 +1185,10 @@ class openSearch extends webServiceServer {
   }
 
 
-  /**/
-  /* output handling functions  */
-  /**/
+  /**************************************************
+   *********** output handling functions  ***********
+   **************************************************/
+
 
   /** \brief sets sortUsed if rank or sort is used
    * 
@@ -1470,9 +1471,9 @@ class openSearch extends webServiceServer {
   }
 
 
-  /**/
-  /*********** Solr related functions ***********/
-  /**/
+  /**********************************************
+   *********** Solr related functions ***********
+   **********************************************/
 
 
   /** \brief Set the parameters to solr facets
@@ -1593,6 +1594,21 @@ class openSearch extends webServiceServer {
       }
     }
     return $solr_arr;
+  }
+
+  /** \brief Check if a record is searchable - currently obsolete
+   *
+   * @param string $unit_id - 
+   * @param string $filter_q - the filter query (search profile)
+   * @retval boolean - true if at least one record is found
+   */
+  private function is_searchable($unit_id, $filter_q) {
+// do not check for searchability, since the relation is found in the search_profile, it's ok to use it
+    return TRUE;
+    if (empty($filter_q)) return TRUE;
+
+    self::get_solr_array($this->unit_id_field . ':' . str_replace(':', '\:', $unit_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
+    return self::get_num_found($solr_arr);
   }
 
   /** \brief Encapsules how to get the data from the first element
@@ -1843,12 +1859,6 @@ class openSearch extends webServiceServer {
     return $xml;
   }
 
-
-
-  /**/
-  /*********** misc functions ***********/
-  /**/
-
   /** \brief Isolation of creation of work structure for caching
   *
   * @param - way to many
@@ -1908,6 +1918,186 @@ class openSearch extends webServiceServer {
       $work_struct[$pos++] = $work;
     }
     //var_dump($edismax); var_dump($add_q); var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
+  }
+
+
+  /**************************************
+   *********** repo functions ***********
+   **************************************/
+
+
+  /** \brief Create record_repo url from settings and given id
+   *
+   * @param string $type - type of record_repo operation
+   * @param string $id - id of record_repo record to fetch
+   * @retval string
+   */
+  private function record_repo_url($type, $id, $datastream_id = '') {
+    $uri = $datastream_id ? str_replace('commonData', $datastream_id, $this->repository[$type]) : $this->repository[$type];
+    return sprintf($uri, $id);
+  }
+
+  /** \brief Check whether an object is deleted or not
+   *
+   * @param string $fpid - the pid to fetch
+   * @param string $datastream_id - 
+   * @retval boolean 
+   */
+  private function deleted_object($fpid) {
+    static $dom;
+    $state = '';
+    self::read_record_repo(self::record_repo_url('fedora_get_object_profile', $fpid), $obj_rec);
+    if ($obj_rec) {
+      if (empty($dom))
+        $dom = new DomDocument();
+      $dom->preserveWhiteSpace = FALSE;
+      if (@ $dom->loadXML($obj_rec))
+        $state = self::get_dom_element($dom, 'objState');
+    }
+    return $state == 'D';
+  }
+
+  /** \brief Fetch a raw record from record_repo
+   *
+   * @param string $fpid - the pid to fetch
+   * @param string $record_repo_xml - the record is returned
+   * @param string $datastream_id - 
+   * @retval mixed - error or NULL
+   */
+  private function read_record_repo_raw($fpid, &$record_repo_xml, $datastream_id = 'commonData') {
+    return self::read_record_repo(self::record_repo_url('fedora_get_raw', $fpid, $datastream_id), $record_repo_xml);
+  }
+
+  /** \brief Fetch a rels_addi record from record_repo
+   *
+   * @param string $fpid - the pid to fetch
+   * @param string $record_repo_addi_xml - the record is returned
+   * @retval mixed - error, FALSE or NULL
+   */
+  private function read_record_repo_rels_addi($fpid, &$record_repo_addi_xml) {
+    if ($this->repository['fedora_get_rels_addi']) {
+      return self::read_record_repo(self::record_repo_url('fedora_get_rels_addi', $fpid), $record_repo_addi_xml, FALSE);
+    }
+    else {
+      return FALSE;
+    }
+  }
+
+  /** \brief Fetch a rels_hierarchy record from record_repo
+   *
+   * @param string $fpid - the pid to fetch
+   * @param string $record_repo_hierarchy_xml - the record is returned
+   * @retval mixed - error or NULL
+   */
+  private function read_record_repo_rels_hierarchy($fpid, &$record_repo_hierarchy_xml) {
+    return self::read_record_repo(self::record_repo_url('fedora_get_rels_hierarchy', $fpid), $record_repo_hierarchy_xml);
+  }
+
+  /** \brief Fetch datastreams for a record from record_repo
+   *
+   * @param string $fpid - the pid to fetch
+   * @param string $record_repo_xml - the record is returned
+   * @retval mixed - error or NULL
+   */
+  private function read_record_repo_datastreams($fpid, &$record_repo_xml) {
+    return self::read_record_repo(self::record_repo_url('fedora_get_datastreams', $fpid), $record_repo_xml);
+  }
+
+  /** \brief Read a record from record_repo and tcheck if it is deleted
+   *
+   * @param string $pid - record pid
+   * @param string $localdata_in_pid - in localData stream of this pid
+   * @retval boolean - TRUE if record is deleted
+   */
+  private function is_deleted_record($pid, $localdata_in_pid) {
+    if ($localdata_in_pid) {
+      self::read_record_repo_raw($localdata_in_pid, $record_repo_result, 'localData.' . self::record_source_from_pid($pid));
+      if (DEBUG_ON) {
+        echo __FUNCTION__ . ':: ' . $pid . ' in ' . $localdata_in_pid . ' localData.' . self::record_source_from_pid($pid) . ' is ' . 
+            (empty($record_repo_result) || strpos($record_repo_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
+      }
+    }
+    else {
+      self::read_record_repo_raw($pid, $record_repo_result);
+      if (DEBUG_ON) {
+        echo __FUNCTION__ . ':: ' . $pid . ' is ' . 
+            (empty($record_repo_result) || strpos($record_repo_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
+      }
+    }
+    return empty($record_repo_result) || strpos($record_repo_result, '<recordStatus>delete</recordStatus>');
+  }
+
+  /** \brief Setup call to record repository and execute it. The record is cached.
+   *
+   * @param string $uri - the record_repo uri
+   * @param string $rec - the record is returned
+   * @param boolean $mandatory - how to handle a missing record/error
+   * @retval mixed - error or NULL
+   */
+  private function read_record_repo($record_uri, &$rec, $mandatory=TRUE) {
+    verbose::log(TRACE, 'repo_read: ' . $record_uri);
+    if (DEBUG_ON) echo __FUNCTION__ . ':: ' . $record_uri . "\n";
+    if ($this->cache && ($rec = $this->cache->get($record_uri))) {
+      $this->number_of_record_repo_cached++;
+    }
+    else {
+      $this->number_of_record_repo_calls++;
+      $this->curl->set_authentication('fedoraAdmin', 'fedoraAdmin');
+      $this->watch->start('record_repo');
+      $rec = self::normalize_chars($this->curl->get($record_uri));
+      $this->watch->stop('record_repo');
+      $curl_err = $this->curl->get_status();
+      if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
+        $rec = '';
+        if ($mandatory) {
+          if ($curl_err['http_code'] == 404) {
+            return 'record_not_found';
+          }
+          verbose::log(FATAL, 'record_repo http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri);
+          return 'Error: Cannot fetch record: ' . $record_uri . ' - http-error: ' . $curl_err['http_code'];
+        }
+      }
+      if ($this->cache) $this->cache->set($record_uri, $rec);
+    }
+    // else verbose::log(TRACE, 'record_repo cache hit for ' . $fpid);
+    return;
+  }
+
+  /** \brief Get multiple urls and return result in structure with the same indices
+   *
+   * @param array $urls - 
+   * @retval array 
+   */
+  private function read_record_repo_all_urls($urls) {
+    $ret = array();
+    if (empty($urls)) $urls = array();
+    $res_map = array_keys($urls);
+    $no = 0;
+    foreach ($urls as $key => $uri) {
+      verbose::log(TRACE, 'repo_read: ' . $uri);
+      if (DEBUG_ON) echo __FUNCTION__ . ':: ' . $uri . "\n";
+      if ($this->cache && ($ret[$key] = $this->cache->get($uri))) {
+        $this->number_of_record_repo_cached++;
+      }
+      else {
+        $this->number_of_record_repo_calls++;
+        $last_no = $no;
+        $this->curl->set_url($uri, $no);
+      }
+      $no++;
+    }
+    if (isset($last_no)) {
+      $this->watch->start('record_repo');
+      $recs = $this->curl->get();
+      $this->watch->stop('record_repo');
+      $this->curl->close();
+      if (!is_array($recs)) $recs = array($last_no => $recs);
+      foreach ($recs as $no => $rec) {
+        if ($this->cache) $this->cache->set($urls[$res_map[$no]], $rec);
+        $ret[$res_map[$no]] = $rec;
+      }
+    }
+    return $ret;
   }
 
   /** \brief Reads records from Raw Record Postgress Database
@@ -1998,6 +2188,85 @@ class openSearch extends webServiceServer {
     die('obsolete function - correct the inifile to use raw repo service instead');
   }
 
+
+  /****************************************
+   *********** agency functions ***********
+   ****************************************/
+
+
+  /** \brief return agency priority
+   * 
+   * @param string $agency 
+   * @retval integer
+   */
+  private function agency_priority($agency) {
+    if (!isset($this->agency_priority_list[$agency])) {
+      $this->agency_priority_list[$agency] = count($this->agency_priority_list) + 1;
+    }
+    return $this->agency_priority_list[$agency];
+  }
+
+  /** \brief Fetch agency types from OpenAgency, cache the result, and return agency type for $agency
+   *
+   * @param string $agency -
+   * @retval mixed - agency type (string) or FALSE
+   */
+  private function get_agency_type($agency) {
+    $this->watch->start('agency_type');
+    $agency_type = $this->open_agency->get_agency_type($agency);
+    $this->watch->stop('agency_type');
+    if ($this->open_agency->get_branch_type($agency) <> 'D') {
+      return $agency_type;
+    }
+
+    return FALSE;
+  }
+
+  /** \brief Fetch priority list for agency
+   *
+   * @retval mixed - array of agencies
+   */
+  private function fetch_agency_show_priority() {
+    $this->watch->start('agency_prio');
+    $agency_list = $this->open_agency->get_show_priority($this->agency);
+    $this->watch->stop('agency_prio');
+    return ($agency_list ? $agency_list : array());
+  }
+
+  /** \brief Fetch a profile $profile_name for agency $agency
+   *
+   * @param string $agency -
+   * @param string $profile_name - 
+   * @retval mixed - profile (array) or FALSE
+   */
+  private function fetch_profile_from_agency($agency, $profile_name) {
+    $this->watch->start('agency_profile');
+    $profile = $this->open_agency->get_search_profile($agency, $profile_name, $this->search_profile_version);
+    $this->watch->stop('agency_profile');
+    return (is_array($profile) ? $profile : FALSE);
+  }
+
+  /** \brief Fetch agency rules from OpenAgency and return specific agency rule
+   *
+   * @param string $agency -
+   * @retval boolean - agency rules
+   */
+  private function agency_rule($agency, $name) {
+    static $agency_rules = array();
+    if (empty($agency_rules[$agency])) {
+      $this->watch->start('agency_rule');
+      $agency_rules[$agency] = $this->open_agency->get_library_rules($agency);
+      $this->watch->stop('agency_rule');
+    }
+    return self::xs_boolean($agency_rules[$agency][$name]);
+  }
+
+
+  /**************************************
+   *********** misc functions ***********
+   **************************************/
+
+
   /** \brief Set fedora pid to corrects objct and modify datastream according to storage scheme
    *
    * @param string $pid 
@@ -2076,156 +2345,6 @@ class openSearch extends webServiceServer {
       }
     }
     return $holds;
-  }
-
-  /** \brief Create record_repo url from settings and given id
-   *
-   * @param string $type - type of record_repo operation
-   * @param string $id - id of record_repo record to fetch
-   * @retval string
-   */
-  private function record_repo_url($type, $id, $datastream_id = '') {
-    $uri = $datastream_id ? str_replace('commonData', $datastream_id, $this->repository[$type]) : $this->repository[$type];
-    return sprintf($uri, $id);
-  }
-
-  /** \brief Check whether an object is deleted or not
-   *
-   * @param string $fpid - the pid to fetch
-   * @param string $datastream_id - 
-   * @retval boolean 
-   */
-  private function deleted_object($fpid) {
-    static $dom;
-    $state = '';
-    self::read_record_repo(self::record_repo_url('fedora_get_object_profile', $fpid), $obj_rec);
-    if ($obj_rec) {
-      if (empty($dom))
-        $dom = new DomDocument();
-      $dom->preserveWhiteSpace = FALSE;
-      if (@ $dom->loadXML($obj_rec))
-        $state = self::get_dom_element($dom, 'objState');
-    }
-    return $state == 'D';
-  }
-
-  /** \brief Fetch a raw record from record_repo
-   *
-   * @param string $fpid - the pid to fetch
-   * @param string $record_repo_xml - the record is returned
-   * @param string $datastream_id - 
-   * @retval mixed - error or NULL
-   */
-  private function read_record_repo_raw($fpid, &$record_repo_xml, $datastream_id = 'commonData') {
-    return self::read_record_repo(self::record_repo_url('fedora_get_raw', $fpid, $datastream_id), $record_repo_xml);
-  }
-
-  /** \brief Fetch a rels_addi record from record_repo
-   *
-   * @param string $fpid - the pid to fetch
-   * @param string $record_repo_addi_xml - the record is returned
-   * @retval mixed - error, FALSE or NULL
-   */
-  private function read_record_repo_rels_addi($fpid, &$record_repo_addi_xml) {
-    if ($this->repository['fedora_get_rels_addi']) {
-      return self::read_record_repo(self::record_repo_url('fedora_get_rels_addi', $fpid), $record_repo_addi_xml, FALSE);
-    }
-    else {
-      return FALSE;
-    }
-  }
-
-  /** \brief Fetch a rels_hierarchy record from record_repo
-   *
-   * @param string $fpid - the pid to fetch
-   * @param string $record_repo_hierarchy_xml - the record is returned
-   * @retval mixed - error or NULL
-   */
-  private function read_record_repo_rels_hierarchy($fpid, &$record_repo_hierarchy_xml) {
-    return self::read_record_repo(self::record_repo_url('fedora_get_rels_hierarchy', $fpid), $record_repo_hierarchy_xml);
-  }
-
-  /** \brief Fetch datastreams for a record from record_repo
-   *
-   * @param string $fpid - the pid to fetch
-   * @param string $record_repo_xml - the record is returned
-   * @retval mixed - error or NULL
-   */
-  private function read_record_repo_datastreams($fpid, &$record_repo_xml) {
-    return self::read_record_repo(self::record_repo_url('fedora_get_datastreams', $fpid), $record_repo_xml);
-  }
-
-  /** \brief Setup call to record repository and execute it. The record is cached.
-   *
-   * @param string $uri - the record_repo uri
-   * @param string $rec - the record is returned
-   * @param boolean $mandatory - how to handle a missing record/error
-   * @retval mixed - error or NULL
-   */
-  private function read_record_repo($record_uri, &$rec, $mandatory=TRUE) {
-    verbose::log(TRACE, 'repo_read: ' . $record_uri);
-    if (DEBUG_ON) echo __FUNCTION__ . ':: ' . $record_uri . "\n";
-    if ($this->cache && ($rec = $this->cache->get($record_uri))) {
-      $this->number_of_record_repo_cached++;
-    }
-    else {
-      $this->number_of_record_repo_calls++;
-      $this->curl->set_authentication('fedoraAdmin', 'fedoraAdmin');
-      $this->watch->start('record_repo');
-      $rec = self::normalize_chars($this->curl->get($record_uri));
-      $this->watch->stop('record_repo');
-      $curl_err = $this->curl->get_status();
-      if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
-        $rec = '';
-        if ($mandatory) {
-          if ($curl_err['http_code'] == 404) {
-            return 'record_not_found';
-          }
-          verbose::log(FATAL, 'record_repo http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri);
-          return 'Error: Cannot fetch record: ' . $record_uri . ' - http-error: ' . $curl_err['http_code'];
-        }
-      }
-      if ($this->cache) $this->cache->set($record_uri, $rec);
-    }
-    // else verbose::log(TRACE, 'record_repo cache hit for ' . $fpid);
-    return;
-  }
-
-  /** \brief Get multiple urls and return result in structure with the same indices
-   *
-   * @param array $urls - 
-   * @retval array 
-   */
-  private function read_record_repo_all_urls($urls) {
-    $ret = array();
-    if (empty($urls)) $urls = array();
-    $res_map = array_keys($urls);
-    $no = 0;
-    foreach ($urls as $key => $uri) {
-      verbose::log(TRACE, 'repo_read: ' . $uri);
-      if (DEBUG_ON) echo __FUNCTION__ . ':: ' . $uri . "\n";
-      if ($this->cache && ($ret[$key] = $this->cache->get($uri))) {
-        $this->number_of_record_repo_cached++;
-      }
-      else {
-        $this->number_of_record_repo_calls++;
-        $last_no = $no;
-        $this->curl->set_url($uri, $no);
-      }
-      $no++;
-    }
-    if (isset($last_no)) {
-      $this->watch->start('record_repo');
-      $recs = $this->curl->get();
-      $this->watch->stop('record_repo');
-      $this->curl->close();
-      if (!is_array($recs)) $recs = array($last_no => $recs);
-      foreach ($recs as $no => $rec) {
-        if ($this->cache) $this->cache->set($urls[$res_map[$no]], $rec);
-        $ret[$res_map[$no]] = $rec;
-      }
-    }
-    return $ret;
   }
 
   /** \brief Check an external relation against the search_profile
@@ -2353,73 +2472,6 @@ class openSearch extends webServiceServer {
     }
   }
 
-  /** \brief return agency priority
-   * 
-   * @param string $agency 
-   * @retval integer
-   */
-  private function agency_priority($agency) {
-    if (!isset($this->agency_priority_list[$agency])) {
-      $this->agency_priority_list[$agency] = count($this->agency_priority_list) + 1;
-    }
-    return $this->agency_priority_list[$agency];
-  }
-
-  /** \brief Fetch agency types from OpenAgency, cache the result, and return agency type for $agency
-   *
-   * @param string $agency -
-   * @retval mixed - agency type (string) or FALSE
-   */
-  private function get_agency_type($agency) {
-    $this->watch->start('agency_type');
-    $agency_type = $this->open_agency->get_agency_type($agency);
-    $this->watch->stop('agency_type');
-    if ($this->open_agency->get_branch_type($agency) <> 'D') {
-      return $agency_type;
-    }
-
-    return FALSE;
-  }
-
-  /** \brief Fetch priority list for agency
-   *
-   * @retval mixed - array of agencies
-   */
-  private function fetch_agency_show_priority() {
-    $this->watch->start('agency_prio');
-    $agency_list = $this->open_agency->get_show_priority($this->agency);
-    $this->watch->stop('agency_prio');
-    return ($agency_list ? $agency_list : array());
-  }
-
-  /** \brief Fetch a profile $profile_name for agency $agency
-   *
-   * @param string $agency -
-   * @param string $profile_name - 
-   * @retval mixed - profile (array) or FALSE
-   */
-  private function fetch_profile_from_agency($agency, $profile_name) {
-    $this->watch->start('agency_profile');
-    $profile = $this->open_agency->get_search_profile($agency, $profile_name, $this->search_profile_version);
-    $this->watch->stop('agency_profile');
-    return (is_array($profile) ? $profile : FALSE);
-  }
-
-  /** \brief Fetch agency rules from OpenAgency and return specific agency rule
-   *
-   * @param string $agency -
-   * @retval boolean - agency rules
-   */
-  private function agency_rule($agency, $name) {
-    static $agency_rules = array();
-    if (empty($agency_rules[$agency])) {
-      $this->watch->start('agency_rule');
-      $agency_rules[$agency] = $this->open_agency->get_library_rules($agency);
-      $this->watch->stop('agency_rule');
-    }
-    return self::xs_boolean($agency_rules[$agency][$name]);
-  }
-
   /** \brief Get info for OpenAgency, solr_file cache style/setup
    *
    * @retval array - cache information from config
@@ -2435,19 +2487,6 @@ class openSearch extends webServiceServer {
                                                      $this->config->get_value('cache_expire', 'setup'));
     }
     return $ret[$offset];
-  }
-
-  /** \brief Fetch full agency url for a given operation
-   *
-   * @param string $agency_op - the agency operation
-   * @retval string - agency url
-   */
-  private function agency_uri($agency_op) {
-    $url = trim($this->config->get_value($agency_op, 'setup'));
-    if (substr($url, 0, 4) != 'http') {
-      $url = $this->config->get_value('open_agency', 'setup') . $url;
-    }
-    return $url;
   }
 
   /** \brief Extract source part of an ID 
@@ -2617,30 +2656,6 @@ class openSearch extends webServiceServer {
     return(array($unit_members, $best_pid, $localdata_in_pid, $primary_pid));
   }
 
-  /** \brief Read a record from record_repo and tcheck if it is deleted
-   *
-   * @param string $pid - record pid
-   * @param string $localdata_in_pid - in localData stream of this pid
-   * @retval boolean - TRUE if record is deleted
-   */
-  private function is_deleted_record($pid, $localdata_in_pid) {
-    if ($localdata_in_pid) {
-      self::read_record_repo_raw($localdata_in_pid, $record_repo_result, 'localData.' . self::record_source_from_pid($pid));
-      if (DEBUG_ON) {
-        echo __FUNCTION__ . ':: ' . $pid . ' in ' . $localdata_in_pid . ' localData.' . self::record_source_from_pid($pid) . ' is ' . 
-            (empty($record_repo_result) || strpos($record_repo_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
-      }
-    }
-    else {
-      self::read_record_repo_raw($pid, $record_repo_result);
-      if (DEBUG_ON) {
-        echo __FUNCTION__ . ':: ' . $pid . ' is ' . 
-            (empty($record_repo_result) || strpos($record_repo_result, '<recordStatus>delete</recordStatus>') ? '' : 'not ') . 'deleted' . PHP_EOL;
-      }
-    }
-    return empty($record_repo_result) || strpos($record_repo_result, '<recordStatus>delete</recordStatus>');
-  }
-
   /** \brief check if a record source is contained in the search profile: searchable_source
    * - for agency_rule 'use_localdata_stream' records can be in 870970-basis localdata stream
    * - School libraries has to be in their own catalog or as part of 870970-skole
@@ -2677,27 +2692,6 @@ class openSearch extends webServiceServer {
     );
   }
 
-  /** \brief Check if a pid has holdings
-   *
-   * @param string $pid - collection identifier
-   * @retval integer - number of records found
-   */
-  private function has_holdings($pid) {
-    if (empty($this->repository['holding'])) {
-      return 1;
-    }
-    list($owner, $coll, $id)  = self::split_pid($pid);
-    $solr_urls[0]['url'] = $this->repository['holding'] .
-                  '?q=' . urlencode('holdingsitem.collectionId:"' . $owner . '-' . $id . '"') .
-                  '&start=1&rows=0&defType=edismax&wt=phps';
-      $solr_urls[0]['debug'] = str_replace('wt=phps', 'wt=xml', $solr_urls[0]['url']);
-      if ($err = self::do_solr($solr_urls, $solr_arr)) {
-        $error = $err;
-        return 0;
-      }
-  }
-
-
   /** \brief Check if a collectionIdentifier contains a searchable "sub collection"
    *       - 150013-palle is not a datastream on its own, but is produced from 870970-basis
    *
@@ -2724,29 +2718,6 @@ class openSearch extends webServiceServer {
       return $this->searchable_source[$cont_id];
     }
     return FALSE;
-  }
-
-  /** \brief Parse a work relation and return array of ids
-   *
-   * @param string $w_rel - xml of the work object
-   * @param string $uid - id of the unit pointing to the work object
-   * @retval array - of id's found in the work object. The first element is always set to $uid
-   */
-  private function parse_work_for_object_ids($w_rel, $uid) {
-    static $dom;
-    if (empty($dom)) {
-      $dom = new DomDocument();
-      $dom->preserveWhiteSpace = FALSE;
-    }
-    if (@ $dom->loadXML($w_rel)) {
-      $res = array();
-      $res[] = $uid;
-      $r_list = $dom->getElementsByTagName('hasMemberOfWork');
-      foreach ($r_list as $r) {
-        if ($r->nodeValue <> $uid) $res[] = $r->nodeValue;
-      }
-      return $res;
-    }
   }
 
   /** \brief Parse a record_repo object and extract record and relations
@@ -2814,21 +2785,6 @@ class openSearch extends webServiceServer {
     if ($debug_info) Object::set_value($ret, 'queryResultExplanation', $debug_info);
 
     return $ret;
-  }
-
-  /** \brief Check if a record is searchable - currently obsolete
-   *
-   * @param string $unit_id - 
-   * @param string $filter_q - the filter query (search profile)
-   * @retval boolean - true if at least one record is found
-   */
-  private function is_searchable($unit_id, $filter_q) {
-// do not check for searchability, since the relation is found in the search_profile, it's ok to use it
-    return TRUE;
-    if (empty($filter_q)) return TRUE;
-
-    self::get_solr_array($this->unit_id_field . ':' . str_replace(':', '\:', $unit_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
-    return self::get_num_found($solr_arr);
   }
 
   /** \brief Check rec for available formats
@@ -3229,9 +3185,10 @@ class openSearch extends webServiceServer {
   }
 
 
-  /**/
-  /************************************ Info helper functions *******************************************/
-  /**/
+  /*
+   ************************************ Info helper functions *******************************************
+   */
+
 
   /** \brief Get information about search profile (info operation)
    * 
