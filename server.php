@@ -67,7 +67,7 @@ class openSearch extends webServiceServer {
     webServiceServer::__construct('opensearch.ini');
 
     $this->curl = new curl();
-    $this->curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 5));
+    $this->curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
     $this->open_agency = new OpenAgency($this->config->get_value('agency', 'setup'));
     $this->unit_id_field = self::value_or_default($this->config->get_value('field_unit_id', 'setup'), 'unit.id');
     $this->fedora_pid_field = self::value_or_default($this->config->get_value('field_fedora_pid', 'setup'), 'fedoraPid');
@@ -326,6 +326,7 @@ class openSearch extends webServiceServer {
 
     $facet_q = self::set_solr_facet_parameters($param->facets->_value);
 
+  // TODO rows should max to like 5000 and use cursorMark to page forward. cursorMark need a sort paramater to work
     $rows = $step_value ? (($start + $step_value + 100) * 2)  + 100 : 0;
 
     verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
