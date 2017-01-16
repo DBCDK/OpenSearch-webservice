@@ -34,10 +34,8 @@ class openSearch extends webServiceServer {
   protected $curl;
   protected $cache;
   protected $search_profile;
-  protected $search_profile_version = 3;
   protected $repository_name;
   protected $repository; // array containing solr and record_repo uri's
-  protected $tracking_id; 
   protected $query_language = 'cqleng'; 
   protected $number_of_record_repo_calls = 0;
   protected $number_of_record_repo_cached = 0;
@@ -58,9 +56,6 @@ class openSearch extends webServiceServer {
   protected $unit_fallback = array();     // if record_repo is updated and solr is not, this is used to find some record from the old unit
   protected $feature_sw = array();
   protected $add_collection_with_relation_to_filter = FALSE;
-  protected $unit_id_field;
-  protected $fedora_pid_field;
-  protected $work_id_field;
 
 
   public function __construct() {
@@ -69,12 +64,13 @@ class openSearch extends webServiceServer {
     $this->curl = new curl();
     $this->curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
     $this->open_agency = new OpenAgency($this->config->get_value('agency', 'setup'));
-    $this->unit_id_field = self::value_or_default($this->config->get_value('field_unit_id', 'setup'), 'unit.id');
-    $this->fedora_pid_field = self::value_or_default($this->config->get_value('field_fedora_pid', 'setup'), 'fedoraPid');
-    $this->work_id_field = self::value_or_default($this->config->get_value('field_work_id', 'setup'), 'rec.workId');
 
-    define(DEBUG_ON, $this->debug);
-    $this->tracking_id = verbose::$tracking_id;
+    define('FIELD_UNIT_ID', self::value_or_default($this->config->get_value('field_unit_id', 'setup'), 'unit.id'));
+    define('FIELD_FEDORA_PID', self::value_or_default($this->config->get_value('field_fedora_pid', 'setup'), 'fedoraPid'));
+    define('FIELD_WORK_ID', self::value_or_default($this->config->get_value('field_work_id', 'setup'), 'rec.workId'));
+
+    define('DEBUG_ON', $this->debug);
+    define('TRACKING_ID', verbose::$tracking_id);
     define('MAX_IDENTICAL_RELATIONS', self::value_or_default($this->config->get_value('max_identical_relation_names', 'setup'), 20));
     define('MAX_OBJECTS_IN_WORK', 100);
     define('AND_OP', ' AND ');
@@ -187,7 +183,7 @@ class openSearch extends webServiceServer {
       Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
       $result->searchResult = &$collections;
       Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-      Object::set_value($result->statInfo->_value, 'trackingId', $this->tracking_id);
+      Object::set_value($result->statInfo->_value, 'trackingId', TRACKING_ID);
       return $ret;
     }
 
@@ -238,7 +234,7 @@ class openSearch extends webServiceServer {
       Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
       $result->searchResult = &$collections;
       Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-      Object::set_value($result->statInfo->_value, 'trackingId', $this->tracking_id);
+      Object::set_value($result->statInfo->_value, 'trackingId', TRACKING_ID);
       if ($debug_query) {
         Object::set_value($result, 'queryDebugResult', self::set_debug_info($solr_arr['debug']));
       }
@@ -376,7 +372,7 @@ class openSearch extends webServiceServer {
         } while (isset($used_search_fid[$no]));
         $used_search_fid[$no] = TRUE;
         self::get_solr_array($solr_query['edismax'], $no, 1, '', '', '', $filter_q, '', $debug_query, $solr_arr);
-        $uid =  self::get_first_solr_element($solr_arr, $this->unit_id_field);
+        $uid =  self::get_first_solr_element($solr_arr, FIELD_UNIT_ID);
         $work_ids[] = array($uid);
       }
     }
@@ -422,13 +418,13 @@ class openSearch extends webServiceServer {
         $q_unit[] =  '"' . $unit_id . '"';
       }
     }
-    $add_queries = array($this->unit_id_field . ':(' . implode(OR_OP, $q_unit) . ')');
+    $add_queries = array(FIELD_UNIT_ID . ':(' . implode(OR_OP, $q_unit) . ')');
     $this->watch->start('Solr_disp');
     $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), '');
     $this->watch->stop('Solr_disp');
         foreach ($display_solr_arr as $d_s_a) {
           foreach ($d_s_a['response']['docs'] as $fdoc) {
-            $u_id =  self::scalar_or_first_elem($fdoc[$this->unit_id_field]);
+            $u_id =  self::scalar_or_first_elem($fdoc[FIELD_UNIT_ID]);
             $unit_sort_keys[$u_id] = $fdoc['sort.complexKey'] . '  ' . $u_id;
           }
         }
@@ -496,7 +492,7 @@ class openSearch extends webServiceServer {
         if ($debug_query) {
           unset($explain);
           foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
-            if ($unit_id == $solr_rec[$this->unit_id_field]) {
+            if ($unit_id == $solr_rec[FIELD_UNIT_ID]) {
               $explain = $solr_arr['debug']['explain'][$explain_keys[$solr_idx]];
               break;
             }
@@ -583,7 +579,7 @@ class openSearch extends webServiceServer {
     Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
     Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
     Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-    Object::set_value($result->statInfo->_value, 'trackingId', $this->tracking_id);
+    Object::set_value($result->statInfo->_value, 'trackingId', TRACKING_ID);
 
     verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
                        ':: agency:' . $this->agency . 
@@ -715,7 +711,7 @@ class openSearch extends webServiceServer {
       Object::set_value($result, 'more', 'false');
       $result->searchResult = &$collections;
       Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-      Object::set_value($result->statInfo->_value, 'trackingId', $this->tracking_id);
+      Object::set_value($result->statInfo->_value, 'trackingId', TRACKING_ID);
       if ($debug_query) {
         Object::set_value($debug_result, 'rawQueryString', $solr_arr['debug']['rawquerystring']);
         Object::set_value($debug_result, 'queryString', $solr_arr['debug']['querystring']);
@@ -749,7 +745,7 @@ class openSearch extends webServiceServer {
               '&start=0' .
               '&rows=500' .
               '&defType=edismax' .
-              '&fl=rec.collectionIdentifier,' . $this->fedora_pid_field . ',rec.id,' . $this->unit_id_field . ',unit.isPrimaryObject' . $add_fl;
+              '&fl=rec.collectionIdentifier,' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' . $add_fl;
     verbose::log(TRACE, __FUNCTION__ . ':: Search for pids in Solr: ' . $solr_q);
     $this->curl->set_post($solr_q); // use post here because query can be very long. curl has current 8192 as max length get url
     $solr_result = $this->curl->get($this->repository['solr']);
@@ -763,14 +759,14 @@ class openSearch extends webServiceServer {
       foreach ($solr_2_arr as $s_2_a) {
         if ($s_2_a['response']['docs']) {
           foreach ($s_2_a['response']['docs'] as $fdoc) {
-            $f_id =  self::scalar_or_first_elem($fdoc[$this->fedora_pid_field]);
+            $f_id =  self::scalar_or_first_elem($fdoc[FIELD_FEDORA_PID]);
             if ($f_id == $fpid->_value) {
-              $unit_id =  self::scalar_or_first_elem($fdoc[$this->unit_id_field]);
+              $unit_id =  self::scalar_or_first_elem($fdoc[FIELD_UNIT_ID]);
               $fedora_pid = $f_id;
               $in_collection = $in_collection || in_array($fpid_collection, $fdoc['rec.collectionIdentifier']);
             }
             if ($f_id == $localdata_object[$fpid->_value]) {
-              $basis_unit_id =  self::scalar_or_first_elem($fdoc[$this->unit_id_field]);
+              $basis_unit_id =  self::scalar_or_first_elem($fdoc[FIELD_UNIT_ID]);
               $basis_pid = $f_id;
               $in_collection = $in_collection || in_array($fpid_collection, $fdoc['rec.collectionIdentifier']);
             }
@@ -871,7 +867,7 @@ class openSearch extends webServiceServer {
     Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
     Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
     Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-    Object::set_value($result->statInfo->_value, 'trackingId', $this->tracking_id);
+    Object::set_value($result->statInfo->_value, 'trackingId', TRACKING_ID);
 
     verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
                        ':: agency:' . $param->agency->_value . 
@@ -1251,8 +1247,8 @@ class openSearch extends webServiceServer {
             if (is_array($solr[0]['response']['docs'])) {
               $fpid = $c->_value->collection->_value->object[$mani_no]->_value->identifier->_value;
               foreach ($solr[0]['response']['docs'] as $solr_doc) {
-                $doc_units = is_array($solr_doc[$this->unit_id_field]) ? $solr_doc[$this->unit_id_field] : array($solr_doc[$this->unit_id_field]);
-                if (is_array($doc_units) && in_array($unit_no, $doc_units) && ($fpid == $solr_doc[$this->fedora_pid_field])) {
+                $doc_units = is_array($solr_doc[FIELD_UNIT_ID]) ? $solr_doc[FIELD_UNIT_ID] : array($solr_doc[FIELD_UNIT_ID]);
+                if (is_array($doc_units) && in_array($unit_no, $doc_units) && ($fpid == $solr_doc[FIELD_FEDORA_PID])) {
                   foreach ($format_tags as $format_tag) {
                     if ($solr_doc[$format_tag] || $format_tag == 'fedora.identifier') {
                       if (strpos($format_tag, '.')) {
@@ -1335,7 +1331,7 @@ class openSearch extends webServiceServer {
           Object::set_value($f_obj->formatRequest->_value, 'outputFormat', $format_arr['format_name']);
           Object::set_namespace($f_obj->formatRequest->_value, 'outputType', $this->xmlns['of']);
           Object::set_value($f_obj->formatRequest->_value, 'outputType', 'php');
-          Object::set_value($f_obj->formatRequest->_value, 'trackingId', $this->tracking_id);
+          Object::set_value($f_obj->formatRequest->_value, 'trackingId', TRACKING_ID);
           $f_xml = $this->objconvert->obj2soap($f_obj);
           $this->curl->set_post($f_xml);
           $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
@@ -1573,7 +1569,7 @@ class openSearch extends webServiceServer {
       $q = $chk_query['edismax'];
       $solr_url = self::create_solr_url($q, 0, 999999, $filter_q);
       list($solr_host, $solr_parm) = explode('?', $solr_url['url'], 2);
-      $solr_parm .= '&fl=rec.collectionIdentifier,unit.isPrimaryObject,' . $this->unit_id_field . ',sort.complexKey' . $add_field_list;
+      $solr_parm .= '&fl=rec.collectionIdentifier,unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
       verbose::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
       if (DEBUG_ON) {
         echo 'post_array: ' . $solr_url['url'] . PHP_EOL;
@@ -1603,7 +1599,7 @@ class openSearch extends webServiceServer {
     return TRUE;
     if (empty($filter_q)) return TRUE;
 
-    self::get_solr_array($this->unit_id_field . ':' . str_replace(':', '\:', $unit_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
+    self::get_solr_array(FIELD_UNIT_ID . ':' . str_replace(':', '\:', $unit_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
     return self::get_num_found($solr_arr);
   }
 
@@ -1634,7 +1630,7 @@ class openSearch extends webServiceServer {
    * @param array $search_ids - contains the result
    */
   private function extract_ids_from_solr($solr_arr, &$search_ids) {
-    $solr_fields = array($this->unit_id_field, $this->work_id_field);
+    $solr_fields = array(FIELD_UNIT_ID, FIELD_WORK_ID);
     static $u_err = 0;
     $search_ids = array();
     $solr_docs = &$solr_arr['response']['docs'];
@@ -1729,8 +1725,8 @@ class openSearch extends webServiceServer {
                     '&fq=' . $filter .
                     '&start=' . $start .  $sort . $rank . $boost . $facets .  $handler_var .
                     '&defType=edismax';
-    $debug_url = $url . '&fl=' . $this->fedora_pid_field . ',' . $this->unit_id_field . ',' . $this->work_id_field . '&rows=1&debugQuery=on';
-    $url .= '&fl=' . $this->fedora_pid_field . ',' . $this->unit_id_field . ',' . $this->work_id_field . '&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
+    $debug_url = $url . '&fl=' . FIELD_FEDORA_PID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . '&rows=1&debugQuery=on';
+    $url .= '&fl=' . FIELD_FEDORA_PID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . '&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
 
     return array('url' => $url, 'debug' => $debug_url);
   }
@@ -1863,9 +1859,9 @@ class openSearch extends webServiceServer {
   */
   private function build_work_struct_from_solr(&$work_cache_struct, &$work_struct, &$more, &$work_ids, $edismax, $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, $all_objects, $num_found, $debug_query) {
     for ($w_idx = 0; isset($work_ids[$w_idx]); $w_idx++) {
-      $struct_id = $work_ids[$w_idx][$this->work_id_field] . ($use_work_collection ? '' : '-' . $work_ids[$w_idx][$this->unit_id_field]);     
+      $struct_id = $work_ids[$w_idx][FIELD_WORK_ID] . ($use_work_collection ? '' : '-' . $work_ids[$w_idx][FIELD_UNIT_ID]);     
       if ($work_cache_struct[$struct_id]) continue;
-      $work_cache_struct[$struct_id] = $use_work_collection ? array() : array($work_ids[$w_idx][$this->unit_id_field]);
+      $work_cache_struct[$struct_id] = $use_work_collection ? array() : array($work_ids[$w_idx][FIELD_UNIT_ID]);
       if (count($work_cache_struct) >= ($start + $step_value)) {
         $more = TRUE;
         verbose::log(TRACE, 'SOLR stat: used ' . $w_idx . ' of ' . count($work_ids) . ' rows. start: ' . $start . ' step: ' . $step_value);
@@ -1896,13 +1892,13 @@ class openSearch extends webServiceServer {
         if ($all_objects) {
           $edismax['q'] = array();
         }
-        $edismax['q'][] = $this->work_id_field . ':(' . implode(OR_OP, $search_w) . ')';
+        $edismax['q'][] = FIELD_WORK_ID . ':(' . implode(OR_OP, $search_w) . ')';
         if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_q, '', $debug_query, $solr_arr)) {
           return $err;
         }
         foreach ($solr_arr['response']['docs'] as $fdoc) {
-          $unit_id = $fdoc[$this->unit_id_field];
-          $work_id = $fdoc[$this->work_id_field];
+          $unit_id = $fdoc[FIELD_UNIT_ID];
+          $work_id = $fdoc[FIELD_WORK_ID];
           if (!in_array($unit_id, $work_slice[$work_id])) {
             $work_slice[$work_id][] = $work_cache_struct[$work_id][] = $unit_id;
           }
@@ -2237,7 +2233,7 @@ class openSearch extends webServiceServer {
    */
   private function fetch_profile_from_agency($agency, $profile_name) {
     $this->watch->start('agency_profile');
-    $profile = $this->open_agency->get_search_profile($agency, $profile_name, $this->search_profile_version);
+    $profile = $this->open_agency->get_search_profile($agency, $profile_name);
     $this->watch->stop('agency_profile');
     return (is_array($profile) ? $profile : FALSE);
   }
