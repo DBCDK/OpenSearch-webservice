@@ -6,10 +6,51 @@
         <hitCount>4</hitCount>
         <collectionCount>3</collectionCount>
         <more>false</more>
-        <sortUsed>date_descending</sortUsed>
+        <sortUsed>creator_descending</sortUsed>
         <searchResult>
           <collection>
             <resultPosition>1</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
+            <object>
+              <dkabm:record>
+                <ac:identifier>34497745|870971</ac:identifier>
+                <dc:identifier xsi:type="dcterms:URI">http://www.gamereactor.dk/magcover/dk/gamereactor_115.pdf</dc:identifier>
+                <ac:source>Tidsskriftsartikler</ac:source>
+                <dc:title>Blandt drager og dæmoner</dc:title>
+                <dc:title xsi:type="dkdcplus:full">Blandt drager og dæmoner : the Elder Scrolls V: Skyrim</dc:title>
+                <dc:creator>Viktor Eriksson</dc:creator>
+                <dc:creator xsi:type="oss:sort">Eriksson, Viktor</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">79.41</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">Bethesda Softworks</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Computerspil</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">Skyrim : the elder scrolls V</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">computerspil</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCF">rollespil</dc:subject>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dc:date>2011</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Tidsskriftsartikel</dc:type>
+                <dcterms:extent>S. 22-27</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">dan</dc:language>
+                <dc:language>Dansk</dc:language>
+                <dcterms:isPartOf>Game reactor, Nr. 115 (2011)</dcterms:isPartOf>
+                <dcterms:isPartOf xsi:type="dkdcplus:ISSN">1603-6522</dcterms:isPartOf>
+              </dkabm:record>
+              <identifier>870971-tsart:34497745</identifier>
+              <primaryObjectIdentifier>870971-tsart:34497745</primaryObjectIdentifier>
+              <creationDate>2011-02-14</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870971-tsart:34497745</identifier>
+              </objectsAvailable>
+            </object>
+          </collection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>2</resultPosition>
             <numberOfObjects>1</numberOfObjects>
             <object>
               <dkabm:record>
@@ -52,49 +93,44 @@
         </searchResult>
         <searchResult>
           <collection>
-            <resultPosition>2</resultPosition>
-            <numberOfObjects>1</numberOfObjects>
+            <resultPosition>3</resultPosition>
+            <numberOfObjects>2</numberOfObjects>
             <object>
               <dkabm:record>
-                <ac:identifier>34497745|870971</ac:identifier>
-                <dc:identifier xsi:type="dcterms:URI">http://www.gamereactor.dk/magcover/dk/gamereactor_115.pdf</dc:identifier>
-                <ac:source>Tidsskriftsartikler</ac:source>
-                <dc:title>Blandt drager og dæmoner</dc:title>
-                <dc:title xsi:type="dkdcplus:full">Blandt drager og dæmoner : the Elder Scrolls V: Skyrim</dc:title>
-                <dc:creator>Viktor Eriksson</dc:creator>
-                <dc:creator xsi:type="oss:sort">Eriksson, Viktor</dc:creator>
+                <ac:identifier>29069638|870970</ac:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>Skyrim</dc:title>
+                <dc:title xsi:type="dkdcplus:full">Skyrim</dc:title>
                 <dc:subject xsi:type="dkdcplus:DK5">79.41</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCF">Bethesda Softworks</dc:subject>
                 <dc:subject xsi:type="dkdcplus:DK5-Text">Computerspil</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCF">Skyrim : the elder scrolls V</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCF">computerspil</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCF">rollespil</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCO">computerspil</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCO">rollespil</dc:subject>
+                <dc:subject xsi:type="dkdcplus:genre">rollespil</dc:subject>
+                <dcterms:abstract>Rollespil. Sagaen om det krigshærgede fantasy-kontinent Tamriel fortsætter. Der er gået flere hundrede år siden "Oblivion". Kolossale drager, som man troede var uddøde forlængst, er begyndt at sprede død og ødelæggelse. Som efterkommer af en gammel drageslægt, skal du opklare dragernes hemmelighed. Undervejs skal du nedkæmpe nogle af dragerne og lære deres særlige angreb. Den kolossale verden ligger åben for dine fødder. Du bestemmer selv hvordan eventyret skal udfolde sig, og hvordan det skal ende!</dcterms:abstract>
+                <dc:description>Titlen hentet fra dvd-rometiketten</dc:description>
+                <dc:description>Vejledning: Engelsk tekst med quickstart på dansk, norsk, svensk og finsk</dc:description>
+                <dcterms:audience xsi:type="dkdcplus:pegi">PEGI-mærkning: 18</dcterms:audience>
+                <dcterms:audience xsi:type="dkdcplus:age">Fra 16 år</dcterms:audience>
                 <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dc:publisher>ZeniMax Europe</dc:publisher>
                 <dc:date>2011</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Tidsskriftsartikel</dc:type>
-                <dcterms:extent>S. 22-27</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">dan</dc:language>
-                <dc:language>Dansk</dc:language>
-                <dcterms:isPartOf>Game reactor, Nr. 115 (2011)</dcterms:isPartOf>
-                <dcterms:isPartOf xsi:type="dkdcplus:ISSN">1603-6522</dcterms:isPartOf>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Xbox 360</dc:type>
+                <dc:format>1 dvd-rom, xbox 360, lyd, farve, 1 vejledning, 1 kort</dc:format>
+                <dc:format>Afspilningsudstyr Xbox 360</dc:format>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
               </dkabm:record>
-              <identifier>870971-tsart:34497745</identifier>
-              <primaryObjectIdentifier>870971-tsart:34497745</primaryObjectIdentifier>
-              <creationDate>2011-02-14</creationDate>
+              <identifier>870970-basis:29069638</identifier>
+              <primaryObjectIdentifier>870970-basis:29069638</primaryObjectIdentifier>
+              <creationDate>2011-11-14</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870971-tsart:34497745</identifier>
+                <identifier>870970-basis:29069638</identifier>
               </objectsAvailable>
             </object>
-          </collection>
-        </searchResult>
-        <searchResult>
-          <collection>
-            <resultPosition>3</resultPosition>
-            <numberOfObjects>2</numberOfObjects>
             <object>
               <dkabm:record>
                 <ac:identifier>29069654|870970</ac:identifier>
@@ -132,50 +168,14 @@
                 <identifier>870970-basis:29069654</identifier>
               </objectsAvailable>
             </object>
-            <object>
-              <dkabm:record>
-                <ac:identifier>29069638|870970</ac:identifier>
-                <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>Skyrim</dc:title>
-                <dc:title xsi:type="dkdcplus:full">Skyrim</dc:title>
-                <dc:subject xsi:type="dkdcplus:DK5">79.41</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Computerspil</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCO">computerspil</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCO">rollespil</dc:subject>
-                <dc:subject xsi:type="dkdcplus:genre">rollespil</dc:subject>
-                <dcterms:abstract>Rollespil. Sagaen om det krigshærgede fantasy-kontinent Tamriel fortsætter. Der er gået flere hundrede år siden "Oblivion". Kolossale drager, som man troede var uddøde forlængst, er begyndt at sprede død og ødelæggelse. Som efterkommer af en gammel drageslægt, skal du opklare dragernes hemmelighed. Undervejs skal du nedkæmpe nogle af dragerne og lære deres særlige angreb. Den kolossale verden ligger åben for dine fødder. Du bestemmer selv hvordan eventyret skal udfolde sig, og hvordan det skal ende!</dcterms:abstract>
-                <dc:description>Titlen hentet fra dvd-rometiketten</dc:description>
-                <dc:description>Vejledning: Engelsk tekst med quickstart på dansk, norsk, svensk og finsk</dc:description>
-                <dcterms:audience xsi:type="dkdcplus:pegi">PEGI-mærkning: 18</dcterms:audience>
-                <dcterms:audience xsi:type="dkdcplus:age">Fra 16 år</dcterms:audience>
-                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>ZeniMax Europe</dc:publisher>
-                <dc:date>2011</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Xbox 360</dc:type>
-                <dc:format>1 dvd-rom, xbox 360, lyd, farve, 1 vejledning, 1 kort</dc:format>
-                <dc:format>Afspilningsudstyr Xbox 360</dc:format>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
-              </dkabm:record>
-              <identifier>870970-basis:29069638</identifier>
-              <primaryObjectIdentifier>870970-basis:29069638</primaryObjectIdentifier>
-              <creationDate>2011-11-14</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:29069638</identifier>
-              </objectsAvailable>
-            </object>
           </collection>
         </searchResult>
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>25</fedoraRecordsRead>
-          <time>1.316405</time>
-          <trackingId>2017-01-17T14:38:17:443203:6210</trackingId>
+          <time>1.237154</time>
+          <trackingId>2017-01-19T09:55:03:932913:24956</trackingId>
         </statInfo>
       </result>
     </searchResponse>

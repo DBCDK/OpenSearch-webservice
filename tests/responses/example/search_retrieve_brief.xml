@@ -6,41 +6,10 @@
         <hitCount>4</hitCount>
         <collectionCount>3</collectionCount>
         <more>false</more>
-        <sortUsed>date_descending</sortUsed>
+        <sortUsed>creator_descending</sortUsed>
         <searchResult>
           <collection>
             <resultPosition>1</resultPosition>
-            <numberOfObjects>1</numberOfObjects>
-            <object>
-              <identifier>870970-basis:45235394</identifier>
-              <primaryObjectIdentifier>870970-basis:45235394</primaryObjectIdentifier>
-              <creationDate>2012-05-25</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:45235394</identifier>
-              </objectsAvailable>
-            </object>
-          </collection>
-          <formattedCollection>
-            <briefDisplay>
-              <manifestation>
-                <accessType>physical</accessType>
-                <fedoraPid>870970-basis:45235394</fedoraPid>
-                <identifier>870970-basis:45235394</identifier>
-                <title>Elder scrolls V</title>
-                <titleFull>Elder scrolls V : Skyrim official strategy guide</titleFull>
-                <type>Bog</type>
-                <workType>book</workType>
-              </manifestation>
-            </briefDisplay>
-          </formattedCollection>
-        </searchResult>
-        <searchResult>
-          <collection>
-            <resultPosition>2</resultPosition>
             <numberOfObjects>1</numberOfObjects>
             <object>
               <identifier>870971-tsart:34497745</identifier>
@@ -72,20 +41,39 @@
         </searchResult>
         <searchResult>
           <collection>
-            <resultPosition>3</resultPosition>
-            <numberOfObjects>2</numberOfObjects>
+            <resultPosition>2</resultPosition>
+            <numberOfObjects>1</numberOfObjects>
             <object>
-              <identifier>870970-basis:29069654</identifier>
-              <primaryObjectIdentifier>870970-basis:29069654</primaryObjectIdentifier>
-              <creationDate>2011-11-15</creationDate>
+              <identifier>870970-basis:45235394</identifier>
+              <primaryObjectIdentifier>870970-basis:45235394</primaryObjectIdentifier>
+              <creationDate>2012-05-25</creationDate>
               <formatsAvailable>
                 <format>dkabm</format>
                 <format>marcxchange</format>
               </formatsAvailable>
               <objectsAvailable>
-                <identifier>870970-basis:29069654</identifier>
+                <identifier>870970-basis:45235394</identifier>
               </objectsAvailable>
             </object>
+          </collection>
+          <formattedCollection>
+            <briefDisplay>
+              <manifestation>
+                <accessType>physical</accessType>
+                <fedoraPid>870970-basis:45235394</fedoraPid>
+                <identifier>870970-basis:45235394</identifier>
+                <title>Elder scrolls V</title>
+                <titleFull>Elder scrolls V : Skyrim official strategy guide</titleFull>
+                <type>Bog</type>
+                <workType>book</workType>
+              </manifestation>
+            </briefDisplay>
+          </formattedCollection>
+        </searchResult>
+        <searchResult>
+          <collection>
+            <resultPosition>3</resultPosition>
+            <numberOfObjects>2</numberOfObjects>
             <object>
               <identifier>870970-basis:29069638</identifier>
               <primaryObjectIdentifier>870970-basis:29069638</primaryObjectIdentifier>
@@ -96,6 +84,18 @@
               </formatsAvailable>
               <objectsAvailable>
                 <identifier>870970-basis:29069638</identifier>
+              </objectsAvailable>
+            </object>
+            <object>
+              <identifier>870970-basis:29069654</identifier>
+              <primaryObjectIdentifier>870970-basis:29069654</primaryObjectIdentifier>
+              <creationDate>2011-11-15</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870970-basis:29069654</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -126,8 +126,8 @@
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>25</fedoraRecordsRead>
-          <time>1.529859</time>
-          <trackingId>2017-01-17T14:37:38:661322:8037</trackingId>
+          <time>1.210732</time>
+          <trackingId>2017-01-19T09:54:57:669717:24954</trackingId>
         </statInfo>
       </result>
     </searchResponse>
