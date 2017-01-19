@@ -6,7 +6,7 @@
       <ns1:includeHoldingsCount>1</ns1:includeHoldingsCount>
       <ns1:start>1</ns1:start>
       <ns1:stepValue>10</ns1:stepValue>
-      <ns1:sort>date_descending</ns1:sort>
+      <ns1:sort>creator_descending</ns1:sort>
     </ns1:searchRequest>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
