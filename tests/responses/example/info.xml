@@ -1072,13 +1072,13 @@
             <indexName>phrase.titleSeries</indexName>
           </cqlIndex>
           <cqlIndex>
+            <indexName>phrase.type</indexName>
+          </cqlIndex>
+          <cqlIndex>
             <indexName>sort.creator</indexName>
           </cqlIndex>
           <cqlIndex>
             <indexName>sort.title</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>phrase.type</indexName>
           </cqlIndex>
           <cqlIndex>
             <indexName>rec.bibliographicRecordId</indexName>
@@ -1162,9 +1162,6 @@
             <indexName>term.acquisitionDate</indexName>
           </cqlIndex>
           <cqlIndex>
-            <indexName>term.dateFirstEdition</indexName>
-          </cqlIndex>
-          <cqlIndex>
             <indexName>term.audience</indexName>
           </cqlIndex>
           <cqlIndex>
@@ -1190,6 +1187,9 @@
           </cqlIndex>
           <cqlIndex>
             <indexName>term.date</indexName>
+          </cqlIndex>
+          <cqlIndex>
+            <indexName>term.dateFirstEdition</indexName>
           </cqlIndex>
           <cqlIndex>
             <indexName>term.default</indexName>
@@ -1359,20 +1359,9 @@
       </infoObjectFormats>
       <infoSearchProfile>
         <searchCollection>
-          <searchCollectionName>1001 fortællinger (steder)</searchCollectionName>
-          <searchCollectionIdentifier>150031-sted</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>1001 fortællinger (temaer)</searchCollectionName>
-          <searchCollectionIdentifier>150031-tema</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>AccessScience</searchCollectionName>
-          <searchCollectionIdentifier>150066-artikler</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
           <searchCollectionName>Artikelbasens anmeldelser</searchCollectionName>
           <searchCollectionIdentifier>870971-anmeld</searchCollectionIdentifier>
+          <searchCollectionIsSearched>false</searchCollectionIsSearched>
           <relationType>dbcaddi:hasOnlineAccess</relationType>
           <relationType>dbcaddi:isReviewOf</relationType>
           <relationType>dbcaddi:hasReview</relationType>
@@ -1380,6 +1369,7 @@
         <searchCollection>
           <searchCollectionName>Artikelbasens avisartikler</searchCollectionName>
           <searchCollectionIdentifier>870971-avis</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
           <relationType>dbcaddi:hasOnlineAccess</relationType>
           <relationType>dbcaddi:continues</relationType>
           <relationType>dbcaddi:continuedIn</relationType>
@@ -1389,6 +1379,7 @@
         <searchCollection>
           <searchCollectionName>Artikelbasens tidsskriftsartikler</searchCollectionName>
           <searchCollectionIdentifier>870971-tsart</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
           <relationType>dbcaddi:hasOnlineAccess</relationType>
           <relationType>dbcaddi:continues</relationType>
           <relationType>dbcaddi:continuedIn</relationType>
@@ -1396,117 +1387,79 @@
           <relationType>dbcaddi:discussedIn</relationType>
         </searchCollection>
         <searchCollection>
-          <searchCollectionName>bibliotek.dk</searchCollectionName>
-          <searchCollectionIdentifier>800000-bibdk</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>Bibliotekets katalog</searchCollectionName>
-          <searchCollectionIdentifier>190101-katalog</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>Biblioteksvagten (bruges kun af Biblioteksvagten)</searchCollectionName>
-          <searchCollectionIdentifier>150024-bibvagt</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
           <searchCollectionName>Bibzoom (albums)</searchCollectionName>
           <searchCollectionIdentifier>150014-album</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>Bibzoom (tracks)</searchCollectionName>
-          <searchCollectionIdentifier>150014-track</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>Credo</searchCollectionName>
-          <searchCollectionIdentifier>150041-credo</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>Danbib</searchCollectionName>
-          <searchCollectionIdentifier>800000-danbib</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Ebrary Academic Complete</searchCollectionName>
           <searchCollectionIdentifier>150008-academic</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Ebrary Public Library Complete</searchCollectionName>
           <searchCollectionIdentifier>150008-public</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>eKurser.nu</searchCollectionName>
-          <searchCollectionIdentifier>150052-ekurser</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Faktalink (Artikelbasen)</searchCollectionName>
           <searchCollectionIdentifier>870971-faktalink</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>Filmstriben (fjernadgang)</searchCollectionName>
-          <searchCollectionIdentifier>150021-fjern</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>Folkebiblioteker og Nationalbibliografi (alle 870970-poster)</searchCollectionName>
-          <searchCollectionIdentifier>870970-basis</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Folkebiblioteker og nationalbibliografi (for bibliotek.dk)</searchCollectionName>
           <searchCollectionIdentifier>870970-bibdk</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
           <relationType>dbcbib:isPartOfManifestation</relationType>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Forfatterweb (Artikelbasen)</searchCollectionName>
           <searchCollectionIdentifier>870971-forfweb</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
           <relationType>dbcaddi:hasOnlineAccess</relationType>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Forskningsbiblioteker</searchCollectionName>
           <searchCollectionIdentifier>870970-forsk</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
           <relationType>dbcbib:isPartOfManifestation</relationType>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Litteratursiden (analyser)</searchCollectionName>
           <searchCollectionIdentifier>150005-analyse</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Litteratursiden (anmeldelser)</searchCollectionName>
           <searchCollectionIdentifier>150005-anmeld</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Litteratursiden (artikler)</searchCollectionName>
           <searchCollectionIdentifier>150005-artikel</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Litteratursiden (forfatterportrætter)</searchCollectionName>
           <searchCollectionIdentifier>150005-portraet</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>Lokalbibliografi for Fyns Amt</searchCollectionName>
-          <searchCollectionIdentifier>159003-lokalbibl</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Lokalbibliografier (alle til bibliotek.dk)</searchCollectionName>
           <searchCollectionIdentifier>870970-lokalbibl</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
         </searchCollection>
         <searchCollection>
           <searchCollectionName>Materialevurderinger</searchCollectionName>
           <searchCollectionIdentifier>870976-anmeld</searchCollectionIdentifier>
+          <searchCollectionIsSearched>false</searchCollectionIsSearched>
           <relationType>dbcaddi:isReviewOf</relationType>
           <relationType>dbcaddi:hasReview</relationType>
         </searchCollection>
         <searchCollection>
-          <searchCollectionName>Materialevurderinger - alle</searchCollectionName>
-          <searchCollectionIdentifier>870976-allanmeld</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>Skolebiblioteker</searchCollectionName>
-          <searchCollectionIdentifier>870970-skole</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
           <searchCollectionName>Store Danske</searchCollectionName>
           <searchCollectionIdentifier>150012-leksikon</searchCollectionIdentifier>
-        </searchCollection>
-        <searchCollection>
-          <searchCollectionName>Zinio</searchCollectionName>
-          <searchCollectionIdentifier>150059-magasin</searchCollectionIdentifier>
+          <searchCollectionIsSearched>true</searchCollectionIsSearched>
         </searchCollection>
         <relationTypes>
           <relationType>dbcaddi:continuedIn</relationType>

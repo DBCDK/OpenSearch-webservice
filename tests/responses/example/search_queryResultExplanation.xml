@@ -49,17 +49,16 @@
                 <identifier>870970-basis:44859831</identifier>
               </objectsAvailable>
               <queryResultExplanation>
-0.31112677 = (MATCH) weight(term.default:old in 22) [DefaultSimilarity], result of:
-  0.31112677 = score(doc=22,freq=2.0 = termFreq=2.0
+2.5135028 = weight(term.default:old in 18) [SchemaSimilarity], result of:
+  2.5135028 = score(doc=18,freq=2.0 = termFreq=2.0
 ), product of:
-    0.99999994 = queryWeight, product of:
-      3.519998 = idf(docFreq=13, maxDocs=174)
-      0.28409106 = queryNorm
-    0.3111268 = fieldWeight in 22, product of:
-      1.4142135 = tf(freq=2.0), with freq of:
-        2.0 = termFreq=2.0
-      3.519998 = idf(docFreq=13, maxDocs=174)
-      0.0625 = fieldNorm(doc=22)
+    2.3184586 = idf(docFreq=12, docCount=126)
+    1.0841267 = tfNorm, computed from:
+      2.0 = termFreq=2.0
+      1.2 = parameter k1
+      0.75 = parameter b
+      131.01587 = avgFieldLength
+      256.0 = fieldLength
 </queryResultExplanation>
             </object>
           </collection>
@@ -68,6 +67,77 @@
           <collection>
             <resultPosition>2</resultPosition>
             <numberOfObjects>2</numberOfObjects>
+            <object>
+              <dkabm:record>
+                <ac:identifier>27337368|870970</ac:identifier>
+                <ac:source>Bibliotekskatalog</ac:source>
+                <dc:title>No country for old men</dc:title>
+                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
+                <dc:creator xsi:type="dkdcplus:drt">Joel Coen</dc:creator>
+                <dc:creator xsi:type="oss:sort">Coen, Joel</dc:creator>
+                <dc:creator xsi:type="dkdcplus:drt">Ethan Coen</dc:creator>
+                <dc:creator xsi:type="oss:sort">Coen, Ethan</dc:creator>
+                <dc:subject xsi:type="dkdcplus:DK5">77.7</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DK5-Text">Spillefilm</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">gangstere</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">thriller</dc:subject>
+                <dc:subject xsi:type="dkdcplus:genre">thriller</dc:subject>
+                <dc:subject xsi:type="dkdcplus:DBCS">vold</dc:subject>
+                <dcterms:abstract>Llewelin Moss finder en taske med to millioner dollars og beholder både taske og indhold! Men pengene stammer fra et blodigt opgør i narkokredse, og bagmændene har bestemt ikke tænkt sig at afskrive de grønne sedler</dcterms:abstract>
+                <dc:description>Originalfilmen: USA : Paramount Vantage : Miramax Films, 2007</dc:description>
+                <dc:description>Af indholdet: Special features (The making of No country for old men ; Working with the Coens ; Diary of a country sherif)</dc:description>
+                <dcterms:audience xsi:type="dkdcplus:medieraad">Mærkning: Tilladt for børn over 15 år</dcterms:audience>
+                <dcterms:audience>voksenmaterialer</dcterms:audience>
+                <dc:publisher>Paramount Home Entertainment (Denmark)</dc:publisher>
+                <dc:contributor>Cormac McCarthy</dc:contributor>
+                <dc:contributor>Joel Coen</dc:contributor>
+                <dc:contributor>Ethan Coen</dc:contributor>
+                <dc:contributor>Roger Deakins</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Tommy Lee Jones</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Javier Bardem</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Josh Brolin</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Woody Harrelson</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Kelly MacDonald</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Garret Dillahunt</dc:contributor>
+                <dc:contributor xsi:type="dkdcplus:act">Tess Harper</dc:contributor>
+                <dc:date>2008</dc:date>
+                <dc:type xsi:type="dkdcplus:BibDK-Type">Dvd</dc:type>
+                <dc:format>1 dvd-video</dc:format>
+                <dcterms:extent>ca. 117 min.</dcterms:extent>
+                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
+                <dc:language>Engelsk</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dan</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">dut</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">nor</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">fin</dc:language>
+                <dc:language xsi:type="dkdcplus:subtitles">swe</dc:language>
+                <dcterms:spatial xsi:type="dkdcplus:DBCS">USA</dcterms:spatial>
+                <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
+              </dkabm:record>
+              <identifier>870970-basis:27337368</identifier>
+              <primaryObjectIdentifier>870970-basis:27337368</primaryObjectIdentifier>
+              <creationDate>2008-07-16</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870970-basis:27337368</identifier>
+              </objectsAvailable>
+              <queryResultExplanation>
+3.09273 = weight(term.default:old in 7) [SchemaSimilarity], result of:
+  3.09273 = score(doc=7,freq=4.0 = termFreq=4.0
+), product of:
+    2.3184586 = idf(docFreq=12, docCount=126)
+    1.3339596 = tfNorm, computed from:
+      4.0 = termFreq=4.0
+      1.2 = parameter k1
+      0.75 = parameter b
+      131.01587 = avgFieldLength
+      334.36734 = fieldLength
+</queryResultExplanation>
+            </object>
             <object>
               <dkabm:record>
                 <ac:identifier>27597505|870970</ac:identifier>
@@ -141,89 +211,16 @@
                 <identifier>870970-basis:27597505</identifier>
               </objectsAvailable>
               <queryResultExplanation>
-0.27223593 = (MATCH) weight(term.default:old in 62) [DefaultSimilarity], result of:
-  0.27223593 = score(doc=62,freq=2.0 = termFreq=2.0
+2.2191508 = weight(term.default:old in 25) [SchemaSimilarity], result of:
+  2.2191508 = score(doc=25,freq=2.0 = termFreq=2.0
 ), product of:
-    0.99999994 = queryWeight, product of:
-      3.519998 = idf(docFreq=13, maxDocs=174)
-      0.28409106 = queryNorm
-    0.27223596 = fieldWeight in 62, product of:
-      1.4142135 = tf(freq=2.0), with freq of:
-        2.0 = termFreq=2.0
-      3.519998 = idf(docFreq=13, maxDocs=174)
-      0.0546875 = fieldNorm(doc=62)
-</queryResultExplanation>
-            </object>
-            <object>
-              <dkabm:record>
-                <ac:identifier>27337368|870970</ac:identifier>
-                <ac:source>Bibliotekskatalog</ac:source>
-                <dc:title>No country for old men</dc:title>
-                <dc:title xsi:type="dkdcplus:full">No country for old men</dc:title>
-                <dc:creator xsi:type="dkdcplus:drt">Joel Coen</dc:creator>
-                <dc:creator xsi:type="oss:sort">Coen, Joel</dc:creator>
-                <dc:creator xsi:type="dkdcplus:drt">Ethan Coen</dc:creator>
-                <dc:creator xsi:type="oss:sort">Coen, Ethan</dc:creator>
-                <dc:subject xsi:type="dkdcplus:DK5">77.7</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DK5-Text">Spillefilm</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCS">gangstere</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCS">thriller</dc:subject>
-                <dc:subject xsi:type="dkdcplus:genre">thriller</dc:subject>
-                <dc:subject xsi:type="dkdcplus:DBCS">vold</dc:subject>
-                <dcterms:abstract>Llewelin Moss finder en taske med to millioner dollars og beholder både taske og indhold! Men pengene stammer fra et blodigt opgør i narkokredse, og bagmændene har bestemt ikke tænkt sig at afskrive de grønne sedler</dcterms:abstract>
-                <dc:description>Originalfilmen: USA : Paramount Vantage : Miramax Films, 2007</dc:description>
-                <dc:description>Af indholdet: Special features (The making of No country for old men ; Working with the Coens ; Diary of a country sherif)</dc:description>
-                <dcterms:audience xsi:type="dkdcplus:medieraad">Mærkning: Tilladt for børn over 15 år</dcterms:audience>
-                <dcterms:audience>voksenmaterialer</dcterms:audience>
-                <dc:publisher>Paramount Home Entertainment (Denmark)</dc:publisher>
-                <dc:contributor>Cormac McCarthy</dc:contributor>
-                <dc:contributor>Joel Coen</dc:contributor>
-                <dc:contributor>Ethan Coen</dc:contributor>
-                <dc:contributor>Roger Deakins</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Tommy Lee Jones</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Javier Bardem</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Josh Brolin</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Woody Harrelson</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Kelly MacDonald</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Garret Dillahunt</dc:contributor>
-                <dc:contributor xsi:type="dkdcplus:act">Tess Harper</dc:contributor>
-                <dc:date>2008</dc:date>
-                <dc:type xsi:type="dkdcplus:BibDK-Type">Dvd</dc:type>
-                <dc:format>1 dvd-video</dc:format>
-                <dcterms:extent>ca. 117 min.</dcterms:extent>
-                <dc:language xsi:type="dcterms:ISO639-2">eng</dc:language>
-                <dc:language>Engelsk</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">dan</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">eng</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">dut</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">nor</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">fin</dc:language>
-                <dc:language xsi:type="dkdcplus:subtitles">swe</dc:language>
-                <dcterms:spatial xsi:type="dkdcplus:DBCS">USA</dcterms:spatial>
-                <dcterms:spatial xsi:type="dkdcplus:DBCS">Texas</dcterms:spatial>
-              </dkabm:record>
-              <identifier>870970-basis:27337368</identifier>
-              <primaryObjectIdentifier>870970-basis:27337368</primaryObjectIdentifier>
-              <creationDate>2008-07-16</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:27337368</identifier>
-              </objectsAvailable>
-              <queryResultExplanation>
-0.38499975 = (MATCH) weight(term.default:old in 60) [DefaultSimilarity], result of:
-  0.38499975 = score(doc=60,freq=4.0 = termFreq=4.0
-), product of:
-    0.99999994 = queryWeight, product of:
-      3.519998 = idf(docFreq=13, maxDocs=174)
-      0.28409106 = queryNorm
-    0.38499978 = fieldWeight in 60, product of:
-      2.0 = tf(freq=4.0), with freq of:
-        4.0 = termFreq=4.0
-      3.519998 = idf(docFreq=13, maxDocs=174)
-      0.0546875 = fieldNorm(doc=60)
+    2.3184586 = idf(docFreq=12, docCount=126)
+    0.95716643 = tfNorm, computed from:
+      2.0 = termFreq=2.0
+      1.2 = parameter k1
+      0.75 = parameter b
+      131.01587 = avgFieldLength
+      334.36734 = fieldLength
 </queryResultExplanation>
             </object>
           </collection>
@@ -237,9 +234,9 @@
         </queryDebugResult>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>19</fedoraRecordsRead>
-          <time>0.790233</time>
-          <trackingId>2016-08-15T08:45:29:375222:18947</trackingId>
+          <fedoraRecordsRead>15</fedoraRecordsRead>
+          <time>1.26086</time>
+          <trackingId>2017-02-01T09:13:52:106014:3144</trackingId>
         </statInfo>
       </result>
     </searchResponse>

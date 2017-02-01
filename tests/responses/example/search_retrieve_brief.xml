@@ -75,18 +75,6 @@
             <resultPosition>3</resultPosition>
             <numberOfObjects>2</numberOfObjects>
             <object>
-              <identifier>870970-basis:29069638</identifier>
-              <primaryObjectIdentifier>870970-basis:29069638</primaryObjectIdentifier>
-              <creationDate>2011-11-14</creationDate>
-              <formatsAvailable>
-                <format>dkabm</format>
-                <format>marcxchange</format>
-              </formatsAvailable>
-              <objectsAvailable>
-                <identifier>870970-basis:29069638</identifier>
-              </objectsAvailable>
-            </object>
-            <object>
               <identifier>870970-basis:29069654</identifier>
               <primaryObjectIdentifier>870970-basis:29069654</primaryObjectIdentifier>
               <creationDate>2011-11-15</creationDate>
@@ -96,6 +84,18 @@
               </formatsAvailable>
               <objectsAvailable>
                 <identifier>870970-basis:29069654</identifier>
+              </objectsAvailable>
+            </object>
+            <object>
+              <identifier>870970-basis:29069638</identifier>
+              <primaryObjectIdentifier>870970-basis:29069638</primaryObjectIdentifier>
+              <creationDate>2011-11-14</creationDate>
+              <formatsAvailable>
+                <format>dkabm</format>
+                <format>marcxchange</format>
+              </formatsAvailable>
+              <objectsAvailable>
+                <identifier>870970-basis:29069638</identifier>
               </objectsAvailable>
             </object>
           </collection>
@@ -125,9 +125,9 @@
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
-          <fedoraRecordsRead>25</fedoraRecordsRead>
-          <time>1.210732</time>
-          <trackingId>2017-01-19T09:54:57:669717:24954</trackingId>
+          <fedoraRecordsRead>19</fedoraRecordsRead>
+          <time>1.263299</time>
+          <trackingId>2017-02-01T09:15:26:221448:3140</trackingId>
         </statInfo>
       </result>
     </searchResponse>
