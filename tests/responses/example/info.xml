@@ -10,18 +10,6 @@
           <repository>obibdk</repository>
           <cqlIndexDoc>opensearch_cql.xml</cqlIndexDoc>
           <cqlIndex>
-            <indexName>work.id</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>unit.id</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>unit.isPrimaryObject</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>unit.primaryObject</indexName>
-          </cqlIndex>
-          <cqlIndex>
             <indexName>cql.serverChoice</indexName>
           </cqlIndex>
           <cqlIndex>
@@ -205,12 +193,6 @@
             </indexAlias>
           </cqlIndex>
           <cqlIndex>
-            <indexName>dkcclphrase.lma</indexName>
-            <indexAlias>
-              <indexName>lma</indexName>
-            </indexAlias>
-          </cqlIndex>
-          <cqlIndex>
             <indexName>dkcclphrase.lme</indexName>
             <indexAlias>
               <indexName>lme</indexName>
@@ -232,12 +214,6 @@
             <indexName>dkcclphrase.lnb</indexName>
             <indexAlias>
               <indexName>lnb</indexName>
-            </indexAlias>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>dkcclphrase.lnm</indexName>
-            <indexAlias>
-              <indexName>lnm</indexName>
             </indexAlias>
           </cqlIndex>
           <cqlIndex>
@@ -735,12 +711,6 @@
             </indexAlias>
           </cqlIndex>
           <cqlIndex>
-            <indexName>dkcclterm.nm</indexName>
-            <indexAlias>
-              <indexName>nm</indexName>
-            </indexAlias>
-          </cqlIndex>
-          <cqlIndex>
             <indexName>dkcclterm.no</indexName>
             <indexAlias>
               <indexName>no</indexName>
@@ -1075,28 +1045,7 @@
             <indexName>phrase.type</indexName>
           </cqlIndex>
           <cqlIndex>
-            <indexName>sort.creator</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>sort.title</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>rec.bibliographicRecordId</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>rec.collectionIdentifier</indexName>
-          </cqlIndex>
-          <cqlIndex>
             <indexName>rec.id</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>rec.repositoryId</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>rec.unitId</indexName>
-          </cqlIndex>
-          <cqlIndex>
-            <indexName>rec.workId</indexName>
           </cqlIndex>
           <cqlIndex>
             <indexName>scanphrase.default</indexName>
@@ -1151,6 +1100,12 @@
           </cqlIndex>
           <cqlIndex>
             <indexName>scanterm.title</indexName>
+          </cqlIndex>
+          <cqlIndex>
+            <indexName>sort.creator</indexName>
+          </cqlIndex>
+          <cqlIndex>
+            <indexName>sort.title</indexName>
           </cqlIndex>
           <cqlIndex>
             <indexName>term.accessType</indexName>

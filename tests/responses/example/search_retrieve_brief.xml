@@ -25,18 +25,7 @@
             </object>
           </collection>
           <formattedCollection>
-            <briefDisplay>
-              <manifestation>
-                <accessType>online</accessType>
-                <fedoraPid>870971-tsart:34497745</fedoraPid>
-                <identifier>870971-tsart:34497745</identifier>
-                <partOf>Game reactor, Nr. 115 (2011)</partOf>
-                <title>Blandt drager og dæmoner</title>
-                <titleFull>Blandt drager og dæmoner : the Elder Scrolls V: Skyrim</titleFull>
-                <type>Tidsskriftsartikel</type>
-                <workType>article</workType>
-              </manifestation>
-            </briefDisplay>
+            <briefDisplay/>
           </formattedCollection>
         </searchResult>
         <searchResult>
@@ -57,17 +46,7 @@
             </object>
           </collection>
           <formattedCollection>
-            <briefDisplay>
-              <manifestation>
-                <accessType>physical</accessType>
-                <fedoraPid>870970-basis:45235394</fedoraPid>
-                <identifier>870970-basis:45235394</identifier>
-                <title>Elder scrolls V</title>
-                <titleFull>Elder scrolls V : Skyrim official strategy guide</titleFull>
-                <type>Bog</type>
-                <workType>book</workType>
-              </manifestation>
-            </briefDisplay>
+            <briefDisplay/>
           </formattedCollection>
         </searchResult>
         <searchResult>
@@ -100,34 +79,15 @@
             </object>
           </collection>
           <formattedCollection>
-            <briefDisplay>
-              <manifestation>
-                <accessType>physical</accessType>
-                <fedoraPid>870970-basis:29069654</fedoraPid>
-                <identifier>870970-basis:29069654</identifier>
-                <title>Skyrim</title>
-                <titleFull>Skyrim</titleFull>
-                <type>Playstation 3</type>
-                <workType>game</workType>
-              </manifestation>
-              <manifestation>
-                <accessType>physical</accessType>
-                <fedoraPid>870970-basis:29069638</fedoraPid>
-                <identifier>870970-basis:29069638</identifier>
-                <title>Skyrim</title>
-                <titleFull>Skyrim</titleFull>
-                <type>Xbox 360</type>
-                <workType>game</workType>
-              </manifestation>
-            </briefDisplay>
+            <briefDisplay/>
           </formattedCollection>
         </searchResult>
         <facetResult/>
         <statInfo>
           <fedoraRecordsCached>0</fedoraRecordsCached>
           <fedoraRecordsRead>19</fedoraRecordsRead>
-          <time>1.263299</time>
-          <trackingId>2017-02-01T09:15:26:221448:3140</trackingId>
+          <time>1.397954</time>
+          <trackingId>2017-03-09T11:26:50:273638:10666</trackingId>
         </statInfo>
       </result>
     </searchResponse>
