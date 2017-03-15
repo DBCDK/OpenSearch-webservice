@@ -365,11 +365,13 @@ max_manifestations = 200
 
 ; --------------
 ; logfile for verbose output
-logfile = /tmp/opensearch.log
+;logfile = /tmp/opensearch.log
 ; logging to syslog is defined like:
 ;logfile = syslog://LOG_LOCAL0
+logfile = @LOGFILE@
+
 ; ident for syslog is set like where _VERSION_ is replaced by version setting above
-;syslog_id = trlog[opensearch__VERSION_]
+syslog_id = trlog[opensearch__VERSION_]
 
 ; set verboselevel
 ;   WARNING - simple warnings
