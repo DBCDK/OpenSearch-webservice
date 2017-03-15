@@ -19,6 +19,7 @@ wsdl = opensearch.wsdl
 
 ;service location used as endpoint in the wsdl-file. If not set, the actual address/location is used
 ;service_location = opensearch.addi.dk/4.1/
+service_location = @SERVICE_LOCATION@
 
 ; --------------
 ; in_house_ip_list or in_house_domain may use ?ShowInfo and use create_sample form

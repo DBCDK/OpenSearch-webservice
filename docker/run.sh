@@ -5,6 +5,7 @@ DIR=/var/www/html/opensearch
 INI=$DIR/opensearch.ini
 INSTALL=$INI"_INSTALL"
 
+cp $DIR/opensearch.wsdl_INSTALL $DIR/opensearch.wsdl
 cp $INSTALL $INI
 
 while IFS='=' read -r name value ; do
