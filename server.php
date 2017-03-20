@@ -1710,7 +1710,7 @@ class openSearch extends webServiceServer {
    * @retval array - then SOLR url and url for debug purposes
    */
   private function create_solr_url($eq, $start, $rows, $filter, $sort='', $rank='', $facets='', $boost='', $debug=FALSE) {
-    $q = implode(AND_OP, $eq['q']);
+    $q = '(' . implode(')' . AND_OP . '(', $eq['q']) . ')';   // force parenthesis around each AND-node, to fix SOLR problem. BUG: 20957
     if (is_array($eq['handler_var'])) {
       $handler_var = '&' . implode('&', $eq['handler_var']);
       $filter = '';  // search profile collection filter is done via fq parm created with handler_var
