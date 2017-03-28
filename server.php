@@ -420,7 +420,9 @@ class openSearch extends webServiceServer {
     }
     $add_queries = array(FIELD_UNIT_ID . ':(' . implode(OR_OP, $q_unit) . ')');
     $this->watch->start('Solr_disp');
-    $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, 'unit.isPrimaryObject=true', self::xs_boolean($param->allObjects->_value), '');
+// bug 20558: Remove 'unit.isPrimaryObject=true' in order to handle situtations where the manifestation isn't the primary object. The concept of a primary object
+// is sort of deprecated, since prioritized approach is used to find the "best" manifestaion in a unit
+    $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, '*', self::xs_boolean($param->allObjects->_value), '');
     $this->watch->stop('Solr_disp');
         foreach ($display_solr_arr as $d_s_a) {
           foreach ($d_s_a['response']['docs'] as $fdoc) {
