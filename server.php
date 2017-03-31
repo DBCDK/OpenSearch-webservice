@@ -49,6 +49,7 @@ class openSearch extends webServiceServer {
   protected $searchable_source = array(); 
   protected $searchable_forskningsbibliotek = FALSE;
   protected $search_filter_for_800000 = array();  // set when collection 800000-danbib or 800000-bibdk are searchable
+  protected $search_profile_contains_800000 = FALSE;
   protected $collection_contained_in = array(); 
   protected $rank_frequence_debug;
   protected $collection_alias = array();
@@ -1040,15 +1041,16 @@ class openSearch extends webServiceServer {
     foreach ($this->searchable_source as $source => $searchable) {
       $searchable = $test_force_filter || $searchable;     // for testing purposes
       if (($source == '800000-bibdk') && $searchable) {
-         if (empty($part_of_bib_dk)) $part_of_bib_dk = $this->open_agency->get_libraries_by_rule('part_of_bibliotek_dk', 1, 'Forskningsbibliotek');
-         if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
+        if (empty($part_of_bib_dk)) $part_of_bib_dk = $this->open_agency->get_libraries_by_rule('part_of_bibliotek_dk', 1, 'Forskningsbibliotek');
+        if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
     
       }
       if (($source == '800000-danbib') && $searchable) {
-         if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
+        if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
       }
     }
     if ($part_of_bib_dk || $use_holding) {
+      $this->search_profile_contains_800000 = TRUE;
       verbose::log(DEBUG, 'Filter 800000 part_of_bib_dk:: ' . count($part_of_bib_dk) . ' use_holding: ' . count($use_holding));
       // TEST $this->search_filter_for_800000 = 'holdingsitem.agencyId=(' . implode(' OR ', array_slice($part_of_bib_dk + $use_holding, 0, 3)) . ')';
       $this->search_filter_for_800000 = 'holdingsitem.agencyId:(' . implode(' OR ', $part_of_bib_dk + $use_holding) . ')';
@@ -2670,6 +2672,7 @@ class openSearch extends webServiceServer {
            ' agency_type: ' . $agency_type . 
            ' agency_catalog: ' . $this->agency_catalog_source .
            ' type_catalog: ' . $this->agency_type .
+           ' search_profile_contains_800000: ' . $this->search_profile_contains_800000 .
            ' use_localdata_stream: ' . (self::agency_rule($agency, 'use_localdata_stream') ? 'TRUE' : 'FALSE') . 
            ' searchable: ' . ($this->searchable_source[$coll_id] ? 'TRUE' : 'FALSE') . 
            ' searchable_source: ' . ($this->searchable_source[$this->agency_catalog_source] ? 'TRUE' : 'FALSE') .
@@ -2680,6 +2683,7 @@ class openSearch extends webServiceServer {
     return (($this->searchable_source[$agency . '-' . $collection]) ||
             ($agency_type == 'Forskningsbibliotek' && $this->searchable_forskningsbibliotek) ||
             ($agency_type == 'Skolebibliotek' && $this->searchable_source['870970-skole']) ||
+            ($this->search_profile_contains_800000 && ($coll_id == '870970-basis')) ||
             (self::agency_rule($agency, 'use_localdata_stream') && $coll_id == '870970-basis' && $this->searchable_source[$this->agency_catalog_source]) ||
             (self::is_collective_collection($coll_id)) ||
             (self::is_contained_in_collection($coll_id))
