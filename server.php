@@ -1038,6 +1038,7 @@ class openSearch extends webServiceServer {
   private function set_search_filters_for_800000_collection($test_force_filter = false) {
     static $part_of_bib_dk = array();
     static $use_holding = array();
+    $containing_80000 = $this->config->get_value('collections_containing_800000', 'setup');
     foreach ($this->searchable_source as $source => $searchable) {
       $searchable = $test_force_filter || $searchable;     // for testing purposes
       if (($source == '800000-bibdk') && $searchable) {
@@ -1047,6 +1048,11 @@ class openSearch extends webServiceServer {
       }
       if (($source == '800000-danbib') && $searchable) {
         if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
+      }
+      if (in_array($source, $containing_80000) && $searchable) {         // clear search filter since "broader" collection is selected
+        $part_of_bib_dk = array();
+        $use_holding = array();
+        break;
       }
     }
     if ($part_of_bib_dk || $use_holding) {

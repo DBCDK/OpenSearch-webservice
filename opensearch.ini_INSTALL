@@ -135,6 +135,12 @@ use_sort_complex_key[] = 190101
 agency_to_collection[870970] = basis
 
 ; --------------
+; collections includings records from 800000-bibdk or 800000-danbib
+collections_containing_800000[] = 870970-basis 
+collections_containing_800000[] = 870970-bibkd
+collections_containing_800000[] = 870970-danbib
+
+; --------------
 ; repository setup
 ; default repository
 default_repository = @REPOSITORY_NAME@
