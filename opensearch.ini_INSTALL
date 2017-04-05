@@ -187,6 +187,11 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 repository[@REPOSITORY_NAME@][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId fromIndex=@HOLDINGS_ITEMS_INDEX@ defType=edismax v=%s}
 repository[@REPOSITORY_NAME@][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId fromIndex=@HOLDINGS_ITEMS_INDEX@ defType=edismax v=%s}%22
 
+; for solr-cloud setups, use 2 lines belown instead or remove the "fromIndex" setting above
+;repository[@REPOSITORY_NAME@][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId defType=edismax v=%s}
+;repository[@REPOSITORY_NAME@][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId defType=edismax v=%s}%22
+
+
 ; collection query filter
 ; Filtering on the collectionIdentifiers specified by the search profile
 ; Records in 870976-anmeld has to be more than 6 months old
