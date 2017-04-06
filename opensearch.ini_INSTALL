@@ -190,12 +190,8 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 ;repository[myrepos][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId fromIndex=holdings-items-index defType=edismax v=%s}%22
 ; the filter attribute controls if the join operation shold go to fq (filter query) or q (query) solr parameter
 
-repository[@REPOSITORY_NAME@][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId fromIndex=@HOLDINGS_ITEMS_INDEX@ defType=edismax v=%s}
-repository[@REPOSITORY_NAME@][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId fromIndex=@HOLDINGS_ITEMS_INDEX@ defType=edismax v=%s}%22
-
-; for solr-cloud setups, use 2 lines belown instead or remove the "fromIndex" setting above
-;repository[@REPOSITORY_NAME@][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId defType=edismax v=%s}
-;repository[@REPOSITORY_NAME@][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId defType=edismax v=%s}%22
+repository[@REPOSITORY_NAME@][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId defType=edismax v=%s}
+repository[@REPOSITORY_NAME@][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId defType=edismax v=%s}%22
 
 
 ; collection query filter
