@@ -266,9 +266,10 @@ solr_file[select] = admin/file?file=%s&contentType=text/xml;charset=utf-8
 
 ; --------------
 ; memcache
-cache_host = localhost
-cache_port = 11211
-cache_expire = 600
+;cache_host = localhost
+;cache_port = 11211
+;cache_expire = 600
+@CACHE_SETTINGS@
 
 ; --------------
 ; memcache for solr_file - if not set cache_* will be used if set
@@ -293,9 +294,10 @@ agency[searchProfile] = ?action=openSearchProfile&agencyId=%s&profileVersion=%s&
 agency[showOrder] = ?action=showOrder&agencyId=%s&trackingId=%s
 ;
 ; memcache settings for openAgency calls. Set cache_expire like 30 (seconds) on test and next-system
-agency[cache_host] = localhost
-agency[cache_port] = 11211
-agency[cache_expire] = 300
+;agency[cache_host] = localhost
+;agency[cache_port] = 11211
+;agency[cache_expire] = 300
+@AGENCY_CACHE_SETTINGS@
 ;
 ; timeout for agency call - defaults to 10 seconds
 agency[timeout] = 15

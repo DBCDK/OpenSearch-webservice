@@ -35,7 +35,9 @@ ENV OPENSEARCH_TAG=$OPENSEARCH_TAG
 # openSearch default settings
 ENV AAA_IP_RIGHTS_BLOCK="aaa_ip_rights[dbc][ip_list] = 0.0.0.0-255.255.255.255\naaa_ip_rights[dbc][ressource][opensearch] = 500"
 ENV AGENCY_FALLBACK=""
+ENV AGENCY_CACHE_SETTINGS="agency[cache_host] = localhost\nagency[cache_port] = 11211\nagency[cache_expire] = 300"
 ENV AGENCY_PROFILE_FALLBACK=""
+ENV CACHE_SETTINGS="cache_host = localhost\ncache_port = 11211\ncache_expire = 600"
 ENV FORMAT_JS_SERVER_BLOCK=""
 ENV FORMAT_CURL_TIMEOUT=""
 ENV FORMAT_CACHE_SETTINGS_BLOCK=""
