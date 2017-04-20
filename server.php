@@ -71,7 +71,6 @@ class openSearch extends webServiceServer {
     define('FIELD_WORK_ID', self::value_or_default($this->config->get_value('field_work_id', 'setup'), 'rec.workId'));
 
     define('DEBUG_ON', $this->debug);
-    define('TRACKING_ID', verbose::$tracking_id);
     define('MAX_IDENTICAL_RELATIONS', self::value_or_default($this->config->get_value('max_identical_relation_names', 'setup'), 20));
     define('MAX_OBJECTS_IN_WORK', 100);
     define('AND_OP', ' AND ');
@@ -184,7 +183,7 @@ class openSearch extends webServiceServer {
       Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
       $result->searchResult = &$collections;
       Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-      Object::set_value($result->statInfo->_value, 'trackingId', TRACKING_ID);
+      Object::set_value($result->statInfo->_value, 'trackingId', verbose::$tracking_id);
       return $ret;
     }
 
@@ -235,7 +234,7 @@ class openSearch extends webServiceServer {
       Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
       $result->searchResult = &$collections;
       Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-      Object::set_value($result->statInfo->_value, 'trackingId', TRACKING_ID);
+      Object::set_value($result->statInfo->_value, 'trackingId', verbose::$tracking_id);
       if ($debug_query) {
         Object::set_value($result, 'queryDebugResult', self::set_debug_info($solr_arr['debug']));
       }
@@ -582,7 +581,7 @@ class openSearch extends webServiceServer {
     Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
     Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
     Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-    Object::set_value($result->statInfo->_value, 'trackingId', TRACKING_ID);
+    Object::set_value($result->statInfo->_value, 'trackingId', verbose::$tracking_id);
 
     verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
                        ':: agency:' . $this->agency . 
@@ -714,7 +713,7 @@ class openSearch extends webServiceServer {
       Object::set_value($result, 'more', 'false');
       $result->searchResult = &$collections;
       Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-      Object::set_value($result->statInfo->_value, 'trackingId', TRACKING_ID);
+      Object::set_value($result->statInfo->_value, 'trackingId', verbose::$tracking_id);
       if ($debug_query) {
         Object::set_value($debug_result, 'rawQueryString', $solr_arr['debug']['rawquerystring']);
         Object::set_value($debug_result, 'queryString', $solr_arr['debug']['querystring']);
@@ -748,7 +747,8 @@ class openSearch extends webServiceServer {
               '&start=0' .
               '&rows=500' .
               '&defType=edismax' .
-              '&fl=rec.collectionIdentifier,' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' . $add_fl;
+              '&fl=rec.collectionIdentifier,' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' . 
+              $add_fl . '&trackingId=' . verbose::$tracking_id;
     verbose::log(TRACE, __FUNCTION__ . ':: Search for pids in Solr: ' . $solr_q);
     $this->curl->set_post($solr_q); // use post here because query can be very long. curl has current 8192 as max length get url
     $solr_result = $this->curl->get($this->repository['solr']);
@@ -870,7 +870,7 @@ class openSearch extends webServiceServer {
     Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
     Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
     Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-    Object::set_value($result->statInfo->_value, 'trackingId', TRACKING_ID);
+    Object::set_value($result->statInfo->_value, 'trackingId', verbose::$tracking_id);
 
     verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
                        ':: agency:' . $param->agency->_value . 
@@ -1341,7 +1341,7 @@ class openSearch extends webServiceServer {
           Object::set_value($f_obj->formatRequest->_value, 'outputFormat', $format_arr['format_name']);
           Object::set_namespace($f_obj->formatRequest->_value, 'outputType', $this->xmlns['of']);
           Object::set_value($f_obj->formatRequest->_value, 'outputType', 'php');
-          Object::set_value($f_obj->formatRequest->_value, 'trackingId', TRACKING_ID);
+          Object::set_value($f_obj->formatRequest->_value, 'trackingId', verbose::$tracking_id);
           $f_xml = $this->objconvert->obj2soap($f_obj);
           $this->curl->set_post($f_xml);
           $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
@@ -1749,6 +1749,7 @@ class openSearch extends webServiceServer {
    */
   private function do_solr($urls, &$solr_arr) {
     foreach ($urls as $no => $url) {
+      $url['url'] .= '&trackingId=' . verbose::$tracking_id;
       verbose::log(TRACE, 'Query: ' . $url['url']);
       if ($url['debug']) verbose::log(DEBUG, 'Query: ' . $url['debug']);
       $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'), $no);
