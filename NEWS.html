@@ -63,6 +63,29 @@ ini: repository: handler_format for holding has changed
 Opensearch "info"-operation - uoverensstemmelse med dokumentation. Sagsnummer 44552
 xsd: searchCollectionIsSearched in searchCollection
 
+4.3.cloud_patch.5
+====
+Fix briefDisplay for records in local data stream in 870970-basis records
+
+4.3.cloud_patch.4
+====
+copy or move aaa_class.php to OLS_class_lib
+
+4.3.cloud_patch.3
+====
+bug 20558: When the primary object in the unit is not included by the the search profile, not data for briefDisplay was found
+Force parenthesis around each AND-node, to fix SOLR problem. BUG: 20957
+
+4.3.cloud_patch.2
+====
+Bug 20813
+
+4.3.cloud_patch
+====
+backport US 1937 to version 4.3
+move solr_query_class.php to OLS_class_lib
+correct handler_format for holding in ini-file according to opensearch.ini_INSTALL example
+
 4.3.patch.1
 =====
 US 1890: allObjects respects part of query related to holdingsItems
