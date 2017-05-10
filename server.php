@@ -1256,45 +1256,55 @@ class openSearch extends webServiceServer {
           foreach ($work_ids[$rec_no] as $mani_no => $unit_no) {
             if (is_array($solr[0]['response']['docs'])) {
               $fpid = $c->_value->collection->_value->object[$mani_no]->_value->identifier->_value;
-              foreach ($solr[0]['response']['docs'] as $solr_doc) {
+              unset($fpid_idx, $basis_idx);
+              foreach ($solr[0]['response']['docs'] as $idx_doc => $solr_doc) {
                 $doc_units = is_array($solr_doc[FIELD_UNIT_ID]) ? $solr_doc[FIELD_UNIT_ID] : array($solr_doc[FIELD_UNIT_ID]);
-                if (is_array($doc_units) && in_array($unit_no, $doc_units) && ($fpid == $solr_doc[FIELD_FEDORA_PID])) {
-                  foreach ($format_tags as $format_tag) {
-                    if ($solr_doc[$format_tag] || $format_tag == 'fedora.identifier') {
-                      if (strpos($format_tag, '.')) {
-                        list($tag_NS, $tag_value) = explode('.', $format_tag);
+                if (is_array($doc_units) && in_array($unit_no, $doc_units)) {
+                  if ($fpid == $solr_doc[FIELD_FEDORA_PID]) {
+                    $fpid_idx = $idx_doc; 
+                  }
+                  elseif (self::record_source_from_pid($solr_doc[FIELD_FEDORA_PID]) == '870970-basis') {
+                     $basis_idx = $idx_doc; 
+                  }
+                }
+              }
+              if (!isset($fpid_idx)) { 
+                $fpid_idx = isset($basis_idx) ? $basis_idx : 0;
+              }
+              $solr_doc = $solr[0]['response']['docs'][$fpid_idx];
+              foreach ($format_tags as $format_tag) {
+                if ($solr_doc[$format_tag] || $format_tag == 'fedora.identifier') {
+                  if (strpos($format_tag, '.')) {
+                    list($tag_NS, $tag_value) = explode('.', $format_tag);
+                  }
+                  else {
+                    $tag_value = $format_tag;
+                  }
+                  if ($format_tag == 'fedora.identifier') {
+                    Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
+                    Object::set_value($mani->_value, $tag_value, $fpid);
+                  }
+                  else {
+                    if (is_array($solr_doc[$format_tag])) {
+                      if ($this->feature_sw[$format_tag] == 'array') {   // more than one for this
+                        foreach ($solr_doc[$format_tag] as $solr_tag) {
+                          $help = new stdClass();
+                          $help->_namespace = $solr_display_ns;
+                          $help->_value = self::normalize_chars($solr_tag);
+                          $mani->_value->{$tag_value}[] = $help;
+                          unset($help);
+                        }
                       }
                       else {
-                        $tag_value = $format_tag;
-                      }
-                      if ($format_tag == 'fedora.identifier') {
                         Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
-                        Object::set_value($mani->_value, $tag_value, $fpid);
-                      }
-                      else {
-                        if (is_array($solr_doc[$format_tag])) {
-                          if ($this->feature_sw[$format_tag] == 'array') {   // more than one for this
-                            foreach ($solr_doc[$format_tag] as $solr_tag) {
-                              $help = new stdClass();
-                              $help->_namespace = $solr_display_ns;
-                              $help->_value = self::normalize_chars($solr_tag);
-                              $mani->_value->{$tag_value}[] = $help;
-                              unset($help);
-                            }
-                          }
-                          else {
-                            Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
-                            Object::set_value($mani->_value, $tag_value, self::normalize_chars($solr_doc[$format_tag][0]));
-                          }
-                        }
-                        else {
-                          Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
-                          Object::set_value($mani->_value, $tag_value, self::normalize_chars($solr_doc[$format_tag]));
-                        }
+                        Object::set_value($mani->_value, $tag_value, self::normalize_chars($solr_doc[$format_tag][0]));
                       }
                     }
+                    else {
+                      Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
+                      Object::set_value($mani->_value, $tag_value, self::normalize_chars($solr_doc[$format_tag]));
+                    }
                   }
-                  break;
                 }
               }
             }
