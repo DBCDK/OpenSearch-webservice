@@ -3013,7 +3013,7 @@ class openSearch extends webServiceServer {
    * @retval string 
    */
   private function get_element_from_admin_data(&$dom, $tag_name) {
-    if ($ads = $dom->getElementsByTagName('adminData')->item(0)) {
+    if ($dom && $ads = $dom->getElementsByTagName('adminData')->item(0)) {
       return self::get_dom_element($ads, $tag_name);
     }
     return NULL;
