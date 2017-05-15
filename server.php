@@ -749,7 +749,7 @@ class openSearch extends webServiceServer {
               '&defType=edismax' .
               '&fl=rec.collectionIdentifier,' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' . 
               $add_fl . '&trackingId=' . verbose::$tracking_id;
-    verbose::log(TRACE, __FUNCTION__ . ':: Search for pids in Solr: ' . $solr_q);
+    verbose::log(TRACE, __FUNCTION__ . ':: Search for pids in Solr: ' . $this->repository['solr'] . str_replace('wt=phps', '?', $solr_q));
     $this->curl->set_post($solr_q); // use post here because query can be very long. curl has current 8192 as max length get url
     $solr_result = $this->curl->get($this->repository['solr']);
     $this->curl->set_option(CURLOPT_POST, 0);
@@ -2618,8 +2618,10 @@ class openSearch extends webServiceServer {
             if ($stream <> '870970-basis') {
               list($agency, $collection) = self::split_record_source($stream);
               $prio = sprintf('%05s', self::agency_priority($agency));
-              $priority_pids[$prio][] = $stream . ':' . $id[1];
-              $in_870970_basis[$stream . ':' . $id[1]] = '870970-basis:' . $id[1];
+              if (self::agency_rule($agency, 'use_localdata_stream')) {
+                $priority_pids[$prio][] = $stream . ':' . $id[1];
+                $in_870970_basis[$stream . ':' . $id[1]] = '870970-basis:' . $id[1];
+              }
             }
           }
         }
