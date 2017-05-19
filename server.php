@@ -160,7 +160,6 @@ class openSearch extends webServiceServer {
       $this->query_language = $param->queryLanguage->_value;
     }
     $debug_query = $this->xs_boolean($param->queryDebug->_value);
-    $this->agency_catalog_source = $this->agency . '-katalog';
     $this->agency_type = self::get_agency_type($this->agency);
 
 // for future use ...  var_dump($this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Folkebibliotek')); die();
@@ -642,6 +641,7 @@ class openSearch extends webServiceServer {
 
     $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
+    $this->agency_catalog_source = $this->agency . '-katalog';
     $this->agency_type = self::get_agency_type($this->agency);
     $this->agency_priority_list = self::fetch_agency_show_priority();
     $this->format = self::set_format($param->objectFormat, 
@@ -796,7 +796,7 @@ class openSearch extends webServiceServer {
         self::read_record_repo_rels_hierarchy($unit_id, $unit_rels_hierarchy);
         list($unit_members, $dummy, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
         list($fpid_collection, $fpid_local) = explode(':', $fedora_pid);
-        if (!$in_collection && $fedora_pid) {
+        if (empty($localdata_in_pid) && !$in_collection && $fedora_pid) {
           $fpid->_value = $fedora_pid;
         }
         list($fedora_pid, $datastream)  = self::create_fedora_pid_and_stream($fpid->_value, $fedora_pid);
