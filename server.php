@@ -479,7 +479,7 @@ class openSearch extends webServiceServer {
     foreach ($work_ids as &$work) {
       $objects = array();
       foreach ($work as $unit_id) {
-        list($unit_members, $fpid, $localdata_in_pid, $primary_oid) = $unit_info[$unit_id];
+        list($unit_members, $fpid, $localdata_in_pid, $primary_oid, $in_870970_basis) = $unit_info[$unit_id];
         $sort_holdings = ' ';
         unset($no_of_holdings);
         if (self::xs_boolean($param->includeHoldingsCount->_value)) {
@@ -506,6 +506,7 @@ class openSearch extends webServiceServer {
           self::parse_record_repo_object($raw_res[$unit_id],
                                     $repo_res[$unit_id . '-addi'],
                                     $unit_members,
+                                    $in_870970_basis,
                                     $param->relationData->_value,
                                     $fpid,
                                     $primary_oid,
@@ -794,7 +795,7 @@ class openSearch extends webServiceServer {
       }
       else {
         self::read_record_repo_rels_hierarchy($unit_id, $unit_rels_hierarchy);
-        list($unit_members, $dummy, $localdata_in_pid, $primary_oid) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
+        list($unit_members, $dummy, $localdata_in_pid, $primary_oid, $in_870970_basis) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
         list($fpid_collection, $fpid_local) = explode(':', $fedora_pid);
         if (empty($localdata_in_pid) && !$in_collection && $fedora_pid) {
           $fpid->_value = $fedora_pid;
@@ -840,6 +841,7 @@ class openSearch extends webServiceServer {
           self::parse_record_repo_object($fedora_result,
                                     $fedora_addi_relation,
                                     $unit_members,
+                                    $in_870970_basis,
                                     $param->relationData->_value,
                                     $fpid->_value,
                                     $primary_oid,
@@ -2106,8 +2108,10 @@ class openSearch extends webServiceServer {
       $this->curl->close();
       if (!is_array($recs)) $recs = array($last_no => $recs);
       foreach ($recs as $no => $rec) {
-        if ($this->cache) $this->cache->set($urls[$res_map[$no]], $rec);
-        $ret[$res_map[$no]] = $rec;
+        if (isset($res_map[$no])) {
+          if ($this->cache) $this->cache->set($urls[$res_map[$no]], $rec);
+          $ret[$res_map[$no]] = $rec;
+        }
       }
     }
     return $ret;
@@ -2665,10 +2669,11 @@ class openSearch extends webServiceServer {
       echo __FUNCTION__ . ':: best_pid: ' . $best_pid . 
            ' primary_pid: ' . $primary_pid . 
            ' localdata_in_pid: ' . $localdata_in_pid . 
+           ' in_870970_basis: ' . str_replace(PHP_EOL, '', print_r($in_870970_basis, TRUE)) . 
            ' unit_members: ' . str_replace(PHP_EOL, '', print_r($unit_members, TRUE)) . 
            PHP_EOL;
     }
-    return(array($unit_members, $best_pid, $localdata_in_pid, $primary_pid));
+    return(array($unit_members, $best_pid, $localdata_in_pid, $primary_pid, $in_870970_basis));
   }
 
   /** \brief check if a record source is contained in the search profile: searchable_source
@@ -2742,6 +2747,7 @@ class openSearch extends webServiceServer {
    * @param string $record_repo_xml      - the bibliographic record from record_repo
    * @param DOMDocument $record_repo_addi_obj - corresponding relation object
    * @param array $unit_members     - list of unit members contained by the search profile
+   * @param array $in_870970_basis  - list of pids found in localData in 870970-basis
    * @param string $rels_type       - level for returning relations
    * @param string $rec_id          - record id of the record
    * @param string $filter          - agency filter
@@ -2749,7 +2755,7 @@ class openSearch extends webServiceServer {
    * @param object $debug_info      -
    * @retval object - record object in a collection object
    */
-  private function parse_record_repo_object(&$record_repo_xml, $record_repo_addi_obj, $unit_members, $rels_type, $rec_id, $primary_id, $filter, $holdings_count, $debug_info='') {
+  private function parse_record_repo_object(&$record_repo_xml, $record_repo_addi_obj, $unit_members, $in_870970_basis, $rels_type, $rec_id, $primary_id, $filter, $holdings_count, $debug_info='') {
     static $record_repo_dom;
     $missing_record = $this->config->get_value('missing_record', 'setup');
     if (empty($record_repo_dom)) {
@@ -2768,7 +2774,7 @@ class openSearch extends webServiceServer {
     $rec = self::extract_record($record_repo_dom, $rec_id);
 
     if (in_array($rels_type, array('type', 'uri', 'full'))) {
-      self::get_relations_from_datastream_domobj($relations, $unit_members, $rels_type);
+      self::get_relations_from_datastream_domobj($relations, $unit_members, $rels_type, $in_870970_basis);
       self::get_relations_from_addi_stream($relations, $record_repo_addi_obj, $rels_type, $filter);
     }
 
@@ -2829,16 +2835,23 @@ class openSearch extends webServiceServer {
    * @param object $relations - return parameter, the relations found
    * @param array $unit_members - list of the members in the unit contained by the search profile
    * @param string $rels_type - type, uri or full
+   * @param array $in_870970_basis - 
    *
    */
-  private function get_relations_from_datastream_domobj(&$relations, $unit_members, $rels_type) {
+  private function get_relations_from_datastream_domobj(&$relations, $unit_members, $rels_type, $in_870970_basis = array()) {
     static $stream_dom;
     if (empty($stream_dom)) {
       $stream_dom = new DomDocument();
     }
 // get all records
     foreach ($unit_members as $idx => $member) {
-      $raw_urls[$idx] = self::record_repo_url('fedora_get_raw', $member);
+      if ($in_870970_basis[$member]) {
+        list($basis_pid, $datastream)  = self::create_fedora_pid_and_stream($member, $in_870970_basis[$member]);
+        $raw_urls[$idx] = self::record_repo_url('fedora_get_raw', $basis_pid, $datastream);
+      }
+      else {
+        $raw_urls[$idx] = self::record_repo_url('fedora_get_raw', $member);
+      }
     }
     $repo_res = self::read_record_repo_all_urls($raw_urls);
 
