@@ -1355,8 +1355,8 @@ class openSearch extends webServiceServer {
           Object::set_value($f_obj->formatRequest->_value, 'outputType', 'php');
           Object::set_value($f_obj->formatRequest->_value, 'trackingId', verbose::$tracking_id);
           $f_xml = $this->objconvert->obj2soap($f_obj);
-          $this->curl->set_post($f_xml);
-          $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
+          $this->curl->set_post($f_xml, 0);
+          $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'), 0);
           $f_result = $this->curl->get($open_format_uri);
           $this->curl->set_option(CURLOPT_POST, 0, 0);
           $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['of']);
