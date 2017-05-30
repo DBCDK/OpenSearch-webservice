@@ -988,7 +988,7 @@ class openSearch extends webServiceServer {
       $help[] = $objectFormat;
     foreach ($help as $of) {
       if ($open_format[$of->_value]) {
-        $ret[$of->_value] = array('user_selected' => TRUE, 'is_open_format' => TRUE, 'format_name' => $open_format[$of->_value]['format']);
+        $ret[$of->_value] = array('user_selected' => TRUE, 'is_open_format' => TRUE, 'format_name' => $open_format[$of->_value]['format'], 'uri' => $open_format[$of->_value]['uri']);
         $ret['found_open_format'] = TRUE;
       }
       elseif ($solr_format[$of->_value]) {
@@ -1357,7 +1357,7 @@ class openSearch extends webServiceServer {
           $f_xml = $this->objconvert->obj2soap($f_obj);
           $this->curl->set_post($f_xml, 0);
           $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'), 0);
-          $f_result = $this->curl->get($open_format_uri);
+          $f_result = $this->curl->get($format_arr['uri'] ? $format_arr['uri'] : $open_format_uri);
           $this->curl->set_option(CURLOPT_POST, 0, 0);
           $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['of']);
   // need to restore correct namespace

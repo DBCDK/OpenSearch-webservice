@@ -315,6 +315,10 @@ holdings_db = @HOLDINGS_DB@
 ; ex:
 ;   ws_open_format_uri = http://openformat.addi.dk/0.2/
 ;
+; You can override the ws_open_format_uri for a specific format this like:
+;   open_format[specialFormatTest][format] =  specialFormat
+;   open_format[specialFormatTest[uri] =  http://openformat.addi.dk/0.1/
+;
 ws_open_format_uri = @OPEN_FORMAT@
 
 ; formats supported by openFormat and possible name mapping
