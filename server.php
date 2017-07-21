@@ -69,6 +69,7 @@ class openSearch extends webServiceServer {
     define('FIELD_UNIT_ID', self::value_or_default($this->config->get_value('field_unit_id', 'setup'), 'unit.id'));
     define('FIELD_FEDORA_PID', self::value_or_default($this->config->get_value('field_fedora_pid', 'setup'), 'fedoraPid'));
     define('FIELD_WORK_ID', self::value_or_default($this->config->get_value('field_work_id', 'setup'), 'rec.workId'));
+    define('HOLDINGS_AGENCY_ID_FIELD', self::value_or_default($this->config->get_value('field_holdings_agency_id', 'setup'), 'rec.holdingsAgencyId'));
 
     define('DEBUG_ON', $this->debug);
     define('MAX_IDENTICAL_RELATIONS', self::value_or_default($this->config->get_value('max_identical_relation_names', 'setup'), 20));
@@ -266,6 +267,7 @@ class openSearch extends webServiceServer {
       $solr_query = $this->cql2solr->parse($param->query->_value);
     else
       $solr_query = $this->cql2solr->parse($param->query->_value, $this->search_filter_for_800000);
+    self::modify_query_and_filter_agency($solr_query);
 //var_dump($solr_query); var_dump($this->split_holdings_include); var_dump($this->search_filter_for_800000); die();
     $this->watch->stop('cql');
     if ($solr_query['error']) {
@@ -1489,6 +1491,21 @@ class openSearch extends webServiceServer {
    *********** Solr related functions ***********
    **********************************************/
 
+
+  /** \brief Alter the query and agency filter if HOLDINGS_AGENCY_ID_FIELD is used in query
+   *
+   * @param object $solr_query
+   */
+  private function modify_query_and_filter_agency(&$solr_query) {
+    foreach (array('q', 'fq') as $solr_par) {
+      foreach ($solr_query['edismax'][$solr_par] as $q_idx => $q) {
+        if (strpos($q, HOLDINGS_AGENCY_ID_FIELD . ':') === 0) {
+          unset($solr_query['edismax'][$solr_par][$q_idx]);
+          $this->filter_agency = str_replace('rec.collectionIdentifier:870970-basis', $q, $this->filter_agency);
+        }
+      }
+    }
+  }
 
   /** \brief Set the parameters to solr facets
    *
