@@ -1493,6 +1493,7 @@ class openSearch extends webServiceServer {
 
 
   /** \brief Alter the query and agency filter if HOLDINGS_AGENCY_ID_FIELD is used in query
+   *         - replace 870970-basis with holdings_agency part and (bug: 21233) add holdings_agency part to the agency_catalog source
    *
    * @param object $solr_query
    */
@@ -1502,6 +1503,8 @@ class openSearch extends webServiceServer {
         if (strpos($q, HOLDINGS_AGENCY_ID_FIELD . ':') === 0) {
           unset($solr_query['edismax'][$solr_par][$q_idx]);
           $this->filter_agency = str_replace('rec.collectionIdentifier:870970-basis', $q, $this->filter_agency);
+          $collect_agency = 'rec.collectionIdentifier:' . $this->agency_catalog_source;
+          $this->filter_agency = str_replace($collect_agency, '(' . $collect_agency . AND_OP . $q . ')', $this->filter_agency);
         }
       }
     }
