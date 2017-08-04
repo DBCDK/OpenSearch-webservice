@@ -799,7 +799,11 @@ class openSearch extends webServiceServer {
         self::read_record_repo_rels_hierarchy($unit_id, $unit_rels_hierarchy);
         list($unit_members, $dummy, $localdata_in_pid, $primary_oid, $in_870970_basis) = self::parse_unit_for_best_agency($unit_rels_hierarchy, $unit_id, FALSE);
         list($fpid_collection, $fpid_local) = explode(':', $fedora_pid);
-        if (empty($localdata_in_pid) && !$in_collection && $fedora_pid) {
+// collectionIdentifiers are now put on all records with holdings, 
+// so the $in_collection variable could be used as information about which 870970 records a given library has holding in
+// but for now, we ignore the information and behave as we did so far
+        // if (empty($localdata_in_pid) && $in_collection && $fedora_pid) { // include this and only records with holdings can be found in 870970-basis
+        if (empty($localdata_in_pid) && $fedora_pid) {                   // include this and 870970-basis records will be shown when no local record is found
           $fpid->_value = $fedora_pid;
         }
         list($fedora_pid, $datastream)  = self::create_fedora_pid_and_stream($fpid->_value, $fedora_pid);
