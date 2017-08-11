@@ -1508,7 +1508,10 @@ class openSearch extends webServiceServer {
           unset($solr_query['edismax'][$solr_par][$q_idx]);
           $this->filter_agency = str_replace('rec.collectionIdentifier:870970-basis', $q, $this->filter_agency);
           $collect_agency = 'rec.collectionIdentifier:' . $this->agency_catalog_source;
-          $this->filter_agency = str_replace($collect_agency, '(' . $collect_agency . AND_OP . $q . ')', $this->filter_agency);
+          $filtered_collect_agency = '(' . $collect_agency . AND_OP . $q . ')';
+          if (strpos($this->filter_agency, $filtered_collect_agency) === FALSE) {
+            $this->filter_agency = str_replace($collect_agency, $filtered_collect_agency, $this->filter_agency);
+          }
         }
       }
     }
@@ -1600,6 +1603,7 @@ class openSearch extends webServiceServer {
           $add_q =  $this->which_rec_id . ':(' . $add_query . ')';
       }
       $chk_query = $this->cql2solr->parse($query);
+      self::modify_query_and_filter_agency($chk_query);
       if ($all_objects) {
         $chk_query['edismax']['q'] =  array($add_q);
       }
@@ -2212,6 +2216,9 @@ class openSearch extends webServiceServer {
         Object::set_value($ret[$rec_pos]->_value->collection->_value->object[0]->_value, 'collection', $marc_obj);
         Object::set_namespace($ret[$rec_pos]->_value->collection->_value->object[0]->_value, 'collection', $this->xmlns['marcx']);
       }
+    }
+    else {
+      verbose::log(ERROR, __FUNCTION__ . ':: no record(s) found. http_code: ' . $this->curl->get_status('http_code') . ' post: ' . sprintf($p_mask, $post) . ' result: ' . $result);
     }
     return $ret;
   }
