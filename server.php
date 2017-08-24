@@ -1505,7 +1505,12 @@ class openSearch extends webServiceServer {
     foreach (array('q', 'fq') as $solr_par) {
       foreach ($solr_query['edismax'][$solr_par] as $q_idx => $q) {
         if (strpos($q, HOLDINGS_AGENCY_ID_FIELD . ':') === 0) {
-          unset($solr_query['edismax'][$solr_par][$q_idx]);
+          if (count($solr_query['edismax'][$solr_par]) == 1) {
+            $solr_query['edismax'][$solr_par][$q_idx] = '*';
+          }
+          else {
+            unset($solr_query['edismax'][$solr_par][$q_idx]);
+          }
           $this->filter_agency = str_replace('rec.collectionIdentifier:870970-basis', $q, $this->filter_agency);
           $collect_agency = 'rec.collectionIdentifier:' . $this->agency_catalog_source;
           $filtered_collect_agency = '(' . $collect_agency . AND_OP . $q . ')';
