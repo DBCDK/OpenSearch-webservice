@@ -57,6 +57,7 @@ class openSearch extends webServiceServer {
   protected $unit_fallback = array();     // if record_repo is updated and solr is not, this is used to find some record from the old unit
   protected $feature_sw = array();
   protected $add_collection_with_relation_to_filter = FALSE;
+  protected $user_param;
 
 
   public function __construct() {
@@ -85,6 +86,7 @@ class openSearch extends webServiceServer {
    */
 
   public function search($param) {
+    $this->user_param = $param;
     // set some defines
     if (!$this->aaa->has_right('opensearch', 500)) {
       Object::set_value($ret_error->searchResponse->_value, 'error', 'authentication_error');
@@ -612,6 +614,7 @@ class openSearch extends webServiceServer {
   * @retval object - the answer to the request
   */
   public function getObject($param) {
+    $this->user_param = $param;
     $ret_error->searchResponse->_value->error->_value = &$error;
     if (!$this->aaa->has_right('opensearch', 500)) {
       $error = 'authentication_error';
@@ -884,7 +887,10 @@ class openSearch extends webServiceServer {
 
     verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .  
                        ':: agency:' . $param->agency->_value . 
-                       ' profile:' . $param->profile->_value . ' ' . $this->watch->dump());
+                       ' profile:' . $param->profile->_value . 
+                       ' repoRecs:' . $this->number_of_record_repo_calls .
+                       ' repoCache:' . $this->number_of_record_repo_cached .
+                       ' ' . $this->watch->dump());
     return $ret;
   }
 
@@ -2103,7 +2109,8 @@ class openSearch extends webServiceServer {
           if ($curl_err['http_code'] == 404) {
             return 'record_not_found';
           }
-          verbose::log(FATAL, 'record_repo http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri);
+          verbose::log(FATAL, 'record_repo http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri . 
+                              ' request ' . preg_replace('/\s+/', ' ', print_r($this->user_param, TRUE)));
           return 'Error: Cannot fetch record: ' . $record_uri . ' - http-error: ' . $curl_err['http_code'];
         }
       }
