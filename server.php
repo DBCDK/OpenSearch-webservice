@@ -3001,7 +3001,7 @@ class openSearch extends webServiceServer {
 
 // loop records and build result
     foreach ($raw_recs as $unit_id => $related_obj) {
-      list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid, $pid) = $unit_info[$unit_id];
+      list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid, $in_870970_basis, $pid) = $unit_info[$unit_id];
       if (@ !$rels_dom->loadXML($related_obj)) {
         verbose::log(FATAL, 'Cannot load ' . $pid . ' object from commonData into DomXml');
         $rels_dom = NULL;
