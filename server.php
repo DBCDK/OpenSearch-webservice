@@ -2146,12 +2146,18 @@ class openSearch extends webServiceServer {
     if (isset($last_no)) {
       $this->watch->start('record_repo');
       $recs = $this->curl->get();
+      $status = $this->curl->get_status();
       $this->watch->stop('record_repo');
       $this->curl->close();
       if (!is_array($recs)) $recs = array($last_no => $recs);
+      if (!is_array($status)) $status = array($last_no => $status);
       foreach ($recs as $no => $rec) {
         if (isset($res_map[$no])) {
-          if ($this->cache) $this->cache->set($urls[$res_map[$no]], $rec);
+          if (!strpos($urls[$res_map[$no]], 'RELS-EXT') && (empty($rec) || $status[$no]['http_code'] < 200 || $status[$no]['http_code'] > 299)) {
+            verbose::log(ERROR, 'record_repo http-error: ' . $status[$no]['http_code'] . ' from: ' . $urls[$res_map[$no]] . 
+                                ' record ' . preg_replace('/\s+/', ' ', $rec));
+            if ($this->cache) $this->cache->set($urls[$res_map[$no]], $rec);
+          }
           $ret[$res_map[$no]] = $rec;
         }
       }
