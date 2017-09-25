@@ -2995,7 +2995,7 @@ class openSearch extends webServiceServer {
     $raw_urls = array();
     foreach ($hierarchy_recs as $unit_id => $hierarchy_rec) {
       $unit_info[$unit_id] = self::parse_unit_for_best_agency($hierarchy_rec, $unit_id, TRUE);
-      list($dummy, $rel_oid) = $unit_info[$unit_id];
+      list($dummy, $rel_oid, $localdata_in_pid) = $unit_info[$unit_id];
       if ($rel_oid) {
         list($pid, $datastream)  = self::create_fedora_pid_and_stream($rel_oid, $localdata_in_pid);
         $unit_info[$unit_id][] = $pid;
