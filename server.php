@@ -3010,7 +3010,6 @@ class openSearch extends webServiceServer {
       list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid, $in_870970_basis, $pid) = $unit_info[$unit_id];
       if (@ !$rels_dom->loadXML($related_obj)) {
         verbose::log(FATAL, 'Cannot load ' . $pid . ' object from commonData into DomXml');
-        $rels_dom = NULL;
       }
       $collection_id = self::get_element_from_admin_data($rels_dom, 'collectionIdentifier');
       if (empty($this->valid_relation[$collection_id])) {  // handling of local data streams
@@ -3026,7 +3025,6 @@ class openSearch extends webServiceServer {
             self::read_record_repo_raw($rel_oid, $related_obj, self::set_data_stream_name($collection_id));
             if (@ !$rels_dom->loadXML($related_obj)) {
               verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from ' . $source . ' into DomXml');
-              $rels_dom = NULL;
             }
             break;
           }
