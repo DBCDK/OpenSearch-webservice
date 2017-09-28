@@ -359,6 +359,9 @@ class openSearch extends webServiceServer {
     if ($debug_query) {
       $debug_result = self::set_debug_info($solr_arr['debug'], $this->rank_frequence_debug, $best_match_debug);
     }
+    if ($solr_arr['debug']) {
+       $solr_timing = $solr_arr['debug']['timing'];
+    }
 
     if ($facet_q) {
       $facets = self::parse_for_facets($solr_arr);
@@ -581,6 +584,9 @@ class openSearch extends webServiceServer {
     Object::set_value($result, 'facetResult', $facets);
     if ($debug_query && $debug_result) {
       Object::set_value($result, 'queryDebugResult', $debug_result);
+    }
+    if ($solr_timing) {
+      verbose::log(STAT, 'solrTiming: ' . json_encode($solr_timing));
     }
     Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
     Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
