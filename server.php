@@ -2155,8 +2155,10 @@ class openSearch extends webServiceServer {
       $status = $this->curl->get_status();
       $this->watch->stop('record_repo');
       $this->curl->close();
-      if (!is_array($recs)) $recs = array($last_no => $recs);
-      if (!is_array($status)) $status = array($last_no => $status);
+      if (!is_array($recs)) {
+        $recs = array($last_no => $recs);
+        $status = array($last_no => $status);
+      }
       foreach ($recs as $no => $rec) {
         if (isset($res_map[$no])) {
           if (!strpos($urls[$res_map[$no]], 'RELS-EXT') && (empty($rec) || $status[$no]['http_code'] < 200 || $status[$no]['http_code'] > 299)) {
