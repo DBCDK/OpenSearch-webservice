@@ -114,6 +114,9 @@ class openSearch extends webServiceServer {
     if (empty($param->agency->_value)) {
       $unsupported = 'Error: No agency in request';
     }
+    elseif (strtolower($param->sort->_value)) {
+      $unsupported = 'Error: random sort is currently disabled';
+    }
     elseif (empty($param->profile->_value)) {
       $unsupported = 'Error: No profile in request';
     }
