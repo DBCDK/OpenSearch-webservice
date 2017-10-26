@@ -114,7 +114,7 @@ class openSearch extends webServiceServer {
     if (empty($param->agency->_value)) {
       $unsupported = 'Error: No agency in request';
     }
-    elseif (strtolower($param->sort->_value)) {
+    elseif (strtolower($param->sort->_value) == 'random') {
       $unsupported = 'Error: random sort is currently disabled';
     }
     elseif (empty($param->profile->_value)) {
@@ -442,7 +442,7 @@ class openSearch extends webServiceServer {
 //var_dump($add_queries); var_dump($display_solr_arr); var_dump($unit_sort_keys); die();
     define('MAX_QUERY_ELEMENTS', 950);
 
-    if ($this->cache->check()) {
+    if ($this->cache && $this->cache->check()) {
       verbose::log(TRACE, 'Cache set, # work: ' . count($work_cache_struct));
       $this->cache->set($key_work_struct, $work_cache_struct);
     }
