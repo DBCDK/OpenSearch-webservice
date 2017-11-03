@@ -2169,7 +2169,7 @@ class openSearch extends webServiceServer {
                                 ' record ' . preg_replace('/\s+/', ' ', $rec));
             if ($this->cache) $this->cache->set($urls[$res_map[$no]], $rec);
           }
-          $ret[$res_map[$no]] = $rec;
+          $ret[$res_map[$no]] = self::normalize_chars($rec);
         }
       }
     }
