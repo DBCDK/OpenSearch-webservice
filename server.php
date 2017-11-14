@@ -2841,7 +2841,7 @@ class openSearch extends webServiceServer {
     }
 
     $ret = $rec;
-    Object::set_value($ret, 'identifier', $rec_id);
+    Object::set_value($ret, 'identifier', $rec_id ? $rec_id : $primary_id);  // fallback to primary to handle records from  deleted libraries
     if ($primary_id) {
       Object::set_value($ret, 'primaryObjectIdentifier', $primary_id);
     }
