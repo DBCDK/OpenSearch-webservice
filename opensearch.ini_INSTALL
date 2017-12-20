@@ -718,6 +718,8 @@ curl_timeout = @FORMAT_CURL_TIMEOUT@
 ; aaa_ip_rights[group-identifier][ressource][<named ressource>] = right to <named ressource>
 ; aaa_ip_rights[group-identifier][ressource][<named ressource 2>] = right to <named ressource 2>
 ;
+; Do not use "all" as group-identifier. This group is for testing and special circumstances
+;
 @AAA_IP_RIGHTS_BLOCK@
 ;
 ; if not found in aaa_ip_rights the authentication object is created from the FORS
