@@ -366,6 +366,7 @@ class openSearch extends webServiceServer {
        $solr_timing = $solr_arr['debug']['timing'];
     }
 
+    $facets = '';
     if ($facet_q) {
       $facets = self::parse_for_facets($solr_arr);
     }
@@ -567,7 +568,7 @@ class openSearch extends webServiceServer {
 //var_dump($solr_2_arr);
 //var_dump($work_cache_struct);
 //die();
-    if ($_REQUEST['work'] == 'debug') {
+    if (isset($_REQUEST['work']) && ($_REQUEST['work'] == 'debug')) {
       echo "returned_work_ids: \n";
       print_r($work_ids);
       echo "cache: \n";
@@ -1441,9 +1442,9 @@ class openSearch extends webServiceServer {
   private function remove_unselected_formats(&$collections) {
     foreach ($collections as $idx => &$c) {
       foreach ($c->_value->collection->_value->object as &$o) {
-        if (!$this->format['dkabm']['user_selected'])
+        if (isset($this->format['dkabm']) && !$this->format['dkabm']['user_selected'])
           unset($o->_value->record);
-        if (!$this->format['marcxchange']['user_selected'])
+        if (isset($this->format['marcxchange']) && !$this->format['marcxchange']['user_selected'])
           unset($o->_value->collection);
       }
     }
