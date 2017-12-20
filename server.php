@@ -492,8 +492,8 @@ class openSearch extends webServiceServer {
       foreach ($work as $unit_id) {
         list($unit_members, $fpid, $localdata_in_pid, $primary_oid, $in_870970_basis) = $unit_info[$unit_id];
         $sort_holdings = ' ';
-        unset($no_of_holdings);
-        if (self::xs_boolean($param->includeHoldingsCount->_value)) {
+        $no_of_holdings = null;
+        if (isset($param->includeHoldingsCount) && self::xs_boolean($param->includeHoldingsCount->_value)) {
           $no_of_holdings = self::get_holdings($fpid);
         }
         if ($use_sort_complex_key && (strpos($unit_sort_keys[$unit_id], $HOLDINGS) !== FALSE)) {
@@ -501,8 +501,8 @@ class openSearch extends webServiceServer {
           $sort_holdings = sprintf(' %04d ', 9999 - intval($holds['lend']));
         }
         $fpid_sort_keys[$fpid] = str_replace($HOLDINGS, $sort_holdings, $unit_sort_keys[$unit_id]);
+        $explain = null;
         if ($debug_query) {
-          unset($explain);
           foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
             if ($unit_id == $solr_rec[FIELD_UNIT_ID]) {
               $explain = $solr_arr['debug']['explain'][$explain_keys[$solr_idx]];
@@ -518,7 +518,7 @@ class openSearch extends webServiceServer {
                                     $repo_res[$unit_id . '-addi'],
                                     $unit_members,
                                     $in_870970_basis,
-                                    $param->relationData->_value,
+                                    isset($param->relationData) ? $param->relationData->_value : null,
                                     $fpid,
                                     $primary_oid,
                                     NULL, // no $filter_agency on search - bad performance
@@ -540,7 +540,7 @@ class openSearch extends webServiceServer {
     if (DEBUG_ON) print_r($unit_sort_keys);
     if (DEBUG_ON) print_r($fpid_sort_keys);
 
-    if ($param->collectionType->_value == 'work-1') {
+    if (isset($param->collectionType) && ($param->collectionType->_value == 'work-1')) {
       foreach ($collections as &$c) {
         $collection_no = 0;
         foreach ($c->_value->collection->_value->object as &$o) {
@@ -556,10 +556,10 @@ class openSearch extends webServiceServer {
     }
 
     if ($step_value) {
-      if ($this->format['found_open_format']) {
+      if (!empty($this->format['found_open_format'])) {
         self::format_records($collections);
       }
-      if ($this->format['found_solr_format']) {
+      if (!empty($this->format['found_solr_format'])) {
         self::format_solr($collections, $display_solr_arr, $work_ids, $fpid_sort_keys);
       }
       self::remove_unselected_formats($collections);
@@ -2694,6 +2694,7 @@ class openSearch extends webServiceServer {
         }
       }
       ksort($priority_pids);
+      $unit_fallback = FALSE;
       if (empty($priority_pids) && $this->unit_fallback[$unit_id] && (!$fallback || !$primary_pid->length)) {
         $unit_fallback = TRUE;
         foreach ($this->unit_fallback[$unit_id] as $pid) {
@@ -2725,7 +2726,7 @@ class openSearch extends webServiceServer {
         $unit_members[] = $best_pid;
       }
     }
-    if ($in_870970_basis[$best_pid] && ($best_pid <> $pid_870970_basis)) {
+    if (!empty($in_870970_basis[$best_pid]) && ($best_pid <> $pid_870970_basis)) {
       $localdata_in_pid = $in_870970_basis[$best_pid];
     }
     if (DEBUG_ON) {
@@ -2767,11 +2768,11 @@ class openSearch extends webServiceServer {
            ' contained_in_coll: ' . (self::is_contained_in_collection($coll_id) ? 'TRUE' : 'FALSE') . 
            PHP_EOL;
     }
-    return (($this->searchable_source[$agency . '-' . $collection]) ||
+    return ((!empty($this->searchable_source[$agency . '-' . $collection])) ||
             ($agency_type == 'Forskningsbibliotek' && $this->searchable_forskningsbibliotek) ||
             ($agency_type == 'Skolebibliotek' && $this->searchable_source['870970-skole']) ||
             ($this->search_profile_contains_800000 && ($coll_id == '870970-basis')) ||
-            (self::agency_rule($agency, 'use_localdata_stream') && $coll_id == '870970-basis' && $this->searchable_source[$this->agency_catalog_source]) ||
+            (self::agency_rule($agency, 'use_localdata_stream') && $coll_id == '870970-basis' && !empty($this->searchable_source[$this->agency_catalog_source])) ||
             (self::is_collective_collection($coll_id)) ||
             (self::is_contained_in_collection($coll_id))
     );
@@ -2860,7 +2861,7 @@ class openSearch extends webServiceServer {
       Object::set_value($ret, 'holdingsCount', $holdings_count['have']);
       Object::set_value($ret, 'lendingLibraries', $holdings_count['lend']);
     }
-    if ($relations) Object::set_value($ret, 'relations', $relations);
+    if (isset($relations)) Object::set_value($ret, 'relations', $relations);
     if ($fa = self::scan_for_formats($record_repo_dom)) {
       Object::set_value($ret, 'formatsAvailable', $fa);
     }
@@ -3128,8 +3129,8 @@ class openSearch extends webServiceServer {
    */
   private function extract_record(&$dom, $rec_id) {
     $record_source = self::record_source_from_pid($rec_id);
-    if ($alias = $this->collection_alias[$record_source]) {
-      $record_source = $alias;
+    if (isset($this->collection_alias[$record_source])) {
+      $record_source = $this->collection_alias[$record_source];
     }
     foreach ($this->format as $format_name => $format_arr) {
       switch ($format_name) {
