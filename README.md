@@ -46,7 +46,7 @@ to be installed in ./OLS_class_lib
  * cql2tree_class.php
  * curl_class.php
  * inifile_class.php
- * io_class.php
+ * ip_class.php
  * jsonconvert_class.php
  * memcache_class.php
  * objconvert_class.php
