@@ -297,6 +297,7 @@ class openSearch extends webServiceServer {
         $rank = $rank_cql;
       }
     }
+    $sort_q = '';
     if ($this->query_language == 'bestMatch') {
       $sort_q .= '&mm=1';
       $solr_query['edismax'] = $solr_query['best_match'];
@@ -319,6 +320,7 @@ class openSearch extends webServiceServer {
         $rank = 'rank_none';
       }
     }
+    $rank_q = '';
     if ($rank_types[$rank]) {
       $rank_qf = $this->cql2solr->make_boost($rank_types[$rank]['word_boost']);
       $rank_pf = $this->cql2solr->make_boost($rank_types[$rank]['phrase_boost']);
@@ -326,7 +328,7 @@ class openSearch extends webServiceServer {
       $rank_q = '&qf=' . urlencode($rank_qf) .  '&pf=' . urlencode($rank_pf) .  '&tie=' . $rank_tie;
     }
 
-    $facet_q = self::set_solr_facet_parameters($param->facets->_value);
+    $facet_q = empty($param->facets) ? '' : self::set_solr_facet_parameters($param->facets->_value);
 
   // TODO rows should max to like 5000 and use cursorMark to page forward. cursorMark need a sort paramater to work
     $rows = $step_value ? (($start + $step_value + 100) * 2)  + 100 : 0;
@@ -969,7 +971,7 @@ class openSearch extends webServiceServer {
     if (!is_array($sort)) {
       $sort = array();
     }
-    if ($param->sort) {
+    if (!empty($param->sort)) {
       $random = FALSE;
       $sorts = (is_array($param->sort) ? $param->sort : array($param->sort));
       $sort_types = $this->config->get_value('sort', 'setup');
