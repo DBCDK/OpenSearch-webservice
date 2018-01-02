@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 Documentation
 -------------
-http://oss.dbc.dk/plone/services/open-search-web-service
+http://oss.dbc.dk/services/open-search-web-service
 
 Use Doxygen to get code documentation
 
