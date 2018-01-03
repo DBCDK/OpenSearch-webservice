@@ -37,6 +37,18 @@ http://oss.dbc.dk/plone/services/open-search
 
 Use Doxygen to get code documentation
 
+Build
+-----
+
+To fetch The Needed OLS_class_lib files run the build.sh script. this script also builds 
+the opensearch-webservice.tar.gz file needed for the docker build. 
+
+```bash
+./build.sh
+(cd docker; docker build -t opensearch:devel . )
+docker run -ti -p 8080:80 --env-file=boble.env opensearch:devel
+```
+
 
 Installation
 ------------
@@ -71,3 +83,5 @@ Copy opensearch.wsdl_INSTALL to opensearch.wsdl
 Create a symbolic link from index.php to server.php or modify your webserver to default to server.php
 
 Consider copying robots.txt_INSTALL to robots.txt
+
+
