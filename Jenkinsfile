@@ -27,6 +27,7 @@ pipeline {
                 sh """                     
                     ./build.sh                                                                                    
                 """
+                archiveArtifacts artifacts: '**/docker/*.tar.gz', fingerprint: true
                 //junit "**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml"
             }
         }

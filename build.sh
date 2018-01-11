@@ -20,7 +20,7 @@ done
 
 cd ..
 
-tar cvzf docker/opensearch-webservice.tar.gz --exclude-vcs doc includes xml *.xsd *.php *.html *_INSTALL OLS_class_lib
+tar czf docker/opensearch-webservice.tar.gz --exclude-vcs doc includes xml *.xsd *.php *.html *_INSTALL OLS_class_lib
 
 echo 
 echo "ready for docker build"
