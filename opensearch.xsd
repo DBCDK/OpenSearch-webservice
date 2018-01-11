@@ -916,7 +916,7 @@ You should have received a copy of the GNU Affero General Public License along w
   </xs:element>
   <xs:element name="objectsAvailable">
     <xs:annotation>
-      <xs:documentation xml:lang="en">Identifiers of records matched together in the same unit.</xs:documentation>
+      <xs:documentation xml:lang="en">Identifiers of records matched together in the same unit. Responses from getObject does not have this block</xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
