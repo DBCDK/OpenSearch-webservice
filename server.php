@@ -90,8 +90,9 @@ class openSearch extends webServiceServer {
 
   /** \brief Entry search: Handles the request and set up the response
    *
+   * @param $param
+   * @return mixed
    */
-
   public function search($param) {
     $this->user_param = $param;
     $ret_error = new stdClass();
@@ -176,30 +177,6 @@ class openSearch extends webServiceServer {
     }
     $debug_query = $this->xs_boolean($param->queryDebug->_value);
     $this->agency_type = self::get_agency_type($this->agency);
-
-// for future use ...  var_dump($this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Folkebibliotek')); die();
-    if ($us_settings = $this->repository['universal']) {
-      require_once 'OLS_class_lib/universal_search_class.php';
-      $this->watch->start('UniSea');
-      $universal = new UniversalSearch($this->config->get_section($us_settings), $this->xmlns['mx']);
-      $collections = $universal->search($param->query->_value, $start, $step_value);
-      $this->watch->stop('UniSea');
-      if (is_scalar($collections)) {
-        $error = $collections;
-        return $ret_error;
-      }
-      if (is_array($collections)) {
-        self::format_records($collections);
-      }
-      $result = &$ret->searchResponse->_value->result->_value;
-      Object::set_value($result, 'hitCount', $universal->get_hits());
-      Object::set_value($result, 'collectionCount', count($collections));
-      Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
-      $result->searchResult = &$collections;
-      Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-      Object::set_value($result->statInfo->_value, 'trackingId', verbose::$tracking_id);
-      return $ret;
-    }
 
     if ($this->repository['postgress'] || $this->repository['rawrepo']) {
       $this->watch->start('rawrepo');
@@ -501,7 +478,7 @@ class openSearch extends webServiceServer {
         }
       }
     }
-    $new_raw_res = self::read_record_repo_all_urls($new_raw_urls, true);
+    $new_raw_res = self::read_record_repo_all_urls($new_raw_urls);
       foreach ($new_raw_res as $key => $raw_res) {
         if (!strpos($key, '-addi')) {
           $help = json_decode($raw_res);
@@ -650,7 +627,7 @@ class openSearch extends webServiceServer {
   *        repository\n
   * 
   * @param object $param - the user request
-  * @retval object - the answer to the request
+  * @return object - the answer to the request
   */
   public function getObject($param) {
     $this->user_param = $param;
@@ -938,7 +915,7 @@ class openSearch extends webServiceServer {
   /** \brief Entry info: collect info
   *
   * @param object $param - the user request
-  * @retval object - the answer to the request
+  * @return object - the answer to the request
   */
   public function info($param) {
     $result = &$ret->infoResponse->_value;
@@ -967,7 +944,7 @@ class openSearch extends webServiceServer {
    * @param object $param -       The request
    * @param string $rank -        Name of rank used by request
    * @param array $rank_types -   Settings for the given rank
-   * @retval boolean - TRUE if a ranking is found
+   * @return boolean - TRUE if a ranking is found
    */
   private function parse_for_ranking($param, &$rank, &$rank_types) {
     if ($rr = $param->userDefinedRanking) {
@@ -994,7 +971,7 @@ class openSearch extends webServiceServer {
    * @param object $param -       The request
    * @param string $sort -        Name of sort used by request
    * @param array $sort_types -   Settings for the given sort
-   * @retval mixed - error or NULL
+   * @return mixed - error or NULL
    */
   private function parse_for_sorting($param, &$sort, &$sort_types) {
     if (!is_array($sort)) {
@@ -1025,6 +1002,7 @@ class openSearch extends webServiceServer {
         }
       }
     }
+    return null;
   }
 
   /** \brief decides which formats to include in result and how the should be build
@@ -1032,7 +1010,7 @@ class openSearch extends webServiceServer {
    * @param mixed $objectFormat
    * @param array $open_format
    * @param array $solr_format
-   * @retval array 
+   * @return array
    */
   private function set_format($objectFormat, $open_format, $solr_format) {
     if (is_array($objectFormat))
@@ -1067,7 +1045,7 @@ class openSearch extends webServiceServer {
    *
    * @param array $profile - the users search profile
    * @param string $index - the index to filter (search) for collection identifiers
-   * @retval string - the SOLR filter query that represent the profile
+   * @return string - the SOLR filter query that represent the profile
    */
   private function set_solr_filter($profile, $index = 'rec.collectionIdentifier') {
     $collection_query = $this->repository['collection_query'];
@@ -1123,7 +1101,7 @@ class openSearch extends webServiceServer {
   /** \brief Build bq (BoostQuery) as field:content^weight 
    *
    * @param mixed $boost - boost query
-   * @retval string - SOLR boost string
+   * @return string - SOLR boost string
    */
   private static function boostUrl($boost) {
     $ret = '';
@@ -1152,7 +1130,7 @@ class openSearch extends webServiceServer {
    *
    * @param array $profile - the users search profile
    * @param string $index - the index to match collection identifiers against
-   * @retval string - the SOLR filter query that represent the profile
+   * @return string - the SOLR filter query that represent the profile
    */
   private function split_collections_for_holdingsitem($profile, $index = 'rec.collectionIdentifier') {
     $collection_query = $this->repository['collection_query'];
@@ -1184,7 +1162,7 @@ class openSearch extends webServiceServer {
    * - in repository: ['collection_alias']['870876-anmeld'] = '870976-allanmeld';
    * 
    * @param array $profile - the users search profile
-   * @retval array - collection alias'
+   * @return array - collection alias'
    */
   private function set_collection_alias($profile) {
     $collection_alias = array();
@@ -1208,7 +1186,7 @@ class openSearch extends webServiceServer {
    *
    * @param string $repository 
    * @param boolean $cql_file_mandatory 
-   * @retval mixed - error or NULL
+   * @return mixed - error or NULL
    */
   private function set_repositories($repository, $cql_file_mandatory = TRUE) {
     $repositories = $this->config->get_value('repository', 'setup');
@@ -1241,9 +1219,14 @@ class openSearch extends webServiceServer {
     else {
       return 'Error: Unknown repository: ' . $this->repository_name;
     }
+    return null;
   }
 
 
+  /**
+   * @param $key
+   * @return bool
+   */
   private function expand_default_repository_setting($key) {
       return (in_array(substr($key, 0, 7), array('fedora_', 'corepo_')));
   }
@@ -1281,9 +1264,9 @@ class openSearch extends webServiceServer {
   /** \brief Helper function to set debug info
    *  
    * @param array $solr_debug - debuginfo from SOLR
-   * @param object $rank_freq_debug - info about frequencies from ranking
-   * @param object $best_match_debug - info about best match parameters
-   * @retval object 
+   * @param mixed $rank_freq_debug - info about frequencies from ranking
+   * @param mixed $best_match_debug - info about best match parameters
+   * @return object
    */
   private function set_debug_info($solr_debug, $rank_freq_debug = '', $best_match_debug = '') {
     Object::set_value($ret, 'rawQueryString', $solr_debug['rawquerystring']);
@@ -1304,7 +1287,7 @@ class openSearch extends webServiceServer {
    * @param array $collections- the structure is modified
    * @param array $solr
    * @param array $work_ids
-   * @param array $pid_sort_keys
+   * @param array $fpid_sort_keys
    */
   private function format_solr(&$collections, $solr, &$work_ids, $fpid_sort_keys = array()) {
     $solr_display_ns = $this->xmlns['ds'];
@@ -1578,7 +1561,7 @@ class openSearch extends webServiceServer {
   /** \brief Set the parameters to solr facets
    *
    * @param object $facets - the facet paramaters from the request
-   * @retval string - facet part of solr url
+   * @return string - facet part of solr url
    */
   private function set_solr_facet_parameters($facets) {
     $max_threads = self::value_or_default($this->config->get_value('max_facet_threads', 'setup'), 50);
@@ -1610,7 +1593,7 @@ class openSearch extends webServiceServer {
   /** \brief Change cql_error to string
    *
    * @param array $solr_error
-   * @retval string
+   * @return string
    */
   private function cql2solr_error_to_string($solr_error) {
     $str = '';
@@ -1630,7 +1613,7 @@ class openSearch extends webServiceServer {
    * @param string $query 
    * @param boolean $all_objects 
    * @param string $filter_q 
-   * @retval mixed - error string or SOLR array
+   * @return mixed - error string or SOLR array
    */
   private function do_add_queries_and_fetch_solr_data_fields($add_queries, $query, $all_objects, $filter_q) {
     if ($this->format['found_solr_format']) {
@@ -1650,7 +1633,7 @@ class openSearch extends webServiceServer {
    * @param boolean $all_objects 
    * @param string $filter_q 
    * @param string $add_field_list - list of extra fields to return, like display_*
-   * @retval mixed - error string or SOLR array
+   * @return mixed - error string or SOLR array
    */
   private function do_add_queries($add_queries, $query, $all_objects, $filter_q, $add_field_list='') {
     foreach ($add_queries as $add_idx => $add_query) {
@@ -1685,7 +1668,7 @@ class openSearch extends webServiceServer {
 
       $this->curl->set_post($solr_parm, 0); // use post here because query can be very long
       $this->curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded; charset=utf-8'), 0);
-      $solr_result = $this->curl->get($solr_host, 0);
+      $solr_result = $this->curl->get($solr_host);
 // remember to clear POST 
       $this->curl->set_option(CURLOPT_POST, 0, 0);
       if (!($solr_arr[$add_idx] = unserialize($solr_result))) {
@@ -1696,26 +1679,11 @@ class openSearch extends webServiceServer {
     return $solr_arr;
   }
 
-  /** \brief Check if a record is searchable - currently obsolete
-   *
-   * @param string $unit_id - 
-   * @param string $filter_q - the filter query (search profile)
-   * @retval boolean - true if at least one record is found
-   */
-  private function is_searchable($unit_id, $filter_q) {
-// do not check for searchability, since the relation is found in the search_profile, it's ok to use it
-    return TRUE;
-    if (empty($filter_q)) return TRUE;
-
-    self::get_solr_array(FIELD_UNIT_ID . ':' . str_replace(':', '\:', $unit_id), 1, 0, '', '', '', rawurlencode($filter_q), '', '', $solr_arr);
-    return self::get_num_found($solr_arr);
-  }
-
   /** \brief Encapsules how to get the data from the first element
    *
    * @param array $solr_arr
    * @param string $element
-   * @retval mixed
+   * @return mixed
    */
   private function get_first_solr_element($solr_arr, $element) {
     $solr_docs = &$solr_arr['response']['docs'];
@@ -1725,7 +1693,7 @@ class openSearch extends webServiceServer {
   /** \brief Encapsules how to get hit count from the solr result
    *
    * @param array $solr_arr
-   * @retval integer
+   * @return integer
    */
   private function get_num_found($solr_arr) {
     return $solr_arr['response']['numFound'];
@@ -1771,7 +1739,7 @@ class openSearch extends webServiceServer {
    * @param string $boost - boost query (so far empty)
    * @param string $debug - include SOLR debug info
    * @param array $solr_arr - result from SOLR
-   * @retval string - error if any, NULL otherwise
+   * @return string - error if any, NULL otherwise
    */
   private function get_solr_array($q, $start, $rows, $sort, $rank, $facets, $filter, $boost, $debug, &$solr_arr) {
     $solr_urls[0] = self::create_solr_url($q, $start, $rows, $filter, $sort, $rank, $facets, $boost, $debug);
@@ -1783,7 +1751,7 @@ class openSearch extends webServiceServer {
    * @param array $eq - the edismax part of the parsed user query
    * @param array $guess - registers, filters, ... to get frequence for
    *
-   * @reval array - hitcount for each register
+   * @return array - hitcount for each register
    */
   private function get_register_freqency($eq, $guess) {
     $q = implode(OR_OP, $eq['q']);
@@ -1814,8 +1782,8 @@ class openSearch extends webServiceServer {
    * @param string $rank - ranking sceme
    * @param string $facets - facets-string
    * @param string $boost - boost query (so far empty)
-   * @param string $debug - include SOLR debug info
-   * @retval array - then SOLR url and url for debug purposes
+   * @param boolean $debug - include SOLR debug info
+   * @return array - then SOLR url and url for debug purposes
    */
   private function create_solr_url($eq, $start, $rows, $filter, $sort='', $rank='', $facets='', $boost='', $debug=FALSE) {
     $q = '(' . implode(')' . AND_OP . '(', $eq['q']) . ')';   // force parenthesis around each AND-node, to fix SOLR problem. BUG: 20957
@@ -1843,7 +1811,7 @@ class openSearch extends webServiceServer {
    *
    * @param array $urls - the url(s) to send to SOLR
    * @param array $solr_arr - result from SOLR
-   * @retval string - error if any, NULL otherwise
+   * @return string - error if any, NULL otherwise
    */
   private function do_solr($urls, &$solr_arr) {
     foreach ($urls as $no => $url) {
@@ -1873,6 +1841,7 @@ class openSearch extends webServiceServer {
       verbose::log(FATAL, 'Solr result in error: (' . $err['code'] . ') ' . preg_replace('/\s+/', ' ', $err['msg']));
       return 'Internal problem: Solr result contains error';
     }
+    return null;
   }
 
   /** \brief Selects a ranking scheme depending on some register frequency lookups
@@ -1881,7 +1850,7 @@ class openSearch extends webServiceServer {
    * @param array $ranks - list of defined rankings
    * @param string $user_filter - filter query as set by users profile
    *
-   * @retval string - the ranking scheme with highest number of hits
+   * @return string - the ranking scheme with highest number of hits
    *
    */
   private function guess_rank($solr_query, $ranks, $user_filter) {
@@ -1907,7 +1876,7 @@ class openSearch extends webServiceServer {
    * @param array $ranks - list of defined rankings
    * @param string $user_filter - filter query as set by users profile
    *
-   * @retval array - list of registers to search and the ranking to use
+   * @return array - list of registers to search and the ranking to use
    *
    */
   private function set_guesses($ranks, $user_filter) {
@@ -1936,7 +1905,7 @@ class openSearch extends webServiceServer {
   /** \brief fetch a file from the solr file directory
    *
    * @param string $name 
-   * @retval string (xml)
+   * @return string (xml)
    */
   private function get_solr_file($name) {
     static $solr_file_cache;
@@ -1961,11 +1930,27 @@ class openSearch extends webServiceServer {
   }
 
   /** \brief Isolation of creation of work structure for caching
-  *
-  * @param - way to many
-  * 
-  * Parameters to a solr-search should be isolated in a class object - refactor one day
-  */
+   *
+   * Parameters to a solr-search should be isolated in a class object - refactor one day
+   *
+   * @param $work_cache_struct
+   * @param $work_struct
+   * @param $more
+   * @param $work_ids
+   * @param $edismax
+   * @param $start
+   * @param $step_value
+   * @param $rows
+   * @param $sort_q
+   * @param $rank_q
+   * @param $filter_q
+   * @param $boost_q
+   * @param $use_work_collection
+   * @param $all_objects
+   * @param $num_found
+   * @param $debug_query
+   * @return mixed string or null
+   */
   private function build_work_struct_from_solr(&$work_cache_struct, &$work_struct, &$more, &$work_ids, $edismax, $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, $all_objects, $num_found, $debug_query) {
     for ($w_idx = 0; isset($work_ids[$w_idx]); $w_idx++) {
       $struct_id = $work_ids[$w_idx][FIELD_WORK_ID] . ($use_work_collection ? '' : '-' . $work_ids[$w_idx][FIELD_UNIT_ID]);
@@ -2023,6 +2008,7 @@ class openSearch extends webServiceServer {
     }
     //var_dump($edismax); var_dump($add_q); var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
     // var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
+    return null;
   }
 
 
@@ -2031,6 +2017,12 @@ class openSearch extends webServiceServer {
    **************************************/
 
 
+  /**
+   * @param string $unit_id
+   * @param array $pids
+   * @param string $visibility
+   * @return string
+   */
   private function corepo_get_url($unit_id, $pids, $visibility = 'showable') {
     return sprintf($this->repository['corepo_get'], $unit_id, implode(',', $pids), $this->agency, $this->profile, $visibility);
   }
@@ -2039,7 +2031,8 @@ class openSearch extends webServiceServer {
    *
    * @param string $type - type of record_repo operation
    * @param string $id - id of record_repo record to fetch
-   * @retval string
+   * @param string $datastream_id - name of datastream to use
+   * @return string
    */
   private function record_repo_url($type, $id, $datastream_id = '') {
     $uri = $datastream_id ? str_replace('commonData', $datastream_id, $this->repository[$type]) : $this->repository[$type];
@@ -2049,8 +2042,7 @@ class openSearch extends webServiceServer {
   /** \brief Check whether an object is deleted or not
    *
    * @param string $fpid - the pid to fetch
-   * @param string $datastream_id - 
-   * @retval boolean 
+   * @return boolean
    */
   private function deleted_object($fpid) {
     static $dom;
@@ -2071,7 +2063,7 @@ class openSearch extends webServiceServer {
    * @param string $fpid - the pid to fetch
    * @param string $record_repo_xml - the record is returned
    * @param string $datastream_id - 
-   * @retval mixed - error or NULL
+   * @return mixed - error or NULL
    */
   private function read_record_repo_raw($fpid, &$record_repo_xml, $datastream_id = 'commonData') {
     return self::read_record_repo(self::record_repo_url('fedora_get_raw', $fpid, $datastream_id), $record_repo_xml);
@@ -2081,7 +2073,7 @@ class openSearch extends webServiceServer {
    *
    * @param string $fpid - the pid to fetch
    * @param string $record_repo_addi_xml - the record is returned
-   * @retval mixed - error, FALSE or NULL
+   * @return mixed - error, FALSE or NULL
    */
   private function read_record_repo_rels_addi($fpid, &$record_repo_addi_xml) {
     if ($this->repository['fedora_get_rels_addi']) {
@@ -2096,7 +2088,7 @@ class openSearch extends webServiceServer {
    *
    * @param string $fpid - the pid to fetch
    * @param string $record_repo_hierarchy_xml - the record is returned
-   * @retval mixed - error or NULL
+   * @return mixed - error or NULL
    */
   private function read_record_repo_rels_hierarchy($fpid, &$record_repo_hierarchy_xml) {
     return self::read_record_repo(self::record_repo_url('fedora_get_rels_hierarchy', $fpid), $record_repo_hierarchy_xml);
@@ -2106,7 +2098,7 @@ class openSearch extends webServiceServer {
    *
    * @param string $fpid - the pid to fetch
    * @param string $record_repo_xml - the record is returned
-   * @retval mixed - error or NULL
+   * @return mixed - error or NULL
    */
   private function read_record_repo_datastreams($fpid, &$record_repo_xml) {
     return self::read_record_repo(self::record_repo_url('fedora_get_datastreams', $fpid), $record_repo_xml);
@@ -2116,7 +2108,7 @@ class openSearch extends webServiceServer {
    *
    * @param string $pid - record pid
    * @param string $localdata_in_pid - in localData stream of this pid
-   * @retval boolean - TRUE if record is deleted
+   * @return boolean - TRUE if record is deleted
    */
   private function is_deleted_record($pid, $localdata_in_pid) {
     if ($localdata_in_pid) {
@@ -2138,10 +2130,10 @@ class openSearch extends webServiceServer {
 
   /** \brief Setup call to record repository and execute it. The record is cached.
    *
-   * @param string $uri - the record_repo uri
+   * @param string $record_uri - the record_repo uri
    * @param string $rec - the record is returned
    * @param boolean $mandatory - how to handle a missing record/error
-   * @retval mixed - error or NULL
+   * @return mixed - error or NULL
    */
   private function read_record_repo($record_uri, &$rec, $mandatory=TRUE) {
     verbose::log(TRACE, 'repo_read: ' . $record_uri);
@@ -2170,13 +2162,13 @@ class openSearch extends webServiceServer {
       if ($this->cache) $this->cache->set($record_uri, $rec);
     }
     // else verbose::log(TRACE, 'record_repo cache hit for ' . $fpid);
-    return;
+    return null;
   }
 
   /** \brief Get multiple urls and return result in structure with the same indices
    *
    * @param array $urls - 
-   * @retval array 
+   * @return array
    */
   private function read_record_repo_all_urls($urls) {
     $ret = array();
@@ -2226,11 +2218,11 @@ class openSearch extends webServiceServer {
    * @param array $solr_response    Response from a solr search in php object
    * @param boolean $s11_records_allowed    restricted record
    * 
-   * @retval mixed  array of collections or error string
+   * @return mixed  array of collections or error string
    */
   private function get_records_from_rawrepo($rr_service, $solr_response, $s11_records_allowed) {
     if (empty($solr_response['docs'])) {
-      return;
+      return null;
     }
     $p_mask = '<?xml version="1.0" encoding="UTF-8"?' . '>' . PHP_EOL . '<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><fetchRequest xmlns="http://oss.dbc.dk/ns/rawreposervice"><records>' . PHP_EOL . '%s</records></fetchRequest></S:Body></S:Envelope>';
     $r_mask = '<record><bibliographicRecordId>%s</bibliographicRecordId><agencyId>%s</agencyId><mode>%s</mode><allowDeleted>true</allowDeleted><includeAgencyPrivate>true</includeAgencyPrivate></record>';
@@ -2242,7 +2234,7 @@ class openSearch extends webServiceServer {
     }
     $this->curl->set_post(sprintf($p_mask, $post), 0); // use post here because query can be very long
     $this->curl->set_option(CURLOPT_HTTPHEADER, array('Accept:application/xml;', 'Content-Type: text/xml; charset=utf-8'), 0);
-    $result = $this->curl->get($rr_service, 0);
+    $result = $this->curl->get($rr_service);
     $this->curl->set_option(CURLOPT_POST, 0, 0);
     $dom = new DomDocument();
     @ $dom->loadXml($result);
@@ -2301,11 +2293,11 @@ class openSearch extends webServiceServer {
   /** \brief Reads records from Raw Record Postgress Database
    *   
    * OBSOLETE from datawell 3.5 - use get_records_from_rawrepo instead
-   * @param string $rr_service    Address fo raw_repo service end point
+   * @param string $pg_db
    * @param array $solr_response    Response from a solr search in php object
    * @param boolean $s11_records_allowed    restricted record
    * 
-   * @retval mixed  array of collections or error string
+   * @return mixed  array of collections or error string
    */
   private function get_records_from_postgress($pg_db, $solr_response, $s11_records_allowed) {
     die('obsolete function - correct the inifile to use raw repo service instead');
@@ -2320,7 +2312,7 @@ class openSearch extends webServiceServer {
   /** \brief return agency priority
    * 
    * @param string $agency 
-   * @retval integer
+   * @return integer
    */
   private function agency_priority($agency) {
     if (!isset($this->agency_priority_list[$agency])) {
@@ -2332,7 +2324,7 @@ class openSearch extends webServiceServer {
   /** \brief Fetch agency types from OpenAgency, cache the result, and return agency type for $agency
    *
    * @param string $agency -
-   * @retval mixed - agency type (string) or FALSE
+   * @return mixed - agency type (string) or FALSE
    */
   private function get_agency_type($agency) {
     $this->watch->start('agency_type');
@@ -2347,7 +2339,7 @@ class openSearch extends webServiceServer {
 
   /** \brief Fetch priority list for agency
    *
-   * @retval mixed - array of agencies
+   * @return mixed - array of agencies
    */
   private function fetch_agency_show_priority() {
     $this->watch->start('agency_prio');
@@ -2360,7 +2352,7 @@ class openSearch extends webServiceServer {
    *
    * @param string $agency -
    * @param string $profile_name - 
-   * @retval mixed - profile (array) or FALSE
+   * @return mixed - profile (array) or FALSE
    */
   private function fetch_profile_from_agency($agency, $profile_name) {
     $this->watch->start('agency_profile');
@@ -2372,7 +2364,8 @@ class openSearch extends webServiceServer {
   /** \brief Fetch agency rules from OpenAgency and return specific agency rule
    *
    * @param string $agency -
-   * @retval boolean - agency rules
+   * @param string $name -
+   * @return boolean - agency rules
    */
   private function agency_rule($agency, $name) {
     static $agency_rules = array();
@@ -2394,7 +2387,7 @@ class openSearch extends webServiceServer {
    *
    * @param string $pid 
    * @param string $localdata_in_pid 
-   * @retval array - of object_id, datastream
+   * @return array - of object_id, datastream
    */
   private function create_fedora_pid_and_stream($pid, $localdata_in_pid) {
     if (empty($localdata_in_pid) || ($pid == $localdata_in_pid)) {
@@ -2408,7 +2401,7 @@ class openSearch extends webServiceServer {
    *  - else dataStream: commonData
    *
    * @param string $collection_id 
-   * @retval string
+   * @return string
    */
   private function set_data_stream_name($collection_id) {
     list($agency, $collection) = self::split_record_source($collection_id);
@@ -2427,7 +2420,7 @@ class openSearch extends webServiceServer {
   /** \brief Return first element of array or the element for scalar vars
    *
    * @param mixed $mixed
-   * @retval mixed
+   * @return mixed
    */
   private function scalar_or_first_elem($mixed) {
     if (is_array($mixed) || is_object($mixed)) {
@@ -2439,7 +2432,7 @@ class openSearch extends webServiceServer {
   /** \brief Fetch holding from extern web service
    *
    * @param string $pid
-   * @retval array - of 'have' and 'lend'
+   * @return array - of 'have' and 'lend'
    */
   private function get_holdings($pid) {
     static $hold_ws_url;
@@ -2475,7 +2468,7 @@ class openSearch extends webServiceServer {
    * @param string $collection - 
    * @param string $relation - 
    * @param array $profile - 
-   * @retval boolean 
+   * @return boolean
    */
   private function check_valid_external_relation($collection, $relation, $profile) {
     self::set_valid_relations_and_sources($profile);
@@ -2491,7 +2484,7 @@ class openSearch extends webServiceServer {
    * @param string $unit_id - 
    * @param string $relation - 
    * @param array $profile - 
-   * @retval mixed - name of source or FALSE
+   * @return mixed - name of source or FALSE
    */
   private function check_valid_internal_relation($unit_id, $relation, $profile) {
     self::set_valid_relations_and_sources($profile);
@@ -2515,7 +2508,7 @@ class openSearch extends webServiceServer {
    *
    * @param string $pid - 
    * @param string $relation - the relation to group by
-   * @retval array - list of record sources
+   * @return array - list of record sources
    */
   private function find_record_sources_and_group_by_relation($pid, $relation) {
     static $group_source_tab;
@@ -2537,7 +2530,7 @@ class openSearch extends webServiceServer {
   /** \brief finds the local datastreams for a given object
    *
    * @param string $pid - 
-   * @retval array - list of local datastreams found in the object
+   * @return array - list of local datastreams found in the object
    */
   private function fetch_valid_sources_from_stream($pid) {
     static $dom;
@@ -2564,7 +2557,7 @@ class openSearch extends webServiceServer {
   /** \brief sets valid relations from the search profile
    *
    * @param array $profile - 
-   * @retval array - of valid relations for the search profile
+   * @return void
    */
 // TODO - valid_relation should also reflect collection_contained_in 
 //        and then check in the collection is found in admin data in record_repo object
@@ -2597,7 +2590,8 @@ class openSearch extends webServiceServer {
 
   /** \brief Get info for OpenAgency, solr_file cache style/setup
    *
-   * @retval array - cache information from config
+   * @param $offset
+   * @return array - cache information from config
    */
   private function get_cache_info($offset) {
     static $ret;
@@ -2615,7 +2609,7 @@ class openSearch extends webServiceServer {
   /** \brief Extract source part of an ID 
    *
    * @param string $id - NNNNNN-xxxxxxx:nnnnnnn
-   * @retval string - the record source (NNNNNN-xxxxxxx)
+   * @return string - the record source (NNNNNN-xxxxxxx)
    */
   private function record_source_from_pid($id) {
     list($ret, $dummy) = explode(':', $id, 2);
@@ -2625,7 +2619,7 @@ class openSearch extends webServiceServer {
   /** \brief Split a record source
    *
    * @param string $record_source - NNNNNN-xxxxxxx
-   * @retval array 
+   * @return array
    */
   private function split_record_source($record_source) {
     return explode('-', $record_source, 2);
@@ -2634,7 +2628,7 @@ class openSearch extends webServiceServer {
   /** \brief Split a pid in its elements
    *
    * @param string $pid - NNNNNN-xxxxxxx:nnnnnnn
-   * @retval list of owner, collection and record-id
+   * @return array - list of owner, collection and record-id
    */
   private function split_pid($pid) {
     list($owner_collection, $id) = explode(':', $pid, 2);
@@ -2645,7 +2639,7 @@ class openSearch extends webServiceServer {
   /** \brief Parse a rels-ext record and extract the unit id
    *
    * @param string $rels_hierarchy - xml of the relation hierarchy object
-   * @retval string - the corresponding unit id
+   * @return string - the corresponding unit id
    */
   private function parse_rels_for_unit_id($rels_hierarchy) {
     return self::parse_rels_hierarchy($rels_hierarchy, array('isPrimaryBibObjectFor', 'isMemberOfUnit'));
@@ -2654,7 +2648,7 @@ class openSearch extends webServiceServer {
   /** \brief Parse a rels-ext record and extract the work id
    *
    * @param string $rels_hierarchy - xml of the relation hierarchy object
-   * @retval string - the corresponding work id
+   * @return string - the corresponding work id
    */
   private function parse_rels_for_work_id($rels_hierarchy) {
     return self::parse_rels_hierarchy($rels_hierarchy, array('isPrimaryUnitObjectFor', 'isMemberOfWork'));
@@ -2664,7 +2658,7 @@ class openSearch extends webServiceServer {
    *
    * @param string $rels_hierarchy - xml of the relation hierarchy object
    * @param array $tags - the tags to look for and return
-   * @retval string - the corresponding work id
+   * @return string - the corresponding work id
    */
   private function parse_rels_hierarchy($rels_hierarchy, $tags) {
     static $dom;
@@ -2688,8 +2682,9 @@ class openSearch extends webServiceServer {
    *         or the id of the primaryBibObject
    *
    * @param string $u_rel - xml of the unit object
+   * @param string $unit_id -
    * @param boolean $fallback - use primaryObject if no member is acceptable
-   * @retval string - "best" object_id from the unit
+   * @return string - "best" object_id from the unit
    */
   private function fetch_best_bib_object($u_rel, $unit_id, $fallback = TRUE) {
     $arr = self::parse_unit_for_best_agency($u_rel, $unit_id, $fallback);
@@ -2699,8 +2694,9 @@ class openSearch extends webServiceServer {
   /** \brief Parse a unit object and return the id of the agency with best priority for the agency
    *
    * @param string $u_rel - xml of the unit object
+   * @param string $unit_id -
    * @param boolean $fallback - use primaryObject if no member is acceptable
-   * @retval array - of object_id, primary_object_id and array of unit members
+   * @return array - of object_id, primary_object_id and array of unit members
    */
   private function parse_unit_for_best_agency($u_rel, $unit_id, $fallback = TRUE) {
     static $dom;
@@ -2791,7 +2787,7 @@ class openSearch extends webServiceServer {
    * 
    * @param string $agency 
    * @param string $collection 
-   * @retval boolean - TRUE is part of a source_grouping
+   * @return boolean - TRUE is part of a source_grouping
    */
   private function is_valid_source($agency, $collection) {
     $agency_type = self::get_agency_type($agency);
@@ -2825,7 +2821,7 @@ class openSearch extends webServiceServer {
    *       - 150013-palle is not a datastream on its own, but is produced from 870970-basis
    *
    * @param string $collection_id - collection identifier
-   * @retval boolean -
+   * @return boolean -
    */
   private function is_collective_collection($collection_id) {
     foreach ($this->collection_contained_in as $sub_collection => $container) {
@@ -2840,7 +2836,7 @@ class openSearch extends webServiceServer {
    *       - 870970-lokalbibl is a collective collecton for 159xxx-lokalbibl
    *
    * @param string $collection_id - collection identifier
-   * @retval boolean -
+   * @return boolean -
    */
   private function is_contained_in_collection($collection_id) {
     if ($cont_id = $this->collection_contained_in[$collection_id]) {
@@ -2857,10 +2853,11 @@ class openSearch extends webServiceServer {
    * @param array $in_870970_basis  - list of pids found in localData in 870970-basis
    * @param string $rels_type       - level for returning relations
    * @param string $rec_id          - record id of the record
+   * @param string $primary_id      - record id of primary object in unit
    * @param string $filter          - agency filter
    * @param integer $holdings_count -
-   * @param object $debug_info      -
-   * @retval object - record object in a collection object
+   * @param mixed $debug_info      -
+   * @return object - record object in a collection object
    */
   private function parse_record_repo_object(&$record_repo_xml, $record_repo_addi_obj, $unit_members, $in_870970_basis, $rels_type, $rec_id, $primary_id, $filter, $holdings_count, $debug_info='') {
     static $record_repo_dom;
@@ -2875,7 +2872,7 @@ class openSearch extends webServiceServer {
         $record_repo_dom->loadXML(sprintf($missing_record, $rec_id));
       }
       else
-        return;
+        return null;
     }
 
     $rec = self::extract_record($record_repo_dom, $rec_id);
@@ -2920,7 +2917,7 @@ class openSearch extends webServiceServer {
   /** \brief Check rec for available formats
    *
    * @param DOMDocument $dom - 
-   * @retval object - available formats found
+   * @return object - available formats found
    */
   private function scan_for_formats(&$dom) {
     static $form_table;
@@ -3089,7 +3086,7 @@ class openSearch extends webServiceServer {
       }
 // TODO: find some way to check relations validity against the search profile without wasting time on a solr-search
 // TODO: pseudo-collections, like 150015-ereol, which are part of a real collection, should be allowed even when the real collection is not allowed
-      if (isset($this->valid_relation[$collection_id]) && self::is_searchable($unit_id, $filter)) {
+      if (isset($this->valid_relation[$collection_id])) {
         Object::set_value($relation, 'relationType', $u_relations[$unit_id]);
         if ($rels_type == 'uri' || $rels_type == 'full') {
           Object::set_value($relation, 'relationUri', $rel_oid);
@@ -3122,7 +3119,7 @@ class openSearch extends webServiceServer {
   /** \brief extract record status from record_repo obj
    *
    * @param DOMDocument $dom - 
-   * @retval string - record status
+   * @return string - record status
    */
   private function get_record_status(&$dom) {
     return self::get_element_from_admin_data($dom, 'recordStatus');
@@ -3131,7 +3128,7 @@ class openSearch extends webServiceServer {
   /** \brief extract creation date from record_repo obj
    *
    * @param DOMDocument $dom - 
-   * @retval string - creation date
+   * @return string - creation date
    */
   private function get_creation_date(&$dom) {
     return self::get_element_from_admin_data($dom, 'creationDate');
@@ -3141,7 +3138,7 @@ class openSearch extends webServiceServer {
    *
    * @param DOMDocument $dom
    * @param string $tag_name
-   * @retval string 
+   * @return string
    */
   private function get_element_from_admin_data(&$dom, $tag_name) {
     if ($dom && $ads = $dom->getElementsByTagName('adminData')->item(0)) {
@@ -3155,7 +3152,7 @@ class openSearch extends webServiceServer {
    * @param DOMDocument $dom
    * @param string $element
    * @param integer $item - default 0
-   * @retval string 
+   * @return string
    */
   private function get_dom_element($dom, $element, $item = 0) {
     if ($node = $dom->getElementsByTagName($element)->item($item)) {
@@ -3169,7 +3166,7 @@ class openSearch extends webServiceServer {
    *
    * @param DOMDocument $dom - the container for the bibliographic record(s)
    * @param string $rec_id - only used for log-line(s)
-   * @retval object - the bibliographic object(s)
+   * @return object - the bibliographic object(s)
    */
   private function extract_record(&$dom, $rec_id) {
     $record_source = self::record_source_from_pid($rec_id);
@@ -3246,7 +3243,7 @@ class openSearch extends webServiceServer {
    * @param array $solr_arr - result from SOLR
    * array('facet_queries' => ..., 'facet_fields' => ..., 'facet_dates' => ...)
    *
-   * @retval object
+   * @return object
    * facet(*)
    * - facetName
    * - facetTerm(*)
@@ -3275,7 +3272,7 @@ class openSearch extends webServiceServer {
   /** \brief Handle non-standardized characters - one day maybe, this code can be deleted
    *
    * @param string $s
-   * @retval string 
+   * @return string
    */
   private function normalize_chars($s) {
     $from[] = "\xEA\x9C\xB2"; $to[] = 'Aa';
@@ -3286,7 +3283,7 @@ class openSearch extends webServiceServer {
 
   /** \brief - ensure that a parameter is an array
    * @param mixed $par
-   * @retval array 
+   * @return array
    */
   private function as_array($par) {
     return is_array($par) ? $par : ($par ? array($par) : array());
@@ -3297,7 +3294,7 @@ class openSearch extends webServiceServer {
    * @param array $struct - the structure to inspect
    * @param string $r_idx - the specific index
    * @param string $par - the parameter to return
-   * @retval string 
+   * @return string
    */
   private function get_val_or_default($struct, $r_idx, $par) {
     return $struct[$r_idx][$par] ? $struct[$r_idx][$par] : $struct[$par];
@@ -3306,7 +3303,7 @@ class openSearch extends webServiceServer {
   /** \brief - 
    * @param mixed $value
    * @param mixed $default
-   * @retval mixed $value if TRUE, $default otherwise
+   * @return mixed $value if TRUE, $default otherwise
    */
   private function value_or_default($value, $default) {
     return ($value ? $value : $default);
@@ -3314,7 +3311,7 @@ class openSearch extends webServiceServer {
 
   /** \brief - xs:boolean to php bolean
    * @param string $str
-   * @retval boolean - return true if xs:boolean is so
+   * @return boolean - return true if xs:boolean is so
    */
   private function xs_boolean($str) {
     return (strtolower($str) == 'true' || $str == 1);
@@ -3330,7 +3327,7 @@ class openSearch extends webServiceServer {
    * 
    * @param string $agency 
    * @param string $profile 
-   * @retval object - the user profile
+   * @return object - the user profile
    */
   private function get_search_profile_info($agency, $profile) {
     if ($s_profile = self::fetch_profile_from_agency($agency, $profile)) {
@@ -3372,7 +3369,7 @@ class openSearch extends webServiceServer {
 
   /** \brief Get information about object formats from config (info operation)
    * 
-   * @retval object 
+   * @return object
    */
   private function get_object_format_info() {
     foreach ($this->config->get_value('scan_format_table', 'setup') as $name => $value) {
@@ -3389,7 +3386,7 @@ class openSearch extends webServiceServer {
 
   /** \brief Get information about repositories from config (info operation)
    * 
-   * @retval object 
+   * @return object
    */
   private function get_repository_info() {
     $dom = new DomDocument();
@@ -3427,7 +3424,7 @@ class openSearch extends webServiceServer {
   /** \brief Get info from dom node (info operation)
    * 
    * @param domNode $node
-   * @retval object 
+   * @return object
    */
   private function set_name_and_slop($node) {
     $prefix = $node->getAttribute('set');
@@ -3440,7 +3437,7 @@ class openSearch extends webServiceServer {
 
   /** \brief Get information about namespaces from config (info operation)
    * 
-   * @retval object 
+   * @return object
    */
   private function get_namespace_info() {
     foreach ($this->config->get_value('xmlns', 'setup') as $prefix => $namespace) {
@@ -3454,7 +3451,7 @@ class openSearch extends webServiceServer {
 
   /** \brief Get information about sorting and ranking from config (info operation)
    * 
-   * @retval object 
+   * @return object
    */
   private function get_sort_info() {
     foreach ($this->config->get_value('rank', 'setup') as $name => $val) {
@@ -3499,7 +3496,7 @@ class openSearch extends webServiceServer {
   /** \brief return one rank entry (info operation)
    * 
    * @param array $rank 
-   * @retval object 
+   * @return object
    */
   private function collect_rank_boost($rank) {
     if (is_array($rank)) {
@@ -3519,7 +3516,7 @@ class openSearch extends webServiceServer {
 
   /** \brief fetch a cql-file from solr and display it
    *
-   * @retval string - xml doc or error
+   * @return void
    */
   protected function showCqlFile() {
     $repositories = $this->config->get_value('repository', 'setup');
@@ -3538,7 +3535,7 @@ class openSearch extends webServiceServer {
   /** \brief Compares registers in cql_file with solr, using the luke request handler:
    *   http://wiki.apache.org/solr/LukeRequestHandler
    *
-   * @retval string - html doc
+   * @return string - html doc
    */
   protected function diffCqlFileWithSolr() {
     if ($error = self::set_repositories($_REQUEST['repository'])) {
