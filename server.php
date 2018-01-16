@@ -1538,7 +1538,7 @@ class openSearch extends webServiceServer {
    * @param object $solr_query
    */
   private function modify_query_and_filter_agency(&$solr_query) {
-    foreach (array('q', 'fq') as $solr_par) {
+    foreach (['q', 'fq'] as $solr_par) {
       foreach ($solr_query['edismax'][$solr_par] as $q_idx => $q) {
         if (strpos($q, HOLDINGS_AGENCY_ID_FIELD . ':') === 0) {
           if (count($solr_query['edismax'][$solr_par]) == 1) {
@@ -1597,7 +1597,7 @@ class openSearch extends webServiceServer {
    */
   private function cql2solr_error_to_string($solr_error) {
     $str = '';
-    foreach (array('no' => '|: ', 'description' => '', 'details' => ' (|)', 'pos' => ' at pos ') as $tag => $txt) {
+    foreach (['no' => '|: ', 'description' => '', 'details' => ' (|)', 'pos' => ' at pos '] as $tag => $txt) {
       list($pre, $post) = explode('|', $txt);
       if ($solr_error[0][$tag]) {
         $str .= $pre . $solr_error[0][$tag]. $post;
@@ -1885,7 +1885,7 @@ class openSearch extends webServiceServer {
     $settings = $this->config->get_value('rank_frequency', 'setup');
     foreach ($settings as $r_idx => $setting) {
       if (isset($setting['register']) && $ranks[$setting['scheme']]) {
-        foreach (array('agency', 'register', 'scheme', 'weight', 'filter', 'profile') as $par) {
+        foreach (['agency', 'register', 'scheme', 'weight', 'filter', 'profile'] as $par) {
           $guess[$r_idx][$par] = self::get_val_or_default($settings, $r_idx, $par);
         }
       }
@@ -2776,7 +2776,7 @@ class openSearch extends webServiceServer {
            ' unit_members: ' . str_replace(PHP_EOL, '', print_r($unit_members, TRUE)) . 
            PHP_EOL;
     }
-    return(array($unit_members, $best_pid, $localdata_in_pid, $primary_pid, $in_870970_basis));
+    return([$unit_members, $best_pid, $localdata_in_pid, $primary_pid, $in_870970_basis]);
   }
 
   /** \brief check if a record source is contained in the search profile: searchable_source
