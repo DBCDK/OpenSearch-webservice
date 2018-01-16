@@ -1,11 +1,4 @@
-FROM docker.dbc.dk/dbc-apache-php
-
-# This should probably be included in a base image
-RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install gettext \
- && apt-get -y install memcached			      \
- && apt-get clean                                             \
- && rm -rf /var/lib/apt/lists/*
+FROM docker.dbc.dk/dbc-apache-php7
 
 # Dummy front html page.
 ADD index.html $APACHE_ROOT/index.html
@@ -16,7 +9,7 @@ RUN mkdir $APACHE_ROOT/opensearch
 ADD opensearch-webservice.tar.gz $APACHE_ROOT/opensearch
 
 RUN ln -s $APACHE_ROOT/opensearch/server.php $APACHE_ROOT/opensearch/index.php \
- && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /etc/php5/apache2/php.ini
+ && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /etc/php/7.0/apache2/php.ini
 
 EXPOSE 80
 
