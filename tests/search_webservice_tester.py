@@ -25,9 +25,7 @@ import os
 from lxml import etree
 from configobj import ConfigObj
 import subprocess
-import requests
-import logging
-import httplib
+import urllib2
 
 ####################################################################################################
 ### Xpaths for nodes that should be filtered from response xml before comparison.
@@ -36,11 +34,11 @@ import httplib
 NAMESPACES = {'SOAP-ENV': 'http://schemas.xmlsoap.org/soap/envelope/',
               'oss': 'http://oss.dbc.dk/ns/opensearch'}
 
-IGNORE = ['/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:statInfo',
-          '/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:searchResult/oss:collection/oss:object/oss:queryResultExplanation']
+IGNORE = [ '/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:statInfo',
+           '/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:searchResult/oss:collection/oss:object/oss:queryResultExplanation' ]
 
 ####################################################################################################
-CONFIG_FILE = 'config.ini'  ### used internally to store testfolder paths
+CONFIG_FILE = 'config.ini' ### used internally to store testfolder paths
 
 
 def retrieve_requests_and_response_files(request_folder, response_folder):
@@ -53,11 +51,11 @@ def retrieve_requests_and_response_files(request_folder, response_folder):
         relpath = os.path.relpath(root, request_folder)
         for f in files:
 
-            request_file = os.path.abspath(os.path.join(request_folder, relpath, f))
-            response_file = os.path.abspath(os.path.join(response_folder, relpath, f))
+            request_file = os.path.abspath(os.path.join( request_folder, relpath, f))
+            response_file = os.path.abspath(os.path.join( response_folder, relpath, f))
 
             if not os.path.exists(response_file):
-                err_mesg = "could not find response matching request file at %s. (expected response file: %s)" % (request_file, response_file)
+                err_mesg = "could not find response matching request file at %s. (expected response file: %s)"%(request_file, response_file)
                 raise RuntimeError(err_mesg)
 
             yield (request_file, response_file)
@@ -81,31 +79,16 @@ def generate_diff(actual_response, expected_response):
     """ generates diff based on actual_response and expected_response strings"""
     rm_blanks = lambda x: x != ''
     diff = difflib.unified_diff(filter(rm_blanks, actual_response.split('\n')),
-                                filter(rm_blanks, expected_response.split('\n')), lineterm='')
+                                filter(rm_blanks, expected_response.split('\n')), lineterm='' )
     return '\n'.join([x for x in diff])
 
 
 def retrieve_response(url, request_string):
     """ POSTS request to server at url and returns response"""
 
-    httplib.HTTPConnection.debuglevel = 1
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.DEBUG)
-    req_log = logging.getLogger('requests.packages.urllib3')
-    req_log.setLevel(logging.DEBUG)
-    req_log.propagate = True
-
-    #request = urllib2.Request(url, request_string, headers={'Content-type': 'text/xml'})
-    #response = urllib2.urlopen(request)
-    #headers = {'content-type': 'application/soap+xml'}
-
-    headers={'content-type': 'application/x-www-form-urlencoded'}
-    r=requests.post(url, data=request_string, headers=headers, allow_redirects=False)
-    print("ja7 : ", r.headers['content-type'], " ", r.status_code)
-    res = r.text
-
-    print("ja7 : ",res[0:1000] )
-    return res
+    request = urllib2.Request(url, request_string, headers={'Content-type': 'text/xml'})
+    response = urllib2.urlopen(request)
+    return response.read()
 
 
 def prune_and_prettyprint(xml_string):
@@ -128,7 +111,7 @@ def compare(request_file, response_file, url):
 
     diff = generate_diff(actual_response, expected_response)
     if diff != '':
-        raise AssertionError("comparison produced diff: (expected response: %s)\n%s" % (response_file, diff))
+        raise AssertionError("comparison produced diff: (expected response: %s)\n%s"%(response_file, diff))
 
 
 def test_webservice():
@@ -148,7 +131,7 @@ if __name__ == '__main__':
     usage = "usage: %prog [options] request-folder response-folder"
     parser = OptionParser(usage=usage)
     parser.add_option("-u", "--url", dest="url",
-                      help="Base url of the webservice to run test again. Default is '%s'" % url)
+                      help="Base url of the webservice to run test again. Default is '%s'"%url)
 
     (options, args) = parser.parse_args()
 
@@ -166,10 +149,10 @@ if __name__ == '__main__':
     config.filename = CONFIG_FILE
     config.write()
 
-    print("Running Tests:")
-    print("request-folder  : %s" % args[0])
-    print("response-folder : %s" % args[1])
-    print("webservice      : %s" % url)
+    print "Running Tests:"
+    print "request-folder  : %s"%args[0]
+    print "response-folder : %s"%args[1]
+    print "webservice      : %s"%url
 
     subprocess.call(["nosetests", "-s", "--with-xunit", "search_webservice_tester.py"])
 
