@@ -20,7 +20,13 @@ done
 
 cd ..
 
-tar czf docker/opensearch-webservice.tar.gz --exclude-vcs doc includes xml *.xsd *.php *.html *_INSTALL OLS_class_lib
+if [ -n "${BUILD_NUMBER}" ]; then
+  echo ${BUILD_NUMBER} > BUILDNUMBER
+else
+  echo "Build Number Unknown" > BUILDNUMBER
+fi
+
+tar czf docker/opensearch-webservice.tar.gz --exclude-vcs doc includes xml *.xsd *.php *.html *_INSTALL OLS_class_lib BUILDNUMBER
 
 echo 
 echo "ready for docker build"

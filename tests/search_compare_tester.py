@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 """
@@ -20,14 +20,15 @@ example of usage:
     python tester.py --url http://lakiseks.dbc.dk/test/ requests/ responses/
 
 """
+import argparse
 import difflib
 import os
+from xml.etree import ElementTree
 from lxml import etree
+
 from configobj import ConfigObj
 import subprocess
 import requests
-import logging
-import httplib
 
 ####################################################################################################
 ### Xpaths for nodes that should be filtered from response xml before comparison.
@@ -41,6 +42,8 @@ IGNORE = ['/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:st
 
 ####################################################################################################
 CONFIG_FILE = 'config.ini'  ### used internally to store testfolder paths
+
+
 
 
 def retrieve_requests_and_response_files(request_folder, response_folder):
@@ -88,43 +91,36 @@ def generate_diff(actual_response, expected_response):
 def retrieve_response(url, request_string):
     """ POSTS request to server at url and returns response"""
 
-    httplib.HTTPConnection.debuglevel = 1
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.DEBUG)
-    req_log = logging.getLogger('requests.packages.urllib3')
-    req_log.setLevel(logging.DEBUG)
-    req_log.propagate = True
-
-    #request = urllib2.Request(url, request_string, headers={'Content-type': 'text/xml'})
-    #response = urllib2.urlopen(request)
-    #headers = {'content-type': 'application/soap+xml'}
-
     headers={'content-type': 'application/x-www-form-urlencoded'}
     r=requests.post(url, data=request_string, headers=headers, allow_redirects=False)
-    print("ja7 : ", r.headers['content-type'], " ", r.status_code)
-    res = r.text
-
-    print("ja7 : ",res[0:1000] )
-    return res
+    print("ja7 2: ", r.headers['content-type'], " ", r.status_code)
+    print("ja7 3: ", r.content)
+    return r.content
 
 
 def prune_and_prettyprint(xml_string):
     """ removed nodes found in the IGNORE list and pretty print xml"""
-    parser = etree.XMLParser(remove_blank_text=True, encoding="UTF-8")
-    xml = etree.fromstring(xml_string, parser)
+    #xml = ElementTree.fromstring(xml_string)
+    from io import StringIO, BytesIO
+
+    xml = etree.parse(BytesIO(xml_string))
 
     for path in IGNORE:
         nodes = xml.xpath(path, namespaces=NAMESPACES)
         for node in nodes:
-            node.getparent().remove(node)
+            print(" found node ", node)
+            #node.getparent().remove(node)
 
-    return etree.tostring(xml, pretty_print=True)
+    res=etree.tostring(xml, pretty_print=True)
+    print("ja7 - 4 : ", res[0:100])
+
+    return res
 
 
 def compare(request_file, response_file, url):
     """ Compare function. Raises an assertionError if diff is found between request_file and response_file """
     actual_response = prune_and_prettyprint(retrieve_response(url, read_file(request_file)))
-    expected_response = prune_and_prettyprint(read_file(response_file))
+    expected_response = prune_and_prettyprint(retrieve_response(url, read_file(request_file)))
 
     diff = generate_diff(actual_response, expected_response)
     if diff != '':
@@ -139,38 +135,39 @@ def test_webservice():
         yield compare, request_file, response_file, url
 
 
+def parse_arguments():
+    global args
+    parser = argparse.ArgumentParser("compare results ")
+    parser.add_argument("actualUrl", help="Url of opensearch-webservice generating actual results")
+    parser.add_argument("expectedUrl", help="Url of opensearch-webservice generating expected results")
+    parser.add_argument("requests", help="Url of opensearch-webservice generating expected results")
+
+    args = parser.parse_args()
+
+
 if __name__ == '__main__':
-
-    from optparse import OptionParser
-
-    url = 'http://lakiseks.dbc.dk/test/'
-
-    usage = "usage: %prog [options] request-folder response-folder"
-    parser = OptionParser(usage=usage)
-    parser.add_option("-u", "--url", dest="url",
-                      help="Base url of the webservice to run test again. Default is '%s'" % url)
-
-    (options, args) = parser.parse_args()
-
-    if len(args) < 2:
-        parser.error('request-folder and response-folder must be given as parameters')
-
-    if options.url:
-        url = options.url
+    
+    parse_arguments()
 
     ### The config file is read by the test generator, when nosetests is called.
     config = ConfigObj()
-    config['request_folder'] = args[0]
-    config['response_folder'] = args[1]
-    config['url'] = url
+    config['request_folder'] = args.requests
+    config['response_folder'] = args.requests
+    config['url'] = args.actualUrl
     config.filename = CONFIG_FILE
     config.write()
 
     print("Running Tests:")
-    print("request-folder  : %s" % args[0])
-    print("response-folder : %s" % args[1])
-    print("webservice      : %s" % url)
+    print("request-folder  : %s" % config['request_folder'])
+    print("webservice      : %s" % config['url'])
 
-    subprocess.call(["nosetests", "-s", "--with-xunit", "search_webservice_tester.py"])
+    import nose
 
+    #nose.main(argv=["-s", __file__])
+    nose.runmodule( argv=["-vv","-s"])
+    #nose.main(argv=[__file__, "-vv" "-s", "--with-xunit", "--xunit-file=FILE.xml"])
+    #nose.main(argv=["-s", "--with-xunit", "--xunit-file=FILE.xml", __file__])
+    #subprocess.call(["nosetests", "-s", "--with-xunit", __file__])
+
+    print("ja7 Exit is run")
     os.remove(CONFIG_FILE)
