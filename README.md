@@ -57,6 +57,7 @@ to be installed in ./OLS_class_lib
  * aaa_class.php
  * cql2tree_class.php
  * curl_class.php
+ * format_class.php (only if openFormat functionality is included in ini-file)
  * inifile_class.php
  * ip_class.php
  * jsonconvert_class.php
