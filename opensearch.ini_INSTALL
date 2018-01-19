@@ -108,7 +108,7 @@ missing_marc_record = <?xml version='1.0' encoding='UTF-8'?><marcx:record format
 
 
 ; --------------
-; agencies allowed to see records from RR (postgress db) containing s11 field
+; agencies allowed to see records from RR (rawrepo db) containing s11 field
 s11_agency[] = 100200
 s11_agency[] = 870970
 
@@ -244,11 +244,6 @@ repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^[a-z]'] 
 repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^...$'] = [&]
 
 @EXTRA_REPOSITORIES@
-
-; Universal Search - sofar still for test only:
-; repository for Universal Search - settings are found in [universal_search_settings] section
-; Using "universal" as repository parameter, will trigger the use of Universal Search instead of normal scheme
-; repository[worldCat][universal] = universal_search_settings
 
 ; info to find available index and files from a solr repos
 ; solr_luke[from] = to    will replace "from" with "to" in the solr-uri
@@ -641,18 +636,6 @@ sort[dateFirstEdition_descending][] = solr_dateFirstEdition_descending
 ; - "user_profile" will use the filter provided by the user specified search profile
 frequency_filter[] = user_profile
 frequency_filter[] = term.date:[1940 TO *]
-
-; ==============
-
-[universal_search_settings]
-target = @WORLDCAT_ZTARGET@
-database = @WORLDCAT_ZTARGET_DATABASE@
-authentication = @WORLDCAT_ZTARGET_AUTHENTICATION@
-;proxy = @WORLDCAT_ZTARGET_PROXY@
-syntax = @WORLDCAT_ZTARGET_SYNTAX@
-element = @WORLDCAT_ZTARGET_ELEMENT@
-rpn = @attr 6=1 @attr 4=2 @attr 3=3 @attr 2=3 @attr BIB1 1=1016 %s
-timeout = 30
 
 ; ==============
 

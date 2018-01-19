@@ -178,7 +178,7 @@ class openSearch extends webServiceServer {
     $debug_query = $this->xs_boolean($param->queryDebug->_value);
     $this->agency_type = self::get_agency_type($this->agency);
 
-    if ($this->repository['postgress'] || $this->repository['rawrepo']) {
+    if ($this->repository['rawrepo']) {
       $this->watch->start('rawrepo');
       $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language);
       $this->watch->start('cql');
@@ -208,12 +208,7 @@ class openSearch extends webServiceServer {
         return $ret_error;
       }
       $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), []);
-      if ($this->repository['rawrepo']) {
-        $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $solr_arr['response'], in_array($this->agency, $s11_agency));
-      }
-      else {
-        $collections = self::get_records_from_postgress($this->repository['postgress'], $solr_arr['response'], in_array($this->agency, $s11_agency));
-      }
+      $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $solr_arr['response'], in_array($this->agency, $s11_agency));
       $this->watch->stop('rawrepo');
       if (is_scalar($collections)) {
         $error = $collections;
@@ -712,7 +707,7 @@ class openSearch extends webServiceServer {
         unset($fpid);
       }
     }
-    if ($this->repository['postgress'] || $this->repository['rawrepo']) {
+    if ($this->repository['rawrepo']) {
       foreach ($fpids as $fpid) {
         list($owner_collection, $id) = explode(':', $fpid->_value);
         list($owner, $coll) = explode('-', $owner_collection);
@@ -723,12 +718,7 @@ class openSearch extends webServiceServer {
         }
       }
       $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), []);
-      if ($this->repository['rawrepo']) {
-        $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $docs, in_array($this->agency, $s11_agency));
-      }
-      else {
-        $collections = self::get_records_from_postgress($this->repository['postgress'], $docs, in_array($this->agency, $s11_agency));
-      }
+      $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $docs, in_array($this->agency, $s11_agency));
       if (is_scalar($collections)) {
         $error = $collections;
         return $ret_error;
@@ -808,13 +798,6 @@ class openSearch extends webServiceServer {
         $fedora_pid = $basis_pid;
       }
 
-/* if not searchable, the records is not there
-      if (!$unit_id) {
-        verbose::log(WARNING, 'getObject:: Cannot find unit for ' . $fpid->_value . ' in SOLR');
-        self::read_record_repo_rels_hierarchy($fpid->_value, $fedora_rels_hierarchy);
-        $unit_id = self::parse_rels_for_unit_id($fedora_rels_hierarchy);
-      }
-*/
       if (!$unit_id) {
         $rec_error = 'Error: unknown/missing/inaccessible record: ' . $fpid->_value;
       }
@@ -2288,19 +2271,6 @@ class openSearch extends webServiceServer {
       verbose::log(ERROR, __FUNCTION__ . ':: no record(s) found. http_code: ' . $this->curl->get_status('http_code') . ' post: ' . sprintf($p_mask, $post) . ' result: ' . $result);
     }
     return $ret;
-  }
-
-  /** \brief Reads records from Raw Record Postgress Database
-   *
-   * OBSOLETE from datawell 3.5 - use get_records_from_rawrepo instead
-   * @param string $pg_db
-   * @param array $solr_response    Response from a solr search in php object
-   * @param boolean $s11_records_allowed    restricted record
-   *
-   * @return mixed  array of collections or error string
-   */
-  private function get_records_from_postgress($pg_db, $solr_response, $s11_records_allowed) {
-    die('obsolete function - correct the inifile to use raw repo service instead');
   }
 
 
