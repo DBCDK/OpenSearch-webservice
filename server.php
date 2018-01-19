@@ -1,4 +1,7 @@
 <?php
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 //-----------------------------------------------------------------------------
 /**
  *
@@ -461,14 +464,14 @@ class openSearch extends webServiceServer {
       }
     }
     $raw_res = self::read_record_repo_all_urls($raw_urls);
-    foreach ($raw_res as $key => $raw_res) {
+    foreach ($raw_res as $key => $r_res) {
       if (!strpos($key, '-addi')) {
-        $help = json_decode($raw_res);
+        $help = json_decode($r_res);
         $raw_res[$key] = $help->xml;
         $unit_info[$key] = [$help->pids, $help->pids[0], null, $help->pids[0]];
       }
     }
-//var_dump($raw_urls); var_dump($raw_res); die();
+    //var_dump($raw_urls); var_dump($raw_res); die();
 
     // find number og holding, sort_key and include relations
     foreach ($work_ids as &$work) {
@@ -800,15 +803,15 @@ class openSearch extends webServiceServer {
       else {
         $fedora_result = json_decode($corepo_res[$pid]);
         if ($param->relationData->_value) {
-          $fedora_addi_relation = json_decode($corepo_res[$unit_id . '-addi']);
+          $fedora_addi_relation = $corepo_res[$unit_id . '-addi'];
         }
         if (self::xs_boolean($param->includeHoldingsCount->_value)) {
           $no_of_holdings = self::get_holdings($pid);
         }
         Object::set($o->collection->_value->object[], '_value',
                     self::parse_record_repo_object($fedora_result->xml,
-                                                   $fedora_addi_relation->xml,
-                                                   $unit_members,
+                                                   $fedora_addi_relation,
+                                                   array(),
                                                    $in_870970_basis,
                                                    $param->relationData->_value,
                                                    $pid,
