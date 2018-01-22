@@ -467,7 +467,7 @@ class openSearch extends webServiceServer {
     foreach ($raw_res as $key => $r_res) {
       if (!strpos($key, '-addi')) {
         $help = json_decode($r_res);
-        $raw_res[$key] = $help->xml;
+        $raw_res[$key] = $help->dataStream;
         $unit_info[$key] = [$help->pids, $help->pids[0], null, $help->pids[0]];
       }
     }
@@ -809,7 +809,7 @@ class openSearch extends webServiceServer {
           $no_of_holdings = self::get_holdings($pid);
         }
         Object::set($o->collection->_value->object[], '_value',
-                    self::parse_record_repo_object($fedora_result->xml,
+                    self::parse_record_repo_object($fedora_result->dataStream,
                                                    $fedora_addi_relation,
                                                    array(),
                                                    $in_870970_basis,
