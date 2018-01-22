@@ -468,7 +468,7 @@ class openSearch extends webServiceServer {
       if (!strpos($key, '-addi')) {
         $help = json_decode($r_res);
         $raw_res[$key] = $help->dataStream;
-        $unit_info[$key] = [$help->pids, $help->pids[0], null, $help->pids[0]];
+        $unit_info[$key] = [$help->pids, $help->pids[0], $help->primaryPid];
       }
     }
     //var_dump($raw_urls); var_dump($raw_res); die();
@@ -477,7 +477,7 @@ class openSearch extends webServiceServer {
     foreach ($work_ids as &$work) {
       $objects = [];
       foreach ($work as $unit_id => $pids) {
-        list($unit_members, $fpid, $localdata_in_pid, $primary_oid, $in_870970_basis) = $unit_info[$unit_id];
+        list($unit_members, $fpid, $primary_oid, $in_870970_basis) = $unit_info[$unit_id];
         $sort_holdings = ' ';
         $no_of_holdings = null;
         if (isset($param->includeHoldingsCount) && self::xs_boolean($param->includeHoldingsCount->_value)) {
@@ -1962,11 +1962,10 @@ class openSearch extends webServiceServer {
   /**
    * @param string $unit_id
    * @param array $pids
-   * @param string $visibility
    * @return string
    */
-  private function corepo_get_url($unit_id, $pids, $visibility = 'showable') {
-    return sprintf($this->repository['corepo_get'], $unit_id, implode(',', $pids), $this->agency, $this->profile, $visibility);
+  private function corepo_get_url($unit_id, $pids) {
+    return sprintf($this->repository['corepo_get'], $unit_id, implode(',', $pids), $this->agency);
   }
 
   /** \brief Create record_repo url from settings and given id
