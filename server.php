@@ -410,7 +410,7 @@ class openSearch extends webServiceServer {
 // fetch data to sort_keys and (if needed) sorl display format(s)
     $q_unit = [];
     foreach ($work_ids as $work) {
-      foreach ($work as $unit_id) {
+      foreach ($work as $unit_id => $unit_pids) {
         $q_unit[] = '"' . $unit_id . '"';
       }
     }
