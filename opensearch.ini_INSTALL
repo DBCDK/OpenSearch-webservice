@@ -320,6 +320,18 @@ open_format[refWorks][format] = refWorks
 open_format[ris][format] = ris
 open_format[marc21ToDm2][format] = marc21ToDm2
 
+; custom uri for netpunkt formats
+open_format['netpunkt_brief']['format'] = netpunkt_brief
+open_format['netpunkt_brief']['uri'] = @NETPUNKT_OPEN_FORMAT@
+open_format['netpunkt_standard']['format'] = netpunkt_standard
+open_format['netpunkt_standard']['uri'] = @NETPUNKT_OPEN_FORMAT@
+open_format['netpunkt_marc21']['format'] = netpunkt_marc21
+open_format['netpunkt_marc21']['uri'] = @NETPUNKT_OPEN_FORMAT@
+open_format['bob_detail']['format'] = bob_detail
+open_format['bob_detail']['uri'] = @NETPUNKT_OPEN_FORMAT@
+open_format['netpunkt_dm2']['format'] = netpunkt_dm2
+open_format['netpunkt_dm2']['uri'] = @NETPUNKT_OPEN_FORMAT@
+
 ; --------------
 ; formats supported by solr-indexes. Comma separated list of solr tags
 ; fedora.identifier will take the id of the manifestation from the fedora object
