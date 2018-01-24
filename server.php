@@ -815,7 +815,7 @@ class openSearch extends webServiceServer {
                                                    $in_870970_basis,
                                                    $param->relationData->_value,
                                                    $pid,
-                                                   $primary_oid,
+                                                   $fedora_result->primaryPid,
                                                    $this->filter_agency,
                                                    $no_of_holdings));
       }
