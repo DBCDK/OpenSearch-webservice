@@ -80,6 +80,7 @@ class openSearch extends webServiceServer {
     define('FIELD_UNIT_ID', 'unit.id');
     define('FIELD_FEDORA_PID', 'fedoraPid');
     define('FIELD_WORK_ID', 'rec.workId');
+    define('FIELD_REC_ID', 'rec.id');
     define('HOLDINGS_AGENCY_ID_FIELD', self::value_or_default($this->config->get_value('field_holdings_agency_id', 'setup'), 'rec.holdingsAgencyId'));
 
     define('DEBUG_ON', $this->debug);
@@ -1743,8 +1744,8 @@ class openSearch extends webServiceServer {
       '&fq=' . $filter .
       '&start=' . $start . $sort . $rank . $boost . $facets . $handler_var .
       '&defType=edismax';
-    $debug_url = $url . '&fl=' . FIELD_FEDORA_PID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . '&rows=1&debugQuery=on';
-    $url .= '&fl=' . FIELD_FEDORA_PID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . '&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
+    $debug_url = $url . '&fl=' . FIELD_FEDORA_PID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . '&rows=1&debugQuery=on';
+    $url .= '&fl=' . FIELD_FEDORA_PID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . '&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
 
     return ['url' => $url, 'debug' => $debug_url];
   }
@@ -1936,20 +1937,21 @@ class openSearch extends webServiceServer {
           $unit_id = $fdoc[FIELD_UNIT_ID];
           $work_id = $fdoc[FIELD_WORK_ID];
           $fedora_pid = $fdoc[FIELD_FEDORA_PID];
-// FVS change struct to hold work->unit->pids
-          $work_slice[$work_id][$unit_id][$fedora_pid] = $fedora_pid;;
-          //if (!in_array($unit_id, $work_slice[$work_id])) {
-          //$work_slice[$work_id][] = $work_cache_struct[$work_id][] = $unit_id;
-          //}
+          foreach ($fdoc[FIELD_REC_ID] as $rec_id) {
+            if (self::is_corepo_pid($rec_id)) {
+              $work_slice[$work_id][$unit_id][$rec_id] = $rec_id;;
+            }
+          }
         }
       }
     }
     $pos = $start;
-    foreach ($work_slice as $work) {
+    foreach ($work_slice as $w_id => $work) {
       $work_struct[$pos++] = $work;
+      // $work_struct[$w_id] = $work;
     }
     //var_dump($edismax); var_dump($add_q); var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
-    // var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
+     // var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
     return null;
   }
 
@@ -2535,6 +2537,13 @@ class openSearch extends webServiceServer {
                                                        $this->config->get_value('cache_expire', 'setup'));
     }
     return $ret[$offset];
+  }
+
+  /**
+   * @param $pid
+   */
+  private function is_corepo_pid($pid) {
+    return ((count(explode('-', $pid)) == 2) && (count(explode(':', $pid)) == 2));
   }
 
   /** \brief Extract source part of an ID
