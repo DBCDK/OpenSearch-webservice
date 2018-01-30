@@ -1,16 +1,16 @@
 FROM docker.dbc.dk/dbc-apache-php7
 
 # Dummy front html page.
-ADD index.html $APACHE_ROOT/index.html
-ADD run.sh /run.sh
+COPY index.html $APACHE_ROOT/index.html
+COPY run.sh /run.sh
+COPY memcached.conf /etc/
 
 # Download and prepare php source-code
 RUN mkdir $APACHE_ROOT/opensearch
 ADD opensearch-webservice.tar.gz $APACHE_ROOT/opensearch
 
 RUN ln -s $APACHE_ROOT/opensearch/server.php $APACHE_ROOT/opensearch/index.php \
- && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /etc/php/7.0/apache2/php.ini \
- && echo -e "\n-I 10m\n" >> /etc/memcached.conf
+ && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /etc/php/7.0/apache2/php.ini  
 
 EXPOSE 80
 
