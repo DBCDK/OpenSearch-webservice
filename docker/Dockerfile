@@ -10,13 +10,11 @@ RUN mkdir $APACHE_ROOT/opensearch
 ADD opensearch-webservice.tar.gz $APACHE_ROOT/opensearch
 
 RUN ln -s $APACHE_ROOT/opensearch/server.php $APACHE_ROOT/opensearch/index.php \
- && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /etc/php/7.0/apache2/php.ini  
+ && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /etc/php/7.0/apache2/php.ini  \
+ && perl -pi -e 's/MaxRequestWorkers.*/MaxRequestWorkers\t 50/' /etc/apache2/mods-available/mpm_prefork.conf
+ 
 
 EXPOSE 80
-
-# Provide means of traceability via build time arguments
-ARG JENKINS_BUILD_NUMBER="N/A"
-ENV JENKINS_BUILD_NUMBER=$JENKINS_BUILD_NUMBER
 
 # openSearch default settings
 ENV AGENCY_FALLBACK="" \
