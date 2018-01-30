@@ -33,8 +33,8 @@ ENV AGENCY_FALLBACK="" \
     RAW_RECORD_REPOSITORY_NAME="rawrepo" \
     REPOSITORY_NAME="test" \
     SERVICE_LOCATION="" \
-    VERBOSE_LEVEL="WARNING+ERROR+FATAL+STAT+TIMER" \
-    
+    VERBOSE_LEVEL="WARNING+ERROR+FATAL+STAT+TIMER" 
+
 LABEL AAA_IP_RIGHTS_BLOCK="Sets authentication and access scheme; Use aaa_ip_rights and/or aaa_fors_rights" \
       AGENCY_CACHE_SETTINGS="cache host, port and timeout to cache openAgency calls; use CACHE_SETTINGS if not set" \
       AGENCY_END_POINT="The full url for the openAgency service" \
