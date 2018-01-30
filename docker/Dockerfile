@@ -9,7 +9,8 @@ RUN mkdir $APACHE_ROOT/opensearch
 ADD opensearch-webservice.tar.gz $APACHE_ROOT/opensearch
 
 RUN ln -s $APACHE_ROOT/opensearch/server.php $APACHE_ROOT/opensearch/index.php \
- && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /etc/php/7.0/apache2/php.ini
+ && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /etc/php/7.0/apache2/php.ini \
+ && echo -e "\n-I 10m\n" >> /etc/memcached.conf
 
 EXPOSE 80
 
@@ -18,8 +19,7 @@ ARG JENKINS_BUILD_NUMBER="N/A"
 ENV JENKINS_BUILD_NUMBER=$JENKINS_BUILD_NUMBER
 
 # openSearch default settings
-ENV AAA_IP_RIGHTS_BLOCK="aaa_ip_rights[dbc][ip_list] = 0.0.0.0-255.255.255.255\naaa_ip_rights[dbc][ressource][opensearch] = 500" \
-    AGENCY_FALLBACK="" \
+ENV AGENCY_FALLBACK="" \
     AGENCY_CACHE_SETTINGS="agency[cache_host] = localhost\nagency[cache_port] = 11211\nagency[cache_expire] = 300" \
     AGENCY_PROFILE_FALLBACK="" \
     CACHE_SETTINGS="cache_host = localhost\ncache_port = 11211\ncache_expire = 600" \
@@ -34,12 +34,6 @@ ENV AAA_IP_RIGHTS_BLOCK="aaa_ip_rights[dbc][ip_list] = 0.0.0.0-255.255.255.255\n
     REPOSITORY_NAME="test" \
     SERVICE_LOCATION="" \
     VERBOSE_LEVEL="WARNING+ERROR+FATAL+STAT+TIMER" \
-    WORLDCAT_ZTARGET="" \
-    WORLDCAT_ZTARGET_AUTHENTICATION="" \
-    WORLDCAT_ZTARGET_DATABASE="" \
-    WORLDCAT_ZTARGET_ELEMENT="" \
-    WORLDCAT_ZTARGET_PROXY="" \
-    WORLDCAT_ZTARGET_SYNTAX=""
     
 LABEL AAA_IP_RIGHTS_BLOCK="Sets authentication and access scheme; Use aaa_ip_rights and/or aaa_fors_rights" \
       AGENCY_CACHE_SETTINGS="cache host, port and timeout to cache openAgency calls; use CACHE_SETTINGS if not set" \
@@ -58,18 +52,13 @@ LABEL AAA_IP_RIGHTS_BLOCK="Sets authentication and access scheme; Use aaa_ip_rig
       EXTRA_REPOSITORIES="Only used if multiple repositories are needed in one opensearch - normally only used for development and testing" \
       LOGFILE="Full path for logile. Normally php://stdout is used" \
       OPEN_FORMAT="The full url for the openFormat service" \
+      NETPUNKT_OPENFORMAT="The full url for the NETPUNKT openFormat service" \
       RAW_RECORD_CONTENT_SERVICE="The url for raw records content service" \
       RAW_RECORD_REPOSITORY_NAME="Name of raw record repository - normally rawrepo" \
       RAW_RECORD_SOLR="The url for raw records solr" \
       REPOSITORY_NAME="Some name describind the repository, like cisterne, mytest" \
       SERVICE_LOCATION="The url to the service. Used as endpoint in the wsdl-file. Default to the actual location" \
       SOLR="Url to the solr server" \
-      VERBOSE_LEVEL=" List of log levels needed, maximum as: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG" \
-      WORLDCAT_ZTARGET="Not used" \
-      WORLDCAT_ZTARGET_AUTHENTICATION="Not used" \
-      WORLDCAT_ZTARGET_DATABASE="Not used" \
-      WORLDCAT_ZTARGET_ELEMENT="Not used" \
-      WORLDCAT_ZTARGET_PROXY="Not used" \
-      WORLDCAT_ZTARGET_SYNTAX="Not used"
+      VERBOSE_LEVEL=" List of log levels needed, maximum as: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG" 
 
 CMD ["/run.sh"]
