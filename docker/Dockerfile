@@ -1,18 +1,15 @@
 FROM docker.dbc.dk/dbc-apache-php7
 
-# Dummy front html page.
-COPY index.html $APACHE_ROOT/index.html
-COPY run.sh /run.sh
 COPY memcached.conf /etc/
 
 # Download and prepare php source-code
 RUN mkdir $APACHE_ROOT/opensearch
 ADD opensearch-webservice.tar.gz $APACHE_ROOT/opensearch
 
-RUN ln -s $APACHE_ROOT/opensearch/server.php $APACHE_ROOT/opensearch/index.php \
+RUN $( cd $APACHE_ROOT/opensearch/ ; ln -s server.php index.php ) \
  && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /etc/php/7.0/apache2/php.ini  \
  && perl -pi -e 's/MaxRequestWorkers.*/MaxRequestWorkers\t 50/' /etc/apache2/mods-available/mpm_prefork.conf
- 
+
 
 EXPOSE 80
 
@@ -31,7 +28,7 @@ ENV AGENCY_FALLBACK="" \
     RAW_RECORD_REPOSITORY_NAME="rawrepo" \
     REPOSITORY_NAME="test" \
     SERVICE_LOCATION="" \
-    VERBOSE_LEVEL="WARNING+ERROR+FATAL+STAT+TIMER" 
+    VERBOSE_LEVEL="WARNING+ERROR+FATAL+STAT+TIMER"
 
 LABEL AAA_IP_RIGHTS_BLOCK="Sets authentication and access scheme; Use aaa_ip_rights and/or aaa_fors_rights" \
       AGENCY_CACHE_SETTINGS="cache host, port and timeout to cache openAgency calls; use CACHE_SETTINGS if not set" \
@@ -57,6 +54,7 @@ LABEL AAA_IP_RIGHTS_BLOCK="Sets authentication and access scheme; Use aaa_ip_rig
       REPOSITORY_NAME="Some name describind the repository, like cisterne, mytest" \
       SERVICE_LOCATION="The url to the service. Used as endpoint in the wsdl-file. Default to the actual location" \
       SOLR="Url to the solr server" \
-      VERBOSE_LEVEL=" List of log levels needed, maximum as: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG" 
+      VERBOSE_LEVEL=" List of log levels needed, maximum as: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG"
 
+COPY run.sh /run.sh
 CMD ["/run.sh"]
