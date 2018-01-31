@@ -1898,7 +1898,7 @@ class openSearch extends webServiceServer {
     for ($w_idx = 0; isset($work_ids[$w_idx]); $w_idx++) {
       $struct_id = $work_ids[$w_idx][FIELD_WORK_ID] . ($use_work_collection ? '' : '-' . $work_ids[$w_idx][FIELD_UNIT_ID]);
       if ($work_cache_struct[$struct_id]) continue;
-      $work_cache_struct[$struct_id] = $use_work_collection ? [] : [$work_ids[$w_idx][FIELD_UNIT_ID]];
+      $work_cache_struct[$struct_id] = [];
       if (count($work_cache_struct) >= ($start + $step_value)) {
         $more = TRUE;
         verbose::log(TRACE, 'SOLR stat: used ' . $w_idx . ' of ' . count($work_ids) . ' rows. start: ' . $start . ' step: ' . $step_value);
@@ -1919,37 +1919,35 @@ class openSearch extends webServiceServer {
       }
     }
     $work_slice = array_slice($work_cache_struct, ($start - 1), $step_value);
-    if ($use_work_collection && $step_value) {
+    if ($step_value) {
       foreach ($work_slice as $w_id => $w_list) {
+        list($w_id, $u_id) = explode('-', $w_id);
         if (empty($w_list)) {
-          $search_w[] = '"' . $w_id . '"';
+          $search_w[] = '"' . ($use_work_collection ? $w_id : $u_id) . '"';
         }
       }
       if (is_array($search_w)) {
         if ($all_objects) {
           $edismax['q'] = [];
         }
-        $edismax['q'][] = FIELD_WORK_ID . ':(' . implode(OR_OP, $search_w) . ')';
+        $edismax['q'][] = ($use_work_collection ? FIELD_WORK_ID : FIELD_UNIT_ID ) . ':(' . implode(OR_OP, $search_w) . ')';
         if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_q, '', $debug_query, $solr_arr)) {
           return $err;
         }
         foreach ($solr_arr['response']['docs'] as $fdoc) {
           $unit_id = $fdoc[FIELD_UNIT_ID];
           $work_id = $fdoc[FIELD_WORK_ID];
-          $fedora_pid = $fdoc[FIELD_FEDORA_PID];
+          $struct_id = $work_id . ($use_work_collection ? '' : '-' . $unit_id);
           foreach ($fdoc[FIELD_REC_ID] as $rec_id) {
             if (self::is_corepo_pid($rec_id)) {
-              $work_slice[$work_id][$unit_id][$rec_id] = $rec_id;;
+              $work_cache_struct[$struct_id][$unit_id][$rec_id] = $rec_id;;
             }
           }
         }
       }
     }
-    $pos = $start;
-    foreach ($work_slice as $w_id => $work) {
-      $work_struct[$pos++] = $work;
-      // $work_struct[$w_id] = $work;
-    }
+    $work_struct = array_slice($work_cache_struct, ($start - 1), $step_value);
+    //var_dump($edismax['q']); var_dump($work_cache_struct); var_dump($work_struct); var_dump($work_slice); die();
     //var_dump($edismax); var_dump($add_q); var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
      // var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
     return null;
