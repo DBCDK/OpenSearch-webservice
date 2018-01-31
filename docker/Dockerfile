@@ -57,4 +57,5 @@ LABEL AAA_IP_RIGHTS_BLOCK="Sets authentication and access scheme; Use aaa_ip_rig
       VERBOSE_LEVEL=" List of log levels needed, maximum as: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG"
 
 COPY run.sh /run.sh
+COPY apache_security.conf /etc/apache2/conf-enabled/
 CMD ["/run.sh"]
