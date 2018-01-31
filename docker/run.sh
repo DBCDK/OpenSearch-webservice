@@ -37,6 +37,7 @@ then
 fi
 
 mv $APACHE_ROOT/opensearch $APACHE_ROOT/$URL_PATH
+$( cd $APACHE_ROOT/ ; ln -s $URL_PATH opensearch )
 
 cat - > $APACHE_ROOT/index.html <<EOF
 <html>
