@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-DIR=/var/www/html/opensearch
+DIR=$APACHE_ROOT/opensearch
 INI=$DIR/opensearch.ini
 INSTALL=$INI"_INSTALL"
 
@@ -24,6 +24,32 @@ then
   printf "\nAdd the missing setting(s) and try again\n\n"
   exit 1
 fi
+
+
+if [ -z "$URL_PATH" ]
+then
+  printf "\nMissed PATH configuration :\n"
+  echo "------------------------------"
+
+  echo "------------------------------"
+  printf "\nAdd the missing setting(s) and try again\n\n"
+  exit 1
+fi
+
+mv $APACHE_ROOT/opensearch $APACHE_ROOT/$URL_PATH
+$( cd $APACHE_ROOT/ ; ln -s $URL_PATH opensearch )
+
+cat - > $APACHE_ROOT/index.html <<EOF
+<html>
+<head>
+<title>OpenSearch $URL_PATH</title>
+<meta http-equiv="refresh" content="0; url=${URL_PATH}" />
+</head>
+<body>
+<p><a href="${URL_PATH}/">Opensearch</a></p>
+</body>
+</html>
+EOF
 
 
 ln -sf /dev/stdout /var/log/apache2/access.log
