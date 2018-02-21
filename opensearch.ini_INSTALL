@@ -185,9 +185,13 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 ;repository[myrepos][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId fromIndex=holdings-items-index defType=edismax v=%s}
 ;repository[myrepos][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId fromIndex=holdings-items-index defType=edismax v=%s}%22
 ; the filter attribute controls if the join operation shold go to fq (filter query) or q (query) solr parameter
+; if repository[myrepos][handler_format][use_holding_block_join] is set, the handler lines with [holding_block_join] will be used for filtering holdings (instead of the [holding] lines)
 
 repository[@REPOSITORY_NAME@][handler_format][holding][fq] = {!join from=parentDocId to=rec.childDocId defType=edismax v=%s}
 repository[@REPOSITORY_NAME@][handler_format][holding][q] = _query_:%22{!join from=parentDocId to=rec.childDocId defType=edismax v=%s}%22
+repository[@REPOSITORY_NAME@][handler_format][use_holding_block_join] = @USE_HOLDING_BLOCK_JOIN@
+repository[@REPOSITORY_NAME@][handler_format][holding_block_join][fq] = {!parent which="t:m" v=%s}
+repository[@REPOSITORY_NAME@][handler_format][holding_block_join][q] = _query_:%22{!parent which="t:m" v=%s}%22
 
 
 ; collection query filter

@@ -446,7 +446,7 @@ class openSearch extends webServiceServer {
       $explain_keys = array_keys($solr_arr['debug']['explain']);
     }
 
-    // fetch all addi and hierarchi records for all units in work_ids
+    // Cut number of units in each work to some predefined maximum
     foreach ($work_ids as $idx => &$work) {
       if (count($work) >= MAX_OBJECTS_IN_WORK) {
         verbose::log(WARNING, 'record_repo work-record containing: ' . reset($work) . ' contains ' . count($work) . ' units. Cut work to first ' . MAX_OBJECTS_IN_WORK . ' units');
@@ -454,7 +454,7 @@ class openSearch extends webServiceServer {
       }
     }
 
-    // find and read root best record in unit's
+    // find and read root best record in unit's. Fetch addi records if relations is part of the request
     $raw_urls = [];
     foreach ($work_ids as &$work) {
       foreach ($work as $unit_id => $pids) {
@@ -1141,6 +1141,10 @@ class openSearch extends webServiceServer {
         if (empty($this->repository[$key])) {
           $this->repository[$key] = self::expand_default_repository_setting($key) ? $this->repository['fedora'] . $url_par : $url_par;
         }
+      }
+      $handler_format = &$this->repository['handler_format'];
+      if ($handler_format['use_holding_block_join'] && is_array($handler_format['holding_block_join'])) {
+        $handler_format['holding'] = $handler_format['holding_block_join'];
       }
       if ($cql_file_mandatory && empty($this->repository['cql_file'])) {
         verbose::log(FATAL, 'cql_file not defined for repository: ' . $this->repository_name);
@@ -1947,9 +1951,7 @@ class openSearch extends webServiceServer {
       }
     }
     $work_struct = array_slice($work_cache_struct, ($start - 1), $step_value);
-    //var_dump($edismax['q']); var_dump($work_cache_struct); var_dump($work_struct); var_dump($work_slice); die();
-    //var_dump($edismax); var_dump($add_q); var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
-     // var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
+    // var_dump($edismax); var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
     return null;
   }
 

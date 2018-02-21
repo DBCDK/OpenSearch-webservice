@@ -28,6 +28,7 @@ ENV AGENCY_FALLBACK="" \
     RAW_RECORD_REPOSITORY_NAME="rawrepo" \
     REPOSITORY_NAME="test" \
     SERVICE_LOCATION="" \
+    USE_HOLDING_BLOCK_JOIN="" \
     VERBOSE_LEVEL="WARNING+ERROR+FATAL+STAT+TIMER"
 
 LABEL AAA_IP_RIGHTS_BLOCK="Sets authentication and access scheme; Use aaa_ip_rights and/or aaa_fors_rights" \
@@ -54,6 +55,7 @@ LABEL AAA_IP_RIGHTS_BLOCK="Sets authentication and access scheme; Use aaa_ip_rig
       REPOSITORY_NAME="Some name describind the repository, like cisterne, mytest" \
       SERVICE_LOCATION="The url to the service. Used as endpoint in the wsdl-file. Default to the actual location" \
       SOLR="Url to the solr server" \
+      USE_HOLDING_BLOCK_JOIN="Switch to control use of block_join for filtering holdings" \
       VERBOSE_LEVEL=" List of log levels needed, maximum as: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG"
 
 COPY run.sh /run.sh
