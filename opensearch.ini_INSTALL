@@ -69,6 +69,7 @@ url_override[wsdl] = Wsdl
 ; diffCqlFileWithSolr - use &repository= in url if set
 url_override[diffCqlFileWithSolr] = diffCqlFileWithSolr
 url_override[showCqlFile] = showCqlFile
+url_override[showExplainXslFile] = showExplainXslFile
 
 ; --------------
 ; prefixes and namespaces
