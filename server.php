@@ -812,7 +812,7 @@ class openSearch extends webServiceServer {
         Object::set($o->collection->_value->object[], '_value',
                     self::parse_record_repo_object($fedora_result->dataStream,
                                                    $fedora_addi_relation,
-                                                   array(),
+                                                   array($pid),
                                                    $in_870970_basis,
                                                    $param->relationData->_value,
                                                    $pid,
