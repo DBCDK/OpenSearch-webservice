@@ -3463,7 +3463,6 @@ class openSearch extends webServiceServer {
    * @return void
    */
   protected function showCqlFile() {
-    $repositories = $this->config->get_value('repository', 'setup');
     $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
     self::set_repositories($repos, FALSE);
     if ($file = $this->repository['cql_settings']) {
@@ -3482,7 +3481,6 @@ class openSearch extends webServiceServer {
    * @return void
    */
   protected function showExplainXslFile() {
-    //$repositories = $this->config->get_value('repository', 'setup');
     $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
     self::set_repositories($repos, FALSE);
     if ($file = self::get_solr_file("explain.xsl")) {
