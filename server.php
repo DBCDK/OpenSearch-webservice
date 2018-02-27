@@ -3466,18 +3466,37 @@ class openSearch extends webServiceServer {
    * @return void
    */
   protected function showCqlFile() {
-    $repositories = $this->config->get_value('repository', 'setup');
     $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
     self::set_repositories($repos, FALSE);
     if ($file = $this->repository['cql_settings']) {
       header('Content-Type: application/xml; charset=utf-8');
-      echo $file;
+      echo str_replace('<?xml-stylesheet type="text/xsl" href="explain.xsl"?>','<?xml-stylesheet type="text/xsl" href="?showExplainXslFile"?>', $file);
     }
     else {
       header('HTTP/1.0 404 Not Found');
-      echo 'Cannot locate the cql-file: ' . $cql . '<br /><br />Use info operation to check name and repostirory';
+      echo 'Cannot locate the cql-file: ' . $this->repository['cql_file']  . '<br /><br />Use info operation to check name and repostirory';
     }
   }
+
+
+  /** \brief fetch a explain.xsl from solr and display it
+   *
+   * @return void
+   */
+  protected function showExplainXslFile() {
+    $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
+    self::set_repositories($repos, FALSE);
+    if ($file = self::get_solr_file("explain.xsl")) {
+      header('Content-Type: application/xslt+xml; charset=utf-8');
+      echo $file;
+    }
+    else {
+    header('Content-Type: application/xml; charset=utf-8');
+      header('HTTP/1.0 404 Not Found');
+      echo 'Cannot locate the cql-file: ' . 'explain.xsl' . '<br /><br />Use info operation to check name and repostirory';
+    }
+  }
+
 
   /** \brief Compares registers in cql_file with solr, using the luke request handler:
    *   http://wiki.apache.org/solr/LukeRequestHandler
