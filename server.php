@@ -475,9 +475,11 @@ class openSearch extends webServiceServer {
     //var_dump($raw_urls); var_dump($raw_res); die();
 
     // find number og holding, sort_key and include relations
+    $work_pos_ids = array();
     foreach ($work_ids as &$work) {
       $objects = [];
       foreach ($work as $unit_id => $pids) {
+        $work_pos_ids[$rec_no][$sort_key] = $unit_id;
         list($unit_members, $fpid, $primary_oid, $in_870970_basis) = $unit_info[$unit_id];
         $sort_holdings = ' ';
         $no_of_holdings = null;
@@ -513,15 +515,16 @@ class openSearch extends webServiceServer {
                                          $no_of_holdings,
                                          $explain);
       }
+      if (count($objects) > 1) {
+        ksort($objects);
+        ksort($work_pos_ids[$rec_no]);
+      }
       $work = $sorted_work;
       if (DEBUG_ON) print_r($sorted_work);
       unset($sorted_work);
       $o = new stdClass();
       Object::set_value($o->collection->_value, 'resultPosition', $rec_no++);
       Object::set_value($o->collection->_value, 'numberOfObjects', count($objects));
-      if (count($objects) > 1) {
-        ksort($objects);
-      }
       $o->collection->_value->object = $objects;
       Object::set($collections[], '_value', $o);
       unset($o);
@@ -549,7 +552,7 @@ class openSearch extends webServiceServer {
         self::format_records($collections);
       }
       if (!empty($this->format['found_solr_format'])) {
-        self::format_solr($collections, $display_solr_arr, $work_ids, $fpid_sort_keys);
+        self::format_solr($collections, $display_solr_arr, $work_pos_ids, $fpid_sort_keys);
       }
       self::remove_unselected_formats($collections);
     }
