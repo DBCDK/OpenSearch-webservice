@@ -26,6 +26,8 @@ else
   echo "Build Number Unknown" > BUILDNUMBER
 fi
 
+
+ln -s server.php index.php
 tar czf docker/opensearch-webservice.tar.gz --exclude-vcs doc includes xml *.xsd *.php *.html *_INSTALL OLS_class_lib BUILDNUMBER
 
 echo 

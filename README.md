@@ -49,8 +49,15 @@ the opensearch-webservice.tar.gz file needed for the docker build.
 docker run -ti -p 8080:80 --env-file=boble.env opensearch:devel
 ```
 
+Development
+-----------
 
-Installation
+To start the docker with the php files just use 
+```bash
+docker run -ti -p 8898:80 --env-file ./docker/fbstest.env -v $(pwd):/var/www/html/opensearch opensearch:devel
+```
+
+Installation inside the docker image
 ------------
 The webservice requires the following files from [class_lib](https://github.com/DBCDK/class_lib-webservice)
 to be installed in ./OLS_class_lib
