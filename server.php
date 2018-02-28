@@ -2851,7 +2851,9 @@ class openSearch extends webServiceServer {
     foreach ($unit_members as $um) {
       Object::set_array_value($u_member, 'identifier', $um);
     }
-    Object::set_value($ret, 'objectsAvailable', $u_member);
+    if ($this->soap_action == 'search') {
+      Object::set_value($ret, 'objectsAvailable', $u_member);
+    }
     if ($debug_info) Object::set_value($ret, 'queryResultExplanation', $debug_info);
 
     return $ret;
