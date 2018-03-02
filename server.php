@@ -2126,6 +2126,8 @@ class openSearch extends webServiceServer {
    * @return array
    */
   private function read_record_repo_all_urls($urls) {
+    $curl = new curl();
+    $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
     $ret = [];
     if (empty($urls)) $urls = [];
     $res_map = array_keys($urls);
@@ -2139,18 +2141,18 @@ class openSearch extends webServiceServer {
       else {
         $this->number_of_record_repo_calls++;
         $last_no = $no;
-        $this->curl->set_url($uri, $no);
+        $curl->set_url($uri, $no);
       }
       $no++;
     }
     if (isset($last_no)) {
       $this->watch->start('record_repo');
-      $recs = $this->curl->get();
-      $status = $this->curl->get_status();
+      $recs = $curl->get();
+      $status = $curl->get_status();
       if (DEBUG_ON) print_r($status);
       if (DEBUG_ON) print_r($recs);
       $this->watch->stop('record_repo');
-      $this->curl->close();
+      $curl->close();
       if (!is_array($recs)) {
         $recs = [$last_no => $recs];
         $status = [$last_no => $status];
