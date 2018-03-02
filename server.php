@@ -469,8 +469,6 @@ class openSearch extends webServiceServer {
     foreach ($raw_res as $key => $r_res) {
       if (!strpos($key, '-addi')) {
         $help = json_decode($r_res);
-        if (DEBUG_ON) print_r($key);
-        if (DEBUG_ON) print_r($help);
         $raw_res[$key] = $help->dataStream;
         $unit_info[$key] = [$help->pids, $help->pids[0], $help->primaryPid];
       }
@@ -2147,8 +2145,6 @@ class openSearch extends webServiceServer {
       $this->watch->start('record_repo');
       $recs = $this->curl->get();
       $status = $this->curl->get_status();
-      if (DEBUG_ON) print_r($status);
-      if (DEBUG_ON) print_r($recs);
       $this->watch->stop('record_repo');
       $this->curl->close();
       if (!is_array($recs)) {
