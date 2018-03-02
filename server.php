@@ -479,7 +479,6 @@ class openSearch extends webServiceServer {
     foreach ($work_ids as &$work) {
       $objects = [];
       foreach ($work as $unit_id => $pids) {
-        $work_pos_ids[$rec_no][$sort_key] = $unit_id;
         list($unit_members, $fpid, $primary_oid, $in_870970_basis) = $unit_info[$unit_id];
         $sort_holdings = ' ';
         $no_of_holdings = null;
@@ -502,6 +501,7 @@ class openSearch extends webServiceServer {
         }
         $sort_key = $fpid_sort_keys[$fpid] . ' ' . sprintf('%04d', count($objects));
         $sorted_work[$sort_key] = $unit_id;
+        $work_pos_ids[$rec_no][$sort_key] = $unit_id;
         $objects[$sort_key] = new stdClass();
         $objects[$sort_key]->_value =
           self::parse_record_repo_object($raw_res[$unit_id],
