@@ -6,8 +6,7 @@ COPY memcached.conf /etc/
 RUN mkdir $APACHE_ROOT/opensearch
 ADD opensearch-webservice.tar.gz $APACHE_ROOT/opensearch
 
-RUN $( cd $APACHE_ROOT/opensearch/ ; ln -s server.php index.php ) \
- && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /etc/php/7.0/apache2/php.ini  \
+RUN echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /etc/php/7.0/apache2/php.ini  \
  && perl -pi -e 's/MaxRequestWorkers.*/MaxRequestWorkers\t 50/' /etc/apache2/mods-available/mpm_prefork.conf
 
 
@@ -60,4 +59,5 @@ LABEL AAA_IP_RIGHTS_BLOCK="Sets authentication and access scheme; Use aaa_ip_rig
 
 COPY run.sh /run.sh
 COPY apache_security.conf /etc/apache2/conf-enabled/
+COPY 000-default.conf /etc/apache2/sites-enabled/000-default.conf
 CMD ["/run.sh"]

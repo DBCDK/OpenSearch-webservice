@@ -6,23 +6,42 @@ INI=$DIR/opensearch.ini
 INSTALL=$INI"_INSTALL"
 
 cp $DIR/opensearch.wsdl_INSTALL $DIR/opensearch.wsdl
-cp $INSTALL $INI
 
-while IFS='=' read -r name value ; do
-  echo "$name $value"
-  sed -i "s/@${name}@/$(echo $value | sed -e 's/\//\\\//g; s/&/\\\&/g')/g" $INI
-done < <(env)
+if [ ! -f $INI ] ; then
+    cp $INSTALL $INI
 
-cat $INI
+    while IFS='=' read -r name value ; do
+      echo "$name $value"
+      sed -i "s/@${name}@/$(echo $value | sed -e 's/\//\\\//g; s/&/\\\&/g')/g" $INI
+    done < <(env)
 
-if [ -n "`grep '@[A-Z_]*@' $INI`" ] 
-then
-  printf "\nMissed some settings:\n"
-  echo "------------------------------"
-  grep '@[A-Z_]*@' $INI
-  echo "------------------------------"
-  printf "\nAdd the missing setting(s) and try again\n\n"
-  exit 1
+    if [ -n "`grep '@[A-Z_]*@' $INI`" ]
+    then
+      printf "\nMissed some settings:\n"
+      echo "------------------------------"
+      grep '@[A-Z_]*@' $INI
+      echo "------------------------------"
+      printf "\nAdd the missing setting(s) and try again\n\n"
+      exit 1
+    fi
+else
+
+    echo "######  ####### #     # ####### #       ####### ####### ######  ####### ######"
+    echo "#     # #       #     # #       #       #       #     # #     # #       #     #"
+    echo "#     # #       #     # #       #       #       #     # #     # #       #     #"
+    echo "#     # #####   #     # #####   #       #####   #     # ######  #####   ######"
+    echo "#     # #        #   #  #       #       #       #     # #       #       #   #"
+    echo "#     # #         # #   #       #       #       #     # #       #       #    #"
+    echo "######  #######    #    ####### ####### ####### ####### #       ####### #     #"
+    echo ""
+    echo "#     # ####### ######  #######"
+    echo "##   ## #     # #     # #"
+    echo "# # # # #     # #     # #"
+    echo "#  #  # #     # #     # #####"
+    echo "#     # #     # #     # #"
+    echo "#     # #     # #     # #"
+    echo "#     # ####### ######  #######"
+
 fi
 
 
@@ -35,9 +54,6 @@ then
   printf "\nAdd the missing setting(s) and try again\n\n"
   exit 1
 fi
-
-mv $APACHE_ROOT/opensearch $APACHE_ROOT/$URL_PATH
-$( cd $APACHE_ROOT/ ; ln -s $URL_PATH opensearch )
 
 cat - > $APACHE_ROOT/index.html <<EOF
 <html>
