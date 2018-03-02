@@ -465,6 +465,7 @@ class openSearch extends webServiceServer {
       }
     }
     $raw_res = self::read_record_repo_all_urls($raw_urls);
+    if (DEBUG_ON) print_r($raw_res);
     foreach ($raw_res as $key => $r_res) {
       if (!strpos($key, '-addi')) {
         $help = json_decode($r_res);
@@ -2126,7 +2127,7 @@ class openSearch extends webServiceServer {
     $no = 0;
     foreach ($urls as $key => $uri) {
       verbose::log(TRACE, 'repo_read: ' . $uri);
-      if (DEBUG_ON) echo __FUNCTION__ . ':: ' . $uri . "\n";
+      if (DEBUG_ON) echo __FUNCTION__ . '(' . $no . '):: ' . $uri . "\n";
       if ($this->cache && ($ret[$key] = $this->cache->get($uri))) {
         $this->number_of_record_repo_cached++;
       }
@@ -2141,6 +2142,8 @@ class openSearch extends webServiceServer {
       $this->watch->start('record_repo');
       $recs = $this->curl->get();
       $status = $this->curl->get_status();
+      if (DEBUG_ON) print_r($status);
+      if (DEBUG_ON) print_r($recs);
       $this->watch->stop('record_repo');
       $this->curl->close();
       if (!is_array($recs)) {
