@@ -764,6 +764,7 @@ class openSearch extends webServiceServer {
     $this->curl->set_post($solr_q); // use post here because query can be very long. curl has current 8192 as max length get url
     $solr_result = $this->curl->get($this->repository['solr']);
     $this->curl->set_option(CURLOPT_POST, 0);
+    $this->curl->close();
     $solr_2_arr[] = unserialize($solr_result);
 
     $match = array();
@@ -1371,6 +1372,7 @@ class openSearch extends webServiceServer {
               Object::set($c->_value->formattedCollection->_value, $struct, $fr_obj->formatResponse->_value->{$struct}[$idx]);
             }
           }
+          $this->curl->close();
         }
         else {
           require_once('OLS_class_lib/format_class.php');
@@ -1625,6 +1627,7 @@ class openSearch extends webServiceServer {
       $solr_result = $this->curl->get($solr_host);
 // remember to clear POST 
       $this->curl->set_option(CURLOPT_POST, 0, 0);
+      $this->curl->close();
       if (!($solr_arr[$add_idx] = unserialize($solr_result))) {
         verbose::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
         return 'Internal problem: Cannot decode Solr re-search';
@@ -1878,6 +1881,7 @@ class openSearch extends webServiceServer {
       if ($this->curl->get_status('http_code') != 200) {
         return FALSE;
       }
+      $this->curl->close();
       $solr_file_cache->set($solr_file_url, $xml);
     }
     return $xml;
@@ -2098,6 +2102,7 @@ class openSearch extends webServiceServer {
       $rec = self::normalize_chars($this->curl->get($record_uri));
       $this->watch->stop('record_repo');
       $curl_err = $this->curl->get_status();
+      $this->curl->close();
       if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
         $rec = '';
         if ($mandatory) {
@@ -2239,6 +2244,7 @@ class openSearch extends webServiceServer {
     else {
       verbose::log(ERROR, __FUNCTION__ . ':: no record(s) found. http_code: ' . $this->curl->get_status('http_code') . ' post: ' . sprintf($p_mask, $post) . ' result: ' . $result);
     }
+    $this->curl->close();
     return $ret;
   }
 
@@ -2385,6 +2391,7 @@ class openSearch extends webServiceServer {
     $this->watch->stop('holdings');
     verbose::log(DEBUG, 'get_holdings:(' . $this->watch->splittime('holdings') . '): ' . $hold_url);
     $curl_err = $this->curl->get_status();
+    $this->curl->close();
     if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
       verbose::log(FATAL, 'holdings_db http-error: ' . $curl_err['http_code'] . ' from: ' . $hold_url);
       $holds = ['have' => 0, 'lend' => 0];
