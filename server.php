@@ -468,21 +468,21 @@ class openSearch extends webServiceServer {
     foreach ($raw_res as $key => $r_res) {
       if (!strpos($key, '-addi')) {
         $help = json_decode($r_res);
+        if (DEBUG_ON) print_r($key);
+        if (DEBUG_ON) print_r($help);
         $raw_res[$key] = $help->dataStream;
         $unit_info[$key] = [$help->pids, $help->pids[0], $help->primaryPid];
       }
     }
+    if (DEBUG_ON) print_r($unit_info);
     //var_dump($raw_urls); var_dump($raw_res); die();
 
     // find number og holding, sort_key and include relations
     $work_pos_ids = array();
-    if (DEBUG_ON) print_r($unit_info);
     foreach ($work_ids as &$work) {
       $objects = [];
       foreach ($work as $unit_id => $pids) {
-        if (DEBUG_ON) print_r($unit_id);
         list($unit_members, $fpid, $primary_oid, $in_870970_basis) = $unit_info[$unit_id];
-        if (DEBUG_ON) print_r($fpid);
         $sort_holdings = ' ';
         $no_of_holdings = null;
         if (isset($param->includeHoldingsCount) && self::xs_boolean($param->includeHoldingsCount->_value)) {
