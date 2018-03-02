@@ -476,10 +476,13 @@ class openSearch extends webServiceServer {
 
     // find number og holding, sort_key and include relations
     $work_pos_ids = array();
+    if (DEBUG_ON) print_r($unit_info);
     foreach ($work_ids as &$work) {
       $objects = [];
       foreach ($work as $unit_id => $pids) {
+        if (DEBUG_ON) print_r($unit_id);
         list($unit_members, $fpid, $primary_oid, $in_870970_basis) = $unit_info[$unit_id];
+        if (DEBUG_ON) print_r($fpid);
         $sort_holdings = ' ';
         $no_of_holdings = null;
         if (isset($param->includeHoldingsCount) && self::xs_boolean($param->includeHoldingsCount->_value)) {
