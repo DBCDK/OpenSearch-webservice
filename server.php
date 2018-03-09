@@ -424,7 +424,10 @@ class openSearch extends webServiceServer {
     foreach ($display_solr_arr as $d_s_a) {
       foreach ($d_s_a['response']['docs'] as $fdoc) {
         $u_id = self::scalar_or_first_elem($fdoc[FIELD_UNIT_ID]);
-        $unit_sort_keys[$u_id] = $fdoc['sort.complexKey'] . '  ' . $u_id;
+        if (count($fdoc['rec.collectionIdentifier']) > $max_col[$u_id]) {
+          $unit_sort_keys[$u_id] = $fdoc['sort.complexKey'] . '  ' . $u_id;
+          $max_col[$u_id] = count($fdoc['rec.collectionIdentifier']);
+        }
       }
     }
 //var_dump($add_queries); var_dump($display_solr_arr); var_dump($unit_sort_keys); die();
