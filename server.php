@@ -762,10 +762,11 @@ class openSearch extends webServiceServer {
       '&fl=rec.collectionIdentifier,' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
       $add_fl . '&trackingId=' . verbose::$tracking_id;
     verbose::log(TRACE, __FUNCTION__ . ':: Search for pids in Solr: ' . $this->repository['solr'] . str_replace('wt=phps', '?', $solr_q));
-    $this->curl->set_post($solr_q); // use post here because query can be very long. curl has current 8192 as max length get url
-    $solr_result = $this->curl->get($this->repository['solr']);
-    $this->curl->set_option(CURLOPT_POST, 0);
-    $this->curl->close();
+    $curl = new curl();
+    $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
+    $curl->set_post($solr_q); // use post here because query can be very long. curl has current 8192 as max length get url
+    $solr_result = $curl->get($this->repository['solr']);
+    $curl->close();
     $solr_2_arr[] = unserialize($solr_result);
 
     $match = array();
@@ -3015,7 +3016,6 @@ class openSearch extends webServiceServer {
       }
     }
     $raw_recs = self::read_record_repo_all_urls($raw_urls);
-//var_dump($u_relations); var_dump($hierarchy_recs); var_dump($raw_recs); die();
 
 // loop records and build result
     foreach ($raw_recs as $unit_id => $related_obj) {
