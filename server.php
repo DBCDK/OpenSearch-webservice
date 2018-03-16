@@ -775,13 +775,14 @@ class openSearch extends webServiceServer {
       foreach ($solr_2_arr as $s_2_a) {
         if ($s_2_a['response']['docs']) {
           foreach ($s_2_a['response']['docs'] as $fdoc) {
-            $id = self::scalar_or_first_elem($fdoc[FIELD_FEDORA_PID]);
+            $rec_id = $fdoc[FIELD_REC_ID];
             $unit_id = self::scalar_or_first_elem($fdoc[FIELD_UNIT_ID]);
-            if ($id == $fpid->_value) {
-              $pid = array($unit_id, $id);
+            if (in_array($fpid->_value, $rec_id)) {
+              $pid = array($unit_id, $fpid->_value);
+              break 2;
             }
-            elseif ($id == $localdata_object[$fpid->_value]) {
-              $basis_pid = array($unit_id, $id);
+            elseif (in_array($localdata_object[$fpid->_value], $rec_id)) {
+              $basis_pid = array($unit_id, $localdata_object[$fpid->_value]);
             }
           }
         }
