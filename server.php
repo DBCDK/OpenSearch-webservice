@@ -743,6 +743,7 @@ class OpenSearch extends webServiceServer {
       return $ret;
 
     }
+    $fpids = self::handle_sequencing($fpids);
     foreach ($fpids as $fpid) {
       $id_array[] = $fpid->_value;
       list($owner_collection, $id) = explode(':', $fpid->_value);
@@ -1195,6 +1196,22 @@ class OpenSearch extends webServiceServer {
    */
   private function expand_default_repository_setting($key) {
     return (in_array(substr($key, 0, 7), ['fedora_', 'corepo_']));
+  }
+
+  /** handle sequencing with , as opposed to repeating the 'identifier' tag
+   *
+   * @param $val_arr
+   * @return array
+   */
+  private function handle_sequencing($val_arr) {
+    $ret = [];
+    foreach ($val_arr as $entry) {
+      $list = explode(',', $entry->_value);
+      foreach ($list as $pid) {
+        Object::set($ret[], '_value', $pid);
+      }
+    }
+    return $ret;
   }
 
   /**************************************************
@@ -2712,12 +2729,12 @@ class OpenSearch extends webServiceServer {
         continue;
       }
       if (empty($ret_rel[$rel_unit])) {
-        $relation_pid = reset($unit_pids[$rel_unit]);
         if (!$rec = json_decode($relation_recs[$rel_unit])) {
-          verbose::log(ERROR, 'Cannot decode ' . $relation_pid . ' from json');
+          verbose::log(ERROR, 'Cannot decode json for best record from ' . $rel_unit);
         }
         else {
           Object::set_value($relation, 'relationType', $rel_name);
+          $relation_pid = reset($rec->pids);
           if ($rels_type == 'uri' || $rels_type == 'full') {
             Object::set_value($relation, 'relationUri', $relation_pid);
           }
@@ -2957,6 +2974,11 @@ class OpenSearch extends webServiceServer {
     return (strtolower($str) == 'true' || $str == 1);
   }
 
+  /**
+   * @param $arr
+   * @param string $glue
+   * @return string
+   */
   private function stringify_obj_array($arr, $glue = ',') {
     $vals = array();
     foreach ($arr as $val) {
@@ -2964,7 +2986,6 @@ class OpenSearch extends webServiceServer {
     }
     return implode($glue, $vals);
   }
-
 
   /*
    ************************************ Info helper functions *******************************************
