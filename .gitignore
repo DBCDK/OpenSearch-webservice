@@ -1,6 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea/
-
+index.php
+opensearch.ini
 OLS_class_lib/
 docker/opensearch-webservice.tar.gz
 BUILDNUMBER
