@@ -30,7 +30,7 @@ in_house_ip_list = @MY_DOMAIN_IP_LIST@
 ;in_house_domain = @MY_DOMAIN@
 
 ; set to TRUE to expose the create_sample form
-; show_samples = 1
+show_samples = 1
 ; show_samples_ip_list = 127.0.0.1
 
 ; --------------
