@@ -27,7 +27,7 @@ ENV AGENCY_FALLBACK="" \
     RAW_RECORD_REPOSITORY_NAME="rawrepo" \
     REPOSITORY_NAME="test" \
     SERVICE_LOCATION="" \
-    USE_HOLDING_BLOCK_JOIN="" \
+    USE_HOLDING_BLOCK_JOIN="yes" \
     VERBOSE_LEVEL="WARNING+ERROR+FATAL+STAT+TIMER"
 
 LABEL AAA_IP_RIGHTS_BLOCK="Sets authentication and access scheme; Use aaa_ip_rights and/or aaa_fors_rights" \
