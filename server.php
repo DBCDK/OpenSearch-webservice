@@ -2076,6 +2076,11 @@ class OpenSearch extends webServiceServer {
    * @return mixed - error or NULL
    */
   private function read_record_repo($record_uri, &$rec, $mandatory = TRUE) {
+    static $curl;
+    if (empty($curl)) {
+      $curl = new curl();
+      $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
+    }
     verbose::log(TRACE, 'repo_read: ' . $record_uri);
     if (DEBUG_ON) echo __FUNCTION__ . ':: ' . $record_uri . "\n";
     if ($this->cache && ($rec = $this->cache->get($record_uri))) {
@@ -2083,12 +2088,12 @@ class OpenSearch extends webServiceServer {
     }
     else {
       $this->number_of_record_repo_calls++;
-      $this->curl->set_authentication('fedoraAdmin', 'fedoraAdmin');
+      $curl->set_authentication('fedoraAdmin', 'fedoraAdmin');
       $this->watch->start('record_repo');
-      $rec = self::normalize_chars($this->curl->get($record_uri));
+      $rec = self::normalize_chars($curl->get($record_uri));
       $this->watch->stop('record_repo');
-      $curl_err = $this->curl->get_status();
-      $this->curl->close();
+      $curl_err = $curl->get_status();
+      $curl->close();
       if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
         $rec = '';
         if ($mandatory) {
@@ -2112,6 +2117,11 @@ class OpenSearch extends webServiceServer {
    * @return array
    */
   private function read_record_repo_all_urls($urls) {
+    static $curl;
+    if (empty($curl)) {
+      $curl = new curl();
+      $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
+    }
     $ret = [];
     if (empty($urls)) $urls = [];
     $res_map = array_keys($urls);
@@ -2125,16 +2135,16 @@ class OpenSearch extends webServiceServer {
       else {
         $this->number_of_record_repo_calls++;
         $last_no = $no;
-        $this->curl->set_url($uri, $no);
+        $curl->set_url($uri, $no);
       }
       $no++;
     }
     if (isset($last_no)) {
       $this->watch->start('record_repo');
-      $recs = $this->curl->get();
-      $status = $this->curl->get_status();
+      $recs = $curl->get();
+      $status = $curl->get_status();
       $this->watch->stop('record_repo');
-      $this->curl->close();
+      $curl->close();
       if (!is_array($recs)) {
         $recs = [$last_no => $recs];
         $status = [$last_no => $status];
