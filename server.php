@@ -2122,9 +2122,9 @@ class OpenSearch extends webServiceServer {
       $curl = new curl();
       $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
     }
-    $ret = [];
     if (empty($urls)) $urls = [];
-    $res_map = array_keys($urls);
+    $ret = [];
+    $res_map = [];
     $no = 0;
     foreach ($urls as $key => $uri) {
       verbose::log(TRACE, 'repo_read: ' . $uri);
@@ -2134,20 +2134,20 @@ class OpenSearch extends webServiceServer {
       }
       else {
         $this->number_of_record_repo_calls++;
-        $last_no = $no;
+        $res_map[$no] = $key;
         $curl->set_url($uri, $no);
+        $no++;
       }
-      $no++;
     }
-    if (isset($last_no)) {
+    if (count($res_map)) {
       $this->watch->start('record_repo');
       $recs = $curl->get();
-      $status = $curl->get_status();
       $this->watch->stop('record_repo');
+      $status = $curl->get_status();
       $curl->close();
       if (!is_array($recs)) {
-        $recs = [$last_no => $recs];
-        $status = [$last_no => $status];
+        $recs = [$recs];
+        $status = [$status];
       }
       foreach ($recs as $no => $rec) {
         if (isset($res_map[$no])) {
