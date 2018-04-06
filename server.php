@@ -800,7 +800,7 @@ class openSearch extends webServiceServer {
         }
       }
     }
-    $corepo_res = self::read_record_repo_all_urls($corepo_urls, FALSE);
+    $corepo_res = self::read_record_repo_all_urls($corepo_urls);
 
     foreach ($match as $fpid_number => $unit_and_pid) {
       list($unit_id, $pid) = $unit_and_pid;
@@ -2131,41 +2131,40 @@ class openSearch extends webServiceServer {
   /** \brief Get multiple urls and return result in structure with the same indices
    *
    * @param array $urls -
-   * @param boolean $use_cache -
    * @return array
    */
-  private function read_record_repo_all_urls($urls, $use_cache = TRUE) {
+  private function read_record_repo_all_urls($urls) {
     static $curl;
     if (empty($curl)) {
       $curl = new curl();
       $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
     }
-    $ret = [];
     if (empty($urls)) $urls = [];
-    $res_map = array_keys($urls);
+    $ret = [];
+    $res_map = [];
     $no = 0;
     foreach ($urls as $key => $uri) {
       verbose::log(TRACE, 'repo_read: ' . $uri);
       if (DEBUG_ON) echo __FUNCTION__ . '(' . $no . '):: ' . $uri . "\n";
-      if ($use_cache && $this->cache && ($ret[$key] = $this->cache->get($uri))) {
+      if ($this->cache && ($ret[$key] = $this->cache->get($uri))) {
         $this->number_of_record_repo_cached++;
       }
       else {
         $this->number_of_record_repo_calls++;
-        $last_no = $no;
+        $res_map[$no] = $key;
         $curl->set_url($uri, $no);
+        $no++;
       }
-      $no++;
     }
-    if (isset($last_no)) {
+    if (count($res_map)) {
       $this->watch->start('record_repo');
       $recs = $curl->get();
-      $status = $curl->get_status();
       $this->watch->stop('record_repo');
+      $status = $curl->get_status();
       $curl->close();
       if (!is_array($recs)) {
-        $recs = [$last_no => $recs];
-        $status = [$last_no => $status];
+        $recs = [$recs];
+        $status = [$status];
       }
       foreach ($recs as $no => $rec) {
         if (isset($res_map[$no])) {
