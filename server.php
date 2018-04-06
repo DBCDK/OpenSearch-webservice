@@ -800,7 +800,7 @@ class openSearch extends webServiceServer {
         }
       }
     }
-    $corepo_res = self::read_record_repo_all_urls($corepo_urls);
+    $corepo_res = self::read_record_repo_all_urls($corepo_urls, FALSE);
 
     foreach ($match as $fpid_number => $unit_and_pid) {
       list($unit_id, $pid) = $unit_and_pid;
@@ -2131,9 +2131,10 @@ class openSearch extends webServiceServer {
   /** \brief Get multiple urls and return result in structure with the same indices
    *
    * @param array $urls -
+   * @param boolean $use_cache -
    * @return array
    */
-  private function read_record_repo_all_urls($urls) {
+  private function read_record_repo_all_urls($urls, $use_cache = TRUE) {
     static $curl;
     if (empty($curl)) {
       $curl = new curl();
@@ -2146,7 +2147,7 @@ class openSearch extends webServiceServer {
     foreach ($urls as $key => $uri) {
       verbose::log(TRACE, 'repo_read: ' . $uri);
       if (DEBUG_ON) echo __FUNCTION__ . '(' . $no . '):: ' . $uri . "\n";
-      if ($this->cache && ($ret[$key] = $this->cache->get($uri))) {
+      if ($use_cache && $this->cache && ($ret[$key] = $this->cache->get($uri))) {
         $this->number_of_record_repo_cached++;
       }
       else {
