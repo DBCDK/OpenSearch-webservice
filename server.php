@@ -2171,6 +2171,8 @@ class openSearch extends webServiceServer {
           if (!strpos($urls[$res_map[$no]], 'RELS-EXT') && (empty($rec) || $status[$no]['http_code'] > 299)) {
             verbose::log(ERROR, 'record_repo http-error: ' . $status[$no]['http_code'] . ' from: ' . $urls[$res_map[$no]] .
                               ' record ' . preg_replace('/\s+/', ' ', $rec));
+            verbose::log(ERROR, 'debug status: ' . json_encode($status));
+            verbose::log(ERROR, 'debug recs: ' . json_encode($recs));
           }
           $ret[$res_map[$no]] = self::normalize_chars($rec);
           if (!empty($rec) && $this->cache) $this->cache->set($urls[$res_map[$no]], $ret[$res_map[$no]]);
