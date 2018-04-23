@@ -862,7 +862,10 @@ class openSearch extends webServiceServer {
                      ' repoRecs:' . $this->number_of_record_repo_calls .
                      ' repoCache:' . $this->number_of_record_repo_cached .
                      ' ' . str_replace(PHP_EOL, '', $this->watch->dump()) .
-                     ' ids:' . implode(',', $id_array));
+                     ' ids:' . implode(',', $id_array) .
+                     ' relationData:'.var_export(isset($param->relationData),true) .
+                     ' identifiers:'.sizeof($fpids).
+                     ' localIdentifiers:'.sizeof($lpids));
     return $ret;
   }
 
