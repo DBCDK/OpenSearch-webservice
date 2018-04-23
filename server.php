@@ -639,6 +639,14 @@ class OpenSearch extends webServiceServer {
       Object::set_value($param, 'agency', $this->config->get_value('agency_fallback', 'setup'));
       Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
     }
+    if (empty($param->agency->_value)) {
+        $error = 'Error: no agency specified';
+        return $ret_error;
+    }
+    if (empty($param->profile->_value) && !is_array($param->profile)) {
+        $error = 'Error: no profile specified';
+        return $ret_error;
+    }
     if ($param->profile && !is_array($param->profile)) {
       $param->profile = array($param->profile);
     }
@@ -868,6 +876,7 @@ class OpenSearch extends webServiceServer {
     verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .
                      ':: agency:' . $this->agency .
                      ' profile:' . self::stringify_obj_array($this->profile) .
+                     ' ip:' . $_SERVER['REMOTE_ADDR'] .
                      ' repoRecs:' . $this->number_of_record_repo_calls .
                      ' repoCache:' . $this->number_of_record_repo_cached .
                      ' ' . str_replace(PHP_EOL, '', $this->watch->dump()) .
@@ -1374,7 +1383,7 @@ class OpenSearch extends webServiceServer {
           }
           if (!$fr_obj) {
             $curl_err = $this->curl->get_status();
-            verbose::log(FATAL, 'openFormat http-error: ' . $curl_err['http_code'] . ' from: ' . $open_format_uri);
+            verbose::log(FATAL, 'openFormat http-error: ' . $curl_err['http_code'] . ' from: ' . $curl_err['url']);
           }
           else {
             $struct = key($fr_obj->formatResponse->_value);
