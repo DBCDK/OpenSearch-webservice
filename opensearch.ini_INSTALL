@@ -396,6 +396,9 @@ logfile = @LOGFILE@
 ; ident for syslog is set like where _VERSION_ is replaced by version setting above
 syslog_id = trlog[opensearch__VERSION_]
 
+; logging style. Default is json, string will make lines with elements like key:value
+;logstyle = string
+
 ; set verboselevel
 ;   WARNING - simple warnings
 ;   ERROR   - errors in response
