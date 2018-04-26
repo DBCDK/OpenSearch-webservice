@@ -192,7 +192,7 @@ class openSearch extends webServiceServer {
         $error = self::cql2solr_error_to_string($solr_query['error']);
         return $ret_error;
       }
-      verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
+      VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
       $q = implode(AND_OP, $solr_query['edismax']['q']);
       if (!in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), []))) {
         $filter = rawurlencode(RR_MARC_001_B . ':(870970 OR ' . $this->agency . ')');
@@ -224,7 +224,7 @@ class openSearch extends webServiceServer {
       Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
       $result->searchResult = &$collections;
       Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-      Object::set_value($result->statInfo->_value, 'trackingId', verbose::$tracking_id);
+      Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
       if ($debug_query) {
         Object::set_value($result, 'queryDebugResult', self::set_debug_info($solr_arr['debug']));
       }
@@ -318,7 +318,7 @@ class openSearch extends webServiceServer {
     // TODO rows should max to like 5000 and use cursorMark to page forward. cursorMark need a sort paramater to work
     $rows = $step_value ? (($start + $step_value + 100) * 2) + 100 : 0;
 
-    verbose::log(TRACE, 'CQL to SOLR: ' . $param->query->_value . ' -> ' . preg_replace('/\s+/', ' ', print_r($solr_query, TRUE)));
+    VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
 
     // do the query
     $this->watch->start('Solr_ids');
@@ -380,11 +380,11 @@ class openSearch extends webServiceServer {
       $work_cache_struct = [];
       if (empty($_GET['skipCache'])) {
         if ($work_cache_struct = $this->cache->get($key_work_struct)) {
-          verbose::log(TRACE, 'Cache hit, lines: ' . count($work_cache_struct));
+          VerboseJson::log(TRACE, 'Cache hit lines' . count($work_cache_struct));
         }
         else {
           $work_cache_struct = [];
-          verbose::log(TRACE, __CLASS__ . '::' . __FUNCTION__ . ' - work_struct cache miss');
+          VerboseJson::log(TRACE, 'work_struct cache miss');
         }
       }
 
@@ -403,7 +403,7 @@ class openSearch extends webServiceServer {
     $this->watch->stop('Build_id');
 
     if (count($work_ids) < $step_value && count($solr_work_ids) < $numFound) {
-      verbose::log(WARNING, 'To few search_ids found in solr. Query: ' . implode(AND_OP, $solr_query['edismax']['q']));
+      VerboseJson::log(WARNING, 'To few search_ids found in solr. Query' . implode(AND_OP, $solr_query['edismax']['q']));
     }
 
     if (DEBUG_ON) echo 'work_ids: ' . print_r($work_ids, TRUE) . "\n";
@@ -434,7 +434,7 @@ class openSearch extends webServiceServer {
     define('MAX_QUERY_ELEMENTS', 950);
 
     if ($this->cache && $this->cache->check()) {
-      verbose::log(TRACE, 'Cache set, # work: ' . count($work_cache_struct));
+      VerboseJson::log(TRACE, 'Cache set, # work: ' . count($work_cache_struct));
       $this->cache->set($key_work_struct, $work_cache_struct);
     }
 
@@ -452,7 +452,7 @@ class openSearch extends webServiceServer {
     // Cut number of units in each work to some predefined maximum
     foreach ($work_ids as $idx => &$work) {
       if (count($work) >= MAX_OBJECTS_IN_WORK) {
-        verbose::log(WARNING, 'record_repo work-record containing: ' . reset($work) . ' contains ' . count($work) . ' units. Cut work to first ' . MAX_OBJECTS_IN_WORK . ' units');
+        VerboseJson::log(WARNING, 'record_repo work-record containing: ' . reset($work) . ' contains ' . count($work) . ' units. Cut work to first ' . MAX_OBJECTS_IN_WORK . ' units');
         array_splice($work, MAX_OBJECTS_IN_WORK);
       }
     }
@@ -587,21 +587,20 @@ class openSearch extends webServiceServer {
       Object::set_value($result, 'queryDebugResult', $debug_result);
     }
     if ($solr_timing) {
-      verbose::log(STAT, 'solrTiming: ' . json_encode($solr_timing));
+      VerboseJson::log(STAT, array('solrTiming ' => json_encode($solr_timing)));
     }
     Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
     Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
     Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-    Object::set_value($result->statInfo->_value, 'trackingId', verbose::$tracking_id);
+    Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
 
-    verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .
-                     ':: agency:' . $this->agency .
-                     ' profile:' . $param->profile->_value .
-                     ' ip:' . $_SERVER['REMOTE_ADDR'] .
-                     ' repoRecs:' . $this->number_of_record_repo_calls .
-                     ' repoCache:' . $this->number_of_record_repo_cached .
-                     ' ' . str_replace(PHP_EOL, '', $this->watch->dump()) .
-                     ' query:' . $param->query->_value . PHP_EOL);
+    VerboseJson::log(STAT, array_merge(
+                             array('agency' => $this->agency,
+                                   'profile' => $param->profile->_value,
+                                   'repoRecs' => $this->number_of_record_repo_calls,
+                                   'repoCache' => $this->number_of_record_repo_cached,
+                                   'query' => $param->query->_value),
+                             $this->watch->get_timers()));
 
     return $ret;
   }
@@ -629,7 +628,7 @@ class openSearch extends webServiceServer {
       return $ret_error;
     }
     if ($error = self::set_repositories($param->repository->_value)) {
-      verbose::log(FATAL, $error);
+      VerboseJson::log(FATAL, $error);
       return $ret_error;
     }
     if (empty($param->agency->_value) && empty($param->profile->_value)) {
@@ -727,7 +726,7 @@ class openSearch extends webServiceServer {
       Object::set_value($result, 'more', 'false');
       $result->searchResult = &$collections;
       Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-      Object::set_value($result->statInfo->_value, 'trackingId', verbose::$tracking_id);
+      Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
       if ($debug_query) {
         Object::set_value($debug_result, 'rawQueryString', $solr_arr['debug']['rawquerystring']);
         Object::set_value($debug_result, 'queryString', $solr_arr['debug']['querystring']);
@@ -760,8 +759,8 @@ class openSearch extends webServiceServer {
       '&rows=500' .
       '&defType=edismax' .
       '&fl=rec.collectionIdentifier,' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
-      $add_fl . '&trackingId=' . verbose::$tracking_id;
-    verbose::log(TRACE, __FUNCTION__ . ':: Search for pids in Solr: ' . $this->repository['solr'] . str_replace('wt=phps', '?', $solr_q));
+      $add_fl . '&trackingId=' . VerboseJson::$tracking_id;
+    VerboseJson::log(TRACE, 'Search for pids in Solr: ' . $this->repository['solr'] . str_replace('wt=phps', '?', $solr_q));
     $curl = new curl();
     $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
     $curl->set_post($solr_q); // use post here because query can be very long. curl has current 8192 as max length get url
@@ -854,15 +853,15 @@ class openSearch extends webServiceServer {
     Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
     Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
     Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-    Object::set_value($result->statInfo->_value, 'trackingId', verbose::$tracking_id);
+    Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
 
-    verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .
-                     ':: agency:' . $this->agency .
-                     ' profile:' . $this->profile .
-                     ' repoRecs:' . $this->number_of_record_repo_calls .
-                     ' repoCache:' . $this->number_of_record_repo_cached .
-                     ' ' . str_replace(PHP_EOL, '', $this->watch->dump()) .
-                     ' ids:' . implode(',', $id_array));
+    VerboseJson::log(STAT, array_merge(
+                             array('agency' => $this->agency,
+                                   'profile' => $param->profile->_value,
+                                   'repoRecs' => $this->number_of_record_repo_calls,
+                                   'repoCache' => $this->number_of_record_repo_cached,
+                                   'ids' => implode(',', $id_array)),
+                             $this->watch->get_timers()));
     return $ret;
   }
 
@@ -879,9 +878,10 @@ class openSearch extends webServiceServer {
     $result->infoSearchProfile = self::get_search_profile_info($param->agency->_value, $param->profile->_value);
     $result->infoSorts = self::get_sort_info();
     $result->infoNameSpaces = self::get_namespace_info();
-    verbose::log(STAT, sprintf($this->dump_timer, $this->soap_action) .
-                     ':: agency:' . $param->agency->_value .
-                     ' profile:' . $param->profile->_value . ' ' . $this->watch->dump());
+    VerboseJson::log(STAT, array_merge(
+                             array('agency' => $this->agency,
+                                   'profile' => $param->profile->_value),
+                             $this->watch->get_timers()));
     return $ret;
   }
 
@@ -1046,7 +1046,7 @@ class openSearch extends webServiceServer {
     }
     if ($part_of_bib_dk || $use_holding) {
       $this->search_profile_contains_800000 = TRUE;
-      verbose::log(DEBUG, 'Filter 800000 part_of_bib_dk:: ' . count($part_of_bib_dk) . ' use_holding: ' . count($use_holding));
+      VerboseJson::log(DEBUG, 'Filter 800000 part_of_bib_dk:: ' . count($part_of_bib_dk) . ' use_holding: ' . count($use_holding));
       // TEST $this->search_filter_for_800000 = 'holdingsitem.agencyId=(' . implode(' OR ', array_slice($part_of_bib_dk + $use_holding, 0, 3)) . ')';
       $this->search_filter_for_800000 = 'holdingsitem.agencyId:(' . implode(' OR ', $part_of_bib_dk + $use_holding) . ')';
     }
@@ -1158,16 +1158,16 @@ class openSearch extends webServiceServer {
         $handler_format['holding'] = $handler_format['holding_block_join'];
       }
       if ($cql_file_mandatory && empty($this->repository['cql_file'])) {
-        verbose::log(FATAL, 'cql_file not defined for repository: ' . $this->repository_name);
+        VerboseJson::log(FATAL, 'cql_file not defined for repository: ' . $this->repository_name);
         return 'Error: cql_file not defined for repository: ' . $this->repository_name;
       }
       if ($this->repository['cql_file']) {
         if (!$this->repository['cql_settings'] = self::get_solr_file($this->repository['cql_file'])) {
           if (!$this->repository['cql_settings'] = @ file_get_contents($this->repository['cql_file'])) {
-            verbose::log(FATAL, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from local directory. Repository: ' . $this->repository_name);
+            VerboseJson::log(FATAL, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from local directory. Repository: ' . $this->repository_name);
             return 'Error: Cannot find cql_file for repository: ' . $this->repository_name;
           }
-          verbose::log(ERROR, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from SOLR - use local version. Repository: ' . $this->repository_name);
+          VerboseJson::log(ERROR, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from SOLR - use local version. Repository: ' . $this->repository_name);
         }
       }
       if (empty($this->repository['filter'])) {
@@ -1353,7 +1353,7 @@ class openSearch extends webServiceServer {
           Object::set_value($f_obj->formatRequest->_value, 'outputFormat', $format_arr['format_name']);
           Object::set_namespace($f_obj->formatRequest->_value, 'outputType', $this->xmlns['of']);
           Object::set_value($f_obj->formatRequest->_value, 'outputType', 'php');
-          Object::set_value($f_obj->formatRequest->_value, 'trackingId', verbose::$tracking_id);
+          Object::set_value($f_obj->formatRequest->_value, 'trackingId', VerboseJson::$tracking_id);
           $f_xml = $this->objconvert->obj2soap($f_obj);
           $this->curl->set_post($f_xml, 0);
           $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: text/xml; charset=UTF-8'], 0);
@@ -1366,7 +1366,7 @@ class openSearch extends webServiceServer {
           }
           if (!$fr_obj) {
             $curl_err = $this->curl->get_status();
-            verbose::log(FATAL, 'openFormat http-error: ' . $curl_err['http_code'] . ' from: ' . $open_format_uri);
+            VerboseJson::log(FATAL, 'openFormat http-error: ' . $curl_err['http_code'] . ' from: ' . $open_format_uri);
           }
           else {
             $struct = key($fr_obj->formatResponse->_value);
@@ -1398,7 +1398,7 @@ class openSearch extends webServiceServer {
           }
           if (!$fr_obj) {
             $curl_err = $formatRecords->get_status();
-            verbose::log(FATAL, 'openFormat http-error: ' . $curl_err[0]['http_code'] . ' - check [format] settings in ini-file');
+            VerboseJson::log(FATAL, 'openFormat http-error: ' . $curl_err[0]['http_code'] . ' - check [format] settings in ini-file');
           }
           else {
             $struct = key($fr_obj[0]);
@@ -1620,7 +1620,7 @@ class openSearch extends webServiceServer {
       $solr_url = self::create_solr_url($q, 0, 999999, $filter_q);
       list($solr_host, $solr_parm) = explode('?', $solr_url['url'], 2);
       $solr_parm .= '&fl=rec.collectionIdentifier,unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
-      verbose::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
+      VerboseJson::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
       if (DEBUG_ON) {
         echo 'post_array: ' . $solr_url['url'] . PHP_EOL;
       }
@@ -1632,7 +1632,7 @@ class openSearch extends webServiceServer {
       $this->curl->set_option(CURLOPT_POST, 0, 0);
       $this->curl->close();
       if (!($solr_arr[$add_idx] = unserialize($solr_result))) {
-        verbose::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
+        VerboseJson::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
         return 'Internal problem: Cannot decode Solr re-search';
       }
     }
@@ -1678,7 +1678,7 @@ class openSearch extends webServiceServer {
         }
         else {
           if (++$u_err < 10) {
-            verbose::log(FATAL, 'Missing ' . $fld . ' in solr_result. Record no: ' . (count($search_ids) + $u_err));
+            VerboseJson::log(FATAL, 'Missing ' . $fld . ' in solr_result. Record no: ' . (count($search_ids) + $u_err));
           }
           break 2;
         }
@@ -1775,9 +1775,9 @@ class openSearch extends webServiceServer {
    */
   private function do_solr($urls, &$solr_arr) {
     foreach ($urls as $no => $url) {
-      $url['url'] .= '&trackingId=' . verbose::$tracking_id;
-      verbose::log(TRACE, 'Query: ' . $url['url']);
-      if ($url['debug']) verbose::log(DEBUG, 'Query: ' . $url['debug']);
+      $url['url'] .= '&trackingId=' . VerboseJson::$tracking_id;
+      VerboseJson::log(TRACE, 'Query: ' . $url['url']);
+      if ($url['debug']) VerboseJson::log(DEBUG, 'Query: ' . $url['debug']);
       $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded; charset=utf-8'], $no);
       $this->curl->set_url($url['url'], $no);
     }
@@ -1798,7 +1798,7 @@ class openSearch extends webServiceServer {
       return 'Internal problem: Cannot decode Solr result';
     }
     elseif ($err = $solr_arr['error']) {
-      verbose::log(FATAL, 'Solr result in error: (' . $err['code'] . ') ' . preg_replace('/\s+/', ' ', $err['msg']));
+      VerboseJson::log(FATAL, 'Solr result in error: (' . $err['code'] . ') ' . preg_replace('/\s+/', ' ', $err['msg']));
       return 'Internal problem: Solr result contains error';
     }
     return null;
@@ -1826,7 +1826,7 @@ class openSearch extends webServiceServer {
         $max = $freq;
       }
     }
-    verbose::log(DEBUG, 'Rank frequency set to ' . $ret . '. ' . $debug_str);
+    VerboseJson::log(DEBUG, 'Rank frequency set to ' . $ret . '. ' . $debug_str);
     return $ret;
 
   }
@@ -1919,12 +1919,12 @@ class openSearch extends webServiceServer {
       $work_cache_struct[$struct_id] = [];
       if (count($work_cache_struct) >= ($start + $step_value)) {
         $more = TRUE;
-        verbose::log(TRACE, 'SOLR stat: used ' . $w_idx . ' of ' . count($work_ids) . ' rows. start: ' . $start . ' step: ' . $step_value);
+        VerboseJson::log(TRACE, 'SOLR stat: used ' . $w_idx . ' of ' . count($work_ids) . ' rows. start: ' . $start . ' step: ' . $step_value);
         break;
       }
       if (!isset($work_ids[$w_idx + 1]) && count($work_ids) < $num_found) {
         $this->watch->start('Solr_add');
-        verbose::log(WARNING, 'To few search_ids fetched from solr. Query: ' . implode(AND_OP, $edismax['q']) . ' idx: ' . $w_idx);
+        VerboseJson::log(WARNING, 'To few search_ids fetched from solr. Query: ' . implode(AND_OP, $edismax['q']) . ' idx: ' . $w_idx);
         $rows *= 2;
         if ($err = self::get_solr_array($edismax, 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr)) {
           $this->watch->stop('Solr_add');
@@ -2098,7 +2098,7 @@ class openSearch extends webServiceServer {
       $curl = new curl();
       $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
     }
-    verbose::log(TRACE, 'repo_read: ' . $record_uri);
+    VerboseJson::log(TRACE, 'repo_read: ' . $record_uri);
     if (DEBUG_ON) echo __FUNCTION__ . ':: ' . $record_uri . "\n";
     if ($this->cache && ($rec = $this->cache->get($record_uri))) {
       $this->number_of_record_repo_cached++;
@@ -2117,14 +2117,14 @@ class openSearch extends webServiceServer {
           if ($curl_err['http_code'] == 404) {
             return 'record_not_found';
           }
-          verbose::log(FATAL, 'record_repo http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri .
+          VerboseJson::log(FATAL, 'record_repo http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri .
                             ' request ' . preg_replace('/\s+/', ' ', print_r($this->user_param, TRUE)));
           return 'Error: Cannot fetch record: ' . $record_uri . ' - http-error: ' . $curl_err['http_code'];
         }
       }
       if ($this->cache) $this->cache->set($record_uri, $rec);
     }
-    // else verbose::log(TRACE, 'record_repo cache hit for ' . $fpid);
+    // else VerboseJson::log(TRACE, 'record_repo cache hit for ' . $fpid);
     return null;
   }
 
@@ -2144,7 +2144,7 @@ class openSearch extends webServiceServer {
     $res_map = [];
     $no = 0;
     foreach ($urls as $key => $uri) {
-      verbose::log(TRACE, 'repo_read: ' . $uri);
+      VerboseJson::log(TRACE, 'repo_read: ' . $uri);
       if (DEBUG_ON) echo __FUNCTION__ . '(' . $no . '):: ' . $uri . "\n";
       if ($this->cache && ($ret[$key] = $this->cache->get($uri))) {
         $this->number_of_record_repo_cached++;
@@ -2169,10 +2169,10 @@ class openSearch extends webServiceServer {
       foreach ($recs as $no => $rec) {
         if (isset($res_map[$no])) {
           if (!strpos($urls[$res_map[$no]], 'RELS-EXT') && (empty($rec) || $status[$no]['http_code'] > 299)) {
-            verbose::log(ERROR, 'record_repo http-error: ' . $status[$no]['http_code'] . ' from: ' . $urls[$res_map[$no]] .
+            VerboseJson::log(ERROR, 'record_repo http-error: ' . $status[$no]['http_code'] . ' from: ' . $urls[$res_map[$no]] .
                               ' record ' . preg_replace('/\s+/', ' ', $rec));
-            verbose::log(ERROR, 'debug status: ' . json_encode($status));
-            verbose::log(ERROR, 'debug recs: ' . json_encode($recs));
+            VerboseJson::log(ERROR, 'debug status: ' . json_encode($status));
+            VerboseJson::log(ERROR, 'debug recs: ' . json_encode($recs));
           }
           $ret[$res_map[$no]] = self::normalize_chars($rec);
           if (!empty($rec) && $this->cache) $this->cache->set($urls[$res_map[$no]], $ret[$res_map[$no]]);
@@ -2219,13 +2219,13 @@ class openSearch extends webServiceServer {
           if (($solr_id == $id) && ($solr_agency == $agency)) {
             $found_record = TRUE;
             if (!$data = base64_decode(self::get_dom_element($record, 'data'))) {
-              verbose::log(FATAL, 'Internal problem: Cannot decode record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
+              VerboseJson::log(FATAL, 'Internal problem: Cannot decode record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
             }
             break;
           }
         }
         if (!$found_record) {
-          verbose::log(ERROR, 'Internal problem: Cannot find record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
+          VerboseJson::log(ERROR, 'Internal problem: Cannot find record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
         }
         if (empty($data)) {
           $data = sprintf($this->config->get_value('missing_marc_record', 'setup'), $solr_id, $solr_agency, 'Cannot read record');
@@ -2242,7 +2242,7 @@ class openSearch extends webServiceServer {
           }
         }
         if ($restricted_record) {
-          verbose::log(WARNING, 'Skipping restricted record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
+          VerboseJson::log(WARNING, 'Skipping restricted record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
           @ $dom->loadXml(sprintf($this->config->get_value('missing_marc_record', 'setup'), $solr_id, $solr_agency, 'Restricted record'));
           $marc_obj = $this->xmlconvert->xml2obj($dom, $this->xmlns['marcx']);
         }
@@ -2255,7 +2255,7 @@ class openSearch extends webServiceServer {
       }
     }
     else {
-      verbose::log(ERROR, __FUNCTION__ . ':: no record(s) found. http_code: ' . $this->curl->get_status('http_code') . ' post: ' . sprintf($p_mask, $post) . ' result: ' . $result);
+      VerboseJson::log(ERROR, 'No record(s) found. http_code: ' . $this->curl->get_status('http_code') . ' post: ' . sprintf($p_mask, $post) . ' result: ' . $result);
     }
     $this->curl->close();
     return $ret;
@@ -2402,11 +2402,11 @@ class openSearch extends webServiceServer {
     $hold_url = sprintf($hold_ws_url, $pid);
     $holds = $this->curl->get($hold_url);
     $this->watch->stop('holdings');
-    verbose::log(DEBUG, 'get_holdings:(' . $this->watch->splittime('holdings') . '): ' . $hold_url);
+    VerboseJson::log(DEBUG, 'get_holdings:(' . $this->watch->splittime('holdings') . '): ' . $hold_url);
     $curl_err = $this->curl->get_status();
     $this->curl->close();
     if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
-      verbose::log(FATAL, 'holdings_db http-error: ' . $curl_err['http_code'] . ' from: ' . $hold_url);
+      VerboseJson::log(FATAL, 'holdings_db http-error: ' . $curl_err['http_code'] . ' from: ' . $hold_url);
       $holds = ['have' => 0, 'lend' => 0];
     }
     else {
@@ -2708,7 +2708,7 @@ class openSearch extends webServiceServer {
         foreach ($this->unit_fallback[$unit_id] as $pid) {
           $priority_pids[] = [$pid];
         }
-        verbose::log(ERROR, 'Empty unit: ' . $unit_id . ' - use pid from Solr instead');
+        VerboseJson::log(ERROR, 'Empty unit: ' . $unit_id . ' - use pid from Solr instead');
       }
       foreach ($priority_pids as $pids_in_unit) {
         foreach ($pids_in_unit as $pid_in_unit) {
@@ -2836,7 +2836,7 @@ class openSearch extends webServiceServer {
       $record_repo_dom->preserveWhiteSpace = FALSE;
     }
     if (@ !$record_repo_dom->loadXML($record_repo_xml)) {
-      verbose::log(FATAL, 'Cannot load recid ' . $rec_id . ' into DomXml');
+      VerboseJson::log(FATAL, 'Cannot load recid ' . $rec_id . ' into DomXml');
       if ($missing_record) {
         $record_repo_dom->loadXML(sprintf($missing_record, $rec_id));
       }
@@ -2934,7 +2934,7 @@ class openSearch extends webServiceServer {
     $dup_check = [];
     foreach ($unit_members as $idx => $member) {
       if (@ !$stream_dom->loadXML($repo_res[$idx])) {
-        verbose::log(ERROR, 'Cannot load STREAMS for ' . $member . ' into DomXml');
+        VerboseJson::log(ERROR, 'Cannot load STREAMS for ' . $member . ' into DomXml');
       }
       else {
         foreach ($stream_dom->getElementsByTagName('link') as $link) {
@@ -3034,7 +3034,7 @@ class openSearch extends webServiceServer {
     foreach ($raw_recs as $unit_id => $related_obj) {
       list($rel_unit_members, $rel_oid, $localdata_in_pid, $primary_oid, $in_870970_basis, $pid) = $unit_info[$unit_id];
       if (@ !$rels_dom->loadXML($related_obj)) {
-        verbose::log(FATAL, 'Cannot load ' . $pid . ' object from commonData into DomXml');
+        VerboseJson::log(FATAL, 'Cannot load ' . $pid . ' object from commonData into DomXml');
       }
       $collection_id = self::get_element_from_admin_data($rels_dom, 'collectionIdentifier');
       if (empty($this->valid_relation[$collection_id])) {  // handling of local data streams
@@ -3049,7 +3049,7 @@ class openSearch extends webServiceServer {
             }
             self::read_record_repo_raw($rel_oid, $related_obj, self::set_data_stream_name($collection_id));
             if (@ !$rels_dom->loadXML($related_obj)) {
-              verbose::log(FATAL, 'Cannot load ' . $rel_oid . ' object from ' . $source . ' into DomXml');
+              VerboseJson::log(FATAL, 'Cannot load ' . $rel_oid . ' object from ' . $source . ' into DomXml');
             }
             break;
           }
@@ -3172,7 +3172,7 @@ class openSearch extends webServiceServer {
             }
           }
           else {
-            verbose::log(FATAL, 'No dkabm record found in ' . $rec_id);
+            VerboseJson::log(FATAL, 'No dkabm record found in ' . $rec_id);
           }
           break;
 
