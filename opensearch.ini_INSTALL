@@ -594,6 +594,9 @@ sort[solr_numberInSeries_descending] = sort.numberInSeries desc
 sort[solr_dateFirstEdition_ascending] = map(sort.dateFirstEdition,0,0,9999) asc
 sort[solr_dateFirstEdition_descending] = sort.dateFirstEdition desc
 
+sort[solr_001c_ascending] = map(sort.001c,0,0,99991231235959) asc
+sort[solr_001c_descending] = map(sort.001c,20500101010101,99999999999999,0) desc
+
 ; sortgroups using sorts - allows you to create "grouped"-sorts, combining existing sorts
 ; like:
 ; sort[<group_sort_name>][] = <sort_name_1>
