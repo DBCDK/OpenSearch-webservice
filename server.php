@@ -2291,10 +2291,16 @@ class OpenSearch extends webServiceServer {
    * @return mixed - profile (array) or FALSE
    */
   private function fetch_profile_from_agency($agency, $profiles) {
+    static $profile_map;
+    if (!isset($profile_map)) {
+      $profile_map = $this->config->get_value('profile_map', 'setup');
+    }
     $this->watch->start('agency_profile');
     $ret = array();
     foreach ($profiles as $profile) {
-      $collections = $this->open_agency->get_search_profile($agency, $profile->_value);
+      $pr_agency = self::value_or_default($profile_map[$profile->_value]['agency'], $agency);
+      $pr_profile = self::value_or_default($profile_map[$profile->_value]['use_profile_name'], $profile->_value);
+      $collections = $this->open_agency->get_search_profile($pr_agency, $pr_profile);
       if (!$collections) {
         $ret = FALSE;
         break;
