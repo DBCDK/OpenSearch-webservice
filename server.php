@@ -1531,19 +1531,21 @@ class OpenSearch extends webServiceServer {
    */
   private function modify_query_and_filter_agency(&$solr_query) {
     foreach (['q', 'fq'] as $solr_par) {
-      foreach ($solr_query['edismax'][$solr_par] as $q_idx => $q) {
-        if (strpos($q, HOLDINGS_AGENCY_ID_FIELD . ':') === 0) {
-          if (count($solr_query['edismax'][$solr_par]) == 1) {
-            $solr_query['edismax'][$solr_par][$q_idx] = '*';
-          }
-          else {
-            unset($solr_query['edismax'][$solr_par][$q_idx]);
-          }
-          $this->filter_agency = str_replace('rec.collectionIdentifier:870970-basis', $q, $this->filter_agency);
-          $collect_agency = 'rec.collectionIdentifier:' . $this->agency_catalog_source;
-          $filtered_collect_agency = '(' . $collect_agency . AND_OP . $q . ')';
-          if (strpos($this->filter_agency, $filtered_collect_agency) === FALSE) {
-            $this->filter_agency = str_replace($collect_agency, $filtered_collect_agency, $this->filter_agency);
+      if ($solr_query['edismax']) {
+        foreach ($solr_query['edismax'][$solr_par] as $q_idx => $q) {
+          if (strpos($q, HOLDINGS_AGENCY_ID_FIELD . ':') === 0) {
+            if (count($solr_query['edismax'][$solr_par]) == 1) {
+              $solr_query['edismax'][$solr_par][$q_idx] = '*';
+            }
+            else {
+              unset($solr_query['edismax'][$solr_par][$q_idx]);
+            }
+            $this->filter_agency = str_replace('rec.collectionIdentifier:870970-basis', $q, $this->filter_agency);
+            $collect_agency = 'rec.collectionIdentifier:' . $this->agency_catalog_source;
+            $filtered_collect_agency = '(' . $collect_agency . AND_OP . $q . ')';
+            if (strpos($this->filter_agency, $filtered_collect_agency) === FALSE) {
+              $this->filter_agency = str_replace($collect_agency, $filtered_collect_agency, $this->filter_agency);
+            }
           }
         }
       }
@@ -2030,16 +2032,18 @@ class OpenSearch extends webServiceServer {
     $relation_units = [];
     $primary_pids = [];
     $unit_info = [];
-    foreach ($raw_res as $key => $r_res) {
-      if (strpos($key, '-addi')) {
-        list($unit_id) = explode('-', $key);
-        $relation_units[$unit_id] = self::parse_addi_for_units_in_relations($key, $r_res);
+    foreach ($raw_res as $unit_key => $r_res) {
+      if (strpos($unit_key, '-addi')) {
+        list($unit_id) = explode('-', $unit_key);
+        $pid_related_from = $unit_info[$unit_id][1];
+        $valid_relations = $this->valid_relation[self::record_source_from_pid($pid_related_from)];
+        $relation_units[$unit_id] = self::parse_addi_for_units_in_relations($unit_key, $r_res, $valid_relations);
       }
       else {
         $help = json_decode($r_res);
-        $raw_res[$key] = $help->dataStream;
-        $primary_pids[$key] = $help->primaryPid;
-        $unit_info[$key] = [$help->pids, $help->pids[0], $help->primaryPid];
+        $raw_res[$unit_key] = $help->dataStream;
+        $primary_pids[$unit_key] = $help->primaryPid;
+        $unit_info[$unit_key] = [$help->pids, $help->pids[0], $help->primaryPid];
       }
     }
     return array($raw_res, $primary_pids, $unit_info, $relation_units);
@@ -2703,9 +2707,10 @@ class OpenSearch extends webServiceServer {
    *
    * @param $unit_id - id of unit
    * @param $record_repo_addi_xml - the addi (RELS-EXT) xml record, containing relations for the unit
+   * @param $valid_relations - array of relations accepted in profile
    * @return array - of relation unit id's
    */
-  private function parse_addi_for_units_in_relations($unit_id, $record_repo_addi_xml) {
+  private function parse_addi_for_units_in_relations($unit_id, $record_repo_addi_xml, $valid_relations) {
     static $rels_dom;
     if (empty($rels_dom)) {
       $rels_dom = new DomDocument();
@@ -2722,7 +2727,7 @@ class OpenSearch extends webServiceServer {
               $this_relation = $rel_prefix . ':' . $tag->localName;
             else
               $this_relation = $tag->localName;
-            if (($relation_count[$this_relation] < MAX_IDENTICAL_RELATIONS)) {
+            if ($valid_relations[$this_relation] && ($relation_count[$this_relation] < MAX_IDENTICAL_RELATIONS)) {
               $relation_count[$this_relation]++;
               $relations[$tag->nodeValue] = $this_relation;
             }
