@@ -40,6 +40,7 @@ require_once 'OLS_class_lib/open_agency_v2_class.php';
 class OpenSearch extends webServiceServer {
   protected $open_agency;
   protected $agency;
+  protected $show_agency;
   protected $cql2solr;
   protected $curl;
   protected $cache;
@@ -148,6 +149,7 @@ class OpenSearch extends webServiceServer {
     if ($unsupported) return $ret_error;
 
     $this->agency = $param->agency->_value;
+    $this->show_agency = self::value_or_default($param->showAgency->_value, $this->agency);
     $this->profile = $param->profile;
     $this->agency_catalog_source = $this->agency . '-katalog';
     $this->filter_agency = self::set_solr_filter($this->search_profile);
@@ -664,6 +666,7 @@ class OpenSearch extends webServiceServer {
       self::set_valid_relations_and_sources($this->search_profile);
       self::set_search_filters_for_800000_collection();
     }
+    $this->show_agency = self::value_or_default($param->showAgency->_value, $this->agency);
     if ($this->filter_agency) {
       $filter_q = rawurlencode($this->filter_agency);
     }
@@ -2055,7 +2058,7 @@ class OpenSearch extends webServiceServer {
    * @return string
    */
   private function corepo_get_url($unit_id, $pids) {
-    return sprintf($this->repository['corepo_get'], $unit_id, implode(',', $pids), $this->agency);
+    return sprintf($this->repository['corepo_get'], $unit_id, implode(',', $pids), $this->show_agency);
   }
 
   /** \brief Create record_repo url from settings and given id
