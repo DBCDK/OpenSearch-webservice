@@ -601,6 +601,7 @@ class OpenSearch extends webServiceServer {
     VerboseJson::log(STAT, array_merge(
                              array('agency' => $this->agency,
                                    'profile' => self::stringify_obj_array($param->profile),
+                                   'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
                                    'repoRecs' => $this->number_of_record_repo_calls,
                                    'repoCache' => $this->number_of_record_repo_cached,
                                    'query' => $param->query->_value),
@@ -878,6 +879,7 @@ class OpenSearch extends webServiceServer {
     VerboseJson::log(STAT, array_merge(
                              array('agency' => $this->agency,
                                    'profile' => self::stringify_obj_array($param->profile),
+                                   'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
                                    'repoRecs' => $this->number_of_record_repo_calls,
                                    'repoCache' => $this->number_of_record_repo_cached,
                                    'ids' => implode(',', $id_array)),
