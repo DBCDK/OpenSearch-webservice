@@ -598,14 +598,13 @@ class OpenSearch extends webServiceServer {
     Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
     Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
 
-    VerboseJson::log(STAT, array_merge(
-                             array('agency' => $this->agency,
-                                   'profile' => self::stringify_obj_array($param->profile),
-                                   'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
-                                   'repoRecs' => $this->number_of_record_repo_calls,
-                                   'repoCache' => $this->number_of_record_repo_cached,
-                                   'query' => $param->query->_value),
-                             $this->watch->get_timers()));
+    VerboseJson::log(STAT, array('agency' => $this->agency,
+                                 'profile' => self::stringify_obj_array($param->profile),
+                                 'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
+                                 'repoRecs' => $this->number_of_record_repo_calls,
+                                 'repoCache' => $this->number_of_record_repo_cached,
+                                 'query' => $param->query->_value,
+                                 'timings' => $this->watch->get_timers()));
 
     //var_dump($ret); die();
     return $ret;
@@ -876,14 +875,13 @@ class OpenSearch extends webServiceServer {
     Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
     Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
 
-    VerboseJson::log(STAT, array_merge(
-                             array('agency' => $this->agency,
-                                   'profile' => self::stringify_obj_array($param->profile),
-                                   'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
-                                   'repoRecs' => $this->number_of_record_repo_calls,
-                                   'repoCache' => $this->number_of_record_repo_cached,
-                                   'ids' => implode(',', $id_array)),
-                             $this->watch->get_timers()));
+    VerboseJson::log(STAT, array('agency' => $this->agency,
+                                 'profile' => self::stringify_obj_array($param->profile),
+                                 'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
+                                 'repoRecs' => $this->number_of_record_repo_calls,
+                                 'repoCache' => $this->number_of_record_repo_cached,
+                                 'ids' => implode(',', $id_array),
+                                 'timings' => $this->watch->get_timers()));
     return $ret;
   }
 
@@ -900,10 +898,9 @@ class OpenSearch extends webServiceServer {
     $result->infoSearchProfile = self::get_search_profile_info($param->agency->_value, $param->profile);
     $result->infoSorts = self::get_sort_info();
     $result->infoNameSpaces = self::get_namespace_info();
-    VerboseJson::log(STAT, array_merge(
-                             array('agency' => $this->agency,
-                                   'profile' => self::stringify_obj_array($param->profile)),
-                             $this->watch->get_timers()));
+    VerboseJson::log(STAT, array('agency' => $this->agency,
+                                 'profile' => self::stringify_obj_array($param->profile),
+                                 'timings' => $this->watch->get_timers()));
     return $ret;
   }
 

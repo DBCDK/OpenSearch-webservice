@@ -13,6 +13,8 @@
 ; version name, unless you specificly want them to share cache
 version = 5.0
 
+buildnumber = @BUILD_NUMBER@
+
 ; --------------
 ; wsdl and service location for service. Used to replace __LOCATION__ in wsdl
 wsdl = opensearch.wsdl
