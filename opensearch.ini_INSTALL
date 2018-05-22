@@ -432,9 +432,6 @@ verbose = @VERBOSE_LEVEL@
 ;dump_timer = opensearch/_VERSION_(%s)
 dump_timer = opensearch(%s)
 
-; include line below to add the request ip adress to the TIMER log lines
-;dump_timer_ip = TRUE
-
 ; --------------
 ; For test purposes
 ; Send each request to other service(s) as soap-request for test purposes (or logging of requests)
