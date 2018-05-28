@@ -13,6 +13,8 @@
 ; version name, unless you specificly want them to share cache
 version = 5.0
 
+; buildnumber = normally taken from file, but can be set here instead
+
 ; --------------
 ; wsdl and service location for service. Used to replace __LOCATION__ in wsdl
 wsdl = opensearch.wsdl
@@ -345,6 +347,21 @@ solr_format[briefDisplay][format] = display.accessType,display.creator,fedoraPid
 solr_format[score][format] = score
 
 ; --------------
+; Mapping search profile to be fectched from another agency
+; profile_map[profile-name][agency] = 123456
+; if input parameter profile = profile-name, fetch the profile from the agency 123456 instead of the input parameter agency
+;
+; profile_map[profile-name][use_profile_name] = NAME
+; if NAME is specified, use NAME as profilename instead of the input parameter profile, fetching profile from 123456
+
+profile_map[danbib][agency] = 190102
+profile_map[danbib][use_profile_name] = danbib
+profile_map[danbibdbc][agency] = 190102
+profile_map[danbibfolk][agency] = 190102
+profile_map[danbibfolkforsk][agency] = 190102
+profile_map[danbibforsk][agency] = 190102
+
+; --------------
 ; default search_profile setting
 agency_fallback = @AGENCY_FALLBACK@
 profile_fallback = @AGENCY_PROFILE_FALLBACK@
@@ -399,6 +416,9 @@ logfile = @LOGFILE@
 ; ident for syslog is set like where _VERSION_ is replaced by version setting above
 syslog_id = trlog[opensearch__VERSION_]
 
+; logging style. Default is json, string will make lines with elements like key:value
+;logstyle = string
+
 ; set verboselevel
 ;   WARNING - simple warnings
 ;   ERROR   - errors in response
@@ -415,9 +435,6 @@ verbose = @VERBOSE_LEVEL@
 ; format for automatic timer dump %s is the soap-action used. _VERSION_ is replaced by version defined above
 ;dump_timer = opensearch/_VERSION_(%s)
 dump_timer = opensearch(%s)
-
-; include line below to add the request ip adress to the TIMER log lines
-;dump_timer_ip = TRUE
 
 ; --------------
 ; For test purposes
