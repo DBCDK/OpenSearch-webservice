@@ -1,11 +1,8 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL & ~E_NOTICE);
-
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
+//error_reporting(E_ALL & ~E_NOTICE);
 //-----------------------------------------------------------------------------
 /**
  *
@@ -429,9 +426,9 @@ class OpenSearch extends webServiceServer {
     foreach ($display_solr_arr as $d_s_a) {
       foreach ($d_s_a['response']['docs'] as $solr_rec) {
         $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
-        if (count($solr_rec['rec.collectionIdentifier']) > $max_col[$unit_id]) {
+        if (count($solr_rec[COLLECTION_INDEX]) > $max_col[$unit_id]) {
           $unit_sort_keys[$unit_id] = $solr_rec['sort.complexKey'] . '  ' . $unit_id;
-          $max_col[$unit_id] = count($solr_rec['rec.collectionIdentifier']);
+          $max_col[$unit_id] = count($solr_rec[COLLECTION_INDEX]);
         }
       }
     }
@@ -775,7 +772,7 @@ class OpenSearch extends webServiceServer {
       '&start=0' .
       '&rows=500' .
       '&defType=edismax' .
-      '&fl=rec.collectionIdentifier,' . FIELD_WORK_ID . ',' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
+      '&fl=rec.' . COLLECTION_INDEX . ',' . FIELD_WORK_ID . ',' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
       $add_fl . '&trackingId=' . VerboseJson::$tracking_id;
     VerboseJson::log(TRACE, 'Search for pids in Solr: ' . $this->repository['solr'] . str_replace('wt=phps', '?', $solr_q));
     $curl = new curl();
@@ -1518,8 +1515,8 @@ class OpenSearch extends webServiceServer {
     $best_idx = 0;
     $max_coll = -1;
     foreach ($s_docs as $s_idx => $s_rec) {
-      if (in_array($match, $s_rec[$field]) && ($max_coll < count($s_rec['rec.collectionIdenfier']))) {
-        $max_coll = count($s_rec['rec.collectionIdenfier']);
+      if (in_array($match, $s_rec[$field]) && ($max_coll < count($s_rec[COLLECTION_INDEX]))) {
+        $max_coll = count($s_rec[COLLECTION_INDEX]);
         $best_idx = $s_idx;
       }
     }
@@ -1542,8 +1539,8 @@ class OpenSearch extends webServiceServer {
             else {
               unset($solr_query['edismax'][$solr_par][$q_idx]);
             }
-            $this->filter_agency = str_replace('rec.collectionIdentifier:870970-basis', $q, $this->filter_agency);
-            $collect_agency = 'rec.collectionIdentifier:' . $this->agency_catalog_source;
+            $this->filter_agency = str_replace(COLLECTION_INDEX . ':870970-basis', $q, $this->filter_agency);
+            $collect_agency = COLLECTION_INDEX . ':' . $this->agency_catalog_source;
             $filtered_collect_agency = '(' . $collect_agency . AND_OP . $q . ')';
             if (strpos($this->filter_agency, $filtered_collect_agency) === FALSE) {
               $this->filter_agency = str_replace($collect_agency, $filtered_collect_agency, $this->filter_agency);
@@ -1656,7 +1653,7 @@ class OpenSearch extends webServiceServer {
       $q = $chk_query['edismax'];
       $solr_url = self::create_solr_url($q, 0, 999999, $filter_q);
       list($solr_host, $solr_parm) = explode('?', $solr_url['url'], 2);
-      $solr_parm .= '&fl=rec.collectionIdentifier,unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
+      $solr_parm .= '&fl=' . COLLECTION_INDEX . ',unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
       VerboseJson::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
       if (DEBUG_ON) {
         echo 'post_array: ' . $solr_url['url'] . PHP_EOL;
