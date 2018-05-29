@@ -30,7 +30,8 @@ You should have received a copy of the GNU Affero General Public License along w
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="os:agency"/>
-        <xs:element ref="os:profile"/>
+        <xs:element ref="os:profile" maxOccurs="unbounded"/>
+        <xs:element ref="os:showAgency" minOccurs="0"/>
         <xs:choice>
             <xs:element ref="os:identifier" maxOccurs="unbounded"/>
             <xs:element ref="os:localIdentifier" maxOccurs="unbounded"/>
@@ -70,7 +71,8 @@ You should have received a copy of the GNU Affero General Public License along w
         <xs:element ref="os:query"/>
         <xs:element ref="os:queryLanguage" minOccurs="0"/>
         <xs:element ref="os:agency"/>
-        <xs:element ref="os:profile"/>
+        <xs:element ref="os:profile" maxOccurs="unbounded"/>
+        <xs:element ref="os:showAgency" minOccurs="0"/>
         <xs:element ref="os:allObjects" minOccurs="0"/>
         <xs:element ref="os:authentication" minOccurs="0"/>
         <xs:element ref="os:callback" minOccurs="0"/>
@@ -741,6 +743,11 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:documentation xml:lang="en">Name of collection as seen in VIP.</xs:documentation>
     </xs:annotation>
   </xs:element>  
+  <xs:element name="showAgency" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Used to show records as seen by this agency</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:element name="sortDetails">
     <xs:annotation>
       <xs:documentation xml:lang="en"></xs:documentation>
