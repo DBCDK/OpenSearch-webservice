@@ -514,6 +514,10 @@ class OpenSearch extends webServiceServer {
                                                                 $primary_pids[$unit_id],
                                                                 $holdings_res[$unit_id],
                                                                 $param);
+        if (empty($param->includeHoldingsCount) || !self::xs_boolean($param->includeHoldingsCount->_value)) {
+          unset($objects[$sort_key]->_value->holdingsCount);
+          unset($objects[$sort_key]->_value->lendingLibraries);
+        }
         foreach ($pids as $um) {
           Object::set_array_value($u_member, 'identifier', $um);
         }
