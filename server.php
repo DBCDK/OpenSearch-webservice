@@ -204,6 +204,12 @@ class OpenSearch extends webServiceServer {
       if (!in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), []))) {
         $filter = rawurlencode(RR_MARC_001_B . ':(870970 OR ' . $this->agency . ')');
       }
+      if ($sort) {
+        foreach ($sort as $s) {
+          $ss[] = urlencode($sort_types[$s]);
+        }
+        $sort_q = '&sort=' . implode(',', $ss);
+      }
       foreach ($solr_query['edismax']['fq'] as $fq) {
         $filter .= '&fq=' . rawurlencode($fq);
       }
@@ -211,7 +217,7 @@ class OpenSearch extends webServiceServer {
         '?q=' . urlencode($q) .
         '&fq=' . $filter .
         '&start=' . ($start - 1) .
-        '&rows=' . $step_value .
+        '&rows=' . $step_value . $sort_q . 
         '&defType=edismax&wt=phps&fl=' . ($debug_query ? '&debugQuery=on' : '');
       $solr_urls[0]['debug'] = str_replace('wt=phps', 'wt=xml', $solr_urls[0]['url']);
       if ($err = self::do_solr($solr_urls, $solr_arr)) {
