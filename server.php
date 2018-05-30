@@ -2492,7 +2492,6 @@ class OpenSearch extends webServiceServer {
         }
       }
       // and build url to fetch.
-      // FVS - behøver kun poster for full, for uri den højst prioriterede. corepo eller egen prio-løkke?
       $rel_urls = [];
       foreach ($rel_unit_pids as $u_id => $pids) {
         $rel_urls[$u_id] = self::corepo_get_url($u_id, $pids);
