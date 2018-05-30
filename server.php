@@ -118,14 +118,14 @@ class OpenSearch extends webServiceServer {
       $unsupported = $repository_error;
     }
 
-// for testing and group all
+    // for testing and group all
     if (count($this->aaa->aaa_ip_groups) == 1 && $this->aaa->aaa_ip_groups['all']) {
       Object::set_value($param, 'agency', '100200');
       Object::set_value($param, 'profile', 'test');
     }
     if (empty($param->agency->_value) && empty($param->profile)) {
       Object::set_value($param, 'agency', $this->config->get_value('agency_fallback', 'setup'));
-      Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup')); // FVS
+      Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
     }
     if ($param->profile && !is_array($param->profile)) {
       $param->profile = array($param->profile);
@@ -447,7 +447,6 @@ class OpenSearch extends webServiceServer {
         }
       }
     }
-//var_dump($add_queries); var_dump($display_solr_arr); var_dump($unit_sort_keys); die();
 
     // work_ids now contains the work-records and the fedoraPids they consist of
     // now fetch the records for each work/collection
@@ -539,7 +538,6 @@ class OpenSearch extends webServiceServer {
     }
     if (DEBUG_ON) {
       echo PHP_EOL . 'unit_sort_keys:' . PHP_EOL; var_dump($unit_sort_keys);
-      //echo PHP_EOL . 'explain:' . PHP_EOL; var_dump($explain);
       echo PHP_EOL . 'holdings_res:' . PHP_EOL; var_dump($holdings_res);
       echo PHP_EOL . 'raw_res:' . PHP_EOL; var_dump($raw_res);
       echo PHP_EOL . 'relation_units (relations found in records):' . PHP_EOL; var_dump($relation_units);
@@ -583,9 +581,6 @@ class OpenSearch extends webServiceServer {
       print_r($work_cache_struct);
       die();
     }
-    //if (DEBUG_ON) { print_r($work_cache_struct); die(); }
-    //if (DEBUG_ON) { print_r($collections); die(); }
-    //if (DEBUG_ON) { print_r($solr_arr); die(); }
 
     $result = &$ret->searchResponse->_value->result->_value;
     Object::set_value($result, 'hitCount', $numFound);
@@ -2052,8 +2047,6 @@ class OpenSearch extends webServiceServer {
     foreach ($raw_res as $unit_key => $r_res) {
       if (strpos($unit_key, '-addi')) {
         list($unit_id) = explode('-', $unit_key);
-        $pid_related_from = $unit_info[$unit_id][1];
-        // $valid_relations = $this->valid_relation[self::record_source_from_pid($pid_related_from)];
         $relation_units[$unit_id] = self::parse_addi_for_units_in_relations($unit_key, $r_res);
       }
       else {
@@ -2439,7 +2432,6 @@ class OpenSearch extends webServiceServer {
 
   /**
    * search units in full profile and collect pids for each unit and create urls to read records with corepo_get
-   *
    * The record pointed to via the relation, should allow the relation in the search profile (the record source)
    *
    * @param $relation_units
@@ -2461,9 +2453,9 @@ class OpenSearch extends webServiceServer {
       if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_all_q, '', $debug_query, $solr_arr)) {
         VerboseJson::log(FATAL, 'Solr error searching relations: ' . $err . ' - query: ' . $edismax['q']);
       }
-      // FVS - type skal ikke læse unit'en,
-      //       uri skal finde den højst prioriterede (hvis der er mere end en),
-      //       full skal læse den højst prioriterede post og hente linkobjectet også.
+      // - type skal ikke læse unit'en,
+      //   uri skal finde den højst prioriterede (hvis der er mere end en),
+      //   full skal læse den højst prioriterede post og hente linkobjectet også.
       $this->watch->stop('Solr_rel');
       // build list of available ids for the unit's
       $rel_unit_pids = [];
@@ -2496,7 +2488,7 @@ class OpenSearch extends webServiceServer {
       foreach ($rel_unit_pids as $u_id => $pids) {
         $rel_urls[$u_id] = self::corepo_get_url($u_id, $pids);
       }
-      // FVS rel_res indeholder manifestationerne for de af relationerne pegede på unit's
+      // rel_res indeholder manifestationerne for de af relationerne pegede på unit's
       if ($rel_urls) {
         $rel_res = self::read_record_repo_all_urls($rel_urls);
       }
