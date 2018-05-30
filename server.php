@@ -614,6 +614,10 @@ class OpenSearch extends webServiceServer {
                                  'timings' => $this->watch->get_timers()));
 
     //var_dump($ret); die();
+
+    // Dump Timings log in text format for zabbix remove by end of 2018
+    $this->logOldStyleZabbixTimings('search', $this->watch->dump());
+
     return $ret;
   }
 
@@ -889,6 +893,10 @@ class OpenSearch extends webServiceServer {
                                  'repoCache' => $this->number_of_record_repo_cached,
                                  'ids' => implode(',', $id_array),
                                  'timings' => $this->watch->get_timers()));
+
+    // Dump Timings log in text format for zabbix remove by end of 2018
+    $this->logOldStyleZabbixTimings('getObject', $this->watch->dump());
+    
     return $ret;
   }
 
@@ -3311,6 +3319,35 @@ class OpenSearch extends webServiceServer {
     die('</body></html>');
   }
 
+  /*  OldStyle function To Match old dup zabbix logline formater.
+
+  Python code for matching the line
+           # tracelog files
+           regex_dateformat=r'(?P<date>\d+:\d+:\d+-\d+/\d+/\d+)'
+           datetime_dateformat=r'%H:%M:%S-%d/%m/%y'
+           lineexp=r'(?:STAT|TIMER)\s+'+regex_dateformat+r'\s*(?P<tracking>\S+)?\s+(?P<tag>\S+)::(?P<dataline>.*Total:(?P<total>[0-9.,]*).*)'
+
+  Lines as seen in production log
+  TIMER 07:22:36-29/05/18 os:2018-05-29T07:22:36:700926:21103 opensearch(getObject):: Total:0.295 agency_profile:0.001 agency_type:0.001 agency_prio:0.000 agency_rule:0.000 cql:0.001 record_repo:0.015
+  TIMER 07:22:37-29/05/18 os:2018-05-29T07:22:37:304071:21103 opensearch(search):: Total:0.167 agency_profile:0.003 agency_type:0.002 cql:0.001 solr:0.041 Solr_ids:0.017 Build_id:0.014 Solr_disp:0.067 agency_prio:0.000 record_repo:0.009
+
+   STAT 07:22:36-29/05/18 os:2018-05-29T07:22:36:732736:21254<39228711-777b-4d1c-a626-3b20f3d4c961 opensearch(getObject):: agency:300661 profile:cicero repoRecs:0 repoCache:5 Total:0.110 agency_profile:0.001 agency_type:0.005 agency_prio:0.000 agency_rule:0.000 cql:0.001 ids:300661-katalog:52264081,870970-basis:52264081,300661-katalog:52264111,870970-basis:52264111,300661-katalog:52399246,870970-basis:52399246,300661-katalog:52526272,870970-basis:52526272,300661-katalog:54049889,870970-basis:54049889
+  TIMER 07:22:36-29/05/18 os:2018-05-29T07:22:36:732736:21254<39228711-777b-4d1c-a626-3b20f3d4c961 opensearch(getObject):: Total:0.110 agency_profile:0.001 agency_type:0.005 agency_prio:0.000 agency_rule:0.000 cql:0.001
+
+  STAT 07:22:37-29/05/18 os:2018-05-29T07:22:37:126884:21420 opensearch(search):: agency:150013 profile:opac ip:172.18.0.66 repoRecs:0 repoCache:6 Total:0.170 agency_profile:0.001 agency_type:0.003 cql:0.001 Solr_ids:0.009 solr:0.026 Build_id:0.018 Solr_disp:0.079 agency_prio:0.000 format_solr:0.001 query:rec.id=870970-basis:51980204
+  TIMER 07:22:37-29/05/18 os:2018-05-29T07:22:37:126884:21420 opensearch(search):: Total:0.170 agency_profile:0.001 agency_type:0.003 cql:0.001 Solr_ids:0.009 solr:0.026 Build_id:0.018 Solr_disp:0.079 agency_prio:0.000 format_solr:0.001
+   */
+  
+  protected function logOldStyleZabbixTimings($functionName, $timings ) {
+    $vtext = 'TIMER';
+    $date_format = 'H:i:s-d/m/y';
+    $trackingId = "os:x<x";
+    if ($fp = @ fopen('php://stdout', 'a')) {
+      fwrite($fp, $vtext . ' ' . date($date_format) . ' ' . $trackingId. ' opensearch(' . $functionName .')::'. $timings .'\n');
+      fclose($fp);
+    }
+  }
+  
 }
 
 /*
