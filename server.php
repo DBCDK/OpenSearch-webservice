@@ -2045,8 +2045,8 @@ class OpenSearch extends webServiceServer {
       if (strpos($unit_key, '-addi')) {
         list($unit_id) = explode('-', $unit_key);
         $pid_related_from = $unit_info[$unit_id][1];
-        $valid_relations = $this->valid_relation[self::record_source_from_pid($pid_related_from)];
-        $relation_units[$unit_id] = self::parse_addi_for_units_in_relations($unit_key, $r_res, $valid_relations);
+        // $valid_relations = $this->valid_relation[self::record_source_from_pid($pid_related_from)];
+        $relation_units[$unit_id] = self::parse_addi_for_units_in_relations($unit_key, $r_res);
       }
       else {
         $help = json_decode($r_res);
@@ -2431,15 +2431,20 @@ class OpenSearch extends webServiceServer {
 
   /**
    * search units in full profile and collect pids for each unit and create urls to read records with corepo_get
+   *
+   * The record pointed to via the relation, should allow the relation in the search profile (the record source)
+   *
    * @param $relation_units
    * @return array
    */
   private function fetch_valid_relation_records($relation_units) {
     if ($relation_units) {
+      $relations_in_to_unit = [];
       $rel_query_ids = [];
       foreach ($relation_units as $unit_rels) {
         foreach ($unit_rels as $u_id => $rel) {
           $rel_query_ids[$u_id] = $u_id;
+          $relations_in_to_unit[$u_id][$rel] = $rel;
         }
       }
       $edismax['q'] = ['unit.id:("' . implode('" OR "', $rel_query_ids) . '")'];
@@ -2455,11 +2460,25 @@ class OpenSearch extends webServiceServer {
       // build list of available ids for the unit's
       $rel_unit_pids = [];
       if (is_array($solr_arr['response']['docs'])) {
+        if (DEBUG_ON) {
+          echo 'relations_in_to_unit ';
+          var_dump($relations_in_to_unit);
+        }
         foreach ($solr_arr['response']['docs'] as $fdoc) {
           $unit_id = $fdoc[FIELD_UNIT_ID];
           foreach ($fdoc[FIELD_REC_ID] as $rec_id) {
             if (self::is_corepo_pid($rec_id)) {
-              $rel_unit_pids[$unit_id][$rec_id] = $rec_id;;
+              $record_source = self::record_source_from_pid($rec_id);
+              if (DEBUG_ON) {
+                echo 'valid relation for ' . $record_source . ' unit: ' . $unit_id . ' ';
+                var_dump($this->valid_relation[$record_source]);
+              }
+              foreach ($relations_in_to_unit[$unit_id] as $rel) {
+                if ($this->valid_relation[$record_source][$rel]) {
+                  $rel_unit_pids[$unit_id][$rec_id] = $rec_id;;
+                  break;
+                }
+              }
             }
           }
         }
@@ -2716,10 +2735,9 @@ class OpenSearch extends webServiceServer {
    *
    * @param $unit_id - id of unit
    * @param $record_repo_addi_xml - the addi (RELS-EXT) xml record, containing relations for the unit
-   * @param $valid_relations - array of relations accepted in profile
    * @return array - of relation unit id's
    */
-  private function parse_addi_for_units_in_relations($unit_id, $record_repo_addi_xml, $valid_relations) {
+  private function parse_addi_for_units_in_relations($unit_id, $record_repo_addi_xml) {
     static $rels_dom;
     if (empty($rels_dom)) {
       $rels_dom = new DomDocument();
@@ -2736,7 +2754,7 @@ class OpenSearch extends webServiceServer {
               $this_relation = $rel_prefix . ':' . $tag->localName;
             else
               $this_relation = $tag->localName;
-            if ($valid_relations[$this_relation] && ($relation_count[$this_relation] < MAX_IDENTICAL_RELATIONS)) {
+            if ($relation_count[$this_relation] < MAX_IDENTICAL_RELATIONS) {
               $relation_count[$this_relation]++;
               $relations[$tag->nodeValue] = $this_relation;
             }

@@ -369,7 +369,8 @@ profile_fallback = @AGENCY_PROFILE_FALLBACK@
 ; --------------
 ; relation_group_source_tab
 ; ...[relation][agency type][collection name] = mapped source
-relation_group_source_tab[dbcbib:isPartOfManifestation][Forskningsbibliotek][katalog] = 870970-forsk
+; obsolete as version 5.1 
+; relation_group_source_tab[dbcbib:isPartOfManifestation][Forskningsbibliotek][katalog] = 870970-forsk
 
 ; --------------
 ; phrase indexes
