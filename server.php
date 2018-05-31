@@ -92,7 +92,7 @@ class OpenSearch extends webServiceServer {
     define('OR_OP', ' OR ');
     define('RR_MARC_001_A', 'marc.001a');
     define('RR_MARC_001_B', 'marc.001b');
-    define('COLLECTION_INDEX', 'rec.collectionIdentifier');
+    define('FIELD_COLLECTION_INDEX', 'rec.collectionIdentifier');
   }
 
   /** \brief Entry search: Handles the request and set up the response
@@ -432,9 +432,9 @@ class OpenSearch extends webServiceServer {
     foreach ($display_solr_arr as $d_s_a) {
       foreach ($d_s_a['response']['docs'] as $solr_rec) {
         $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
-        if (count($solr_rec[COLLECTION_INDEX]) > $max_col[$unit_id]) {
+        if (count($solr_rec[FIELD_COLLECTION_INDEX]) > $max_col[$unit_id]) {
           $unit_sort_keys[$unit_id] = $solr_rec['sort.complexKey'] . '  ' . $unit_id;
-          $max_col[$unit_id] = count($solr_rec[COLLECTION_INDEX]);
+          $max_col[$unit_id] = count($solr_rec[FIELD_COLLECTION_INDEX]);
         }
       }
     }
@@ -781,7 +781,7 @@ class OpenSearch extends webServiceServer {
       '&start=0' .
       '&rows=500' .
       '&defType=edismax' .
-      '&fl=rec.' . COLLECTION_INDEX . ',' . FIELD_WORK_ID . ',' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
+      '&fl=rec.' . FIELD_COLLECTION_INDEX . ',' . FIELD_WORK_ID . ',' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
       $add_fl . '&trackingId=' . VerboseJson::$tracking_id;
     VerboseJson::log(TRACE, 'Search for pids in Solr: ' . $this->repository['solr'] . str_replace('wt=phps', '?', $solr_q));
     $curl = new curl();
@@ -1038,10 +1038,10 @@ class OpenSearch extends webServiceServer {
       foreach ($profile as $p) {
         if (self::xs_boolean($p['sourceSearchable']) || ($add_relation_sources && count($p['relation']))) {
           if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
-            $ret[] = '(' . COLLECTION_INDEX . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
+            $ret[] = '(' . FIELD_COLLECTION_INDEX . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
           }
           else {
-            $ret[] = COLLECTION_INDEX . ':' . $p['sourceIdentifier'];
+            $ret[] = FIELD_COLLECTION_INDEX . ':' . $p['sourceIdentifier'];
           }
         }
       }
@@ -1127,7 +1127,7 @@ class OpenSearch extends webServiceServer {
           }
           else {
             if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
-              $normal_collections[] = '(' . COLLECTION_INDEX . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
+              $normal_collections[] = '(' . FIELD_COLLECTION_INDEX . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
             }
             else {
               $normal_collections[] = $p['sourceIdentifier'];
@@ -1137,8 +1137,8 @@ class OpenSearch extends webServiceServer {
       }
     }
     return
-      ($normal_collections ? COLLECTION_INDEX . ':(' . implode(' OR ', $normal_collections) . ') OR ' : '') .
-      ($filtered_collections ? '(' . COLLECTION_INDEX . ':(' . implode(' OR ', $filtered_collections) . ') AND %s)' : '%s');
+      ($normal_collections ? FIELD_COLLECTION_INDEX . ':(' . implode(' OR ', $normal_collections) . ') OR ' : '') .
+      ($filtered_collections ? '(' . FIELD_COLLECTION_INDEX . ':(' . implode(' OR ', $filtered_collections) . ') AND %s)' : '%s');
   }
 
   /** \brief Set list of collection alias' depending on the user search profile
@@ -1528,8 +1528,8 @@ class OpenSearch extends webServiceServer {
     $best_idx = 0;
     $max_coll = -1;
     foreach ($s_docs as $s_idx => $s_rec) {
-      if (in_array($match, $s_rec[$field]) && ($max_coll < count($s_rec[COLLECTION_INDEX]))) {
-        $max_coll = count($s_rec[COLLECTION_INDEX]);
+      if (in_array($match, $s_rec[$field]) && ($max_coll < count($s_rec[FIELD_COLLECTION_INDEX]))) {
+        $max_coll = count($s_rec[FIELD_COLLECTION_INDEX]);
         $best_idx = $s_idx;
       }
     }
@@ -1552,8 +1552,8 @@ class OpenSearch extends webServiceServer {
             else {
               unset($solr_query['edismax'][$solr_par][$q_idx]);
             }
-            $this->filter_agency = str_replace(COLLECTION_INDEX . ':870970-basis', $q, $this->filter_agency);
-            $collect_agency = COLLECTION_INDEX . ':' . $this->agency_catalog_source;
+            $this->filter_agency = str_replace(FIELD_COLLECTION_INDEX . ':870970-basis', $q, $this->filter_agency);
+            $collect_agency = FIELD_COLLECTION_INDEX . ':' . $this->agency_catalog_source;
             $filtered_collect_agency = '(' . $collect_agency . AND_OP . $q . ')';
             if (strpos($this->filter_agency, $filtered_collect_agency) === FALSE) {
               $this->filter_agency = str_replace($collect_agency, $filtered_collect_agency, $this->filter_agency);
@@ -1666,7 +1666,7 @@ class OpenSearch extends webServiceServer {
       $q = $chk_query['edismax'];
       $solr_url = self::create_solr_url($q, 0, 999999, $filter_q);
       list($solr_host, $solr_parm) = explode('?', $solr_url['url'], 2);
-      $solr_parm .= '&fl=' . COLLECTION_INDEX . ',unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
+      $solr_parm .= '&fl=' . FIELD_COLLECTION_INDEX . ',unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
       VerboseJson::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
       if (DEBUG_ON) {
         echo 'post_array: ' . $solr_url['url'] . PHP_EOL;
@@ -1807,9 +1807,10 @@ class OpenSearch extends webServiceServer {
       '?q=' . urlencode($q) .
       '&fq=' . $filter .
       '&start=' . $start . $sort . $rank . $boost . $facets . $handler_var .
-      '&defType=edismax';
-    $debug_url = $url . '&fl=' . FIELD_FEDORA_PID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . '&rows=1&debugQuery=on';
-    $url .= '&fl=' . FIELD_FEDORA_PID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . '&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
+      '&defType=edismax' .
+      '&fl=' . FIELD_FEDORA_PID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . ',' . FIELD_COLLECTION_INDEX;
+    $debug_url = $url . '&rows=1&debugQuery=on';
+    $url .= '&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
 
     return ['url' => $url, 'debug' => $debug_url];
   }
@@ -2332,7 +2333,7 @@ class OpenSearch extends webServiceServer {
     return $ret;
   }
 
-  /** Merge two search profiles, extending the first ($sum) with the additions found in the second ($add)
+  /** \brief Merge two search profiles, extending the first ($sum) with the additions found in the second ($add)
    *
    * @param $sum
    * @param $add
@@ -2430,8 +2431,7 @@ class OpenSearch extends webServiceServer {
     return $obj;
   }
 
-  /**
-   * search units in full profile and collect pids for each unit and create urls to read records with corepo_get
+  /** \brief search units in full profile and collect pids for each unit and create urls to read records with corepo_get
    * The record pointed to via the relation, should allow the relation in the search profile (the record source)
    *
    * @param $relation_units
@@ -2466,19 +2466,22 @@ class OpenSearch extends webServiceServer {
         }
         foreach ($solr_arr['response']['docs'] as $fdoc) {
           $unit_id = $fdoc[FIELD_UNIT_ID];
+          $collections = $fdoc[FIELD_COLLECTION_INDEX];
           foreach ($fdoc[FIELD_REC_ID] as $rec_id) {
-            if (self::is_corepo_pid($rec_id)) {
-              $record_source = self::record_source_from_pid($rec_id);
+            if (self::is_corepo_pid($rec_id) && empty($rel_unit_pids[$unit_id][$rec_id])) {
               if (DEBUG_ON) {
-                echo 'valid relation for ' . $record_source . ' unit: ' . $unit_id . ' ';
-                var_dump($this->valid_relation[$record_source]);
+                printf('Relation for %s in %s. collections %s', $rec_id, $unit_id, implode(',', $collections));
               }
               foreach ($relations_in_to_unit[$unit_id] as $rel) {
-                if ($this->valid_relation[$record_source][$rel]) {
-                  $rel_unit_pids[$unit_id][$rec_id] = $rec_id;;
-                  break;
+                foreach ($collections as $rc) {
+                  if ($this->valid_relation[$rc][$rel]) {
+                    if (DEBUG_ON) { echo ' - go' . PHP_EOL; }
+                    $rel_unit_pids[$unit_id][$rec_id] = $rec_id;;
+                    break 3;
+                  }
                 }
               }
+              if (DEBUG_ON) { echo ' - no go' . PHP_EOL; }
             }
           }
         }
@@ -2496,7 +2499,7 @@ class OpenSearch extends webServiceServer {
     return array($rel_res, $rel_unit_pids);
   }
 
-  /** get holdings for the records if needed
+  /** \brief get holdings for the records if needed
    *
    * @param $work_ids
    * @param $include_holdings
@@ -2729,7 +2732,7 @@ class OpenSearch extends webServiceServer {
     return $external_relation;
   }
 
-  /** Parse a RELS-EXT stream and return the relations found
+  /** \brief Parse a RELS-EXT stream and return the relations found
    *  NB: Not all unit's have an RELS-EXT stream, so xml load errors are just ignored
    *
    * @param $unit_id - id of unit
