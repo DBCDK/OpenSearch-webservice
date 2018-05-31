@@ -2477,7 +2477,7 @@ class OpenSearch extends webServiceServer {
                   if ($this->valid_relation[$rc][$rel]) {
                     if (DEBUG_ON) { echo ' - go' . PHP_EOL; }
                     $rel_unit_pids[$unit_id][$rec_id] = $rec_id;;
-                    break 3;
+                    break 2;
                   }
                 }
               }
