@@ -347,19 +347,12 @@ solr_format[briefDisplay][format] = display.accessType,display.creator,fedoraPid
 solr_format[score][format] = score
 
 ; --------------
-; Mapping search profile to be fectched from another agency
-; profile_map[profile-name][agency] = 123456
-; if input parameter profile = profile-name, fetch the profile from the agency 123456 instead of the input parameter agency
-;
-; profile_map[profile-name][use_profile_name] = NAME
-; if NAME is specified, use NAME as profilename instead of the input parameter profile, fetching profile from 123456
+; Mapping search profile to be fectched from agency (123456) if prefix (qwerty) is matched as prefix against a profile in agency
+; profile_map[agency] = 123456
+; profile_map[profile_prefix] = qwerty
 
-profile_map[danbib][agency] = 190102
-profile_map[danbib][use_profile_name] = danbib
-profile_map[danbibdbc][agency] = 190102
-profile_map[danbibfolk][agency] = 190102
-profile_map[danbibfolkforsk][agency] = 190102
-profile_map[danbibforsk][agency] = 190102
+profile_map[agency] = 190102
+profile_map[prefix] = danbib
 
 ; --------------
 ; default search_profile setting

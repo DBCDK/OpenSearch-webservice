@@ -2176,7 +2176,7 @@ class OpenSearch extends webServiceServer {
         if (isset($res_map[$no])) {
           if (!strpos($urls[$res_map[$no]], 'RELS-EXT') && (empty($rec) || $status[$no]['http_code'] > 299)) {
             VerboseJson::log(ERROR, 'record_repo http-error: ' . $status[$no]['http_code'] . ' from: ' . $urls[$res_map[$no]] .
-                              ' record ' . preg_replace('/\s+/', ' ', $rec));
+                              ' record ' . substr(preg_replace('/\s+/', ' ', $rec), 0, 200) . '...');
             if ($this->cache) $this->cache->set($urls[$res_map[$no]], $rec);
           }
           $ret[$res_map[$no]] = self::normalize_chars($rec);
@@ -2308,14 +2308,13 @@ class OpenSearch extends webServiceServer {
   private function fetch_profile_from_agency($agency, $profiles) {
     static $profile_map;
     if (!isset($profile_map)) {
-      $profile_map = $this->config->get_value('profile_map', 'setup');
+      $profile_map = self::fetch_profile_map($this->config->get_value('profile_map', 'setup'));
     }
     $this->watch->start('agency_profile');
     $ret = array();
     foreach ($profiles as $profile) {
-      $pr_agency = self::value_or_default($profile_map[$profile->_value]['agency'], $agency);
-      $pr_profile = self::value_or_default($profile_map[$profile->_value]['use_profile_name'], $profile->_value);
-      $collections = $this->open_agency->get_search_profile($pr_agency, $pr_profile);
+      $pr_agency = $profile_map[$profile->_value] ? : $agency;
+      $collections = $this->open_agency->get_search_profile($pr_agency, $profile->_value);
       if (!$collections) {
         $ret = FALSE;
         break;
@@ -2331,6 +2330,11 @@ class OpenSearch extends webServiceServer {
     }
     $this->watch->stop('agency_profile');
     return $ret;
+  }
+
+  private function fetch_profile_map($profile_map) {
+    $profile_names = $this->open_agency->get_search_profile_names($profile_map['agency'], $profile_map['prefix']);
+    return $profile_names;
   }
 
   /** \brief Merge two search profiles, extending the first ($sum) with the additions found in the second ($add)
