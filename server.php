@@ -66,6 +66,7 @@ class OpenSearch extends webServiceServer {
   protected $unit_fallback = [];     // if record_repo is updated and solr is not, this is used to find some record from the old unit
   protected $feature_sw = [];
   protected $user_param;
+  protected $debug_query = FALSE;
 
 
   /**
@@ -82,17 +83,17 @@ class OpenSearch extends webServiceServer {
     define('FIELD_FEDORA_PID', 'fedoraPid');
     define('FIELD_WORK_ID', 'rec.workId');
     define('FIELD_REC_ID', 'rec.id');
+    define('FIELD_COLLECTION_INDEX', 'rec.collectionIdentifier');
+    define('RR_MARC_001_A', 'marc.001a');
+    define('RR_MARC_001_B', 'marc.001b');
+
     define('HOLDINGS_AGENCY_ID_FIELD', self::value_or_default($this->config->get_value('field_holdings_agency_id', 'setup'), 'rec.holdingsAgencyId'));
     define('HOLDINGS', ' holdings ');
-
     define('DEBUG_ON', $this->debug);
     define('MAX_IDENTICAL_RELATIONS', self::value_or_default($this->config->get_value('max_identical_relation_names', 'setup'), 20));
     define('MAX_OBJECTS_IN_WORK', 100);
     define('AND_OP', ' AND ');
     define('OR_OP', ' OR ');
-    define('RR_MARC_001_A', 'marc.001a');
-    define('RR_MARC_001_B', 'marc.001b');
-    define('FIELD_COLLECTION_INDEX', 'rec.collectionIdentifier');
   }
 
   /** \brief Entry search: Handles the request and set up the response
@@ -186,7 +187,7 @@ class OpenSearch extends webServiceServer {
     if ($param->queryLanguage->_value) {
       $this->query_language = $param->queryLanguage->_value;
     }
-    $debug_query = $this->xs_boolean($param->queryDebug->_value);
+    $this->debug_query = $this->xs_boolean($param->queryDebug->_value);
     $this->agency_type = self::get_agency_type($this->agency);
 
     if ($this->repository['rawrepo']) {
@@ -218,7 +219,7 @@ class OpenSearch extends webServiceServer {
         '&fq=' . $filter .
         '&start=' . ($start - 1) .
         '&rows=' . $step_value . $sort_q . 
-        '&defType=edismax&wt=phps&fl=' . ($debug_query ? '&debugQuery=on' : '');
+        '&defType=edismax&wt=phps&fl=' . ($this->debug_query ? '&debugQuery=on' : '');
       $solr_urls[0]['debug'] = str_replace('wt=phps', 'wt=xml', $solr_urls[0]['url']);
       if ($err = self::do_solr($solr_urls, $solr_arr)) {
         $error = $err;
@@ -238,7 +239,7 @@ class OpenSearch extends webServiceServer {
       $result->searchResult = &$collections;
       Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
       Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
-      if ($debug_query) {
+      if ($this->debug_query) {
         Object::set_value($result, 'queryDebugResult', self::set_debug_info($solr_arr['debug']));
       }
       return $ret;
@@ -329,14 +330,14 @@ class OpenSearch extends webServiceServer {
     // do the query
     $this->watch->start('Solr_ids');
     if ($sort[0] == 'random') {
-      if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, $filter_q, '', $debug_query, $solr_arr))
+      if ($err = self::get_solr_array($solr_query['edismax'], 0, 0, '', '', $facet_q, $filter_q, '', $solr_arr))
         $error = $err;
       else {
         $numFound = self::get_num_found($solr_arr);
       }
     }
     else {
-      if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, $facet_q, $filter_q, $boost_q, $debug_query, $solr_arr))
+      if ($err = self::get_solr_array($solr_query['edismax'], 0, $rows, $sort_q, $rank_q, $facet_q, $filter_q, $boost_q, $solr_arr))
         $error = $err;
       else {
         $numFound = self::get_num_found($solr_arr);
@@ -352,7 +353,7 @@ class OpenSearch extends webServiceServer {
 
     if ($error) return $ret_error;
 
-    if ($debug_query) {
+    if ($this->debug_query) {
       $debug_result = self::set_debug_info($solr_arr['debug'], $this->rank_frequence_debug, $best_match_debug);
     }
     if ($solr_arr['debug']) {
@@ -374,7 +375,7 @@ class OpenSearch extends webServiceServer {
           $no = rand(0, $numFound - 1);
         } while (isset($used_search_fid[$no]));
         $used_search_fid[$no] = TRUE;
-        self::get_solr_array($solr_query['edismax'], $no, 1, '', '', '', $filter_q, '', $debug_query, $solr_arr);
+        self::get_solr_array($solr_query['edismax'], $no, 1, '', '', '', $filter_q, '', $solr_arr);
         $uid = self::get_first_solr_element($solr_arr, FIELD_UNIT_ID);
         $work_ids[] = [$uid];
       }
@@ -400,7 +401,7 @@ class OpenSearch extends webServiceServer {
         $more = ($numFound >= $start);   // no need to find records, only hit count is returned and maybe facets
       }
       else {
-        if ($err = self::build_work_struct_from_solr($work_cache_struct, $work_ids, $more, $solr_work_ids, $solr_query['edismax'], $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, self::xs_boolean($param->allObjects->_value), $numFound, $debug_query)) {
+        if ($err = self::build_work_struct_from_solr($work_cache_struct, $work_ids, $more, $solr_work_ids, $solr_query['edismax'], $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, self::xs_boolean($param->allObjects->_value), $numFound, $this->debug_query)) {
           $error = $err;
           return $ret_error;
         }
@@ -438,7 +439,7 @@ class OpenSearch extends webServiceServer {
         }
       }
     }
-    if ($debug_query) {
+    if ($this->debug_query) {
       $explain_keys = array_keys($solr_arr['debug']['explain']);
       foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
         $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
@@ -589,7 +590,7 @@ class OpenSearch extends webServiceServer {
     self::set_sortUsed($result, $rank, $sort, $sort_types);
     $result->searchResult = $collections;
     Object::set_value($result, 'facetResult', $facets);
-    if ($debug_query && $debug_result) {
+    if ($this->debug_query && $debug_result) {
       Object::set_value($result, 'queryDebugResult', $debug_result);
     }
     if ($solr_timing) {
@@ -749,7 +750,7 @@ class OpenSearch extends webServiceServer {
       $result->searchResult = &$collections;
       Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
       Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
-      if ($debug_query) {
+      if ($this->debug_query) {
         Object::set_value($debug_result, 'rawQueryString', $solr_arr['debug']['rawquerystring']);
         Object::set_value($debug_result, 'queryString', $solr_arr['debug']['querystring']);
         Object::set_value($debug_result, 'parsedQuery', $solr_arr['debug']['parsedquery']);
@@ -1744,12 +1745,11 @@ class OpenSearch extends webServiceServer {
    * @param string $facets - facets-string
    * @param string $filter - the users search profile
    * @param string $boost - boost query (so far empty)
-   * @param string $debug - include SOLR debug info
    * @param array $solr_arr - result from SOLR
    * @return string - error if any, NULL otherwise
    */
-  private function get_solr_array($q, $start, $rows, $sort, $rank, $facets, $filter, $boost, $debug, &$solr_arr) {
-    $solr_urls[0] = self::create_solr_url($q, $start, $rows, $filter, $sort, $rank, $facets, $boost, $debug);
+  private function get_solr_array($q, $start, $rows, $sort, $rank, $facets, $filter, $boost, &$solr_arr) {
+    $solr_urls[0] = self::create_solr_url($q, $start, $rows, $filter, $sort, $rank, $facets, $boost);
     return self::do_solr($solr_urls, $solr_arr);
   }
 
@@ -1789,10 +1789,9 @@ class OpenSearch extends webServiceServer {
    * @param string $rank - ranking sceme
    * @param string $facets - facets-string
    * @param string $boost - boost query (so far empty)
-   * @param boolean $debug - include SOLR debug info
    * @return array - then SOLR url and url for debug purposes
    */
-  private function create_solr_url($eq, $start, $rows, $filter, $sort = '', $rank = '', $facets = '', $boost = '', $debug = FALSE) {
+  private function create_solr_url($eq, $start, $rows, $filter, $sort = '', $rank = '', $facets = '', $boost = '') {
     $q = '(' . implode(')' . AND_OP . '(', $eq['q']) . ')';   // force parenthesis around each AND-node, to fix SOLR problem. BUG: 20957
     if (is_array($eq['handler_var'])) {
       $handler_var = '&' . implode('&', $eq['handler_var']);
@@ -1810,7 +1809,7 @@ class OpenSearch extends webServiceServer {
       '&defType=edismax' .
       '&fl=' . FIELD_FEDORA_PID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . ',' . FIELD_COLLECTION_INDEX;
     $debug_url = $url . '&rows=1&debugQuery=on';
-    $url .= '&wt=phps&rows=' . $rows . ($debug ? '&debugQuery=on' : '');
+    $url .= '&wt=phps&rows=' . $rows . ($this->debug_query ? '&debugQuery=on' : '');
 
     return ['url' => $url, 'debug' => $debug_url];
   }
@@ -1957,10 +1956,9 @@ class OpenSearch extends webServiceServer {
    * @param $use_work_collection
    * @param $all_objects
    * @param $num_found
-   * @param $debug_query
    * @return mixed string or null
    */
-  private function build_work_struct_from_solr(&$work_cache_struct, &$work_struct, &$more, &$work_ids, $edismax, $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, $all_objects, $num_found, $debug_query) {
+  private function build_work_struct_from_solr(&$work_cache_struct, &$work_struct, &$more, &$work_ids, $edismax, $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, $all_objects, $num_found) {
     for ($w_idx = 0; isset($work_ids[$w_idx]); $w_idx++) {
       $struct_id = $work_ids[$w_idx][FIELD_WORK_ID] . ($use_work_collection ? '' : '-' . $work_ids[$w_idx][FIELD_UNIT_ID]);
       if ($work_cache_struct[$struct_id]) continue;
@@ -1974,7 +1972,7 @@ class OpenSearch extends webServiceServer {
         $this->watch->start('Solr_add');
         VerboseJson::log(WARNING, 'To few search_ids fetched from solr. Query: ' . implode(AND_OP, $edismax['q']) . ' idx: ' . $w_idx);
         $rows *= 2;
-        if ($err = self::get_solr_array($edismax, 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $debug_query, $solr_arr)) {
+        if ($err = self::get_solr_array($edismax, 0, $rows, $sort_q, $rank_q, '', $filter_q, $boost_q, $solr_arr)) {
           $this->watch->stop('Solr_add');
           return $err;
         }
@@ -1997,7 +1995,7 @@ class OpenSearch extends webServiceServer {
           $edismax['q'] = [];
         }
         $edismax['q'][] = ($use_work_collection ? FIELD_WORK_ID : FIELD_UNIT_ID ) . ':(' . implode(OR_OP, $search_w) . ')';
-        if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_q, '', $debug_query, $solr_arr)) {
+        if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_q, '', $solr_arr)) {
           return $err;
         }
         foreach ($solr_arr['response']['docs'] as $fdoc) {
@@ -2454,7 +2452,7 @@ class OpenSearch extends webServiceServer {
       $edismax['q'] = ['unit.id:("' . implode('" OR "', $rel_query_ids) . '")'];
       $filter_all_q = rawurlencode(self::set_solr_filter($this->search_profile, TRUE));
       $this->watch->start('Solr_rel');
-      if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_all_q, '', $debug_query, $solr_arr)) {
+      if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_all_q, '', $solr_arr)) {
         VerboseJson::log(FATAL, 'Solr error searching relations: ' . $err . ' - query: ' . $edismax['q']);
       }
       // - type skal ikke læse unit'en,
@@ -2476,16 +2474,17 @@ class OpenSearch extends webServiceServer {
               if (DEBUG_ON) {
                 printf('Relation for %s in %s. collections %s', $rec_id, $unit_id, implode(',', $collections));
               }
+              $debug_no = 'no ';
               foreach ($relations_in_to_unit[$unit_id] as $rel) {
                 foreach ($collections as $rc) {
                   if ($this->valid_relation[$rc][$rel]) {
-                    if (DEBUG_ON) { echo ' - go' . PHP_EOL; }
+                    $debug_no = '';
                     $rel_unit_pids[$unit_id][$rec_id] = $rec_id;;
                     break 2;
                   }
                 }
               }
-              if (DEBUG_ON) { echo ' - no go' . PHP_EOL; }
+              if (DEBUG_ON) { echo ' -> ' . $debug_no . 'go' . PHP_EOL; }
             }
           }
         }
