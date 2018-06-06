@@ -91,6 +91,7 @@ class OpenSearch extends webServiceServer {
     define('HOLDINGS', ' holdings ');
     define('DEBUG_ON', $this->debug);
     define('MAX_IDENTICAL_RELATIONS', self::value_or_default($this->config->get_value('max_identical_relation_names', 'setup'), 20));
+    // FVS Move clip till later in flow (after search)
     define('MAX_OBJECTS_IN_WORK', 100);
     define('AND_OP', ' AND ');
     define('OR_OP', ' OR ');
@@ -395,7 +396,7 @@ class OpenSearch extends webServiceServer {
         }
       }
 
-      if (DEBUG_ON) print_r($solr_work_ids);
+      if (DEBUG_ON) { echo 'solr_work_ids: '; print_r($solr_work_ids); }
 
       if (empty($step_value)) {
         $more = ($numFound >= $start);   // no need to find records, only hit count is returned and maybe facets
@@ -839,7 +840,7 @@ class OpenSearch extends webServiceServer {
 
     $record_repo_dom = new DomDocument();
     $record_repo_dom->preserveWhiteSpace = FALSE;
-    $missing_record = $this->config->get_value('missing_record', 'setup');
+    $missing_record = $this->config->get_value('missing_record_getObject', 'setup');
     foreach ($work_ids as $rec_no => &$work) {
       foreach ($work as $unit_id => $pids) {
         Object::set_value($o->collection->_value, 'resultPosition', $rec_no + 1);
@@ -2637,7 +2638,10 @@ class OpenSearch extends webServiceServer {
    * @param $pid
    */
   private function is_corepo_pid($pid) {
-    return ((count(explode('-', $pid)) == 2) && (count(explode(':', $pid)) == 2));
+    return ((count(explode('-', self::record_source_from_pid($pid))) == 2) &&
+            (count(explode(':', $pid)) == 2) &&
+            (strlen($pid) <= 64)
+    );
   }
 
   /** \brief Extract source part of an ID
