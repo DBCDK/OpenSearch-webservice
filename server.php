@@ -91,7 +91,6 @@ class OpenSearch extends webServiceServer {
     define('HOLDINGS', ' holdings ');
     define('DEBUG_ON', $this->debug);
     define('MAX_IDENTICAL_RELATIONS', self::value_or_default($this->config->get_value('max_identical_relation_names', 'setup'), 20));
-    // FVS Move clip till later in flow (after search)
     define('MAX_OBJECTS_IN_WORK', 100);
     define('AND_OP', ' AND ');
     define('OR_OP', ' OR ');
@@ -2479,6 +2478,7 @@ class OpenSearch extends webServiceServer {
         foreach ($solr_arr['response']['docs'] as $fdoc) {
           $unit_id = $fdoc[FIELD_UNIT_ID];
           $collections = $fdoc[FIELD_COLLECTION_INDEX];
+          $this_relation = key($relations_in_to_unit[$unit_id]);
           foreach ($fdoc[FIELD_REC_ID] as $rec_id) {
             if (self::is_corepo_pid($rec_id) && empty($rel_unit_pids[$unit_id][$rec_id])) {
               if (DEBUG_ON) {
@@ -2495,6 +2495,17 @@ class OpenSearch extends webServiceServer {
                 }
               }
               if (DEBUG_ON) { echo ' -> ' . $debug_no . 'go' . PHP_EOL; }
+            }
+          }
+        }
+      }
+      // reduce identical relations to MAX_IDENTICAL_RELATIONS
+      foreach ($relation_units as $u_id_from => $unit_rels) {
+        $relation_count = array();
+        foreach ($unit_rels as $u_id_to => $rel) {
+          if ($rel_unit_pids[$u_id_to]) {
+            if (++$relation_count[$rel] > MAX_IDENTICAL_RELATIONS) {
+              unset($rel_unit_pids[$u_id_to]);
             }
           }
         }
@@ -2773,10 +2784,7 @@ class OpenSearch extends webServiceServer {
               $this_relation = $rel_prefix . ':' . $tag->localName;
             else
               $this_relation = $tag->localName;
-            if ($relation_count[$this_relation] < MAX_IDENTICAL_RELATIONS) {
-              $relation_count[$this_relation]++;
-              $relations[$tag->nodeValue] = $this_relation;
-            }
+            $relations[$tag->nodeValue] = $this_relation;
           }
         }
       }
