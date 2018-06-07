@@ -351,7 +351,7 @@ solr_format[score][format] = score
 ; --------------
 ; Mapping search profile to be fectched from agency (123456) if prefix (qwerty) is matched as prefix against a profile in agency
 ; profile_map[agency] = 123456
-; profile_map[profile_prefix] = qwerty
+; profile_map[prefix] = qwerty
 
 profile_map[agency] = 190102
 profile_map[prefix] = danbib
@@ -854,6 +854,7 @@ showinfo[] = </pre>
 ; ==============
 
 [howru]
-test[] = search&query=danmark&stepValue=1&surveil=1
+server_name = localhost:80
+test[] = search&query=peale&agency=100200&profile=test&stepValue=1&surveil=1
 preg_match[] = hitCount
 error[] = ERROR searching for danmark
