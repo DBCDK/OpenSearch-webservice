@@ -2650,8 +2650,8 @@ class OpenSearch extends webServiceServer {
    */
   private function is_corepo_pid($pid) {
     $record_source = self::record_source_from_pid($pid);
-    return ((count(explode('-', $record_source)) == 2) &&
-            (count(explode(':', $pid)) == 2) &&
+    return ((count(explode(':', $pid)) == 2) &&
+            (($record_source != '870970-basis') || (count(explode('-', $pid)) == 2)) &&
             (!strpos($pid, $record_source, 7))
     );
   }
