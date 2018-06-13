@@ -2,7 +2,7 @@
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
-//error_reporting(E_ALL & ~E_NOTICE);
+error_reporting(E_ALL & ~E_NOTICE);
 //-----------------------------------------------------------------------------
 /**
  *
@@ -96,6 +96,63 @@ class OpenSearch extends webServiceServer {
     define('OR_OP', ' OR ');
   }
 
+  public function getDkabm($param) {
+// action[getDkabm][] = agency
+// action[getDkabm][] = profile
+// action[getDkabm][] = identifier
+// action[getDkabm][] = repository
+    $ret_error = new stdClass();
+    $ret_error->searchResponse->_value->error->_value = &$unsupported;
+    if ($repository_error = self::set_repositories($param->repository->_value)) {
+      $unsupported = $repository_error;
+    }
+    if (empty($param->agency->_value) && empty($param->profile)) {
+      Object::set_value($param, 'agency', $this->config->get_value('agency_fallback', 'setup'));
+      Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
+    }
+    if ($param->profile && !is_array($param->profile)) {
+      $param->profile = array($param->profile);
+    }
+    if (empty($param->agency->_value)) {
+      $unsupported = 'Error: No agency in request';
+    }
+    elseif (empty($param->profile)) {
+      $unsupported = 'Error: No profile in request';
+    }
+    elseif (!($this->search_profile = self::fetch_profile_from_agency($param->agency->_value, $param->profile))) {
+      $unsupported = 'Error: Cannot fetch profile(s): ' . self::stringify_obj_array($param->profile) .
+        ' for ' . $param->agency->_value;
+    }
+    if ($unsupported) return $ret_error;
+    $this->agency = $param->agency->_value;
+    $this->show_agency = self::value_or_default($param->showAgency->_value, $this->agency);
+    $result = &$ret->dkabmResponse->_value->result->_value;
+    Object::set_value($result, 'records', 6);
+    if (is_array($param->identifier)) {
+      foreach ($param->identifier as $pid) {
+        $pids[] = $pid->_value;
+      }
+    }
+    else {
+      $pids[] = $param->identifier->_value;
+    }
+    $urls[] = self::corepo_get_url('', $pids);
+    $recs = self::read_record_repo_all_urls($urls);
+        $help = json_decode($recs[0]);
+        $rec = $help->dataStream;
+        $primary_pid = $help->primaryPid;
+        $prio_pids = $help->pids;
+    if (empty($dom)) {
+      $dom = new DomDocument();
+    }
+    $dom->loadXml($rec);
+    $this->format['dkabm'] = array();
+    $obj = self::extract_record($dom, $prio_pids[0]);
+    $result = $obj;
+//var_dump($prio_pids); var_dump($primary_pid); var_dump($rec); var_dump($obj); var_dump($ret); die();
+    return $ret;
+  }
+
   /** \brief Entry search: Handles the request and set up the response
    *
    * @param $param
@@ -153,7 +210,7 @@ class OpenSearch extends webServiceServer {
     $this->filter_agency = self::set_solr_filter($this->search_profile);
     $this->split_holdings_include = self::split_collections_for_holdingsitem($this->search_profile);
     self::set_valid_relations_and_sources($this->search_profile);
-    self::set_search_filters_for_800000_collection($param->forceFilter->_value);
+    // self::set_search_filters_for_800000_collection($param->forceFilter->_value);
 
     $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
@@ -430,6 +487,7 @@ class OpenSearch extends webServiceServer {
     $this->watch->start('Solr_disp');
     $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, '*', self::xs_boolean($param->allObjects->_value), '');
     $this->watch->stop('Solr_disp');
+    $max_col = array();
     foreach ($display_solr_arr as $d_s_a) {
       foreach ($d_s_a['response']['docs'] as $solr_rec) {
         $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
@@ -523,7 +581,7 @@ class OpenSearch extends webServiceServer {
         }
         Object::set_value($objects[$sort_key]->_value, 'objectsAvailable', $u_member);
         unset($u_member);
-        if ($explain[$unit_id]) {
+        if (isset($explain[$unit_id])) {
           Object::set_value($objects[$sort_key]->_value, 'queryResultExplanation', $explain[$unit_id]);
         }
       }
@@ -593,7 +651,7 @@ class OpenSearch extends webServiceServer {
     if ($this->debug_query && $debug_result) {
       Object::set_value($result, 'queryDebugResult', $debug_result);
     }
-    if ($solr_timing) {
+    if (isset($solr_timing)) {
       VerboseJson::log(STAT, array('solrTiming ' => json_encode($solr_timing)));
     }
     Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
@@ -675,7 +733,7 @@ class OpenSearch extends webServiceServer {
         return $ret_error;
       }
       self::set_valid_relations_and_sources($this->search_profile);
-      self::set_search_filters_for_800000_collection();
+      // self::set_search_filters_for_800000_collection();
     }
     $this->show_agency = self::value_or_default($param->showAgency->_value, $this->agency);
     if ($this->filter_agency) {
@@ -1046,7 +1104,7 @@ class OpenSearch extends webServiceServer {
     if (is_array($profile)) {
       $this->collection_alias = self::set_collection_alias($profile);
       foreach ($profile as $p) {
-        if (self::xs_boolean($p['sourceSearchable']) || ($add_relation_sources && count($p['relation']))) {
+        if (self::xs_boolean($p['sourceSearchable']) || ($add_relation_sources && isset($p['relation']) && count($p['relation']))) {
           if ($filter_query = $collection_query[$p['sourceIdentifier']]) {
             $ret[] = '(' . FIELD_COLLECTION_INDEX . ':' . $p['sourceIdentifier'] . AND_OP . $filter_query . ')';
           }
@@ -1632,7 +1690,8 @@ class OpenSearch extends webServiceServer {
    * @return mixed - error string or SOLR array
    */
   private function do_add_queries_and_fetch_solr_data_fields($add_queries, $query, $all_objects, $filter_q) {
-    if ($this->format['found_solr_format']) {
+    $add_fl = '';
+    if (isset($this->format['found_solr_format'])) {
       foreach ($this->format as $f) {
         if ($f['is_solr_format']) {
           $add_fl .= ',' . $f['format_name'];
@@ -1802,11 +1861,12 @@ class OpenSearch extends webServiceServer {
    */
   private function create_solr_url($eq, $start, $rows, $filter, $sort = '', $rank = '', $facets = '', $boost = '') {
     $q = '(' . implode(')' . AND_OP . '(', $eq['q']) . ')';   // force parenthesis around each AND-node, to fix SOLR problem. BUG: 20957
-    if (is_array($eq['handler_var'])) {
+    $handler_var = '';
+    if (isset($eq['handler_var']) && is_array($eq['handler_var'])) {
       $handler_var = '&' . implode('&', $eq['handler_var']);
       $filter = '';  // search profile collection filter is done via fq parm created with handler_var
     }
-    if (is_array($eq['fq'])) {
+    if (isset($eq['fq']) && is_array($eq['fq'])) {
       foreach ($eq['fq'] as $fq) {
         $filter .= '&fq=' . rawurlencode($fq);
       }
@@ -1970,7 +2030,7 @@ class OpenSearch extends webServiceServer {
   private function build_work_struct_from_solr(&$work_cache_struct, &$work_struct, &$more, &$work_ids, $edismax, $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, $all_objects, $num_found) {
     for ($w_idx = 0; isset($work_ids[$w_idx]); $w_idx++) {
       $struct_id = $work_ids[$w_idx][FIELD_WORK_ID] . ($use_work_collection ? '' : '-' . $work_ids[$w_idx][FIELD_UNIT_ID]);
-      if ($work_cache_struct[$struct_id]) continue;
+      if (isset($work_cache_struct[$struct_id])) continue;
       $work_cache_struct[$struct_id] = [];
       if (count($work_cache_struct) >= ($start + $step_value)) {
         $more = TRUE;
@@ -2516,6 +2576,7 @@ class OpenSearch extends webServiceServer {
         $rel_urls[$u_id] = self::corepo_get_url($u_id, $pids);
       }
       // rel_res indeholder manifestationerne for de af relationerne pegede på unit's
+      $rel_res = array();
       if ($rel_urls) {
         $rel_res = self::read_record_repo_all_urls($rel_urls);
       }
@@ -2601,14 +2662,14 @@ class OpenSearch extends webServiceServer {
     if (empty($this->valid_relation) && is_array($profile)) {
       foreach ($profile as $src) {
         $this->searchable_source[$src['sourceIdentifier']] = self::xs_boolean($src['sourceSearchable']);
-        if ($src['sourceContainedIn']) {
+        if (!empty($src['sourceContainedIn'])) {
           $this->collection_contained_in[$src['sourceIdentifier']] = $src['sourceContainedIn'];
         }
-        if ($src['relation']) {
+        if (!empty($src['relation'])) {
           foreach ($src['relation'] as $rel) {
-            if ($rel['rdfLabel'])
+            if (!empty($rel['rdfLabel']))
               $this->valid_relation[$src['sourceIdentifier']][$rel['rdfLabel']] = TRUE;
-            if ($rel['rdfInverse'])
+            if (!empty($rel['rdfInverse']))
               $this->valid_relation[$src['sourceIdentifier']][$rel['rdfInverse']] = TRUE;
           }
         }
@@ -2718,6 +2779,7 @@ class OpenSearch extends webServiceServer {
    * @return mixed
    */
   private function extract_external_relation_from_dom($dom, $rels_type) {
+    $external_relation = null;
     foreach ($dom->getElementsByTagName('link') as $link) {
       $url = self::get_dom_element($link, 'url');
       $access_type = self::get_dom_element($link, 'accessType');
