@@ -612,11 +612,12 @@ class OpenSearch extends webServiceServer {
     //var_dump($ret); die();
     //
     // Dump Timings log in text format for zabbix remove by end of 2018
-    $this->logOldStyleZabbixTimings('search', ':: agency:' . $this->agency .
+    $this->logOldStyleZabbixTimings('search', 'agency:' . $this->agency .
                              ' profile:' . self::stringify_obj_array($param->profile) .
                              ' ip:' . $_SERVER['REMOTE_ADDR'] .
                              ' repoRecs:' . $this->number_of_record_repo_calls .
-                             ' repoCache:' . $this->number_of_record_repo_cached . $this->watch->dump());
+                             ' repoCache:' . $this->number_of_record_repo_cached .
+                             ' ' . $this->watch->dump());
 
     return $ret;
   }
@@ -895,7 +896,7 @@ class OpenSearch extends webServiceServer {
                                  'timings' => $this->watch->get_timers()));
 
     // Dump Timings log in text format for zabbix remove by end of 2018
-    $this->logOldStyleZabbixTimings('getObject',':: agency:' . $this->agency .
+    $this->logOldStyleZabbixTimings('getObject','agency:' . $this->agency .
                          ' profile:' . self::stringify_obj_array($this->profile) .
                          ' ip:' . $_SERVER['REMOTE_ADDR'] .
                          ' repoRecs:' . $this->number_of_record_repo_calls .
@@ -3361,7 +3362,7 @@ class OpenSearch extends webServiceServer {
     $trackingId = "os:x<x";
     $timings = str_replace(PHP_EOL, '', $timings );
     if ($fp = @ fopen('php://stdout', 'a')) {
-      fwrite($fp, $vtext . ' ' . date($date_format) . ' ' . $trackingId. ' opensearch(' . $functionName .')::'. $timings . PHP_EOL);
+      fwrite($fp, $vtext . ' ' . date($date_format) . ' ' . $trackingId. ' opensearch(' . $functionName .'):: '. $timings . PHP_EOL);
       fclose($fp);
     }
   }
