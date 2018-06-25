@@ -181,6 +181,23 @@ repository[defaults][cql_file] = opensearch_cql.xml
 repository[@REPOSITORY_NAME@][solr] = @SOLR@
 repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 
+; Defining allowed sort operations in repository
+; As default, all sortings and rankings specified in the sort- and rank-section are allowed in a repository
+;
+; exclude lines will ignore specified sorts
+; repository[my_repository][sort][exclude][] = spec_sort_in_my_repository
+; ALL will exclude all sorts (except the ones found in include)
+; repository[my_repository][sort][exclude][] = ALL
+;
+; include lines will allow specified sorts, used only if exclude = ALL is used
+; repository[my_repository][sort][include][] = spec_sort_in_my_repository
+;
+; So, either exclude a few OR exclude ALL and include the ones allowed
+
+;repository[@REPOSITORY_NAME@][sort][include] = 
+repository[@REPOSITORY_NAME@][sort][exclude][] = solr_001c_ascending
+repository[@REPOSITORY_NAME@][sort][exclude][] = solr_001c_descending
+
 ; Querying holdings using the join handler
 ; to "filter" searches using holding information registered in a separate solr index
 ; opensearch_cql.xml describes which indexes are to be found in $HOLDINGS_ITEMS_INDEX@ via the searchHandler attribute
@@ -251,6 +268,10 @@ repository[@RAW_RECORD_REPOSITORY_NAME@][rawrepo] = @RAW_RECORD_CONTENT_SERVICE@
 repository[@RAW_RECORD_REPOSITORY_NAME@][cql_file] = rawrecord_cql.xml
 repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^[a-z]'] = .
 repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^...$'] = [&]
+
+repository[@RAW_RECORD_REPOSITORY_NAME@][sort][exclude][] = ALL
+;repository[@RAW_RECORD_REPOSITORY_NAME@][sort][include][] = solr_001c_ascending
+;repository[@RAW_RECORD_REPOSITORY_NAME@][sort][include][] = solr_001c_descending
 
 @EXTRA_REPOSITORIES@
 

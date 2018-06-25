@@ -1018,7 +1018,7 @@ class OpenSearch extends webServiceServer {
    * @return mixed - error or NULL
    */
   private function parse_for_sorting($param, &$sort, &$sort_types) {
-    // 2DO self::fetch_sortfields_in_repository();
+    $repo_sorts = self::fetch_sortfields_in_repository();
     if (!is_array($sort)) {
       $sort = [];
     }
@@ -1034,16 +1034,21 @@ class OpenSearch extends webServiceServer {
         if ($random && count($sort)) {
           return 'Error: Random sorting can only be used alone';
         }
-        if (is_array($sort_types[$s->_value])) {
-          foreach ($sort_types[$s->_value] as $item) {
-            if (!isset($sort_types[$item])) {
-              return 'Error in service setup: ' . $item . ' specified in ' . $s->_value . ' is not defined';
-            }
-            $sort[] = $item;
-          }
+        if (empty($repo_sorts[$s->_value])) {
+          // 2DO - this should be reported as such in the next version
         }
         else {
-          $sort[] = $s->_value;
+          if (is_array($sort_types[$s->_value])) {
+            foreach ($sort_types[$s->_value] as $item) {
+              if (!isset($sort_types[$item])) {
+                return 'Error in service setup: ' . $item . ' specified in ' . $s->_value . ' is not defined';
+              }
+              $sort[] = $item;
+            }
+          }
+          else {
+            $sort[] = $s->_value;
+          }
         }
       }
     }
@@ -2000,27 +2005,29 @@ class OpenSearch extends webServiceServer {
     return $xml;
   }
 
-  /** \brief fetch schema from the solr file directory
+  /** \brief filter allowed sort and rank for the repository
    *
-   * Fetch field in solr which can be used for sorting 
-   * 2DO For some reason unknown, not all fields are return by solr
-   * 2DO Need some heavy caching as well
+   * sort.exclude and sor.include tables in in-file sepcifies the repository sort setting
    */
   private function fetch_sortfields_in_repository() {
-    return;
-
-    $schema_url = $this->repository['solr'];
-    $schema_cfg = $this->config->get_value('solr_schema', 'setup');
-    foreach ($schema_cfg as $from => $to) {
-      $schema_url = str_replace($from, $to, $schema_url);
-    }
-    $schema = json_decode($this->curl->get($schema_url));
-    $repo_sorts = array();
-    foreach ($schema->fields as $field) {
-      if (!$field->multiValued && $field->indexed) {
-        $repo_sorts[$field->name] = TRUE;
+    $sort_def = $this->repository['sort'];
+    $all_sorts = $repo_sorts = $this->config->get_value('sort', 'setup');
+    if (is_array($sort_def['exclude'])) {
+      foreach ($sort_def['exclude'] as $exclude) {
+        if ($exclude == 'ALL') {
+          $repo_sorts = array();
+        }
+        else {
+          unset($repo_sorts[$exclude]);
+        }
       }
     }
+    if (is_array($sort_def['include'])) {
+      foreach ($sort_def['include'] as $include) {
+        $repo_sorts[$include] = $all_sorts[$include];
+      }
+    }
+
     return $repo_sorts;
   }
 
