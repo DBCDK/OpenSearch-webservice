@@ -177,7 +177,7 @@ class OpenSearch extends webServiceServer {
     }
 
     // for testing and group all
-    if (count($this->aaa->aaa_ip_groups) == 1 && $this->aaa->aaa_ip_groups['all']) {
+    if (count($this->aaa->aaa_ip_groups) == 1 && isset($this->aaa->aaa_ip_groups['all'])) {
       Object::set_value($param, 'agency', '100200');
       Object::set_value($param, 'profile', 'test');
     }
@@ -191,7 +191,7 @@ class OpenSearch extends webServiceServer {
     if (empty($param->agency->_value)) {
       $unsupported = 'Error: No agency in request';
     }
-    elseif (strtolower($param->sort->_value) == 'random') {
+    elseif (isset($param->sort) && (strtolower($param->sort->_value) == 'random')) {
       $unsupported = 'Error: random sort is currently disabled';
     }
     elseif (empty($param->profile)) {
@@ -1010,7 +1010,7 @@ class OpenSearch extends webServiceServer {
       }
       $rank_types[$rank] = $rank_user;
     }
-    elseif (is_scalar($param->sort->_value)) {
+    elseif (isset($param->sort) && is_scalar($param->sort->_value)) {
       if ($rank_types[$param->sort->_value]) {
         $rank = $param->sort->_value;
       }
@@ -1026,6 +1026,7 @@ class OpenSearch extends webServiceServer {
    * @return mixed - error or NULL
    */
   private function parse_for_sorting($param, &$sort, &$sort_types) {
+    // 2DO self::fetch_sortfields_in_repository();
     if (!is_array($sort)) {
       $sort = [];
     }
@@ -1072,11 +1073,11 @@ class OpenSearch extends webServiceServer {
     else
       $help[] = $objectFormat;
     foreach ($help as $of) {
-      if ($open_format[$of->_value]) {
+      if (isset($open_format[$of->_value])) {
         $ret[$of->_value] = ['user_selected' => TRUE, 'is_open_format' => TRUE, 'format_name' => $open_format[$of->_value]['format'], 'uri' => $open_format[$of->_value]['uri']];
         $ret['found_open_format'] = TRUE;
       }
-      elseif ($solr_format[$of->_value]) {
+      elseif (isset($solr_format[$of->_value])) {
         $ret[$of->_value] = ['user_selected' => TRUE, 'is_solr_format' => TRUE, 'format_name' => $solr_format[$of->_value]['format']];
         $ret['found_solr_format'] = TRUE;
       }
@@ -1084,7 +1085,7 @@ class OpenSearch extends webServiceServer {
         $ret[$of->_value] = ['user_selected' => TRUE, 'is_solr_format' => FALSE];
       }
     }
-    if ($ret['found_open_format'] || $ret['found_solr_format']) {
+    if (isset($ret['found_open_format']) || isset($ret['found_solr_format'])) {
       if (empty($ret['dkabm']))
         $ret['dkabm'] = ['user_selected' => FALSE, 'is_open_format' => FALSE];
       if (empty($ret['marcxchange']))
@@ -2007,6 +2008,30 @@ class OpenSearch extends webServiceServer {
     return $xml;
   }
 
+  /** \brief fetch schema from the solr file directory
+   *
+   * Fetch field in solr which can be used for sorting 
+   * 2DO For some reason unknown, not all fields are return by solr
+   * 2DO Need some heavy caching as well
+   */
+  private function fetch_sortfields_in_repository() {
+    return;
+
+    $schema_url = $this->repository['solr'];
+    $schema_cfg = $this->config->get_value('solr_schema', 'setup');
+    foreach ($schema_cfg as $from => $to) {
+      $schema_url = str_replace($from, $to, $schema_url);
+    }
+    $schema = json_decode($this->curl->get($schema_url));
+    $repo_sorts = array();
+    foreach ($schema->fields as $field) {
+      if (!$field->multiValued && $field->indexed) {
+        $repo_sorts[$field->name] = TRUE;
+      }
+    }
+    return $repo_sorts;
+  }
+
   /** \brief Isolation of creation of work structure for caching
    *
    * Parameters to a solr-search should be isolated in a class object - refactor one day
@@ -2271,12 +2296,14 @@ class OpenSearch extends webServiceServer {
     $r_mask = '<record><bibliographicRecordId>%s</bibliographicRecordId><agencyId>%s</agencyId><mode>%s</mode><allowDeleted>true</allowDeleted><includeAgencyPrivate>true</includeAgencyPrivate></record>';
     $ret = [];
     $rec_pos = $solr_response['start'];
+    $post = '';
     foreach ($solr_response['docs'] as $solr_doc) {
       $bib = self::scalar_or_first_elem($solr_doc[RR_MARC_001_B]);
       $post .= sprintf($r_mask, self::scalar_or_first_elem($solr_doc[RR_MARC_001_A]), $bib, ($bib == '870970' ? 'MERGED' : 'RAW')) . PHP_EOL;
     }
     $this->curl->set_post(sprintf($p_mask, $post), 0); // use post here because query can be very long
     $this->curl->set_option(CURLOPT_HTTPHEADER, ['Accept:application/xml;', 'Content-Type: text/xml; charset=utf-8'], 0);
+    VerboseJson::log(TRACE, array('message' => 'rawrepo_read: ' . $rr_service, 'post' => $post));
     $result = $this->curl->get($rr_service);
     $this->curl->set_option(CURLOPT_POST, 0, 0);
     $dom = new DomDocument();
@@ -2676,9 +2703,9 @@ class OpenSearch extends webServiceServer {
         }
       }
 
-      $this->searchable_forskningsbibliotek = $this->searchable_source['870970-forsk'] ||
-        $this->searchable_source['800000-danbib'] ||
-        $this->searchable_source['800000-bibdk'];
+      $this->searchable_forskningsbibliotek = isset($this->searchable_source['870970-forsk']) ||
+        isset($this->searchable_source['800000-danbib']) ||
+        isset($this->searchable_source['800000-bibdk']);
       if (DEBUG_ON) {
         print_r($profile);
         echo "rels:\n";
