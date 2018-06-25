@@ -3139,19 +3139,6 @@ class OpenSearch extends webServiceServer {
     return (strtolower($str) == 'true' || $str == 1);
   }
 
-  /**
-   * @param $arr
-   * @param string $glue
-   * @return string
-   */
-  private function stringify_obj_array($arr, $glue = ',') {
-    $vals = array();
-    foreach ($arr as $val) {
-      $vals[] = $val->_value;
-    }
-    return implode($glue, $vals);
-  }
-
   /** Log STAT line for search
    *
    */
@@ -3179,6 +3166,22 @@ class OpenSearch extends webServiceServer {
                                  'ids' => implode(',', $id_array),
                                  'timings' => $this->watch->get_timers()));
   }
+
+  /**
+   * @param $arr
+   * @param string $glue
+   * @return string
+   */
+  private function stringify_obj_array($arr, $glue = ',') {
+    $vals = array();
+    foreach ($arr as $val) {
+      if (isset($val->_value)) {
+        $vals[] = $val->_value;
+      }
+    }
+    return implode($glue, $vals);
+  }
+
   /*
    ************************************ Info helper functions *******************************************
    */
