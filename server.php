@@ -123,6 +123,7 @@ class OpenSearch extends webServiceServer {
       $unsupported = 'Error: Cannot fetch profile(s): ' . self::stringify_obj_array($param->profile) .
         ' for ' . $param->agency->_value;
     }
+    $this->user_param = $param;
     if ($unsupported) return $ret_error;
     $this->agency = $param->agency->_value;
     $this->show_agency = self::value_or_default($param->showAgency->_value, $this->agency);
@@ -159,7 +160,6 @@ class OpenSearch extends webServiceServer {
    * @return mixed
    */
   public function search($param) {
-    $this->user_param = $param;
     $ret_error = new stdClass();
     // set some defines
     if (!$this->aaa->has_right('opensearch', 500)) {
@@ -201,6 +201,7 @@ class OpenSearch extends webServiceServer {
       $unsupported = 'Error: Cannot fetch profile(s): ' . self::stringify_obj_array($param->profile) .
         ' for ' . $param->agency->_value;
     }
+    $this->user_param = $param;
     if ($unsupported) return $ret_error;
 
     $this->agency = $param->agency->_value;
@@ -299,6 +300,7 @@ class OpenSearch extends webServiceServer {
       if ($this->debug_query) {
         Object::set_value($result, 'queryDebugResult', self::set_debug_info($solr_arr['debug']));
       }
+      self::log_stat_search();
       return $ret;
     }
 
@@ -659,13 +661,7 @@ class OpenSearch extends webServiceServer {
     Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
     Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
 
-    VerboseJson::log(STAT, array('agency' => $this->agency,
-                                 'profile' => self::stringify_obj_array($param->profile),
-                                 'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
-                                 'repoRecs' => $this->number_of_record_repo_calls,
-                                 'repoCache' => $this->number_of_record_repo_cached,
-                                 'query' => $param->query->_value,
-                                 'timings' => $this->watch->get_timers()));
+    self::log_stat_search();
 
     //var_dump($ret); die();
     //
@@ -695,7 +691,6 @@ class OpenSearch extends webServiceServer {
    * @return object - the answer to the request
    */
   public function getObject($param) {
-    $this->user_param = $param;
     $ret_error = new stdClass();
     $ret_error->searchResponse->_value->error->_value = &$error;
     if (!$this->aaa->has_right('opensearch', 500)) {
@@ -721,6 +716,7 @@ class OpenSearch extends webServiceServer {
     if ($param->profile && !is_array($param->profile)) {
       $param->profile = array($param->profile);
     }
+    $this->user_param = $param;
     if ($this->agency = $param->agency->_value) {
       $this->profile = $param->profile;
       if ($this->profile) {
@@ -790,7 +786,9 @@ class OpenSearch extends webServiceServer {
       }
     }
     if ($this->repository['rawrepo']) {
+      $id_array = array();
       foreach ($fpids as $fpid) {
+        $id_array[] = $fpid->_value;
         list($owner_collection, $id) = explode(':', $fpid->_value);
         list($owner, $coll) = explode('-', $owner_collection);
         if (($owner == $this->agency)
@@ -820,6 +818,7 @@ class OpenSearch extends webServiceServer {
         Object::set_value($debug_result, 'parsedQueryString', $solr_arr['debug']['parsedquery_toString']);
         Object::set_value($result, 'queryDebugResult', $debug_result);
       }
+      self::log_stat_get_object($id_array);
       return $ret;
 
     }
@@ -945,14 +944,7 @@ class OpenSearch extends webServiceServer {
     Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
     Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
 
-    VerboseJson::log(STAT, array('agency' => $this->agency,
-                                 'profile' => self::stringify_obj_array($param->profile),
-                                 'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
-                                 'repoRecs' => $this->number_of_record_repo_calls,
-                                 'repoCache' => $this->number_of_record_repo_cached,
-                                 'ids' => implode(',', $id_array),
-                                 'timings' => $this->watch->get_timers()));
-
+    self::log_stat_get_object($id_array);
     // Dump Timings log in text format for zabbix remove by end of 2018
     $this->logOldStyleZabbixTimings('getObject','agency:' . $this->agency .
                          ' profile:' . self::stringify_obj_array($this->profile) .
@@ -3160,6 +3152,33 @@ class OpenSearch extends webServiceServer {
     return implode($glue, $vals);
   }
 
+  /** Log STAT line for search
+   *
+   */
+  private function log_stat_search() {
+    VerboseJson::log(STAT, array('agency' => $this->agency,
+                                 'profile' => self::stringify_obj_array($this->user_param->profile),
+                                 'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
+                                 'repoRecs' => $this->number_of_record_repo_calls,
+                                 'repoCache' => $this->number_of_record_repo_cached,
+                                 'query' => $this->user_param->query->_value,
+                                 'timings' => $this->watch->get_timers()));
+  }
+
+  /** Log STAT line for getObject
+   *
+   * @param $id_array
+   *
+   */
+  private function log_stat_get_object($id_array) {
+    VerboseJson::log(STAT, array('agency' => $this->agency,
+                                 'profile' => self::stringify_obj_array($this->user_param->profile),
+                                 'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
+                                 'repoRecs' => $this->number_of_record_repo_calls,
+                                 'repoCache' => $this->number_of_record_repo_cached,
+                                 'ids' => implode(',', $id_array),
+                                 'timings' => $this->watch->get_timers()));
+  }
   /*
    ************************************ Info helper functions *******************************************
    */
