@@ -1258,7 +1258,7 @@ class OpenSearch extends webServiceServer {
         return 'Error: cql_file not defined for repository: ' . $this->repository_name;
       }
       if ($this->repository['cql_file']) {
-        if (!$this->repository['cql_settings'] = self::get_solr_file($this->repository['cql_file'])) {
+        if (!$this->repository['cql_settings'] = self::get_solr_file('solr_file', $this->repository['cql_file'])) {
           if (!$this->repository['cql_settings'] = @ file_get_contents($this->repository['cql_file'])) {
             VerboseJson::log(FATAL, 'Cannot get cql_file (' . $this->repository['cql_file'] . ') from local directory. Repository: ' . $this->repository_name);
             return 'Error: Cannot find cql_file for repository: ' . $this->repository_name;
@@ -1982,27 +1982,27 @@ class OpenSearch extends webServiceServer {
    * @param string $name
    * @return string (xml)
    */
-  private function get_solr_file($name) {
+  private function get_solr_file($ini_def, $name='') {
     static $solr_file_cache;
     $file_url = $this->repository['solr'];
-    $file = $this->config->get_value('solr_file', 'setup');
+    $file = $this->config->get_value($ini_def, 'setup');
     foreach ($file as $from => $to) {
       $file_url = str_replace($from, $to, $file_url);
     }
-    $solr_file_url = sprintf($file_url, $name);
+    $solr_url = sprintf($file_url, $name);
     if (empty($solr_file_cache)) {
       $cache = self::get_cache_info('solr_file');
       $solr_file_cache = new cache($cache['host'], $cache['port'], $cache['expire']);
     }
-    if (!$xml = $solr_file_cache->get($solr_file_url)) {
-      $xml = $this->curl->get($solr_file_url);
+    if (!$solr_data = $solr_file_cache->get($solr_url)) {
+      $solr_data = $this->curl->get($solr_url);
       if ($this->curl->get_status('http_code') != 200) {
         return FALSE;
       }
-      $solr_file_cache->set($solr_file_url, $xml);
+      $solr_file_cache->set($solr_url, $solr_data);
       $this->curl->close();
     }
-    return $xml;
+    return $solr_data;
   }
 
   /** \brief filter allowed sort and rank for the repository
@@ -2010,6 +2010,7 @@ class OpenSearch extends webServiceServer {
    * sort.exclude and sor.include tables in in-file sepcifies the repository sort setting
    */
   private function fetch_sortfields_in_repository() {
+    self::test();
     $sort_def = $this->repository['sort'];
     $all_sorts = $repo_sorts = $this->config->get_value('sort', 'setup');
     if (is_array($sort_def['exclude'])) {
@@ -2028,6 +2029,37 @@ class OpenSearch extends webServiceServer {
       }
     }
 
+    return $repo_sorts;
+  }
+
+  /** \brief 
+   *
+   * For next version. Filtering ini-files sort-setup against the solr index
+   * get files in index and adjust sorting to include only existing sort-fields in the actual repository (solr)
+   */
+  private function test() {
+    return;
+
+    $luke_result = self::get_solr_file('solr_luke');
+    $all_sorts = $repo_sorts = $this->config->get_value('sort', 'setup');
+    if ($luke_result) {
+      $repo_sorts = array();
+      $solr_fields = json_decode($luke_result);
+      foreach ($solr_fields->fields as $sf_name => $sf_field) {
+        if (substr($sf_name, 0, 5) == 'sort.') {
+          foreach ($all_sorts as $as_name => $as_spec) {
+            if (is_scalar($as_spec) && (strpos($as_spec, $sf_name) !== FALSE)) {
+              $repo_sorts[$as_name] = $as_spec;
+              foreach ($all_sorts as $as_name_arr => $as_spec_arr) {
+                if (is_array($as_spec_arr) && in_array($as_name, $as_spec_arr)) {
+                  $repo_sorts[$as_name_arr][] = $as_name;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     return $repo_sorts;
   }
 
@@ -3412,20 +3444,13 @@ class OpenSearch extends webServiceServer {
     if ($error = self::set_repositories($_REQUEST['repository'])) {
       die('Error setting repository: ' . $error);
     }
-    $luke_url = $this->repository['solr'];
-    if (empty($luke_url)) {
-      die('Cannot find url to solr for repository');
-    }
-    $luke = $this->config->get_value('solr_luke', 'setup');
-    foreach ($luke as $from => $to) {
-      $luke_url = str_replace($from, $to, $luke_url);
-    }
-    $luke_result = json_decode($this->curl->get($luke_url));
+    $luke_result = self::get_solr_file('solr_luke');
     $this->curl->close();
     if (!$luke_result) {
       die('Cannot fetch register info from solr: ' . $luke_url);
     }
-    $luke_fields = &$luke_result->fields;
+    $luke_result = json_decode($luke_result);
+    @ $luke_fields = &$luke_result->fields;
     $dom = new DomDocument();
     $dom->loadXML($this->repository['cql_settings']) || die('Cannot read cql_file: ' . $this->repository['cql_file']);
 
@@ -3451,8 +3476,9 @@ class OpenSearch extends webServiceServer {
     foreach ($cql_regs as $cr)
       echo $cr . '</br>';
     echo '</br><h1>Found in Solr but not in ' . $this->repository['cql_file'] . ' for repository ' . $this->repository_name . '</h1>';
-    foreach ($luke_fields as $lf => $obj)
-      echo $lf . '</br>';
+    if (is_array($luke_fields))
+      foreach ($luke_fields as $lf => $obj)
+        echo $lf . '</br>';
 
     die('</body></html>');
   }
