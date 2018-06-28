@@ -1,0 +1,134 @@
+#!/usr/bin/php
+<?php
+include find_php_file_or_die('curl_class');
+
+$opt = getopt('w:i:p:s:r:');
+if (count($opt['w']) != 2 || count($opt['i']) != 1) usage($argv[0]);
+
+$searcher = $opt['w'];
+$logfile = $opt['i'];
+$add_param = '&outputType=json&' . (is_array($opt['p']) ? implode('&', $opt['p']) : $opt['p']);
+
+$skip_records = intval($opt['s']) ? intval($opt['s']) : 0;
+$read_records = intval($opt['r']) ? intval($opt['r']) : 100;
+$curl = new curl();
+$curl->set_option(CURLOPT_TIMEOUT, 11);
+$curl->set_option(CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset=UTF-8'));
+
+$count = 0;
+if (!file_exists($logfile)) {
+  fatal('Cannot find ' . $logfile);
+}
+if (!$fr = fopen($logfile, 'r')) {
+  fatal('Cannot open ' . $logfile);
+}
+
+while (($count++ < ($read_records + $skip_records)) && !feof($fr)) {
+  $line = trim(fgets($fr));
+  if ($count <= $skip_records) {
+    if ($count < 10) echo 'skip: ' . $line . PHP_EOL;
+    if ($count == 10) echo 'skip: .... ' . PHP_EOL;
+    continue;
+  }
+  if (strpos($line, 'action=') !== FALSE) {
+    if ($p = strpos(' ' . $line, '?')) {
+      $line = substr($line, $p);
+    }
+    $parms = '?' . str_replace('outputType=xml', '', $line) . $add_param;
+    if (strpos($parms, 'action=search') && (strpos($parms, 'stepValue') === FALSE)) {
+      $parms .= '&stepValue=10';
+    }
+  }
+  else {
+    echo 'ERROR - cannot recognize line: ' . $line . PHP_EOL;
+    continue;
+  }
+  foreach ($searcher as $idx => $s) {
+    $curl->set_url($s . $parms, $idx);
+  }
+  $response = $curl->get();
+  $status = $curl->get_status();
+  foreach ($searcher as $idx => $s) {
+    $res[$idx] = json_decode($response[$idx])->searchResponse->result;
+    $tot[$idx] = $status[$idx]['total_time'];
+  }
+  $perc = (($tot[0] - $tot[1]) * 100) / $tot[0];
+  printf('%s: hits:%5s old: %5.3f new: %5.3f %6.2f%% %s' . PHP_EOL, 
+         $count, $res[0]->hitCount->{'$'}, $tot[0], $tot[1], $perc, str_replace('&outputType=json', '', $parms));
+  if ($res[0]->searchResult <> $res[1]->searchResult) {
+    echo ' - differs:' . PHP_EOL;
+    printf(' -   %s %s ' . PHP_EOL, str_replace('&outputType=json', '', $status[0]['url']), $status[0]['http_code']);
+    printf(' -   %s %s ' . PHP_EOL, str_replace('&outputType=json', '', $status[1]['url']), $status[1]['http_code']);
+    show_diff($res[0]->searchResult, $res[1]->searchResult);
+  }
+  sleep(1);
+}
+fclose($fr);
+
+/* ------------------------------------------------------------ */
+
+/** Show diff of two structures
+ *
+ * @param $a
+ * @param $b
+ */
+function show_diff($a, $b) {
+  $aa = json_encode($a);
+  $bb = json_encode($b);
+  $len = min(strlen($aa), strlen($bb));
+  for ($i = 0; $i < $len; $i++) {
+    if (substr($aa, $i, 1) <> substr($bb, $i, 1)) {
+      $start = max(0, ($i - 90));
+      echo ' - -   ' . $len . ' ' . $start . PHP_EOL;
+      echo ' - -   ' . substr($aa, $start, 180) . PHP_EOL;
+      echo ' - -   ' . substr($bb, $start, 180) . PHP_EOL;
+      break;
+    }
+  }
+  echo PHP_EOL;
+}
+
+/** Look for file to include and die if not found
+ *
+ * @param $file
+ * @return string
+ */
+function find_php_file_or_die($file) {
+  if (file_exists($file . '.php'))
+    return $file . '.php';
+  if (file_exists('OLS_class_lib/' . $file . '.php'))
+    return 'OLS_class_lib/' . $file . '.php';
+
+  fatal('Cannot include ' . $file . '.php');
+}
+
+/** Print fatal error and die
+ *
+ * @param $err
+ */
+function fatal($err) {
+  die(PHP_EOL . 'Fatal error: ' . $err . PHP_EOL);
+}
+
+/**
+ * @param $me
+ */
+function usage($me) {
+  die (PHP_EOL
+    . 'Usage: ' . $me . ' -i input_file -w webservice_last_url -w webservice_new_url' . PHP_EOL
+    . PHP_EOL
+    . 'Compares results from two openSearch webservices - for regression testing' . PHP_EOL
+    . 'The inputfile has to contain the query part of openSearch queries, like:' . PHP_EOL
+    . '  action=search&agency=100200&profile=test&query=danmark' . PHP_EOL
+    . PHP_EOL
+    . 'Use input file to create request against two services and compare results' . PHP_EOL
+    . '  -p      add parameter to url, like -p start=2 -p stepValue=5' . PHP_EOL
+    . '  -s n    skip first n loglines, like -s 1000' . PHP_EOL
+    . '  -r n    read and compare n loglines, like -r 100' . PHP_EOL
+    . PHP_EOL
+    . 'If stepValue is not set (either by logline or set by -p), stepValue will default to 10' . PHP_EOL
+    . PHP_EOL
+    . 'Example:' . PHP_EOL
+    . '  ' . $me . ' -i searches.log -w \'https://opensearch.addi.dk/b3.5_5.0/\' -w \'https://opensearch.addi.dk/staging_5.0/\' -p relationData=full -s 200 -r 10' . PHP_EOL
+  );
+}
