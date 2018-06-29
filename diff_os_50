@@ -34,7 +34,7 @@ while (($count++ < ($read_records + $skip_records)) && !feof($fr)) {
     if ($p = strpos(' ' . $line, '?')) {
       $line = substr($line, $p);
     }
-    $parms = '?' . str_replace('outputType=xml', '', $line) . $add_param;
+    $parms = '?' . str_replace('outputType=xml', '', set_tracking_id($line)) . $add_param;
     if (strpos($parms, 'action=search') && (strpos($parms, 'stepValue') === FALSE)) {
       $parms .= '&stepValue=10';
     }
@@ -108,6 +108,28 @@ function find_php_file_or_die($file) {
  */
 function fatal($err) {
   die(PHP_EOL . 'Fatal error: ' . $err . PHP_EOL);
+}
+
+/** Change/set trackingId
+ *
+ * @param $line
+ * @return string
+ */
+function set_tracking_id($line) {
+  static $me;
+  if (!isset($me)) {
+    global $argv;
+    $me = preg_replace('/\W/', '', $argv[0]);
+  }
+  if ($p = strpos($line, 'trackingId')) {
+    if ($p_end = strpos($line, '&', $p)) {
+      $line = substr($line, 0, ($p - 1)) . substr($line, ($p_end + 1));
+    }
+    else {
+      $line = substr($line, 0, ($p - 1));
+    }
+  }
+  return $line . '&trackingId=' . $me;
 }
 
 /**
