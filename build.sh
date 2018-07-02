@@ -20,6 +20,9 @@ done
 
 cd ..
 
+echo fetch explain.xsl from https://svn.dbc.dk/repos/opensearch-repository/trunk/solr-config/config/explain.xsl
+wget -q https://svn.dbc.dk/repos/opensearch-repository/trunk/solr-config/config/explain.xsl
+
 if [ -n "${BUILD_NUMBER}" ]; then
   echo ${BUILD_NUMBER} > BUILDNUMBER
 else
