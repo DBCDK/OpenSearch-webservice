@@ -31,7 +31,7 @@ fi
 
 
 ln -s server.php index.php
-tar czf docker/opensearch-webservice.tar.gz --exclude-vcs doc includes xml *.xsd *.php *.html *_INSTALL OLS_class_lib BUILDNUMBER
+tar czf docker/opensearch-webservice.tar.gz --exclude-vcs doc includes xml *.xsd *.php *.html *_INSTALL OLS_class_lib BUILDNUMBER explain.xsl
 
 echo 
 echo "ready for docker build"
