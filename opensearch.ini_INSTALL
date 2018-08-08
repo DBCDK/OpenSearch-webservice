@@ -145,25 +145,20 @@ collections_containing_800000[] = 870970-danbib
 default_repository = @REPOSITORY_NAME@
 
 ; define repository[defaults] parameters for:
-; - fedora_get_raw: parameters to get raw record from fedora - commonData stream
-; - fedora_get_rels_hierarchy: parameters to get work-/unit-structure relations from fedora - RELS-SYS stream
 ; - fedora_get_rels_addi: parameters to get addi relation datastream - RELS-EXT stream
-; - fedora_get_object_profile: parameters to get object state/profile from fedora - if not set, deleted records will be returned
-; - fedora_get_datastreams: parameters to get datastreams for an object
 ; - corepo_get: get highest prioritized record in unit
 ; - collection_query - Filtering on the collectionIdentifiers specified by the search profile
 ; - collection_alias - Alias' for collections for filtering to work differently for records with imore thanh one collectionIdentifier
 ; - filter - Filtering on the collectionIdentifiers specified by the search profile
+; - add_filter - Add a filter if the given library_rule is true or false
 ; Defaults starting with fedora_ will be prefixed by the fedora url set below, the rest is normal defaults
 ; All default settings will be set in each repository, unless a repository specifically has defined the setting
 ; The user can specify the repository to use in the request and override the default_repository setting
 
-repository[defaults][fedora_get_raw] = objects/%s/datastreams/commonData/content
-repository[defaults][fedora_get_rels_hierarchy] = objects/%s/datastreams/RELS-SYS/content
 repository[defaults][fedora_get_rels_addi] = objects/%s/datastreams/RELS-EXT/content
-repository[defaults][fedora_get_object_profile] = objects/%s?format=xml
-repository[defaults][fedora_get_datastreams] = objects/%s/datastreams?format=xml
 repository[defaults][corepo_get] = opensearch/unit?unit=%s&pids=%s&agencyId=%s
+repository[defaults][add_filter][view_metacompass:false][870970][marcxchange][665] = .
+
 
 ; cql file - xml file containing useable registers and cql operators.
 repository[defaults][cql_file] = opensearch_cql.xml
@@ -253,6 +248,15 @@ repository[@REPOSITORY_NAME@][collection_alias]['870976-anmeld'] = 870976-allanm
 repository[@REPOSITORY_NAME@][filter]['870976-anmeld'][marcxchange]['^559'] = i
 ; filter docbook section with title = "Til bibliotekaren" from collectionIdentier 870976-anmeld
 repository[@REPOSITORY_NAME@][filter]['870976-anmeld'][docbook]['section/title'] = Til bibliotekaren
+
+; add filter depending on library_rules
+;repository[my_repository][add_filter][view_metacompass:false][owner][marcxchange][665] = .
+; will add a filter if the library rule view_metacompass is false - NB anything but true (after the :) will evaluate as false
+; 
+; Higher up
+; repository[defaults][add_filter][view_metacompass:false][870970][marcxchange][665] = .
+; is set as default, since field 665 should only be shown to libraries where view_metacompass is set
+; 
 
 
 ; Raw record repositories

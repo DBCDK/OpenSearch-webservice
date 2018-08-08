@@ -20,9 +20,6 @@ done
 
 cd ..
 
-echo fetch explain.xsl from https://svn.dbc.dk/repos/opensearch-repository/trunk/solr-config/config/explain.xsl
-wget -q https://svn.dbc.dk/repos/opensearch-repository/trunk/solr-config/config/explain.xsl
-
 if [ -n "${BUILD_NUMBER}" ]; then
   echo ${BUILD_NUMBER} > BUILDNUMBER
 else
@@ -31,7 +28,7 @@ fi
 
 
 ln -s server.php index.php
-tar czf docker/opensearch-webservice.tar.gz --exclude-vcs doc includes xml *.xsd *.php *.html *_INSTALL OLS_class_lib BUILDNUMBER explain.xsl
+tar czf docker/opensearch-webservice.tar.gz --exclude-vcs doc includes xml *.xsd *.php *.html *_INSTALL OLS_class_lib BUILDNUMBER
 
 echo 
 echo "ready for docker build"

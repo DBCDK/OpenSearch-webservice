@@ -790,7 +790,7 @@ class OpenSearch extends webServiceServer {
       foreach ($fpids as $fpid) {
         $id_array[] = $fpid->_value;
         list($owner_collection, $id) = explode(':', $fpid->_value);
-        list($owner, $coll) = explode('-', $owner_collection);
+        list($owner) = explode('-', $owner_collection);
         if (($owner == $this->agency)
           || ($owner == '870970')
           || in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), []))
@@ -826,7 +826,7 @@ class OpenSearch extends webServiceServer {
     foreach ($fpids as $fpid) {
       $id_array[] = $fpid->_value;
       list($owner_collection, $id) = explode(':', $fpid->_value);
-      list($owner, $coll) = explode('-', $owner_collection);
+      list($owner) = explode('-', $owner_collection);
 // 870970-basis contain records for libraries with 'use_localdata_stream switch set
 // BUT, similar actions should be made for school libraries and 300000-katalog, but no switch is currently made for this
       if (self::agency_rule($owner, 'use_localdata_stream')) {
@@ -1268,6 +1268,20 @@ class OpenSearch extends webServiceServer {
       }
       if (empty($this->repository['filter'])) {
         $this->repository['filter'] = [];
+      }
+      if ($this->repository['add_filter']) {
+        foreach ($this->repository['add_filter'] as $agency_rule => $filter) {
+          list($rule, $bool) = explode(':', trim($agency_rule), 2);
+          if ((strtolower($bool) == 'true') === self::agency_rule($this->agency, $rule)) {
+            foreach ($filter as $agency => $format_and_spec) {
+              foreach ($format_and_spec as $format => $spec) {
+                foreach ($spec as $field => $subfield) {
+                  $this->repository['filter'][$agency][$format][$field] = $subfield;
+                }
+              }
+            }
+          }
+        }
       }
     }
     else {
@@ -1829,6 +1843,7 @@ class OpenSearch extends webServiceServer {
    */
   private function get_register_freqency($eq, $guess) {
     $q = implode(OR_OP, $eq['q']);
+    $filter = '';
     foreach ($eq['fq'] as $fq) {
       $filter .= '&fq=' . rawurlencode($fq);
     }
@@ -1932,6 +1947,7 @@ class OpenSearch extends webServiceServer {
     $guess = self::set_guesses($ranks, $user_filter);
     $freqs = self::get_register_freqency($solr_query['edismax'], $guess);
     $max = -1;
+    $debug_str = '';
     foreach ($guess as $idx => $g) {
       $freq = $freqs[$idx] * $g['weight'];
       Object::set_value($this->rank_frequence_debug, $g['register'], $freq . ' (' . $freqs[$idx] . '*' . $g['weight'] . ')');
@@ -2039,7 +2055,7 @@ class OpenSearch extends webServiceServer {
    */
   private function test() {
     return;
-
+    /*
     $luke_result = self::get_solr_file('solr_luke');
     $all_sorts = $repo_sorts = $this->config->get_value('sort', 'setup');
     if ($luke_result) {
@@ -2061,6 +2077,7 @@ class OpenSearch extends webServiceServer {
       }
     }
     return $repo_sorts;
+    */
   }
 
   /** \brief Isolation of creation of work structure for caching
@@ -2203,16 +2220,6 @@ class OpenSearch extends webServiceServer {
   private function record_repo_url($type, $id, $datastream_id = '') {
     $uri = $datastream_id ? str_replace('commonData', $datastream_id, $this->repository[$type]) : $this->repository[$type];
     return sprintf($uri, $id);
-  }
-
-  /** \brief Fetch datastreams for a record from record_repo
-   *
-   * @param string $fpid - the pid to fetch
-   * @param string $record_repo_xml - the record is returned
-   * @return mixed - error or NULL
-   */
-  private function read_record_repo_datastreams($fpid, &$record_repo_xml) {
-    return self::read_record_repo(self::record_repo_url('fedora_get_datastreams', $fpid), $record_repo_xml);
   }
 
   /** \brief Setup call to record repository and execute it. The record is cached.
@@ -2458,6 +2465,10 @@ class OpenSearch extends webServiceServer {
     return $ret;
   }
 
+  /**
+   * @param $profile_map
+   * @return array
+   */
   private function fetch_profile_map($profile_map) {
     $profile_names = $this->open_agency->get_search_profile_names($profile_map['agency'], $profile_map['prefix']);
     return $profile_names;
@@ -3427,11 +3438,28 @@ class OpenSearch extends webServiceServer {
     self::set_repositories($repos, FALSE);
     if ($file = $this->repository['cql_settings']) {
       header('Content-Type: application/xml; charset=utf-8');
+      echo str_replace('<?xml-stylesheet type="text/xsl" href="explain.xsl"?>','<?xml-stylesheet type="text/xsl" href="?showExplainXslFile"?>', $file);
+    }
+    else {
+      header('HTTP/1.0 404 Not Found');
+      echo 'Cannot locate the cql-file: ' . $this->repository['cql_file']  . '<br /><br />Use info operation to check name and repository';
+    }
+  }
+  /** \brief fetch a explain.xsl from solr and display it
+   *
+   * @return void
+   */
+  protected function showExplainXslFile() {
+    //$repositories = $this->config->get_value('repository', 'setup');
+    $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
+    self::set_repositories($repos, FALSE);
+    if ($file = self::get_solr_file('solr_file', 'explain.xsl')) {
+      header('Content-Type: application/xslt+xml; charset=utf-8');
       echo $file;
     }
     else {
       header('HTTP/1.0 404 Not Found');
-      echo 'Cannot locate the cql-file: ' . $cql . '<br /><br />Use info operation to check name and repostirory';
+      echo 'Cannot locate the xsl stylesheet: explain.xsl<br /><br />Use info operation to check name and repository';
     }
   }
 
