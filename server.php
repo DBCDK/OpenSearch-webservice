@@ -1269,7 +1269,7 @@ class OpenSearch extends webServiceServer {
       if (empty($this->repository['filter'])) {
         $this->repository['filter'] = [];
       }
-      if ($this->repository['add_filter']) {
+      if ($this->repository['add_filter'] && $this->agency) {
         foreach ($this->repository['add_filter'] as $agency_rule => $filter) {
           list($rule, $bool) = explode(':', trim($agency_rule), 2);
           if ((strtolower($bool) == 'true') === self::agency_rule($this->agency, $rule)) {
@@ -3433,7 +3433,7 @@ class OpenSearch extends webServiceServer {
    * @return void
    */
   protected function showCqlFile() {
-    $repositories = $this->config->get_value('repository', 'setup');
+    //$repositories = $this->config->get_value('repository', 'setup');
     $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
     self::set_repositories($repos, FALSE);
     if ($file = $this->repository['cql_settings']) {
