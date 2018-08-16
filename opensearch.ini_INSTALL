@@ -190,8 +190,8 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 ; So, either exclude a few OR exclude ALL and include the ones allowed
 
 ;repository[@REPOSITORY_NAME@][sort][include] = 
-repository[@REPOSITORY_NAME@][sort][exclude][] = solr_001c_ascending
-repository[@REPOSITORY_NAME@][sort][exclude][] = solr_001c_descending
+repository[@REPOSITORY_NAME@][sort][exclude][] = solr_001d_ascending
+repository[@REPOSITORY_NAME@][sort][exclude][] = solr_001d_descending
 
 ; Querying holdings using the join handler
 ; to "filter" searches using holding information registered in a separate solr index
@@ -274,8 +274,8 @@ repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^[a-z]'] 
 repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^...$'] = [&]
 
 repository[@RAW_RECORD_REPOSITORY_NAME@][sort][exclude][] = ALL
-;repository[@RAW_RECORD_REPOSITORY_NAME@][sort][include][] = solr_001c_ascending
-;repository[@RAW_RECORD_REPOSITORY_NAME@][sort][include][] = solr_001c_descending
+;repository[@RAW_RECORD_REPOSITORY_NAME@][sort][include][] = solr_001d_ascending
+;repository[@RAW_RECORD_REPOSITORY_NAME@][sort][include][] = solr_001d_descending
 
 @EXTRA_REPOSITORIES@
 
@@ -632,8 +632,8 @@ sort[solr_numberInSeries_descending] = sort.numberInSeries desc
 sort[solr_dateFirstEdition_ascending] = map(sort.dateFirstEdition,0,0,9999) asc
 sort[solr_dateFirstEdition_descending] = sort.dateFirstEdition desc
 
-sort[solr_001c_ascending] = map(sort.001c,0,0,99991231235959) asc
-sort[solr_001c_descending] = map(sort.001c,20500101010101,99999999999999,0) desc
+sort[solr_001d_ascending] = map(sort.001d,0,0,99991231235959) asc
+sort[solr_001d_descending] = map(sort.001d,20500101010101,99999999999999,0) desc
 
 ; sortgroups using sorts - allows you to create "grouped"-sorts, combining existing sorts
 ; like:
