@@ -1466,9 +1466,11 @@ class OpenSearch extends webServiceServer {
           $f_xml = $this->objconvert->obj2soap($f_obj);
           $this->curl->set_post($f_xml, 0);
           $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: text/xml; charset=UTF-8'], 0);
+          VerboseJson::log(DEBUG, 'openFormat: ' . $f_xml);
+          VerboseJson::log(TRACE, 'openFormat: ' . $format_arr['uri'] ? $format_arr['uri'] : $open_format_uri);
           $f_result = $this->curl->get($format_arr['uri'] ? $format_arr['uri'] : $open_format_uri);
           $this->curl->set_option(CURLOPT_POST, 0, 0);
-          $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['of']);
+          $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['of'], FALSE);
           // need to restore correct namespace
           foreach ($f_obj->formatRequest->_value->originalData as $i => &$oD) {
             $oD->_namespace = $save_ns[$i];
@@ -1500,7 +1502,7 @@ class OpenSearch extends webServiceServer {
             $oD->_namespace = $this->xmlns['of'];
           }
           $f_result = $formatRecords->format($param->originalData, $param);
-          $fr_obj = $this->objconvert->set_obj_namespace($f_result, $this->xmlns['os']);
+          $fr_obj = $this->objconvert->set_obj_namespace($f_result, $this->xmlns['os'], FALSE);
           // need to restore correct namespace
           foreach ($param->originalData as $i => &$oD) {
             $oD->_namespace = $save_ns[$i];
