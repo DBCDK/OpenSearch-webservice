@@ -156,7 +156,7 @@ class OpenSearch extends webServiceServer {
       $dom = new DomDocument();
     }
     $dom->loadXml($rec);
-    $this->format['dkabm'] = array();
+    etthis->format['dkabm'] = array();
     $obj = self::extract_record($dom, $prio_pids[0]);
     $result = $obj;
 //var_dump($prio_pids); var_dump($primary_pid); var_dump($rec); var_dump($obj); var_dump($ret); die();
