@@ -103,9 +103,6 @@ class OpenSearch extends webServiceServer {
 // action[getDkabm][] = repository
     $ret_error = new stdClass();
     $ret_error->searchResponse->_value->error->_value = &$unsupported;
-    if ($repository_error = self::set_repositories($param->repository->_value)) {
-      $unsupported = $repository_error;
-    }
     if (empty($param->agency->_value) && empty($param->profile)) {
       Object::set_value($param, 'agency', $this->config->get_value('agency_fallback', 'setup'));
       Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
@@ -124,8 +121,13 @@ class OpenSearch extends webServiceServer {
         ' for ' . $param->agency->_value;
     }
     $this->user_param = $param;
-    if ($unsupported) return $ret_error;
     $this->agency = $param->agency->_value;
+    if ($repository_error = self::set_repositories($param->repository->_value)) {
+      $unsupported = $repository_error;
+    }
+
+    if ($unsupported) return $ret_error;
+
     $this->show_agency = self::value_or_default($param->showAgency->_value, $this->agency);
     $result = &$ret->dkabmResponse->_value->result->_value;
     Object::set_value($result, 'records', 6);
@@ -172,9 +174,6 @@ class OpenSearch extends webServiceServer {
     if (empty($param->query->_value)) {
       $unsupported = 'Error: No query found in request';
     }
-    if ($repository_error = self::set_repositories($param->repository->_value)) {
-      $unsupported = $repository_error;
-    }
 
     // for testing and group all
     if (count($this->aaa->aaa_ip_groups) == 1 && isset($this->aaa->aaa_ip_groups['all'])) {
@@ -202,9 +201,13 @@ class OpenSearch extends webServiceServer {
         ' for ' . $param->agency->_value;
     }
     $this->user_param = $param;
+    $this->agency = $param->agency->_value;
+    if ($repository_error = self::set_repositories($param->repository->_value)) {
+      $unsupported = $repository_error;
+    }
+
     if ($unsupported) return $ret_error;
 
-    $this->agency = $param->agency->_value;
     $this->show_agency = self::value_or_default($param->showAgency->_value, $this->agency);
     $this->profile = $param->profile;
     $this->agency_catalog_source = $this->agency . '-katalog';
@@ -697,10 +700,6 @@ class OpenSearch extends webServiceServer {
       $error = 'authentication_error';
       return $ret_error;
     }
-    if ($error = self::set_repositories($param->repository->_value)) {
-      VerboseJson::log(FATAL, $error);
-      return $ret_error;
-    }
     if (empty($param->agency->_value) && empty($param->profile)) {
       Object::set_value($param, 'agency', $this->config->get_value('agency_fallback', 'setup'));
       Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
@@ -731,6 +730,10 @@ class OpenSearch extends webServiceServer {
       }
       self::set_valid_relations_and_sources($this->search_profile);
       // self::set_search_filters_for_800000_collection();
+    }
+    if ($error = self::set_repositories($param->repository->_value)) {
+      VerboseJson::log(FATAL, $error);
+      return $ret_error;
     }
     $this->show_agency = self::value_or_default($param->showAgency->_value, $this->agency);
     if ($this->filter_agency) {
@@ -1470,7 +1473,7 @@ class OpenSearch extends webServiceServer {
           VerboseJson::log(TRACE, 'openFormat: ' . $format_arr['uri'] ? $format_arr['uri'] : $open_format_uri);
           $f_result = $this->curl->get($format_arr['uri'] ? $format_arr['uri'] : $open_format_uri);
           $this->curl->set_option(CURLOPT_POST, 0, 0);
-          $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['of'], FALSE);
+          $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['of']);
           // need to restore correct namespace
           foreach ($f_obj->formatRequest->_value->originalData as $i => &$oD) {
             $oD->_namespace = $save_ns[$i];
@@ -1502,7 +1505,7 @@ class OpenSearch extends webServiceServer {
             $oD->_namespace = $this->xmlns['of'];
           }
           $f_result = $formatRecords->format($param->originalData, $param);
-          $fr_obj = $this->objconvert->set_obj_namespace($f_result, $this->xmlns['os'], FALSE);
+          $fr_obj = $this->objconvert->set_obj_namespace($f_result, $this->xmlns['os']);
           // need to restore correct namespace
           foreach ($param->originalData as $i => &$oD) {
             $oD->_namespace = $save_ns[$i];
