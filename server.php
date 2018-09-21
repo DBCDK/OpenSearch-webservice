@@ -49,7 +49,6 @@ class OpenSearch extends webServiceServer {
   protected $number_of_record_repo_calls = 0;
   protected $number_of_record_repo_cached = 0;
   protected $agency_catalog_source = '';
-  protected $agency_type = '';
   protected $filter_agency = '';
   protected $format = '';
   protected $which_rec_id = '';
@@ -62,7 +61,6 @@ class OpenSearch extends webServiceServer {
   protected $collection_contained_in = [];
   protected $rank_frequence_debug;
   protected $collection_alias = [];
-  protected $agency_priority_list = [];  // prioritised list af agencies for the actual agency
   protected $unit_fallback = [];     // if record_repo is updated and solr is not, this is used to find some record from the old unit
   protected $feature_sw = [];
   protected $user_param;
@@ -249,7 +247,6 @@ class OpenSearch extends webServiceServer {
       $this->query_language = $param->queryLanguage->_value;
     }
     $this->debug_query = $this->xs_boolean($param->queryDebug->_value);
-    $this->agency_type = self::get_agency_type($this->agency);
 
     if ($this->repository['rawrepo']) {
       $this->watch->start('rawrepo');
@@ -517,7 +514,6 @@ class OpenSearch extends webServiceServer {
     $collections = [];
     $rec_no = max(1, $start);
     $use_sort_complex_key = in_array($this->agency, self::value_or_default($this->config->get_value('use_sort_complex_key', 'setup'), []));
-    $this->agency_priority_list = self::fetch_agency_show_priority();
 
     // fetch all addi and hierarchi records for all units in work_ids
     foreach ($work_ids as $idx => $work) {
@@ -743,8 +739,6 @@ class OpenSearch extends webServiceServer {
     $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
     $this->agency_catalog_source = $this->agency . '-katalog';
-    $this->agency_type = self::get_agency_type($this->agency);
-    $this->agency_priority_list = self::fetch_agency_show_priority();
     $this->format = self::set_format($param->objectFormat,
                                      $this->config->get_value('open_format', 'setup'),
                                      $this->config->get_value('solr_format', 'setup'));
@@ -2410,33 +2404,6 @@ class OpenSearch extends webServiceServer {
    ****************************************/
 
 
-  /** \brief Fetch agency types from OpenAgency, cache the result, and return agency type for $agency
-   *
-   * @param string $agency -
-   * @return mixed - agency type (string) or FALSE
-   */
-  private function get_agency_type($agency) {
-    $this->watch->start('agency_type');
-    $agency_type = $this->open_agency->get_agency_type($agency);
-    $this->watch->stop('agency_type');
-    if ($this->open_agency->get_branch_type($agency) <> 'D') {
-      return $agency_type;
-    }
-
-    return FALSE;
-  }
-
-  /** \brief Fetch priority list for agency
-   *
-   * @return mixed - array of agencies
-   */
-  private function fetch_agency_show_priority() {
-    $this->watch->start('agency_prio');
-    $agency_list = $this->open_agency->get_show_priority($this->agency);
-    $this->watch->stop('agency_prio');
-    return ($agency_list ? $agency_list : []);
-  }
-
   /** \brief Fetch a profile $profile_name for agency $agency
    *
    * @param string $agency -
@@ -3198,15 +3165,9 @@ class OpenSearch extends webServiceServer {
    *
    */
   private function log_stat_search() {
-    VerboseJson::log(STAT, array('agency' => $this->agency,
-                                 'profile' => self::stringify_obj_array($this->user_param->profile),
-                                 'repository' => $this->repository_name,
-                                 'objectFormat' => self::stringify_obj_array($this->user_param->objectFormat),
-                                 'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
-                                 'repoRecs' => $this->number_of_record_repo_calls,
-                                 'repoCache' => $this->number_of_record_repo_cached,
-                                 'query' => $this->user_param->query->_value,
-                                 'timings' => $this->watch->get_timers()));
+    self::log_stat(array('query' => $this->user_param->query->_value,
+                         'start' => $this->user_param->start->_value,
+                         'stepValue' => $this->user_param->stepValue->_value));
   }
 
   /** Log STAT line for getObject
@@ -3215,16 +3176,28 @@ class OpenSearch extends webServiceServer {
    *
    */
   private function log_stat_get_object($id_array) {
-    VerboseJson::log(STAT, array('agency' => $this->agency,
+    self::log_stat(array('ids' => implode(',', $id_array)));
+  }
+
+  /** Log STAT line 
+   *
+   * @param $extra
+   *
+   */
+  private function log_stat($extra) {
+    VerboseJson::log(STAT, array_merge(
+                           array('agency' => $this->agency,
                                  'profile' => self::stringify_obj_array($this->user_param->profile),
                                  'repository' => $this->repository_name,
                                  'objectFormat' => self::stringify_obj_array($this->user_param->objectFormat),
+                                 'outputType' => $this->user_param->outputType->_value,
                                  'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
                                  'repoRecs' => $this->number_of_record_repo_calls,
                                  'repoCache' => $this->number_of_record_repo_cached,
-                                 'ids' => implode(',', $id_array),
-                                 'timings' => $this->watch->get_timers()));
+                                 'timings' => $this->watch->get_timers()), 
+                            $extra));
   }
+
 
   /**
    * @param $arr

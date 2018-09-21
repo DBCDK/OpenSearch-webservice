@@ -134,12 +134,6 @@ use_sort_complex_key[] = 190101
 agency_to_collection[870970] = basis
 
 ; --------------
-; collections includings records from 800000-bibdk or 800000-danbib
-collections_containing_800000[] = 870970-basis 
-collections_containing_800000[] = 870970-bibkd
-collections_containing_800000[] = 870970-danbib
-
-; --------------
 ; repository setup
 ; default repository
 default_repository = @REPOSITORY_NAME@
@@ -311,11 +305,8 @@ solr_file_cache_expire = 3600
 agency[base_uri] = @AGENCY_END_POINT@
 ;
 ; openAgency operations. base_uri is added unless the operation itself contains http:// or https://
-agency[librariesByRule] = ?action=libraryRules&name=%s&bool=%s&trackingId=%s
 agency[libraryRules] = ?action=libraryRules&agencyId=%s&trackingId=%s
-agency[libraryType] = ?action=libraryTypeList&&outputType=json&trackingId=%s
 agency[searchProfile] = ?action=openSearchProfile&agencyId=%s&profileVersion=%s&trackingId=%s
-agency[showOrder] = ?action=showOrder&agencyId=%s&trackingId=%s
 ;
 ; memcache settings for openAgency calls. Set cache_expire like 30 (seconds) on test and next-system
 ;agency[cache_host] = localhost
