@@ -557,22 +557,32 @@ class OpenSearch extends webServiceServer {
           $sort_holdings = sprintf(' %04d ', 9999 - intval($holdings_res[$unit_id]['lend']));
         }
         $sort_key = str_replace(HOLDINGS, $sort_holdings, $unit_sort_keys[$unit_id]);
+        $objects[$sort_key] = new stdClass();
+        unset($rec_error);
         if (@ !$record_repo_dom->loadXML($raw_res[$unit_id])) {
           VerboseJson::log(FATAL, 'Cannot load recid ' . $rec_id . ' into DomXml');
           if ($missing_record) {
             $record_repo_dom->loadXML(sprintf($missing_record, $rec_id));
           }
+          else {
+            Object::set_value($rec_error->object->_value, 'error', 'unknown/missing/inaccessible record: ' . reset($pids));
+            Object::set_value($rec_error->object->_value, 'identifier', reset($pids));
+          }
         }
-        $objects[$sort_key] = new stdClass();
-        $objects[$sort_key]->_value = self::build_record_object($record_repo_dom,
-                                                                $raw_res[$unit_id],
-                                                                reset($pids),
-                                                                $rel_res,
-                                                                $relation_units[$unit_id],
-                                                                $rel_unit_pids,
-                                                                $primary_pids[$unit_id],
-                                                                $holdings_res[$unit_id],
-                                                                $param);
+        if ($rec_error) {
+          $objects[$sort_key]->_value = $rec_error;
+        } 
+        else {
+          $objects[$sort_key]->_value = self::build_record_object($record_repo_dom,
+                                                                  $raw_res[$unit_id],
+                                                                  reset($pids),
+                                                                  $rel_res,
+                                                                  $relation_units[$unit_id],
+                                                                  $rel_unit_pids,
+                                                                  $primary_pids[$unit_id],
+                                                                  $holdings_res[$unit_id],
+                                                                  $param);
+        } 
         if (empty($param->includeHoldingsCount) || !self::xs_boolean($param->includeHoldingsCount->_value)) {
           unset($objects[$sort_key]->_value->holdingsCount);
           unset($objects[$sort_key]->_value->lendingLibraries);
@@ -899,22 +909,29 @@ class OpenSearch extends webServiceServer {
       foreach ($work as $unit_id => $pids) {
         Object::set_value($o->collection->_value, 'resultPosition', $rec_no + 1);
         Object::set_value($o->collection->_value, 'numberOfObjects', 1);
+
         if (@ !$record_repo_dom->loadXML($raw_res[$unit_id])) {
           VerboseJson::log(FATAL, 'Cannot load recid ' . reset($pids) . ' into DomXml');
           if ($missing_record) {
             $record_repo_dom->loadXML(sprintf($missing_record, reset($pids)));
           }
+          else {
+            Object::set_value($o->collection->_value->object->_value, 'error', 'unknown/missing/inaccessible record: ' . reset($pids));
+            Object::set_value($o->collection->_value->object->_value, 'identifier', reset($pids));
+          }
         }
-        Object::set($o->collection->_value->object[], '_value',
-                    self::build_record_object($record_repo_dom,
-                                              $raw_res[$unit_id],
-                                              reset($pids),
-                                              $rel_res,
-                                              $relation_units[$unit_id],
-                                              $rel_unit_pids,
-                                              $primary_pids[$unit_id],
-                                              $holdings_res[$unit_id],
-                                              $param));
+        if (empty($o->collection->_value->object)) {
+          Object::set($o->collection->_value->object[], '_value',
+                      self::build_record_object($record_repo_dom,
+                                                $raw_res[$unit_id],
+                                                reset($pids),
+                                                $rel_res,
+                                                $relation_units[$unit_id],
+                                                $rel_unit_pids,
+                                                $primary_pids[$unit_id],
+                                                $holdings_res[$unit_id],
+                                                $param));
+        }
         Object::set($collections[], '_value', $o);
         unset($o);
       }
