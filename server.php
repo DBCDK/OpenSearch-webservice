@@ -3184,7 +3184,13 @@ class OpenSearch extends webServiceServer {
   private function log_stat_search() {
     self::log_stat(array('query' => $this->user_param->query->_value,
                          'start' => $this->user_param->start->_value,
-                         'stepValue' => $this->user_param->stepValue->_value));
+                         'stepValue' => $this->user_param->stepValue->_value,
+                         'userDefinedRanking' => $this->user_param->userDefinedRanking->_value,
+                         'userDefinedBoost' => $this->user_param->userDefinedBoost->_value,
+                         'sort' => is_array($this->user_param->sort)
+                                     ? self::stringify_obj_array($this->user_param->sort)
+                                     : $this->user_param->sort->_value,
+                         'facets' => $this->user_param->facets>_value));
   }
 
   /** Log STAT line for getObject
@@ -3211,10 +3217,10 @@ class OpenSearch extends webServiceServer {
                                  'repoTotal' => $this->number_of_record_repo_calls + $this->number_of_record_repo_cached,
                                  'repoRecs' => $this->number_of_record_repo_calls,
                                  'repoCache' => $this->number_of_record_repo_cached,
+                                 'callback' => $this->user_param->callback->_value,
                                  'timings' => $this->watch->get_timers()), 
                             $extra));
   }
-
 
   /**
    * @param $arr
