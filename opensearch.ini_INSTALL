@@ -215,13 +215,19 @@ repository[@REPOSITORY_NAME@][handler_format][holding_block_join][q] = _query_:%
 ; Filtering on the collectionIdentifiers specified by the search profile
 ; Records in 870976-anmeld has to be more than 6 months old
 ; The search profile is kept in solr's filter cache, so the /DAY is needed to make it cachable
-repository[@REPOSITORY_NAME@][collection_query]['870976-anmeld'] = rec.createdDate:[* TO NOW-6MONTHS/DAY]
+;
+; OBSOLETE - bug 22229
+;
+; repository[@REPOSITORY_NAME@][collection_query]['870976-anmeld'] = rec.createdDate:[* TO NOW-6MONTHS/DAY]
 
 ; collection_alias
 ; Alias' for collections for filtering to work differently for records with more than one collectionIdentifier
 ; repository[my_repository][collection_alias]['the.collectionIdentifier.used.in.the.record.id'] = the.alias
 ; Sofar only one of these is needed
-repository[@REPOSITORY_NAME@][collection_alias]['870976-anmeld'] = 870976-allanmeld
+;
+; OBSOLETE - bug 22229
+;
+; repository[@REPOSITORY_NAME@][collection_alias]['870976-anmeld'] = 870976-allanmeld
 
 ; Filtering in marcxchange records kan be done by defining a filter mask
 ; with regular expression matching owner, fields and subfields
