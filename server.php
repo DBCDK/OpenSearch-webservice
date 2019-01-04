@@ -233,7 +233,10 @@ class OpenSearch extends webServiceServer {
     }
     $boost_q = self::boostUrl($param->userDefinedBoost);
 
-    $this->format = self::set_format($param->objectFormat, $this->config->get_value('open_format', 'setup'), $this->config->get_value('solr_format', 'setup'));
+    $this->format = self::set_format($param->objectFormat,
+                                     $this->config->get_value('open_format', 'setup'),
+                                     $this->config->get_value('open_format_force_namespace', 'setup'),
+                                     $this->config->get_value('solr_format', 'setup'));
 
     if ($unsupported) return $ret_error;
 
@@ -751,6 +754,7 @@ class OpenSearch extends webServiceServer {
     $this->agency_catalog_source = $this->agency . '-katalog';
     $this->format = self::set_format($param->objectFormat,
                                      $this->config->get_value('open_format', 'setup'),
+                                     $this->config->get_value('open_format_force_namespace', 'setup'),
                                      $this->config->get_value('solr_format', 'setup'));
     $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
                              $this->config->get_value('cache_port', 'setup'),
@@ -1073,10 +1077,11 @@ class OpenSearch extends webServiceServer {
    *
    * @param mixed $objectFormat
    * @param array $open_format
+   * @param array $force_namespace
    * @param array $solr_format
    * @return array
    */
-  private function set_format($objectFormat, $open_format, $solr_format) {
+  private function set_format($objectFormat, $open_format, $force_namespace, $solr_format) {
     if (is_array($objectFormat))
       $help = $objectFormat;
     elseif (empty($objectFormat->_value))
@@ -1085,7 +1090,11 @@ class OpenSearch extends webServiceServer {
       $help[] = $objectFormat;
     foreach ($help as $of) {
       if (isset($open_format[$of->_value])) {
-        $ret[$of->_value] = ['user_selected' => TRUE, 'is_open_format' => TRUE, 'format_name' => $open_format[$of->_value]['format'], 'uri' => $open_format[$of->_value]['uri']];
+        $ret[$of->_value] = ['user_selected' => TRUE,
+                             'is_open_format' => TRUE,
+                             'format_name' => $open_format[$of->_value]['format'],
+                             'uri' => $open_format[$of->_value]['uri'],
+                             'force_namespace' => $force_namespace[$of->_value]];
         $ret['found_open_format'] = TRUE;
       }
       elseif (isset($solr_format[$of->_value])) {
@@ -1484,7 +1493,12 @@ class OpenSearch extends webServiceServer {
           VerboseJson::log(TRACE, 'openFormat: ' . $format_arr['uri'] ? $format_arr['uri'] : $open_format_uri);
           $f_result = $this->curl->get($format_arr['uri'] ? $format_arr['uri'] : $open_format_uri);
           $this->curl->set_option(CURLOPT_POST, 0, 0);
-          $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['of'], FALSE);
+          if ($format_arr['force_namespace'] && $this->xmlns[$format_arr['force_namespace']]) {
+            $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns[$format_arr['force_namespace']]);
+          }
+          else {
+            $fr_obj = $this->objconvert->set_obj_namespace(unserialize($f_result), $this->xmlns['of'], FALSE);
+          }
           // need to restore correct namespace
           foreach ($f_obj->formatRequest->_value->originalData as $i => &$oD) {
             $oD->_namespace = $save_ns[$i];
@@ -1516,7 +1530,12 @@ class OpenSearch extends webServiceServer {
             $oD->_namespace = $this->xmlns['of'];
           }
           $f_result = $formatRecords->format($param->originalData, $param);
-          $fr_obj = $this->objconvert->set_obj_namespace($f_result, $this->xmlns['os'], FALSE);
+          if ($format_arr['force_namespace'] && $this->xmlns[$format_arr['force_namespace']]) {
+            $fr_obj = $this->objconvert->set_obj_namespace($f_result, $this->xmlns[$format_arr['force_namespace']]);
+          }
+          else {
+            $fr_obj = $this->objconvert->set_obj_namespace($f_result, $this->xmlns['os'], FALSE);
+          }
           // need to restore correct namespace
           foreach ($param->originalData as $i => &$oD) {
             $oD->_namespace = $save_ns[$i];

@@ -372,6 +372,16 @@ open_format['bob_detail']['uri'] = @NETPUNKT_OPEN_FORMAT@
 open_format['netpunkt_dm2']['format'] = netpunkt_dm2
 open_format['netpunkt_dm2']['uri'] = @NETPUNKT_OPEN_FORMAT@
 
+; set namespace for these formats
+; open_format_force_namespace[open_format_name] = namespace_prefix_from_xmlns
+open_format_force_namespace[bibliotekdkWorkDisplay] = of
+open_format_force_namespace[briefWorkDisplay] = of
+open_format_force_namespace[refWorks] = of
+open_format_force_namespace[ris] = of
+open_format_force_namespace[bob_detail] = of
+open_format_force_namespace[netpunkt_brief] = of
+open_format_force_namespace[netpunkt_standard] = of
+
 ; --------------
 ; formats supported by solr-indexes. Comma separated list of solr tags
 ; fedora.identifier will take the id of the manifestation from the fedora object
