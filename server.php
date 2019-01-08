@@ -65,6 +65,7 @@ class OpenSearch extends webServiceServer {
   protected $feature_sw = [];
   protected $user_param;
   protected $debug_query = FALSE;
+  protected $corepo_timers = [];  
 
 
   /**
@@ -2283,6 +2284,7 @@ class OpenSearch extends webServiceServer {
       $this->watch->stop('record_repo');
       $curl_err = $curl->get_status();
       $curl->close();
+      $this->corepo_timers[] = (object) array('total' => $curl_err['total_time'], 'namelookup' => $curl_err['namelookup_time'], 'connect' => $curl_err['connect_time'], 'pretransfer' => $curl_err['pretransfer_time']);
       if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
         $rec = '';
         if ($mandatory) {
@@ -2340,6 +2342,8 @@ class OpenSearch extends webServiceServer {
       }
       foreach ($recs as $no => $rec) {
         if (isset($res_map[$no])) {
+          $s = &$status[$no];
+          $this->corepo_timers[] = (object) array('http' => $s['http_code'], 'total' => $s['total_time'], 'namelookup' => $s['namelookup_time'], 'connect' => $s['connect_time'], 'pretransfer' => $s['pretransfer_time']);
           if (!strpos($urls[$res_map[$no]], 'RELS-EXT') && (empty($rec) || $status[$no]['http_code'] > 299)) {
             VerboseJson::log(ERROR, 'record_repo http-error: ' . $status[$no]['http_code'] . ' from: ' . $urls[$res_map[$no]] .
                               ' record ' . substr(preg_replace('/\s+/', ' ', $rec), 0, 200) . '...');
@@ -3209,7 +3213,8 @@ class OpenSearch extends webServiceServer {
                          'sort' => is_array($this->user_param->sort)
                                      ? self::stringify_obj_array($this->user_param->sort)
                                      : $this->user_param->sort->_value,
-                         'facets' => $this->user_param->facets>_value));
+                         'facets' => $this->user_param->facets>_value,
+                         'corepo' => $this->corepo_timers));
   }
 
   /** Log STAT line for getObject
