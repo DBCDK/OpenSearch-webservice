@@ -648,8 +648,8 @@ sort[solr_numberInSeries_descending] = sort.numberInSeries desc
 sort[solr_dateFirstEdition_ascending] = map(sort.dateFirstEdition,0,0,9999) asc
 sort[solr_dateFirstEdition_descending] = sort.dateFirstEdition desc
 
-sort[solr_001d_ascending] = map(sort.001d,0,0,99991231) asc
-sort[solr_001d_descending] = map(sort.001d,20500101,99999999,0) desc
+sort[solr_001d_ascending] = sort.001d asc
+sort[solr_001d_descending] = sort.001d desc
 sort[solr_marc_001a001b_ascending] = marc.001a001b asc
 
 ; sortgroups using sorts - allows you to create "grouped"-sorts, combining existing sorts
