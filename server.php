@@ -1845,7 +1845,7 @@ class OpenSearch extends webServiceServer {
           if (++$u_err < 10) {
             VerboseJson::log(FATAL, 'Missing ' . $fld . ' in solr_result. Record no: ' . (count($search_ids) + $u_err));
           }
-          break 2;
+          break 1;
         }
       }
       $search_ids[] = $ids;
