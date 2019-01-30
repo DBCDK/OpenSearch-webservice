@@ -528,7 +528,7 @@ class OpenSearch extends webServiceServer {
     }
 
     // find and read best record in unit's. Fetch addi records if relations is part of the request
-    list($raw_res, $primary_pids, $unit_info, $relation_units) = self::read_records_and_extract_data($work_ids, $param);
+    list($raw_res, $primary_pids, $unit_info, $relation_units) = self::read_records_and_extract_data($work_ids, $param, 'UNIT');
 
     // modify order of pids to reflect show priority, as returned from corepo
     foreach ($unit_info as $info_uid => $info) {
@@ -547,7 +547,7 @@ class OpenSearch extends webServiceServer {
     list($rel_res, $rel_unit_pids) = self::fetch_valid_relation_records($relation_units);
 
     // collect holdings if needed or directly requested
-    $holdings_res = self::collect_holdings($work_ids, $param->includeHoldingsCount, $use_sort_complex_key, $unit_sort_keys);
+    $holdings_res = self::collect_holdings($work_ids, $param->includeHoldingsCount, 'UNIT', $use_sort_complex_key, $unit_sort_keys);
 
     $record_repo_dom = new DomDocument();
     $record_repo_dom->preserveWhiteSpace = FALSE;
@@ -888,14 +888,14 @@ class OpenSearch extends webServiceServer {
       }
     }
 
-    // find and read best record in unit's. Fetch addi records if relations is part of the request
-    list($raw_res, $primary_pids, $unit_info, $relation_units) = self::read_records_and_extract_data($work_ids, $param);
+    // read requested record in unit's. Fetch addi records if relations is part of the request
+    list($raw_res, $primary_pids, $unit_info, $relation_units) = self::read_records_and_extract_data($work_ids, $param, 'PID');
 
     // If relations is asked for, build a search to find available records using "full" search profile
     list($rel_res, $rel_unit_pids) = self::fetch_valid_relation_records($relation_units);
 
     // collect holdings if requested
-    $holdings_res = self::collect_holdings($work_ids, $param->includeHoldingsCount);
+    $holdings_res = self::collect_holdings($work_ids, $param->includeHoldingsCount, 'PID');
 
     if (DEBUG_ON) {
       echo PHP_EOL . 'fpids:' . PHP_EOL; var_dump($fpids);
@@ -912,10 +912,11 @@ class OpenSearch extends webServiceServer {
     $missing_record = $this->config->get_value('missing_record_getObject', 'setup');
     foreach ($work_ids as $rec_no => &$work) {
       foreach ($work as $unit_id => $pids) {
+        $key = reset($pids);
         Object::set_value($o->collection->_value, 'resultPosition', $rec_no + 1);
         Object::set_value($o->collection->_value, 'numberOfObjects', 1);
 
-        if (@ !$record_repo_dom->loadXML($raw_res[$unit_id])) {
+        if (@ !$record_repo_dom->loadXML($raw_res[$key])) {
           VerboseJson::log(FATAL, 'Cannot load recid ' . reset($pids) . ' into DomXml');
           if ($missing_record) {
             $record_repo_dom->loadXML(sprintf($missing_record, reset($pids)));
@@ -928,13 +929,13 @@ class OpenSearch extends webServiceServer {
         if (empty($o->collection->_value->object)) {
           Object::set($o->collection->_value->object[], '_value',
                       self::build_record_object($record_repo_dom,
-                                                $raw_res[$unit_id],
+                                                $raw_res[$key],
                                                 reset($pids),
                                                 $rel_res,
-                                                $relation_units[$unit_id],
+                                                $relation_units[$key],
                                                 $rel_unit_pids,
-                                                $primary_pids[$unit_id],
-                                                $holdings_res[$unit_id],
+                                                $primary_pids[$key],
+                                                $holdings_res[$key],
                                                 $param));
         }
         Object::set($collections[], '_value', $o);
@@ -2203,16 +2204,18 @@ class OpenSearch extends webServiceServer {
   /**
    * @param $work_ids
    * @param $param
+   * @param $collect_type
    * @return array
    */
-  private function read_records_and_extract_data($work_ids, $param) {
+  private function read_records_and_extract_data($work_ids, $param, $collect_type) {
     $raw_urls = [];
     foreach ($work_ids as $work) {
       foreach ($work as $unit_id => $pids) {
         if ($unit_id <> 'NotFound') {
-          $raw_urls[$unit_id] = self::corepo_get_url($unit_id, $pids);
+          $key = $collect_type == 'PID' ? reset($pids) : $unit_id;
+          $raw_urls[$key] = self::corepo_get_url($unit_id, $pids);
           if (in_array($param->relationData->_value, ['type', 'uri', 'full'])) {
-            $raw_urls[$unit_id . '-addi'] = self::record_repo_url('fedora_get_rels_addi', $unit_id);
+            $raw_urls[$key . '-addi'] = self::record_repo_url('fedora_get_rels_addi', $unit_id);
           }
         }
       }
@@ -2222,16 +2225,16 @@ class OpenSearch extends webServiceServer {
     $relation_units = [];
     $primary_pids = [];
     $unit_info = [];
-    foreach ($raw_res as $unit_key => $r_res) {
-      if (strpos($unit_key, '-addi')) {
-        list($unit_id) = explode('-', $unit_key);
-        $relation_units[$unit_id] = self::parse_addi_for_units_in_relations($unit_key, $r_res);
+    foreach ($raw_res as $record_key => $record) {
+      if (strpos($record_key, '-addi')) {
+        $unit_id = str_replace('-addi', '', $record_key);
+        $relation_units[$unit_id] = self::parse_addi_for_units_in_relations($record_key, $record);
       }
       else {
-        $help = json_decode($r_res);
-        $raw_res[$unit_key] = $help->dataStream;
-        $primary_pids[$unit_key] = $help->primaryPid;
-        $unit_info[$unit_key] = [$help->pids, $help->pids[0], $help->primaryPid];
+        $help = json_decode($record);
+        $raw_res[$record_key] = $help->dataStream;
+        $primary_pids[$record_key] = $help->primaryPid;
+        $unit_info[$record_key] = [$help->pids, $help->pids[0], $help->primaryPid];
       }
     }
     return array($raw_res, $primary_pids, $unit_info, $relation_units);
@@ -2671,17 +2674,19 @@ class OpenSearch extends webServiceServer {
    * @param $work_ids
    * @param $include_holdings
    * @param $use_sort_complex_key
+   * @param $collect_type
    * @param $unit_sort_keys
    * @return array
    */
-  private function collect_holdings($work_ids, $include_holdings, $use_sort_complex_key = FALSE, $unit_sort_keys = array()) {
+  private function collect_holdings($work_ids, $include_holdings, $collect_type, $use_sort_complex_key = FALSE, $unit_sort_keys = array()) {
     $hold_ws_url = $this->config->get_value('holdings_db', 'setup');
     $holdings_urls = [];
     foreach ($work_ids as &$work) {
       foreach ($work as $unit_id => $pids) {
         if ((isset($include_holdings) && self::xs_boolean($include_holdings->_value)) ||
           ($use_sort_complex_key && (strpos($unit_sort_keys[$unit_id], HOLDINGS) !== FALSE))) {
-          $holdings_urls[$unit_id] = sprintf($hold_ws_url, reset($pids));
+          $key = $collect_type == 'PID' ? reset($pids) : $unit_id;
+          $holdings_urls[$key] = sprintf($hold_ws_url, reset($pids));
         }
       }
     }
