@@ -40,7 +40,10 @@ while (($count++ < ($read_records + $skip_records)) && !feof($fr)) {
     }
   }
   else {
-    echo 'ERROR - cannot recognize line: ' . $line . PHP_EOL;
+    if (feof($fr)) 
+      echo 'Reached the end of the input file' . PHP_EOL;
+    else
+      echo 'ERROR - cannot recognize line: ' . $line . PHP_EOL;
     continue;
   }
   foreach ($searcher as $idx => $s) {

@@ -1,5 +1,7 @@
 <?php
 
+echo '<h1>Converting xml to json using <a href="https://badgerfish.ning.com/">Badgerfish</a></h1>';
+
 $xml = '<result>
   <hitCount>20</hitCount>
   <collecion>

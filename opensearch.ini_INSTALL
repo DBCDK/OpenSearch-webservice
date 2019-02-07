@@ -124,8 +124,9 @@ all_rawrepo_agency[] = 010100
 
 ; --------------
 ; agencies fetching holdings to include in sort.complexKey used sort manifestations within work
-; Normally, only bibliotek.dk (190101) should do this
+; Normally, only bibliotek.dk and netpunkt (190101, 190102) should do this
 use_sort_complex_key[] = 190101
+use_sort_complex_key[] = 190102
 
 ; --------------
 ; agency to collection identifer for getObject operation using agencyAndLocalIdentifier to identify record(s)
@@ -885,7 +886,7 @@ showinfo[] = <pre>
 showinfo[] = version:            __version.setup__
 showinfo[] = logfile:            __logfile.setup__
 showinfo[] = verbose:            __verbose__
-showinfo[] = agency:             __open_agency__
+showinfo[] = agency:             __agency__
 showinfo[] = holdings:           __holdings_db__
 showinfo[] = aaa_credentials:    __aaa_credentials__
 showinfo[] = aaa_fors_rights:    __aaa_fors_rights__
