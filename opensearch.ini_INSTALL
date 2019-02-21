@@ -283,7 +283,7 @@ repository[@RAW_RECORD_REPOSITORY_NAME@][filter][870970][marcxchange]['^...$'] =
 repository[@RAW_RECORD_REPOSITORY_NAME@][sort][exclude][] = ALL
 repository[@RAW_RECORD_REPOSITORY_NAME@][sort][include][] = solr_001d_ascending
 repository[@RAW_RECORD_REPOSITORY_NAME@][sort][include][] = solr_001d_descending
-repository[@RAW_RECORD_REPOSITORY_NAME@][sort][include][] = solr_marc_001a001b_ascending
+repository[@RAW_RECORD_REPOSITORY_NAME@][sort][include][] = solr_marc_001a001b_descending
 repository[@RAW_RECORD_REPOSITORY_NAME@][sort][include][] = date_created_ascending
 repository[@RAW_RECORD_REPOSITORY_NAME@][sort][include][] = date_created_descending
 
