@@ -191,6 +191,7 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 repository[@REPOSITORY_NAME@][sort][exclude][] = solr_001d_ascending
 repository[@REPOSITORY_NAME@][sort][exclude][] = solr_001d_descending
 repository[@REPOSITORY_NAME@][sort][exclude][] = solr_marc_001a001b_ascending
+repository[@REPOSITORY_NAME@][sort][exclude][] = solr_marc_001a001b_descending
 repository[@REPOSITORY_NAME@][sort][exclude][] = date_created_ascending
 repository[@REPOSITORY_NAME@][sort][exclude][] = date_created_descending
 
@@ -652,6 +653,7 @@ sort[solr_dateFirstEdition_descending] = sort.dateFirstEdition desc
 sort[solr_001d_ascending] = sort.001d asc
 sort[solr_001d_descending] = sort.001d desc
 sort[solr_marc_001a001b_ascending] = marc.001a001b asc
+sort[solr_marc_001a001b_descending] = marc.001a001b desc
 
 ; sortgroups using sorts - allows you to create "grouped"-sorts, combining existing sorts
 ; like:
@@ -688,7 +690,7 @@ sort[date_descending][] = solr_article_date_descending
 sort[date_created_ascending][] = solr_001d_ascending
 sort[date_created_ascending][] = solr_marc_001a001b_ascending
 sort[date_created_descending][] = solr_001d_descending
-sort[date_created_descending][] = solr_marc_001a001b_ascending
+sort[date_created_descending][] = solr_marc_001a001b_descending
 
 sort[record_owner_ascending][] = solr_record_owner_ascending
 sort[record_owner_descending][] = solr_record_owner_descending
