@@ -651,6 +651,19 @@ sort[solr_numberInSeries_descending] = sort.numberInSeries desc
 sort[solr_dateFirstEdition_ascending] = map(sort.dateFirstEdition,0,0,9999) asc
 sort[solr_dateFirstEdition_descending] = sort.dateFirstEdition desc
 
+sort[solr_reviewedTitle_ascending] = sort.reviewedTitle asc
+sort[solr_reviewedTitle_descending] = sort.reviewedTitle desc
+sort[solr_reviewedCreator_ascending] = sort.reviewedCreator asc
+sort[solr_reviewedCreator_descending] = sort.reviewedCreator desc
+sort[solr_reviewedDate_ascending] = sort.reviewedDate asc
+sort[solr_reviewedDate_descending] = sort.reviewedDate desc
+sort[solr_reviewedCreator_ascending] = sort.reviewedCreator asc
+sort[solr_reviewedCreator_descending] = sort.reviewedCreator desc
+sort[solr_reviewedTitle_ascending] = sort.reviewedTitle asc
+sort[solr_reviewedTitle_descending] = sort.reviewedTitle desc
+sort[solr_reviewedWorkType_ascending] = sort.reviewedWorkType asc
+sort[solr_reviewedWorkType_descending] = sort.reviewedWorkType desc
+
 sort[solr_001d_ascending] = sort.001d asc
 sort[solr_001d_descending] = sort.001d desc
 sort[solr_marc_001a001b_ascending] = marc.001a001b asc
@@ -744,6 +757,25 @@ sort[dateFirstEdition_ascending][] = solr_dateFirstEdition_ascending
 sort[dateFirstEdition_ascending][] = solr_docid_ascending
 sort[dateFirstEdition_descending][] = solr_dateFirstEdition_descending
 sort[dateFirstEdition_descending][] = solr_docid_ascending
+
+sort[reviewed_title_ascending][] = solr_reviewedTitle_ascending
+sort[reviewed_title_ascending][] = solr_reviewedDate_ascending
+sort[reviewed_title_ascending][] = solr_reviewedCreator_ascending
+sort[reviewed_title_descending][] = solr_reviewedTitle_descending
+sort[reviewed_title_descending][] = solr_reviewedDate_descending
+sort[reviewed_title_descending][] = solr_reviewedCreator_descending
+
+sort[reviewed_creator_ascending][] = solr_reviewedCreator_ascending
+sort[reviewed_creator_ascending][] = solr_reviewedDate_ascending
+sort[reviewed_creator_ascending][] = solr_reviewedTitle_ascending
+sort[reviewed_creator_descending][] = solr_reviewedCreator_descending
+sort[reviewed_creator_descending][] = solr_reviewedDate_descending
+sort[reviewed_creator_descending][] = solr_reviewedTitle_descending
+
+sort[reviewed_date_ascending][] = solr_reviewedDate_ascending
+sort[reviewed_date_ascending][] = solr_reviewedWorkType_ascending
+sort[reviewed_date_descending][] = solr_reviewedDate_descending
+sort[reviewed_date_descending][] = solr_reviewedWorkType_descending
 
 ; --------------
 ; filter for rank_frequency
