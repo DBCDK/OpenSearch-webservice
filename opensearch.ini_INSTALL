@@ -395,8 +395,8 @@ solr_format[score][format] = score
 ; profile_map[agency] = 123456
 ; profile_map[prefix] = qwerty
 
-profile_map[agency] = 190102
-profile_map[prefix] = danbib
+;profile_map[agency] = 190102
+;profile_map[prefix] = danbib
 
 ; --------------
 ; default search_profile setting
