@@ -191,8 +191,10 @@ repository[@REPOSITORY_NAME@][fedora] = @FEDORA@
 repository[@REPOSITORY_NAME@][sort][exclude][] = solr_001d_ascending
 repository[@REPOSITORY_NAME@][sort][exclude][] = solr_001d_descending
 repository[@REPOSITORY_NAME@][sort][exclude][] = solr_marc_001a001b_ascending
+repository[@REPOSITORY_NAME@][sort][exclude][] = solr_marc_001a001b_descending
 repository[@REPOSITORY_NAME@][sort][exclude][] = date_created_ascending
 repository[@REPOSITORY_NAME@][sort][exclude][] = date_created_descending
+repository[@REPOSITORY_NAME@][sort][exclude][] = solr_docid_ascending
 
 ; Querying holdings using the join handler
 ; to "filter" searches using holding information registered in a separate solr index
@@ -649,9 +651,24 @@ sort[solr_numberInSeries_descending] = sort.numberInSeries desc
 sort[solr_dateFirstEdition_ascending] = map(sort.dateFirstEdition,0,0,9999) asc
 sort[solr_dateFirstEdition_descending] = sort.dateFirstEdition desc
 
+sort[solr_reviewedTitle_ascending] = sort.reviewedTitle asc
+sort[solr_reviewedTitle_descending] = sort.reviewedTitle desc
+sort[solr_reviewedCreator_ascending] = sort.reviewedCreator asc
+sort[solr_reviewedCreator_descending] = sort.reviewedCreator desc
+sort[solr_reviewedDate_ascending] = sort.reviewedDate asc
+sort[solr_reviewedDate_descending] = sort.reviewedDate desc
+sort[solr_reviewedCreator_ascending] = sort.reviewedCreator asc
+sort[solr_reviewedCreator_descending] = sort.reviewedCreator desc
+sort[solr_reviewedTitle_ascending] = sort.reviewedTitle asc
+sort[solr_reviewedTitle_descending] = sort.reviewedTitle desc
+sort[solr_reviewedWorkType_ascending] = sort.reviewedWorkType asc
+sort[solr_reviewedWorkType_descending] = sort.reviewedWorkType desc
+
 sort[solr_001d_ascending] = sort.001d asc
 sort[solr_001d_descending] = sort.001d desc
 sort[solr_marc_001a001b_ascending] = marc.001a001b asc
+sort[solr_marc_001a001b_descending] = marc.001a001b desc
+sort[solr_docid_ascending] = _docid_ asc
 
 ; sortgroups using sorts - allows you to create "grouped"-sorts, combining existing sorts
 ; like:
@@ -662,58 +679,103 @@ sort[solr_marc_001a001b_ascending] = marc.001a001b asc
 ; necessity to make a group with only one line
 ;
 sort[acquisitionDate_ascending][] = solr_acquisitionDate_ascending
+sort[acquisitionDate_ascending][] = solr_docid_ascending
 sort[acquisitionDate_descending][] = solr_acquisitionDate_descending
+sort[acquisitionDate_descending][] = solr_docid_ascending
 sort[localAcquisitionDate_ascending][] = solr_localAcquisitionDate_ascending
+sort[localAcquisitionDate_ascending][] = solr_docid_ascending
 sort[localAcquisitionDate_descending][] = solr_localAcquisitionDate_descending
+sort[localAcquisitionDate_descending][] = solr_docid_ascending
 
 sort[article_date_ascending][] = solr_article_date_ascending
+sort[article_date_ascending][] = solr_docid_ascending
 sort[article_date_descending][] = solr_article_date_descending
+sort[article_date_descending][] = solr_docid_ascending
 
 sort[creator_ascending][] = solr_creator_ascending
 sort[creator_ascending][] = solr_date_descending
 sort[creator_ascending][] = solr_title_ascending
+sort[creator_ascending][] = solr_docid_ascending
 sort[creator_descending][] = solr_creator_descending
 sort[creator_descending][] = solr_date_descending
 sort[creator_descending][] = solr_title_ascending
+sort[creator_descending][] = solr_docid_ascending
 
 sort[date_ascending][] = solr_date_ascending
 sort[date_ascending][] = solr_work_type_ascending
 sort[date_ascending][] = solr_record_owner_ascending
 sort[date_ascending][] = solr_article_date_ascending
+sort[date_ascending][] = solr_docid_ascending
 sort[date_descending][] = solr_date_descending
 sort[date_descending][] = solr_work_type_ascending
 sort[date_descending][] = solr_record_owner_ascending
 sort[date_descending][] = solr_article_date_descending
+sort[date_descending][] = solr_docid_ascending
 
 sort[date_created_ascending][] = solr_001d_ascending
 sort[date_created_ascending][] = solr_marc_001a001b_ascending
+sort[date_created_ascending][] = solr_docid_ascending
 sort[date_created_descending][] = solr_001d_descending
-sort[date_created_descending][] = solr_marc_001a001b_ascending
+sort[date_created_descending][] = solr_marc_001a001b_descending
+sort[date_created_descending][] = solr_docid_ascending
 
 sort[record_owner_ascending][] = solr_record_owner_ascending
+sort[record_owner_ascending][] = solr_docid_ascending
 sort[record_owner_descending][] = solr_record_owner_descending
+sort[record_owner_descending][] = solr_docid_ascending
 
 sort[title_ascending][] = solr_title_ascending
 sort[title_ascending][] = solr_date_descending
 sort[title_ascending][] = solr_creator_ascending
+sort[title_ascending][] = solr_docid_ascending
 sort[title_descending][] = solr_title_descending
 sort[title_descending][] = solr_date_descending
 sort[title_descending][] = solr_creator_ascending
+sort[title_descending][] = solr_docid_ascending
 
 sort[work_type_ascending][] = solr_work_type_ascending
+sort[work_type_ascending][] = solr_docid_ascending
 sort[work_type_descending][] = solr_work_type_descending
+sort[work_type_descending][] = solr_docid_ascending
 
 sort[genre_category_ascending][] = solr_genre_category_ascending
+sort[genre_category_ascending][] = solr_docid_ascending
 sort[genre_category_descending][] = solr_genre_category_descending
+sort[genre_category_descending][] = solr_docid_ascending
 
 sort[dk5_ascending][] = solr_dk5_ascending
+sort[dk5_ascending][] = solr_docid_ascending
 sort[dk5_descending][] = solr_dk5_descending
+sort[dk5_descending][] = solr_docid_ascending
 
 sort[numberInSeries_ascending][] = solr_numberInSeries_ascending
+sort[numberInSeries_ascending][] = solr_docid_ascending
 sort[numberInSeries_descending][] = solr_numberInSeries_descending
+sort[numberInSeries_descending][] = solr_docid_ascending
 
 sort[dateFirstEdition_ascending][] = solr_dateFirstEdition_ascending
+sort[dateFirstEdition_ascending][] = solr_docid_ascending
 sort[dateFirstEdition_descending][] = solr_dateFirstEdition_descending
+sort[dateFirstEdition_descending][] = solr_docid_ascending
+
+sort[reviewed_title_ascending][] = solr_reviewedTitle_ascending
+sort[reviewed_title_ascending][] = solr_reviewedDate_ascending
+sort[reviewed_title_ascending][] = solr_reviewedCreator_ascending
+sort[reviewed_title_descending][] = solr_reviewedTitle_descending
+sort[reviewed_title_descending][] = solr_reviewedDate_descending
+sort[reviewed_title_descending][] = solr_reviewedCreator_descending
+
+sort[reviewed_creator_ascending][] = solr_reviewedCreator_ascending
+sort[reviewed_creator_ascending][] = solr_reviewedDate_ascending
+sort[reviewed_creator_ascending][] = solr_reviewedTitle_ascending
+sort[reviewed_creator_descending][] = solr_reviewedCreator_descending
+sort[reviewed_creator_descending][] = solr_reviewedDate_descending
+sort[reviewed_creator_descending][] = solr_reviewedTitle_descending
+
+sort[reviewed_date_ascending][] = solr_reviewedDate_ascending
+sort[reviewed_date_ascending][] = solr_reviewedWorkType_ascending
+sort[reviewed_date_descending][] = solr_reviewedDate_descending
+sort[reviewed_date_descending][] = solr_reviewedWorkType_descending
 
 ; --------------
 ; filter for rank_frequency

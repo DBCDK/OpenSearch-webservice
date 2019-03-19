@@ -16,7 +16,7 @@ pipeline {
                 // Fail Early..
                 script {
                     if (!env.BRANCH_NAME) {
-                        currentBuild.rawBuild.result = Result.ABORTED
+                        setScriptStatus(Result.ABORTED)
                         throw new hudson.AbortException('Job Started from non MultiBranch Build')
                     } else {
                         println(" Building BRANCH_NAME == ${BRANCH_NAME}")
@@ -65,7 +65,7 @@ pipeline {
             steps {
                 script {
                     def changeLogSets = currentBuild.changeSets
-                    def message = ""
+                    def message = "${env.JOB_NAME}: build #${env.BUILD_NUMBER}\n\n"
                     for (int i = 0; i < changeLogSets.size(); i++) {
                         message += "ChangeSet ${i}\n\n"
                         def entries = changeLogSets[i].items
@@ -86,4 +86,9 @@ pipeline {
             }
         }
     }
+}
+
+@NonCPS
+def setScriptStatus(status) {
+    currentBuild.rawBuild.result = status
 }
