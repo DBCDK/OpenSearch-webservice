@@ -85,6 +85,7 @@ class OpenSearch extends webServiceServer {
     define('FIELD_COLLECTION_INDEX', 'rec.collectionIdentifier');
     define('RR_MARC_001_A', 'marc.001a');
     define('RR_MARC_001_B', 'marc.001b');
+    define('RR_MARC_001_AB', 'marc.001a001b');
 
     define('HOLDINGS_AGENCY_ID_FIELD', self::value_or_default($this->config->get_value('field_holdings_agency_id', 'setup'), 'rec.holdingsAgencyId'));
     define('HOLDINGS', ' holdings ');
@@ -217,8 +218,22 @@ class OpenSearch extends webServiceServer {
 
     $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
+    $this->format = self::set_format($param->objectFormat,
+                                     $this->config->get_value('open_format', 'setup'),
+                                     $this->config->get_value('open_format_force_namespace', 'setup'),
+                                     $this->config->get_value('solr_format', 'setup'));
+
     $use_work_collection = ($param->collectionType->_value <> 'manifestation');
-    if ($use_work_collection) {
+    if ($this->repository['rawrepo']) {
+      $fetch_raw_records = (!$this->format['found_solr_format'] || $this->format['marcxchange']['user_selected']);
+      if ($fetch_raw_records) {
+        define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
+      }
+      else {
+        define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_rawrepo', 'setup'), 1000));
+      }
+    }
+    elseif ($use_work_collection) {
       define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_collections', 'setup'), 50));
     }
     else {
@@ -233,11 +248,6 @@ class OpenSearch extends webServiceServer {
       }
     }
     $boost_q = self::boostUrl($param->userDefinedBoost);
-
-    $this->format = self::set_format($param->objectFormat,
-                                     $this->config->get_value('open_format', 'setup'),
-                                     $this->config->get_value('open_format_force_namespace', 'setup'),
-                                     $this->config->get_value('solr_format', 'setup'));
 
     if ($unsupported) return $ret_error;
 
@@ -288,13 +298,18 @@ class OpenSearch extends webServiceServer {
         return $ret_error;
       }
       $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), []);
-      $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $solr_arr['response'], in_array($this->agency, $s11_agency));
+      if ($fetch_raw_records) {
+        $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $solr_arr['response'], in_array($this->agency, $s11_agency));
+      }
       $this->watch->stop('rawrepo');
       if (is_scalar($collections)) {
         $error = $collections;
         return $ret_error;
       }
       $result = &$ret->searchResponse->_value->result->_value;
+      if (!empty($this->format['found_solr_format'])) {
+        self::collections_from_solr($collections, $solr_arr['response']);
+      }
       Object::set_value($result, 'hitCount', self::get_num_found($solr_arr));
       Object::set_value($result, 'collectionCount', count($collections));
       Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
@@ -765,7 +780,18 @@ class OpenSearch extends webServiceServer {
     $lpids = self::as_array($param->localIdentifier);
     $alpids = self::as_array($param->agencyAndLocalIdentifier);
 
-    define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
+    if ($this->repository['rawrepo']) {
+      $fetch_raw_records = (!$this->format['found_solr_format'] || $this->format['marcxchange']['user_selected']);
+      if ($fetch_raw_records) {
+        define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
+      }
+      else {
+        define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_rawrepo', 'setup'), 1000));
+      }
+    }
+    else {
+      define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
+    }
     if (MAX_STEP_VALUE <= count($fpids) + count($lpids) + count($alpids)) {
       $error = 'getObject can fetch up to ' . MAX_STEP_VALUE . ' records. ';
       return $ret_error;
@@ -797,6 +823,7 @@ class OpenSearch extends webServiceServer {
         unset($fpid);
       }
     }
+    $fpids = self::handle_sequencing($fpids);
     if ($this->repository['rawrepo']) {
       $id_array = array();
       foreach ($fpids as $fpid) {
@@ -807,16 +834,21 @@ class OpenSearch extends webServiceServer {
           || ($owner == '870970')
           || in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), []))
         ) {
-          $docs['docs'][] = [RR_MARC_001_A => $id, RR_MARC_001_B => $owner];
+          $docs['docs'][] = [RR_MARC_001_A => $id, RR_MARC_001_B => $owner, RR_MARC_001_AB => $id . ':' . $owner];
         }
       }
       $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), []);
-      $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $docs, in_array($this->agency, $s11_agency));
+      if ($fetch_raw_records) {
+        $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $docs, in_array($this->agency, $s11_agency));
+      }
       if (is_scalar($collections)) {
         $error = $collections;
         return $ret_error;
       }
       $result = &$ret->searchResponse->_value->result->_value;
+      if (!empty($this->format['found_solr_format'])) {
+        self::collections_from_solr($collections, $docs);
+      }
       Object::set_value($result, 'hitCount', count($collections));
       Object::set_value($result, 'collectionCount', count($collections));
       Object::set_value($result, 'more', 'false');
@@ -834,7 +866,6 @@ class OpenSearch extends webServiceServer {
       return $ret;
 
     }
-    $fpids = self::handle_sequencing($fpids);
     foreach ($fpids as $fpid) {
       $id_array[] = $fpid->_value;
       list($owner_collection, $id) = explode(':', $fpid->_value);
@@ -1396,6 +1427,35 @@ class OpenSearch extends webServiceServer {
    * @param array $collections - the structure is modified
    * @param array $solr
    */
+  private function collections_from_solr(&$collections, $solr) {
+    $solr_display_ns = $this->xmlns['ds'];
+    foreach ($solr['docs'] as $idx => $solr_doc) {
+      $pos = $solr['start'] + $idx + 1;
+      if (empty($collections[$pos])) {
+        Object::set_value($collection, 'resultPosition', $pos);
+        Object::set_value($collection, 'numberOfObjects', '1');
+        Object::set_value($collections[$pos]->_value, 'collection', $collection);
+        unset($collection);
+      }
+      foreach ($this->format as $format_name => $format_arr) {
+        if ($format_arr['is_solr_format']) {
+          $format_tags = explode(',', $format_arr['format_name']);
+          $mani = self::collect_solr_tags($format_tags, $solr_doc);
+          Object::set($formattedCollection, $format_name, $mani);
+          unset($mani);
+        }
+      }
+      Object::set_value($collections[$pos]->_value, 'formattedCollection', $formattedCollection);
+      unset($formattedCollection);
+    }
+    return;
+  }
+
+  /** \brief Pick tags from solr result and create format
+   *
+   * @param array $collections - the structure is modified
+   * @param array $solr
+   */
   private function format_solr(&$collections, $solr) {
     //var_dump($collections); var_dump($solr); die();
     $solr_display_ns = $this->xmlns['ds'];
@@ -1409,41 +1469,7 @@ class OpenSearch extends webServiceServer {
             $pid = $obj->_value->identifier->_value;
             $best_idx = $this->find_best_solr_rec($solr[0]['response']['docs'], FIELD_REC_ID, $pid);
             $solr_doc = &$solr[0]['response']['docs'][$best_idx];
-            foreach ($format_tags as $format_tag) {
-              if ($solr_doc[$format_tag] || $format_tag == 'fedora.identifier') {
-                if (strpos($format_tag, '.')) {
-                  list($tag_NS, $tag_value) = explode('.', $format_tag);
-                }
-                else {
-                  $tag_value = $format_tag;
-                }
-                if ($format_tag == 'fedora.identifier') {
-                  Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
-                  Object::set_value($mani->_value, $tag_value, $pid);
-                }
-                else {
-                  if (is_array($solr_doc[$format_tag])) {
-                    if ($this->feature_sw[$format_tag] == 'array') {   // more than one for this
-                      foreach ($solr_doc[$format_tag] as $solr_tag) {
-                        $help = new stdClass();
-                        $help->_namespace = $solr_display_ns;
-                        $help->_value = self::normalize_chars($solr_tag);
-                        $mani->_value->{$tag_value}[] = $help;
-                        unset($help);
-                      }
-                    }
-                    else {
-                      Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
-                      Object::set_value($mani->_value, $tag_value, self::normalize_chars($solr_doc[$format_tag][0]));
-                    }
-                  }
-                  else {
-                    Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
-                    Object::set_value($mani->_value, $tag_value, self::normalize_chars($solr_doc[$format_tag]));
-                  }
-                }
-              }
-            }
+            $mani = self::collect_solr_tags($format_tags, $solr_doc);
             if ($mani) {   // should contain data, but for some odd reason it can be empty. Some bug in the solr-indexes?
               $mani->_namespace = $solr_display_ns;
               $manifestation->manifestation[$o_key] = $mani;
@@ -1462,6 +1488,51 @@ class OpenSearch extends webServiceServer {
       }
     }
     $this->watch->stop('format_solr');
+  }
+
+  /** \brief Pick tags from solr result and create format
+   *
+   * @param array $format_tags - tags to collect from the solr result
+   * @param array $solr_doc - the solr result
+   */
+  private function collect_solr_tags($format_tags, $solr_doc) {
+    foreach ($format_tags as $format_tag) {
+      if ($solr_doc[$format_tag] || $format_tag == 'fedora.identifier') {
+        if (strpos($format_tag, '.')) {
+          list($tag_NS, $tag_value) = explode('.', $format_tag);
+          if (is_numeric($tag_value[0])) $tag_value = $format_tag;
+        }
+        else {
+          $tag_value = $format_tag;
+        }
+        if ($format_tag == 'fedora.identifier') {
+          Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
+          Object::set_value($mani->_value, $tag_value, $pid);
+        }
+        else {
+          if (is_array($solr_doc[$format_tag])) {
+            if ($this->feature_sw[$format_tag] == 'array') {   // more than one for this
+              foreach ($solr_doc[$format_tag] as $solr_tag) {
+                $help = new stdClass();
+                $help->_namespace = $solr_display_ns;
+                $help->_value = self::normalize_chars($solr_tag);
+                $mani->_value->{$tag_value}[] = $help;
+                unset($help);
+              }
+            }
+            else {
+              Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
+              Object::set_value($mani->_value, $tag_value, self::normalize_chars($solr_doc[$format_tag][0]));
+            }
+          }
+          else {
+            Object::set_namespace($mani->_value, $tag_value, $solr_display_ns);
+            Object::set_value($mani->_value, $tag_value, self::normalize_chars($solr_doc[$format_tag]));
+          }
+        }
+      }
+    }
+    return $mani;
   }
 
   /** \brief Setup call to OpenFormat and execute the format request
@@ -3258,9 +3329,11 @@ class OpenSearch extends webServiceServer {
    */
   private function stringify_obj_array($arr, $glue = ',') {
     $vals = array();
-    foreach ($arr as $val) {
-      if (isset($val->_value)) {
-        $vals[] = $val->_value;
+    if ($arr) {
+      foreach ($arr as $val) {
+        if (isset($val->_value)) {
+          $vals[] = $val->_value;
+        }
       }
     }
     return implode($glue, $vals);
@@ -3324,7 +3397,8 @@ class OpenSearch extends webServiceServer {
       Object::set_array_value($ret->_value, 'objectFormat', $value);
     }
     foreach ($this->config->get_value('solr_format', 'setup') as $name => $value) {
-      Object::set_array_value($ret->_value, 'objectFormat', $name);
+      if (empty($value['secret']))
+        Object::set_array_value($ret->_value, 'objectFormat', $name);
     }
     foreach ($this->config->get_value('open_format', 'setup') as $name => $value) {
       Object::set_array_value($ret->_value, 'objectFormat', $name);
