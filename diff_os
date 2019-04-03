@@ -34,7 +34,7 @@ while (($count++ < ($read_records + $skip_records)) && !feof($fr)) {
     if ($p = strpos(' ' . $line, '?')) {
       $line = substr($line, $p);
     }
-    $parms = '?' . str_replace('outputType=xml', '', set_tracking_id($line)) . $add_param;
+    $parms = '?' . str_replace('outputType=', 'ignore=', set_tracking_id($line)) . $add_param;
     if (strpos($parms, 'action=search') && (strpos($parms, 'stepValue') === FALSE)) {
       $parms .= '&stepValue=10';
     }

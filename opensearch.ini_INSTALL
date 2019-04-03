@@ -388,9 +388,18 @@ open_format_force_namespace[netpunkt_standard] = of
 ; --------------
 ; formats supported by solr-indexes. Comma separated list of solr tags
 ; fedora.identifier will take the id of the manifestation from the fedora object
-;solr_format[briefDisplay][format] = display.accessType,display.creator,fedoraPid,rec.id,fedora.identifier,display.language,display.partOf,display.title,display.titleFull,display.type,display.workType
+; Fields will be named by the suffix part (title for display.title), apart from numeric fields, which will include the "namespace" part (like marc.001a)
+; define name of format and list of solr tags to be collected, like:
+;   solr_format[<format_name>][format] = <comma seperated list of solr tags>
+; Remove format name from the info function by setting the secret property, like:
+;   solr_format[<format_name>][secret] = 1
+; example: 
+;   solr_format[briefDisplay][format] = display.accessType,display.creator,fedoraPid,rec.id,fedora.identifier,display.language,display.partOf,display.title,display.titleFull,display.type,display.workType
+;
 solr_format[briefDisplay][format] = display.accessType,display.creator,fedoraPid,fedora.identifier,display.language,display.partOf,display.title,display.titleFull,display.dependentTitle,display.type,display.workType,display.multiVolumeType
 solr_format[score][format] = score
+solr_format[idnr][format] = marc.001a,marc.001b,marc.001a001b
+solr_format[idnr][secret] = 1
 
 ; --------------
 ; Mapping search profile to be fectched from agency (123456) if prefix (qwerty) is matched as prefix against a profile in agency
@@ -436,8 +445,10 @@ solr_timeout = 30
 ; Max number of collection returned
 ; Defines the maximum stepValue acepted. 
 ; For collectionType = manifestation, max_manifestations is used, max_collections otherwise
+; For rawrepo repositories, max_rawrepo is used.
 max_collections = 50
 max_manifestations = 200
+max_rawrepo = 1000
 
 ; --------------
 ; Max number of threads to use for facetting - defaults to 50
