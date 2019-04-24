@@ -374,7 +374,7 @@ open_format['bob_detail']['format'] = bob_detail
 open_format['bob_detail']['uri'] = @NETPUNKT_OPEN_FORMAT@
 open_format['netpunkt_dm2']['format'] = netpunkt_dm2
 open_format['netpunkt_dm2']['uri'] = @NETPUNKT_OPEN_FORMAT@
-open_format['netpunkt_emne']['format'] = netpunkt_dm2
+open_format['netpunkt_emne']['format'] = netpunkt_emne
 open_format['netpunkt_emne']['uri'] = @NETPUNKT_OPEN_FORMAT@
 
 ; set namespace for these formats
