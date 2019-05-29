@@ -1216,7 +1216,7 @@ class OpenSearch extends webServiceServer {
       foreach ($boosts as $bf) {
         $weight = $bf->_value->weight->_value ? : 1;
         if ($weight < 0) {
-          $weight = 0.01 / ($weight * $weight);
+          $weight = max(0.00001, 0.01 / ($weight * $weight));
         }
         if (empty($bf->_value->fieldValue->_value)) {
           $ret .= '&bf=' .
