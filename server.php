@@ -1214,18 +1214,19 @@ class OpenSearch extends webServiceServer {
     if ($boost) {
       $boosts = (is_array($boost) ? $boost : [$boost]);
       foreach ($boosts as $bf) {
+        $weight = $bf->_value->weight->_value ? : 1;
+        if ($weight < 0) {
+          $weight = 0.01 / ($weight * $weight);
+        }
         if (empty($bf->_value->fieldValue->_value)) {
-          if (!$weight = $bf->_value->weight->_value) {
-            $weight = 1;
-          }
           $ret .= '&bf=' .
-            urlencode('product(' . $bf->_value->fieldName->_value . ',' . $weight . ')');
+            urlencode('product(' . $bf->_value->fieldName->_value . ',' . sprintf('%.5f', $weight) . ')');
         }
         else {
           $ret .= '&bq=' .
             urlencode($bf->_value->fieldName->_value . ':"' .
                       str_replace('"', '', $bf->_value->fieldValue->_value) . '"^' .
-                      $bf->_value->weight->_value);
+                      sprintf('%.5f', $weight));
         }
       }
     }
@@ -2332,50 +2333,6 @@ class OpenSearch extends webServiceServer {
   private function record_repo_url($type, $id, $datastream_id = '') {
     $uri = $datastream_id ? str_replace('commonData', $datastream_id, $this->repository[$type]) : $this->repository[$type];
     return sprintf($uri, $id);
-  }
-
-  /** \brief Setup call to record repository and execute it. The record is cached.
-   *
-   * @param string $record_uri - the record_repo uri
-   * @param string $rec - the record is returned
-   * @param boolean $mandatory - how to handle a missing record/error
-   * @return mixed - error or NULL
-   */
-  private function read_record_repo($record_uri, &$rec, $mandatory = TRUE) {
-    static $curl;
-    if (empty($curl)) {
-      $curl = new curl();
-      $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
-    }
-    VerboseJson::log(TRACE, 'repo_read: ' . $record_uri);
-    if (DEBUG_ON) echo __FUNCTION__ . ':: ' . $record_uri . "\n";
-    if ($this->cache && ($rec = $this->cache->get($record_uri))) {
-      $this->number_of_record_repo_cached++;
-    }
-    else {
-      $this->number_of_record_repo_calls++;
-      $curl->set_authentication('fedoraAdmin', 'fedoraAdmin');
-      $this->watch->start('record_repo');
-      $rec = self::normalize_chars($curl->get($record_uri));
-      $this->watch->stop('record_repo');
-      $curl_err = $curl->get_status();
-      $curl->close();
-      $this->corepo_timers[] = (object) array('total' => $curl_err['total_time'], 'namelookup' => $curl_err['namelookup_time'], 'connect' => $curl_err['connect_time'], 'pretransfer' => $curl_err['pretransfer_time']);
-      if ($curl_err['http_code'] < 200 || $curl_err['http_code'] > 299) {
-        $rec = '';
-        if ($mandatory) {
-          if ($curl_err['http_code'] == 404) {
-            return 'record_not_found';
-          }
-          VerboseJson::log(FATAL, 'record_repo http-error: ' . $curl_err['http_code'] . ' from: ' . $record_uri .
-                            ' request ' . preg_replace('/\s+/', ' ', print_r($this->user_param, TRUE)));
-          return 'Error: Cannot fetch record: ' . $record_uri . ' - http-error: ' . $curl_err['http_code'];
-        }
-      }
-      if ($this->cache) $this->cache->set($record_uri, $rec);
-    }
-    // else VerboseJson::log(TRACE, 'record_repo cache hit for ' . $fpid);
-    return null;
   }
 
   /** \brief Get multiple urls and return result in structure with the same indices
