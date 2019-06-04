@@ -1214,10 +1214,11 @@ class OpenSearch extends webServiceServer {
     if ($boost) {
       $boosts = (is_array($boost) ? $boost : [$boost]);
       foreach ($boosts as $bf) {
-        $weight = $bf->_value->weight->_value ? : 1;
+        $weight = floatval($bf->_value->weight->_value) ? : 1;
         if ($weight < 0) {
-          $weight = max(0.00001, 0.01 / ($weight * $weight));
+          $weight = 0.01 / ($weight * $weight);
         }
+        $weight = max(0.00001, $weight);
         if (empty($bf->_value->fieldValue->_value)) {
           $ret .= '&bf=' .
             urlencode('product(' . $bf->_value->fieldName->_value . ',' . sprintf('%.5f', $weight) . ')');
