@@ -2214,6 +2214,7 @@ class OpenSearch extends webServiceServer {
    * @return mixed string or null
    */
   private function build_work_struct_from_solr(&$work_cache_struct, &$work_struct, &$more, &$work_ids, $edismax, $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, $all_objects, $num_found) {
+    $more = (count($work_cache_struct) >= ($start + $step_value));
     for ($w_idx = 0; isset($work_ids[$w_idx]); $w_idx++) {
       $struct_id = $work_ids[$w_idx][FIELD_WORK_ID] . ($use_work_collection ? '' : '-' . $work_ids[$w_idx][FIELD_UNIT_ID]);
       if (isset($work_cache_struct[$struct_id])) continue;
