@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     dirName = "docker"
-                    version = 5.0
+                    version = 5.2
                     dir(dirName) {
                         def imageName = "opensearch-webservice-${version}".toLowerCase()
                         def imageLabel = env.BUILD_NUMBER
