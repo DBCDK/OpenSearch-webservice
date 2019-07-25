@@ -508,13 +508,15 @@ class OpenSearch extends webServiceServer {
     $this->watch->start('Solr_disp');
     $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, '*', self::xs_boolean($param->allObjects->_value), '');
     $this->watch->stop('Solr_disp');
-    $max_col = array();
+    $found_primary = array();
     foreach ($display_solr_arr as $d_s_a) {
       foreach ($d_s_a['response']['docs'] as $solr_rec) {
         $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
-        if (count($solr_rec[FIELD_COLLECTION_INDEX]) > $max_col[$unit_id]) {
+        if ($solr_rec['sort.complexKey'] && !$found_primary[$unit_id]) {
           $unit_sort_keys[$unit_id] = $solr_rec['sort.complexKey'] . '  ' . $unit_id;
-          $max_col[$unit_id] = count($solr_rec[FIELD_COLLECTION_INDEX]);
+          $source = self::record_source_from_pid($solr_rec[FIELD_FEDORA_PID]);
+          $found_primary[$unit_id] = (self::scalar_or_first_elem($solr_rec['unit.isPrimaryObject']) == 'true') &&
+                                     in_array($source, $solr_rec[FIELD_COLLECTION_INDEX]);
         }
       }
     }
