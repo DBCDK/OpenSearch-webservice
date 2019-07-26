@@ -248,7 +248,12 @@ class OpenSearch extends webServiceServer {
       }
     }
     $boost_q = self::boostUrl($param->userDefinedBoost);
+    if ($boost_q < 0) {
+      Object::set_value($ret_error->searchResponse->_value, 'error', 'Only positive float value allowed');
+      return $ret_error;
+    }
 
+#AF hvor kan den unsupported komme fra ?
     if ($unsupported) return $ret_error;
 
     $ret_error->searchResponse->_value->error->_value = &$error;
@@ -1218,9 +1223,9 @@ class OpenSearch extends webServiceServer {
       foreach ($boosts as $bf) {
         $weight = floatval($bf->_value->weight->_value) ? : 1;
         if ($weight < 0) {
-          $weight = 0.01 / ($weight * $weight);
+           $boost_err = $weight;
+           break;
         }
-        $weight = max(0.00001, $weight);
         if (empty($bf->_value->fieldValue->_value)) {
           $ret .= '&bf=' .
             urlencode('product(' . $bf->_value->fieldName->_value . ',' . sprintf('%.5f', $weight) . ')');
@@ -1233,7 +1238,11 @@ class OpenSearch extends webServiceServer {
         }
       }
     }
-    return $ret;
+    if ($boost_err) {
+      return $boost_err;
+    } else {
+      return $ret;
+    }
   }
 
   /** \brief Build search to include collections without holdings
