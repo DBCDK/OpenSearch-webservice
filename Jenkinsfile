@@ -90,5 +90,5 @@ pipeline {
 
 @NonCPS
 def setScriptStatus(status) {
-    currentBuild.result = status
+    currentBuild.rawBuild.result = status
 }
