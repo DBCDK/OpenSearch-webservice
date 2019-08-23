@@ -16,7 +16,6 @@ pipeline {
                 // Fail Early..
                 script {
                     if (!env.BRANCH_NAME) {
-                        setScriptStatus(Result.ABORTED)
                         throw new hudson.AbortException('Job Started from non MultiBranch Build')
                     } else {
                         println(" Building BRANCH_NAME == ${BRANCH_NAME}")
@@ -86,9 +85,4 @@ pipeline {
             }
         }
     }
-}
-
-@NonCPS
-def setScriptStatus(status) {
-    currentBuild.result = status
 }
