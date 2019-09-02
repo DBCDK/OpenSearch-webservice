@@ -466,7 +466,7 @@ logfile = @LOGFILE@
 ; logging style. Default is json, string will make lines with elements like key:value
 ;logstyle = string
 ; logging timestamp ISO8601 way
-date_format = Y-m-d\TH:i:sO
+date_format = Y-m-d\TH:i:s\Z
 
 ; ident for syslog is set like where _VERSION_ is replaced by version setting above
 syslog_id = trlog[opensearch__VERSION_]
