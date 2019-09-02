@@ -67,9 +67,7 @@ cat - > $APACHE_ROOT/index.html <<EOF
 </html>
 EOF
 
-
-ln -sf /dev/stdout /var/log/apache2/access.log
-ln -sf /dev/stderr /var/log/apache2/error.log
+sed -i 's/CustomLog ${APACHE_LOG_DIR}\/access.log combined/CustomLog ${APACHE_LOG_DIR}\/access.log json_log/' /etc/apache2/sites-enabled/000-default.conf
 
 /etc/init.d/memcached start
 
