@@ -38,7 +38,7 @@ pipeline {
                     dir(dirName) {
                         def imageName = "opensearch-webservice-${version}".toLowerCase()
                         def imageLabel = env.BUILD_NUMBER
-                        if (!(env.BRANCH_NAME ==~ /master|trunk/)) {
+                        if (!(env.BRANCH_NAME ==~ /master|trunk|50_k8s/)) {
                             println("Using branch_name ${BRANCH_NAME}")
                             imageLabel = BRANCH_NAME.split(/\//)[-1]
                             imageLabel = imageLabel.toLowerCase()
@@ -51,7 +51,7 @@ pipeline {
                         if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
                             docker.withRegistry('https://docker-os.dbc.dk', 'docker') {
                                 app.push()
-                                if (env.BRANCH_NAME ==~ /master|trunk/) {
+                                if (env.BRANCH_NAME ==~ /master|trunk|50_k8s/) {
                                     app.push "latest"
                                 }
                             }
