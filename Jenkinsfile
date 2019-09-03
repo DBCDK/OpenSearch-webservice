@@ -36,7 +36,7 @@ pipeline {
                     dirName = "docker"
                     version = 5.0
                     dir(dirName) {
-                        def imageName = "opensearch-webservice-${version}".toLowerCase()
+                        def imageName = "opensearch-webservice-${version}_k8s".toLowerCase()
                         def imageLabel = env.BUILD_NUMBER
                         if (!(env.BRANCH_NAME ==~ /master|trunk|50_k8s/)) {
                             println("Using branch_name ${BRANCH_NAME}")
