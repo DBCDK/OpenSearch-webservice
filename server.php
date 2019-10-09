@@ -2,7 +2,7 @@
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
-error_reporting(E_ALL & ~E_NOTICE);
+//error_reporting(E_ALL & ~E_NOTICE);
 //-----------------------------------------------------------------------------
 /**
  *
@@ -2519,8 +2519,10 @@ class OpenSearch extends webServiceServer {
    * @return array
    */
   private function fetch_profile_map($profile_map) {
-    $profile_names = $this->open_agency->get_search_profile_names($profile_map['agency'], $profile_map['prefix']);
-    return $profile_names;
+    if (is_array($profile_map) && $profile_map['agency']) {
+      return $this->open_agency->get_search_profile_names($profile_map['agency'], $profile_map['prefix']);
+    }
+    return array();
   }
 
   /** \brief Merge two search profiles, extending the first ($sum) with the additions found in the second ($add)
@@ -2564,12 +2566,13 @@ class OpenSearch extends webServiceServer {
    */
   private function agency_rule($agency, $name) {
     static $agency_rules = [];
-    if (empty($agency_rules[$agency])) {
+    if ($agency && $name && empty($agency_rules[$agency])) {
       $this->watch->start('agency_rule');
       $agency_rules[$agency] = $this->open_agency->get_library_rules($agency);
       $this->watch->stop('agency_rule');
+      return self::xs_boolean($agency_rules[$agency][$name]);
     }
-    return self::xs_boolean($agency_rules[$agency][$name]);
+    return false;
   }
 
 
