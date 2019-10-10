@@ -2566,13 +2566,12 @@ class OpenSearch extends webServiceServer {
    */
   private function agency_rule($agency, $name) {
     static $agency_rules = [];
-    if ($agency && $name && empty($agency_rules[$agency])) {
+    if ($agency && empty($agency_rules[$agency])) {
       $this->watch->start('agency_rule');
       $agency_rules[$agency] = $this->open_agency->get_library_rules($agency);
       $this->watch->stop('agency_rule');
-      return self::xs_boolean($agency_rules[$agency][$name]);
     }
-    return false;
+    return isset($agency_rules[$agency]) ? self::xs_boolean($agency_rules[$agency][$name]) : false;
   }
 
 
