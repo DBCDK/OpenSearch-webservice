@@ -353,31 +353,38 @@ holdings_db = @HOLDINGS_DB@
 ;   open_format[specialFormatTest][format] =  specialFormat
 ;   open_format[specialFormatTest[uri] =  http://openformat.addi.dk/0.1/
 ;
-ws_open_format_uri = @OPEN_FORMAT@
+ws_open_format_uri = @OLD_OPEN_FORMAT@
 
 ; formats supported by openFormat and possible name mapping
 ; open_format[openSearch_format_name][format] = openFormat format name
-open_format[bibliotekdkWorkDisplay][format] = bibliotekdkWorkDisplay
-open_format[briefWorkDisplay][format] = briefWorkDisplay
-open_format[refWorks][format] = refWorks
-open_format[ris][format] = ris
-open_format[marc21ToDm2][format] = marc21ToDm2
+open_format[bibliotekdkWorkDisplay]['format'] = bibliotekdkWorkDisplay
+open_format[bibliotekdkWorkDisplay]['uri'] = @OLD_OPEN_FORMAT@
+open_format[briefWorkDisplay]['format'] = briefWorkDisplay
+open_format[briefWorkDisplay]['uri'] = @OLD_OPEN_FORMAT@
+open_format[refWorks]['format'] = refWorks
+open_format[refWorks]['uri'] = @OLD_OPEN_FORMAT@
+open_format[ris]['format'] = ris
+open_format[ris]['uri'] = @OLD_OPEN_FORMAT@
+open_format[marc21ToDm2]['format'] = marc21ToDm2
+open_format[marc21ToDm2]['uri'] = @OLD_OPEN_FORMAT@
 
-; custom uri for netpunkt formats
+; custom uri for formats served by k8s openformat
 open_format['netpunkt_brief']['format'] = netpunkt_brief
-open_format['netpunkt_brief']['uri'] = @NETPUNKT_OPEN_FORMAT@
+open_format['netpunkt_brief']['uri'] = @OPEN_FORMAT@
 open_format['netpunkt_standard']['format'] = netpunkt_standard
-open_format['netpunkt_standard']['uri'] = @NETPUNKT_OPEN_FORMAT@
+open_format['netpunkt_standard']['uri'] = @OPEN_FORMAT@
 open_format['netpunkt_marc21']['format'] = netpunkt_marc21
-open_format['netpunkt_marc21']['uri'] = @NETPUNKT_OPEN_FORMAT@
+open_format['netpunkt_marc21']['uri'] = @OPEN_FORMAT@
 open_format['bob_detail']['format'] = bob_detail
-open_format['bob_detail']['uri'] = @NETPUNKT_OPEN_FORMAT@
+open_format['bob_detail']['uri'] = @OPEN_FORMAT@
 open_format['netpunkt_dm2']['format'] = netpunkt_dm2
-open_format['netpunkt_dm2']['uri'] = @NETPUNKT_OPEN_FORMAT@
+open_format['netpunkt_dm2']['uri'] = @OPEN_FORMAT@
 open_format['netpunkt_emne']['format'] = netpunkt_emne
-open_format['netpunkt_emne']['uri'] = @NETPUNKT_OPEN_FORMAT@
+open_format['netpunkt_emne']['uri'] = @OPEN_FORMAT@
 open_format['kb_marc21']['format'] = kb_marc21
-open_format['kb_marc21']['uri'] = @NETPUNKT_OPEN_FORMAT@
+open_format['kb_marc21']['uri'] = @OPEN_FORMAT@
+open_format['bibdkWorkDisplay']['format'] = bibdkWorkDisplay
+open_format['bibdkWorkDisplay']['uri'] = @OPEN_FORMAT@
 
 ; set namespace for these formats
 ; open_format_force_namespace[open_format_name] = namespace_prefix_from_xmlns
