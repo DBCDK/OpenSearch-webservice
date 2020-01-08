@@ -1154,6 +1154,11 @@ class OpenSearch extends webServiceServer {
     return $ret;
   }
 
+  private static function set_app_id() {
+    $pod_name = getenv('POD_NAME') ?: 'NO_POD';
+    $namespace = getenv('POD_NAMESPACE') ?: 'NO_NAMESPACE';
+    return $namespace . '-' .$pod_name;
+  }
   /** \brief Build Solr filter_query parm
    *
    * @param array $profile - the users search profile
@@ -2023,8 +2028,9 @@ class OpenSearch extends webServiceServer {
    * @return string - error if any, NULL otherwise
    */
   private function do_solr($urls, &$solr_arr) {
+    $solr_appid = self::set_app_id();
     foreach ($urls as $no => $url) {
-      $url['url'] .= '&trackingId=' . VerboseJson::$tracking_id;
+      $url['url'] .= '&trackingId=' . VerboseJson::$tracking_id . '&appId=' . $solr_appid;
       VerboseJson::log(TRACE, 'Query: ' . $url['url']);
       if ($url['debug']) VerboseJson::log(DEBUG, 'Query: ' . $url['debug']);
       $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded; charset=utf-8'], $no);
