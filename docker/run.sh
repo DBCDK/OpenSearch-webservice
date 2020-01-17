@@ -55,6 +55,7 @@ then
   exit 1
 fi
 
+# MBD: I am not sure we want this?
 cat - > $APACHE_ROOT/index.html <<EOF
 <html>
 <head>
