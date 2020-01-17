@@ -29,11 +29,10 @@ LABEL maintainer="Team Search <os-team@dbc.dk>" \
       VERBOSE_LEVEL="List of log levels needed, maximum as: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG"
 
 # Download and prepare php source-code
-RUN mkdir $APACHE_ROOT/opensearch
-ADD opensearch-webservice.tar.gz $APACHE_ROOT/opensearch
+RUN mkdir $APACHE_ROOT/app
+ADD opensearch-webservice.tar.gz $APACHE_ROOT/app
 
 COPY run.sh /run.sh
-COPY 000-default.conf /etc/apache2/sites-enabled/000-default.conf
 CMD ["/run.sh"]
 
 # openSearch default settings
