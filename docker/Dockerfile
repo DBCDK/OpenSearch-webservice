@@ -1,6 +1,4 @@
-FROM docker.dbc.dk/dbc-apache-php7:json_log
-
-COPY memcached.conf /etc/
+FROM docker.dbc.dk/dbc-apache-php7:latest
 
 # Download and prepare php source-code
 RUN mkdir $APACHE_ROOT/opensearch
