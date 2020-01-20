@@ -28,12 +28,16 @@ LABEL maintainer="Team Search <os-team@dbc.dk>" \
       USE_HOLDING_BLOCK_JOIN="Switch to control use of block_join for filtering holdings" \
       VERBOSE_LEVEL="List of log levels needed, maximum as: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG"
 
-# Download and prepare php source-code
-RUN mkdir $APACHE_ROOT/app
-ADD opensearch-webservice.tar.gz $APACHE_ROOT/app
-
-COPY run.sh /run.sh
-CMD ["/run.sh"]
+# This is modelled after vip-php. I think it is a bit many layers, but ... no big deal.
+# NOTE: The BUILDNUMBER file is no longer generated or copied - we can add it back, if we need it
+COPY --chown=sideejer:sideejer src/OLS_class_lib/ ${DBC_PHP_INSTALL_DIR}/OLS_class_lib/
+RUN rm -Rf ${DBC_PHP_INSTALL_DIR}/OLS_class_lib/.svn ${DBC_PHP_INSTALL_DIR}/OLS_class_lib/test ${DBC_PHP_INSTALL_DIR}/OLS_class_lib/simpletest
+COPY --chown=sideejer:sideejer src/xml/ ${DBC_PHP_INSTALL_DIR}/xml/
+COPY --chown=sideejer:sideejer src/includes/ ${DBC_PHP_INSTALL_DIR}/includes/
+COPY --chown=sideejer:sideejer src/*.xsd ${DBC_PHP_INSTALL_DIR}/
+COPY --chown=sideejer:sideejer src/*.html ${DBC_PHP_INSTALL_DIR}/
+COPY --chown=sideejer:sideejer src/*_INSTALL ${DBC_PHP_INSTALL_DIR}/
+COPY --chown=sideejer:sideejer src/*.php ${DBC_PHP_INSTALL_DIR}/
 
 # openSearch default settings
 ENV AGENCY_FALLBACK="" \
