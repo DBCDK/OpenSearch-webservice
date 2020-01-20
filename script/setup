@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+which dirname &> /dev/null || die "Unable to run dirname command - please install it"
+export SCRIPTNAME="setup"
+export SCRIPT_DIR=$(dirname "$(readlink -f "$0")") || { echo "Unable to identify basedir from $0" ; exit 1; }
+. "${SCRIPT_DIR}/shared.sh" || { echo "Unable to load shared file shared.sh" ; exit 1; }
+
+exec ${SCRIPT_DIR}/bootstrap

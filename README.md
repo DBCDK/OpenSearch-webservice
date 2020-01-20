@@ -1,14 +1,13 @@
-OpenSearch WebService, Copyright(c) 2009, DBC
+# OpenSearch WebService
 
-Introduction
-------------
+## Introduction
 
-OpenSearch webservice
+The OpenSearch webservice can be used to perform searches in the DBC datawell.
 
 
-License
--------
-DBC-Software Copyright (c). 2009, Danish Library Center, dbc as.
+## License
+
+DBC-Software Copyright © 2009-2020, Danish Library Center, dbc as.
 
 This library is Open source middleware/backend software developed and distributed 
 under the following licenstype:
@@ -30,35 +29,97 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+## Documentation
 
-Documentation
--------------
-http://oss.dbc.dk/services/open-search-web-service
+See [the online docs](http://oss.dbc.dk/services/open-search-web-service) for information on using the service.
 
-Use Doxygen to get code documentation
-
-Build
------
-
-To fetch The Needed OLS_class_lib files run the build.sh script. this script also builds 
-the opensearch-webservice.tar.gz file needed for the docker build. 
-
+For code documentation, use [Doxygen](http://www.doxygen.nl/) similar to this:
 ```bash
-./build.sh
-(cd docker; docker build -t opensearch:devel . )
-docker run -ti -p 8080:80 --env-file=boble.env opensearch:devel
+cd doc
+doxygen opensearch.doxygen
+firefox api/html/classOpenSearch.html
 ```
 
-Development
------------
+## Getting Started with Development
 
-To start the docker with the php files just use 
+This project depends on a project still in subversion. After checkout from gitlab, 
+run the script [`script/bootstrap`](script/bootstrap)
+to retrieve this svn dependency:
 ```bash
-docker run -ti -p 8898:80 --env-file ./docker/fbstest.env -v $(pwd):/var/www/html/opensearch opensearch:devel
+$ ./script/bootstrap 
+INFO: Checking out svn repo 'https://svn.dbc.dk/repos/php/OpenLibrary/class_lib/trunk' into directory './src/OLS_class_lib'
+INFO: Svn repo 'https://svn.dbc.dk/repos/php/OpenLibrary/class_lib/trunk' checked out into directory './src/OLS_class_lib'
+INFO: Svn info:
+Revision: 122504
+Last Changed Author: fvs
+Last Changed Rev: 122080
+Last Changed Date: 2018-10-02 15:59:39 +0200 (tir, 02 okt 2018)
 ```
 
-Installation inside the docker image
-------------
+As the name suggests, you can also run this script to update the contents. Changes to the external svn project is handled
+as ordinary svn changes.
+
+See the [script/README](script/README.md) for additional info about build scripts.
+
+## Building
+
+The project can be run "as is" in a properly configured Apache webserver, or you can build a docker image to test in.
+
+To build the docker image, in the root directory, use `script/build`. Remember to 
+check the options, using `--help`.
+
+The build script requires the [build-dockers.py](https://gitlab.dbc.dk/i-scrum/build-tools) script. You can use this directly, 
+e.g. like this:
+
+```bash
+build-dockers.py --debug --use-cache
+```
+
+Alternatively, you can build the docker image yourself, using plain docker, 
+like this, in the top directory:
+
+```bash
+docker build -f docker/Dockerfile -t opensearch-php-local/opensearch-php:latest .
+``` 
+
+## Running a Server During Development
+
+You can start a server from the docker image, using the scripts
+
+```bash
+script/server
+```
+
+This uses the compose file set up for the (not yet made) systemtest. The output from 
+the log files will be shown in your console. You will have to ask docker for the port
+for the system, like this:
+
+```bash
+docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-php_1
+```
+
+You can then check the service at this port, using the script `client`:
+
+```bash
+script/client
+```
+ 
+If you wish to do it manually, you can do something like this instead:
+
+```bash
+firefox localhost:$(docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-php_1)/5.2
+``` 
+ 
+### Alternative
+
+If you wish to use a different configuration, you can start with one of the two 
+environment files in [docker](docker):
+
+```bash
+docker run -ti -p 8080:80 --env-file=docker/boble.env opensearch-php-local/opensearch-php:latest
+```
+
+## Installation Without Docker
 The webservice requires the following files from [class_lib](https://github.com/DBCDK/class_lib-webservice)
 to be installed in ./OLS_class_lib
  * aaa_class.php
