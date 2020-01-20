@@ -4,8 +4,8 @@ version: '3'
 services:
 
   # The image under test
-  opensearch-php:
-    image: opensearch-php-local/opensearch-php${DOCKER_IMAGE_TAG}
+  opensearch-webservice:
+    image: opensearch-ws-local/opensearch-webservice${DOCKER_IMAGE_TAG}
     environment:
       # These settings modified from the fbstest.env file. I have no clue if they are "working" at this time.
       - AAA_IP_RIGHTS_BLOCK=aaa_ip_rights[dbc][ip_list] = 0.0.0.0-255.255.255.255\naaa_ip_rights[dbc][ressource][opensearch] = 500

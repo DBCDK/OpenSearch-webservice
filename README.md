@@ -79,7 +79,7 @@ Alternatively, you can build the docker image yourself, using plain docker,
 like this, in the top directory:
 
 ```bash
-docker build -f docker/Dockerfile -t opensearch-php-local/opensearch-php:latest .
+docker build -f docker/Dockerfile -t opensearch-ws-local/opensearch-webservice:latest .
 ``` 
 
 ## Running a Server During Development
@@ -95,7 +95,7 @@ the log files will be shown in your console. You will have to ask docker for the
 for the system, like this:
 
 ```bash
-docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-php_1
+docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-webservice_1
 ```
 
 You can then check the service at this port, using the script `client`:
@@ -107,7 +107,7 @@ script/client
 If you wish to do it manually, you can do something like this instead:
 
 ```bash
-firefox localhost:$(docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-php_1)/5.2
+firefox localhost:$(docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-webservice_1)/5.2
 ``` 
  
 ### Alternative
@@ -116,7 +116,7 @@ If you wish to use a different configuration, you can start with one of the two
 environment files in [docker](docker):
 
 ```bash
-docker run -ti -p 8080:80 --env-file=docker/boble.env opensearch-php-local/opensearch-php:latest
+docker run -ti -p 8080:80 --env-file=docker/boble.env opensearch-ws-local/opensearch-webservice:latest
 ```
 
 ## Installation Without Docker

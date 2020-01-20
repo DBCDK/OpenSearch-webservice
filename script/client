@@ -10,8 +10,8 @@ export SCRIPT_DIR=$(dirname "$(readlink -f "$0")") || { echo "Unable to identify
 set -e
 
 # Locate the port of a running server.
-PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-php_1) \
-  || die "Unable to locate a running opensearch server, named docker_opensearch-php_1 - did you forget to run 'server'?"
+PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-webservice_1) \
+  || die "Unable to locate a running opensearch server, named docker_opensearch-webservice_1 - did you forget to run 'server'?"
 
 URL="localhost:${PORT}/5.2"
 

@@ -2,9 +2,9 @@ config:
   # Backtrack is where the root of the project is, relative to this file
   backtrack: .
   # Use this for prefix when building
-  prefix: opensearch-php-local
+  prefix: opensearch-ws-local
 images:
-  opensearch-php:
+  opensearch-webservice:
     type: prod
     context: .
     dockerfile: docker/Dockerfile

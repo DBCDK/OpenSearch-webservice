@@ -10,5 +10,5 @@ set -e
 cd ${PROJECT_DIR}/docker
 check_on_path docker docker-compose
 info "Starting ws service, based on compose file in $(pwd)"
-docker-compose up --force-recreate opensearch-php
+docker-compose up --force-recreate opensearch-webservice
 
