@@ -41,6 +41,8 @@ COPY --chown=sideejer:sideejer src/*.php ${DBC_PHP_INSTALL_DIR}/
 # Would be nice to not have to have this file?
 RUN ln -s ${DBC_PHP_INSTALL_DIR}/server.php ${DBC_PHP_INSTALL_DIR}/index.php && chown sideejer:sideejer ${DBC_PHP_INSTALL_DIR}/index.php
 
+# Do not forget to add a memcache
+ENV USE_MEMCACHE=yes
 
 # openSearch default settings
 ENV AGENCY_FALLBACK="" \
