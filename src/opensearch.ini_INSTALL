@@ -870,7 +870,8 @@ ${FORMAT_CACHE_SETTINGS_BLOCK}
 ;
 ; Do not use "all" as group-identifier. This group is for testing and special circumstances
 ;
-${AAA_IP_RIGHTS_BLOCK}
+aaa_ip_rights[dbc][ip_list] = ${AAA_IP_LIST}
+aaa_ip_rights[dbc][ressource][opensearch] = 500
 ;
 ; if not found in aaa_ip_rights the authentication object is created from the FORS
 ; either by using the WS specified by aaa_fors_rights or by OCI specified by aaa_credentials
