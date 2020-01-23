@@ -98,7 +98,7 @@ for the system, like this:
 docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-webservice_1
 ```
 
-You can then check the service at this port, using the script `client`:
+The script `client` does this, and tries to start your favorite browser:
 
 ```bash
 script/client
