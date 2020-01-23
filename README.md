@@ -90,9 +90,11 @@ You can start a server from the docker image, using the scripts
 script/server
 ```
 
-This uses the compose file set up for the (not yet made) systemtest. The output from 
-the log files will be shown in your console. You will have to ask docker for the port
-for the system, like this:
+This uses the compose file in [docker/docker-compose.yml](docker/docker-compose.yml), which is configured
+to use the Datawell called `fbstest`. The output from 
+the log files will be shown in your console. 
+
+To connect to the server, you will have to ask docker for the port for the system, like this:
 
 ```bash
 docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-webservice_1
@@ -118,6 +120,8 @@ environment files in [docker](docker):
 ```bash
 docker run -ti -p 8080:80 --env-file=docker/boble.env opensearch-ws-local/opensearch-webservice:latest
 ```
+
+Currently these environment files may not work.
 
 ## Installation Without Docker
 The webservice requires the following files from [class_lib](https://github.com/DBCDK/class_lib-webservice)
