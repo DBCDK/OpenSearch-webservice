@@ -94,6 +94,8 @@ This uses the compose file in [docker/docker-compose.yml](docker/docker-compose.
 to use the Datawell called `fbstest`. The output from 
 the log files will be shown in your console. 
 
+## Connecting to the Server Using a Browser
+
 To connect to the server, you will have to ask docker for the port for the system, like this:
 
 ```bash
@@ -112,10 +114,21 @@ If you wish to do it manually, you can do something like this instead:
 firefox localhost:$(docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-webservice_1)/5.2
 ``` 
  
-### Alternative
+You can then use the example request to test that the server is functioning.
+
+## Test
+
+There are currently no functioning automatic test. In the [tests](tests) directory 
+there are a number of requst/response pairs that at some time probably worked together.
+However, these are heavily dependent on the data, and are probably bit-rot by now.
+
+There is a script called [diff_os](diff_os) that originally could be used to compare 
+two OpenSearch servers against eachother. State of this script is unknown.
+ 
+## Alternative Server Start
 
 If you wish to use a different configuration, you can start with one of the two 
-environment files in [docker](docker):
+environment files in the [docker](docker) directory:
 
 ```bash
 docker run -ti -p 8080:80 --env-file=docker/boble.env opensearch-ws-local/opensearch-webservice:latest
