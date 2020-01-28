@@ -57,7 +57,7 @@ function check_timings() {
       grep '"level":"TIMER"' | grep '"timing":{' | awk '{print $0","}' | sed '$ s/,$//' >> ${JSONFILE}
     echo "]"  >> ${JSONFILE}
 
-    exec ${SCRIPT_DIR}/analyze-timings.py ${JSONFILE}
+    exec ${SCRIPT_DIR}/analyze-timings.py  ${JSONFILE}
 
 }
 

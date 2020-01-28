@@ -268,6 +268,7 @@ def analyze_timing(request, target_percentage) -> bool:
     else:
         error("Request for action " + action + " at time " + str(timestamp)
               + " has " + str(durations_sum/total*100) + "% durations, which is less than required")
+        info("Durations, non overlapping: " + str(non_overlapping_durations))
 
     return result
 
