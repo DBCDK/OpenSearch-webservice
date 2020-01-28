@@ -195,6 +195,81 @@ Examples:
     return args
 
 
+def analyze_timing(request, target_percentage) -> bool:
+    """
+    Analyze a single timing
+    :param request: Information about a request, including "timing" information.
+    :param target_percentage: The target percentage for the coverage of Total
+    """
+
+    # Get the total
+    action = request['action']
+    timestamp = request['timestamp']
+    timing = request['timing']
+    total = timing['Total']
+
+    debug("Total for request for action " + action + ": " + str(total))
+
+    # The approach is to get all durations, and remove any overlapping durations. This is done by using the
+    # durations with the earliest start, and have any durations that start in that duration, be removed.
+    # This is an heuristic to see if we cover most of the Total timing or not.
+    # This is not foolproof, but a best effort. Measurements that does not live up to the percentage, will be flagged.
+    subkeys = [m for m in timing.keys() if '.durations' in m and not 'Total.durations' in m]
+    # Create list of all durations. First, add the k to the timings, for debugging / output purposes
+    for k in subkeys:
+        for t in timing[k]:
+            t['timer'] = k
+    durations = []
+    for k in subkeys:
+        durations.extend(timing[k])
+
+    # Make sure we do not have an empty list
+    if len(durations) == 0:
+        debug("Found empty list of measurements")
+        error("Request for action " + action + " at time " + str(timestamp) + " has no submeasurements.")
+        return False
+
+    # Sort by relstart, reverse to use pop
+    durations.sort(key=lambda e: e['relstart'], reverse=True)
+
+    debug("Durations, potentially overlapping, reversed: " + str(durations))
+
+    # Get the first measurement, use as starting point
+    non_overlapping_durations = []
+    d = durations.pop()
+    non_overlapping_durations.append(d)
+    relstop = d['relstop']
+    timer = d['timer']
+    while True:
+        if len(durations) == 0:
+            break
+        d = durations.pop()
+        # Ignore this measurement, if it was before current ended
+        if d['relstart'] < relstop:
+            debug("Dropping duration because of overlap with timer " + timer + ": " + str(d))
+            continue
+        # Use this measurement instead
+        non_overlapping_durations.append(d)
+        relstop = d['relstop']
+        timer = d['timer']
+
+    debug("Durations, non overlapping: " + str(non_overlapping_durations))
+
+    # Now, sum the durations, and compare to total
+    durations_sum = sum([e['duration'] for e in non_overlapping_durations])
+    debug("Total for this timer: " + str(total) + ", durations_sum: " + str(durations_sum)
+          + ", percentage: " + str(durations_sum/total*100))
+
+    result = durations_sum/total*100 >= target_percentage
+
+    if result:
+        info("Request for action " + action + " at time " + str(timestamp)
+             + " has " + str(durations_sum/total*100) + "% durations, which is sufficient")
+    else:
+        error("Request for action " + action + " at time " + str(timestamp)
+              + " has " + str(durations_sum/total*100) + "% durations, which is less than required")
+
+    return result
 
 
 def main():
@@ -209,10 +284,19 @@ def main():
         debug("cli options: debug:" + str(args.debug))
 
         # Read the json file
+
+        final_result = True
         with open(args.filename) as json_file:
             data = json.load(json_file)
-            for p in data:
-                print (p['timestamp'])
+            for r in data:
+                final_result = analyze_timing(r, args.percentage) and final_result
+
+        if final_result:
+            info("All measurements higher than target percentage of " + str(args.percentage))
+            sys.exit(0)
+        else:
+            error("At least one measurements less than target percentage of " + str(args.percentage))
+            sys.exit(1)
 
     except Exception:
         output_log_msg(traceback.format_exc())
