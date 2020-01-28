@@ -10,6 +10,7 @@ import sys
 import traceback
 import json
 import datetime
+import re
 
 ################################################################################
 # GLOBAL STUFF
@@ -183,7 +184,8 @@ def get_args() -> argparse.Namespace:
                         help="Output extra debug information")
     parser.add_argument("-p", "--percentage", default=98,
                         type=float,
-                        help="Check that the sums of non-overlapping measurements covers at least this percentage of Total.")
+                        help="Check that the sums of non-overlapping measurements"
+                             + " covers at least this percentage of Total.")
     parser.description = "Checks that the sums of non-overlapping measurements covers a percentage of Total"
     parser.epilog = """
 Examples:
@@ -210,11 +212,11 @@ def analyze_timing(request, target_percentage) -> bool:
 
     debug("Total for request for action " + action + ": " + str(total))
 
-    # The approach is to get all durations, and remove any overlapping durations. This is done by using the
-    # durations with the earliest start, and have any durations that start in that duration, be removed.
+    # The approach is to get all durations (except total), and remove any overlapping durations. This is done by using
+    # the durations with the earliest start, and have any durations that start in that duration, be removed.
     # This is an heuristic to see if we cover most of the Total timing or not.
     # This is not foolproof, but a best effort. Measurements that does not live up to the percentage, will be flagged.
-    subkeys = [m for m in timing.keys() if '.durations' in m and not 'Total.durations' in m]
+    subkeys = [m for m in timing.keys() if '.durations' in m and 'Total.durations' not in m]
     # Create list of all durations. First, add the k to the timings, for debugging / output purposes
     for k in subkeys:
         for t in timing[k]:
@@ -268,7 +270,9 @@ def analyze_timing(request, target_percentage) -> bool:
     else:
         error("Request for action " + action + " at time " + str(timestamp)
               + " has " + str(durations_sum/total*100) + "% durations, which is less than required")
-        info("Durations, non overlapping: " + str(non_overlapping_durations))
+        info("Total: " + json.dumps(timing['Total']) + ", durations, non overlapping: "
+             + json.dumps(non_overlapping_durations))
+        info("Request: " + json.dumps(request))
 
     return result
 
