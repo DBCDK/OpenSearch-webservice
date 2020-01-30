@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# Tries to start a browser, if an opensearch server is currently running using docker compose.
+
+which dirname &> /dev/null || die "Unable to run dirname command - please install it"
+export SCRIPTNAME="client"
+export SCRIPT_DIR=$(dirname "$(readlink -f "$0")") || { echo "Unable to identify basedir from $0" ; exit 1; }
+. "${SCRIPT_DIR}/shared.sh" || { echo "Unable to load shared file shared.sh" ; exit 1; }
+
+set -e
+
+# Locate the port of a running server.
+PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-webservice_1) \
+  || die "Unable to locate a running opensearch server, named docker_opensearch-webservice_1 - did you forget to run 'server'?"
+
+URL="localhost:${PORT}/5.2"
+
+# Try to find a browser-open program
+URL_OPEN_PROG=$(which xdg-open || which gnome-open || which kde-open || which firefox || which chromium-browser || which chrome || which links)
+
+debug "Found URL opener to ${URL_OPEN_PROG}"
+
+info "Starting ws client on ${URL}"
+${URL_OPEN_PROG} ${URL} || die "Unable to start a client for url ${URL_OPEN_PROG}"
+

@@ -1,12 +1,33 @@
 def workerNode = 'devel10'
 
 pipeline {
-    agent { label "devel8" }
-    tools {
-        maven "maven 3.5"
+    agent {
+        label "devel10"
     }
     environment {
+        // TODO: This needs to be visited, when Version5.2 is merged to master.
+        VERSION = "5.2"
+
+        // This is the prefix used by the docker container builds. If you need to change this,
+        // you must sync it with the values from the source code. (Shell scripts, compose files, etc).
+        DOCKER_BUILD_PREFIX = "opensearch-ws-local"
+
+        // This is the prefix used for PUSH
+        DOCKER_PUSH_PREFIX = "docker-os.dbc.dk"
+
+        // We use this tag during building, to avoid clashing with other builds
+        DOCKER_BUILD_TAG = "${env.BUILD_TAG}"
+
+        // This is how we wish to mark the pushed tags
         DOCKER_PUSH_TAG = "${env.BUILD_NUMBER}"
+
+        // BUILD_NUMBER is used later in the build process
+        BUILD_NUMBER = "${env.BUILD_NUMBER}"
+
+        // The registry to push images to
+        registry = "https://docker-os.dbc.dk"
+        registryCredential = "docker"
+
         GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
     }
     triggers {
@@ -15,54 +36,144 @@ pipeline {
     options {
         buildDiscarder(logRotator(artifactDaysToKeepStr: "", artifactNumToKeepStr: "", daysToKeepStr: "30", numToKeepStr: "30"))
         timestamps()
+        // Limit concurrent builds to one pr. branch.
+        disableConcurrentBuilds()
     }
+
+
     stages {
-        stage("build") {
+        stage("clear workspace") {
             steps {
-                // Fail Early..
-                script {
-                    if (!env.BRANCH_NAME) {
-                        throw new hudson.AbortException('Job Started from non MultiBranch Build')
-                    } else {
-                        println(" Building BRANCH_NAME == ${BRANCH_NAME}")
-                    }
-
-                }
-
-                sh """                     
-                    ./build.sh                                                                                    
-                """
-                archiveArtifacts artifacts: '**/docker/*.tar.gz', fingerprint: true
-                //junit "**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml"
+                deleteDir()
+                checkout scm
             }
         }
-        stage("docker") {
+        stage('Checkout OLS_class_lib') {
+            /* Let's make sure we have the OLS_class_lib repository cloned to our workspace */
+            steps {
+                checkout scm
+                checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'GITLAB_DEPLOY_METASCRUM', depthOption: 'infinity', ignoreExternalsOption: true, local: 'src/OLS_class_lib', remote: 'https://svn.dbc.dk/repos/php/OpenLibrary/class_lib/trunk']], quietOperation: true, workspaceUpdater: [$class: 'CheckoutUpdater']])
+            }
+        }
+
+        // Build all docker images by script. If they pass the systemtest, and we are on master, they will be pushed.
+        stage("Docker Build") {
             steps {
                 script {
-                    dirName = "docker"
-                    version = 5.2
-                    dir(dirName) {
-                        def imageName = "opensearch-webservice-${version}".toLowerCase()
-                        def imageLabel = env.BUILD_NUMBER
-                        if (!(env.BRANCH_NAME ==~ /master|trunk|Version5.2/)) {
-                            println("Using branch_name ${BRANCH_NAME}")
-                            imageLabel = BRANCH_NAME.split(/\//)[-1]
-                            imageLabel = imageLabel.toLowerCase()
-                        } else {
-                            println(" Using Master branch ${BRANCH_NAME}")
-                        }
-                        println("In ${dirName} build opensearch as ${imageName}:$imageLabel")
-                        def app = docker.build("$imageName:${imageLabel}".toLowerCase(), '--pull --no-cache .')
+                    currentBuild.displayName = "Building Dockers for ${env.BUILD_TAG}"
+                }
+                // This builds the docker images with a prefix and a tag that is related to this jenkins job.
+                ansiColor("xterm") {
+                    sh """#!/usr/bin/env bash
+                    set -e
+                    echo ${BUILD_NUMBER} > BUILDNUMBER
+                    build-dockers.py --debug --pull --tag ${DOCKER_BUILD_TAG} --output tags-to-push.json
+                    """
+                }
+                script {
+                    // The next step... Cheating a bit here.
+                    currentBuild.displayName = "Testing ${env.BRANCH_NAME} / ${env.BUILD_TAG}"
+                }
+            }
+        }
 
-                        if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
-                            docker.withRegistry('https://docker-os.dbc.dk', 'docker') {
-                                app.push()
-                                if (env.BRANCH_NAME ==~ /master|trunk|Version5.2/) {
-                                    app.push "latest"
-                                }
+        /*
+        stage("Integration tests") {
+            failFast true
+            parallel {
+                stage("Systemtest") {
+                    steps {
+                        script {
+                            echo "Running integration test on ${DOCKER_BUILD_TAG}"
+                            ansiColor("xterm") {
+                                sh """#!/usr/bin/env bash
+                                set -e
+                                pwd
+                                ./run-system-test.sh --debug --pull --tag ${DOCKER_BUILD_TAG}
+                                """
                             }
                         }
                     }
+                }
+            }
+         }
+        */
+        stage("Docker Push") {
+            // If, we are on branch master, and tests passed, push to artifactory, using "push names"
+            // TODO: This needs to be visited, when we merge Version5.2 to master.
+            when {
+                branch "Version5.2"
+            }
+            steps {
+                script {
+                    currentBuild.displayName = "Pushing images for ${env.BUILD_TAG}"
+
+                    // Get a list of all the images that needs pushing - saved in the previous step
+                    def tags = readJSON file: 'tags-to-push.json'
+
+                    // Retag, using the shell. Then push, using the docker abstraction.
+                    // Why the retag here - because we use a different docker prefix, and
+                    // want to change the name. The idea of using a "limited" docker prefix is
+                    // to make the seperation between "local" and "docker-*.dbc.dk" very clear.
+                    // If the Jenkins docker abstraction supported renaming, that would be great.
+                    // First the rename - if any rename fails, nothing has been pushed.
+                    echo "Retagging all images before pushing to repository"
+                    for (int i = 0; i < tags.size(); i++) {
+                        def buildTag = tags[i]
+                        def pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, DOCKER_PUSH_TAG)
+                        echo "Retagging $buildTag to $pushTag"
+                        ansiColor("xterm") {
+                            sh """#!/usr/bin/env bash
+                            set -e
+                            docker tag "${buildTag}" "${pushTag}"
+                        """
+                    }
+                    /*
+			              // This project also needs a latest tag.
+                        pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, "latest")
+                        echo "Retagging $buildTag to $pushTag"
+                        ansiColor("xterm") {
+                            sh """#!/usr/bin/env bash
+                            set -e
+                            docker tag "${buildTag}" "${pushTag}"
+                        """
+                        }
+                    */
+
+                    echo "Pushing images to repository"
+                    for (int i = 0; i < tags.size(); i++) {
+                        def buildTag = tags[i]
+                        def pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, DOCKER_PUSH_TAG)
+                        // Wrap the images in docker abstractions.
+                        image = docker.image(pushTag)
+                        docker.withRegistry(registry, registryCredential) {
+                            image.push()
+                        }
+                        echo "Image pushed with tag $pushTag"
+                        /*
+                        pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, "latest")
+                        // Wrap the images in docker abstractions.
+                        image = docker.image(pushTag)
+                        docker.withRegistry(registry, registryCredential) {
+                            image.push()
+                        }
+                        echo "Image pushed with tag $pushTag"
+                        */
+                    }
+
+                    // And, finally, an overview.
+                    // Yes, this is not very elegant code, but debugging it is a pain, so stay simple.
+                    echo "These images were pushed to the repository:"
+                    for (int i = 0; i < tags.size(); i++) {
+                        def buildTag = tags[i]
+                        def pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, DOCKER_PUSH_TAG)
+                        echo "=>  $pushTag"
+                        /*
+                        pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, "latest")
+                        echo "=>  $pushTag"
+                        */
+                    }
+                    currentBuild.displayName = "Pushed *-${VERSION}:${DOCKER_PUSH_TAG}"
                 }
             }
         }
@@ -88,11 +199,43 @@ pipeline {
                 }
             }
         }
-
-    } // stages
+    }
 
     post {
+        // The intention is to differentiate between master and branches. For
+        // * master : All developers gets mail (with log) on every failed build, and on fixed buils. Slack to #search.
+        //          : Also
+        // * non-master: Only culprit (if possible), no log.
+        // To identify master, everything is wrapped in a script section.
+        fixed {
+            script {
+                if ("${env.BRANCH_NAME}" == 'master') {
+                    emailext(
+                            to: "os-team@dbc.dk",
+                            subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} back to normal",
+                            mimeType: 'text/html; charset=UTF-8',
+                            body: "<p>The master build is back to normal.</p><p><a href=\"${env.BUILD_URL}\">Build information</a>.</p>",
+                            attachLog: false,
+                    )
+                    slackSend(channel: 'search',
+                            color: 'good',
+                            message: "${env.JOB_NAME} #${env.BUILD_NUMBER} back to normal: ${env.BUILD_URL}",
+                            tokenCredentialId: 'slack-global-integration-token')
+
+                } else {
+                    // this is some other branch, only send to developer
+                    emailext(
+                            recipientProviders: [developers()],
+                            subject: "[Jenkins] ${env.BUILD_TAG} is back to normal",
+                            mimeType: 'text/html; charset=UTF-8',
+                            body: "<p>${env.BUILD_TAG} is back to normal. </p><p><a href=\"${env.BUILD_URL}\">Build information</a>.</p>",
+                            attachLog: false,
+                    )
+                }
+            }
+        }
         failure {
+            // archiveArtifacts artifacts: 'dev/docker/**/*_container_log.txt', fingerprint: true
             script {
                 if ("${env.BRANCH_NAME}" == 'master') {
                     emailext(
@@ -119,7 +262,28 @@ pipeline {
                     )
                 }
             }
+            println("Job was a failure.")
         }
-    } // post
-
+        success {
+            println("Job was a succes.")
+//            script {
+//                if ("${env.BRANCH_NAME}" == 'master') {
+//                    slackSend(channel: 'search',
+//                            color: 'good',
+//                            message: "${env.JOB_NAME} #${env.BUILD_NUMBER} completed, and pushed *-${VERSION}:${DOCKER_PUSH_TAG} to artifactory.",
+//                            tokenCredentialId: 'slack-global-integration-token')
+//
+//                }
+//            }
+        }
+    }
 }
+
+// Takes an image, and substitutes the prefix and tag
+def toPushTag(tag, prefixFrom, prefixTo, tagFrom, tagTo) {
+    tag = tag.replaceFirst(/^$prefixFrom/, prefixTo)
+    // TODO: More 5.2./version weirdness.
+    tag = tag.replaceFirst(/:$tagFrom$/, "-$VERSION:$tagTo")
+    return tag
+}
+
