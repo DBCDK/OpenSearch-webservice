@@ -9,7 +9,6 @@ LABEL maintainer="Team Search <os-team@dbc.dk>" \
       AGENCY_CACHE_HOST="OpenAgency calls memcache host [localhost]" \
       AGENCY_CACHE_PORT="OpenAgency calls memcache port [11211]" \
       AGENCY_CACHE_EXPIRE="OpenAgency calls mencache expiration [3600]" \
-      CACHE_SETTINGS="cache host, port and timeout to cache search-structures" \
       CACHE_HOST="Search results memcache host [localhost]" \
       CACHE_PORT="Search results memcache port [11211]" \
       CACHE_EXPIRE="Search results memcache expiration [600]" \
