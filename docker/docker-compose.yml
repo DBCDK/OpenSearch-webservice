@@ -14,11 +14,9 @@ services:
       # - AAA_IP_RIGHTS_BLOCK=aaa_ip_rights[dbc] = 0.0.0.0-255.255.255.255\naaa_ip_rights = 500
       # - AAA_IP_RIGHTS_BLOCK=
       - AAA_IP_LIST=0.0.0.0-255.255.255.255
-      - AGENCY_CACHE_SETTINGS=
       - AGENCY_END_POINT=http://openagency.addi.dk/test_2.34/
       - AGENCY_FALLBACK=100200
       - AGENCY_PROFILE_FALLBACK=test
-      - CACHE_SETTINGS=
       - FEDORA=http://corepo-content-service.fbstest.svc.cloud.dbc.dk/rest/
       - HOLDINGS_DB=http://holdings-service.fbstest.svc.cloud.dbc.dk/getAllAvailability?pid=%s
       - HOLDINGS_ITEMS_INDEX=fbstest-corepo-searcher

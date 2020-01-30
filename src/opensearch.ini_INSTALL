@@ -328,9 +328,9 @@ agency[searchProfile] = ?action=openSearchProfile&agencyId=%s&profileVersion=%s&
 ;agency[cache_host] = localhost
 ;agency[cache_port] = 11211
 ;agency[cache_expire] = 300
-agency[cache_host] = ${AGENCY_CACHE_SET_HOST}
-agency[cache_port] = ${AGENCY_CACHE_SET_PORT}
-agency[cache_expire] = ${AGENCY_CACHE_SET_EXPIRE}
+agency[cache_host] = ${AGENCY_CACHE_HOST}
+agency[cache_port] = ${AGENCY_CACHE_PORT}
+agency[cache_expire] = ${AGENCY_CACHE_EXPIRE}
 ;
 ; timeout for agency call - defaults to 10 seconds
 agency[timeout] = 15
