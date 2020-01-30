@@ -18,6 +18,9 @@ pipeline {
         // This is how we wish to mark the pushed tags
         DOCKER_PUSH_TAG = "${env.BUILD_NUMBER}"
 
+        // BUILD_NUMBER is used later in the build process
+        BUILD_NUMBER = "${env.BUILD_NUMBER}"
+
         // The registry to push images to
         registry = "https://docker-os.dbc.dk"
         registryCredential = "docker"
@@ -58,6 +61,7 @@ pipeline {
                 ansiColor("xterm") {
                     sh """#!/usr/bin/env bash
                     set -e
+                    echo ${BUILD_NUMBER} > BUILDNUMBER
                     build-dockers.py --debug --pull --tag ${DOCKER_BUILD_TAG} --output tags-to-push.json
                     """
                 }
