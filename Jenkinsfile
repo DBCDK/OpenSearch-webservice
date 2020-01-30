@@ -1,3 +1,5 @@
+def workerNode = 'devel10'
+
 pipeline {
     agent {
         label "devel10"
@@ -25,6 +27,8 @@ pipeline {
         // The registry to push images to
         registry = "https://docker-os.dbc.dk"
         registryCredential = "docker"
+
+        GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
     }
     triggers {
         pollSCM("H/3 * * * *")
@@ -93,7 +97,6 @@ pipeline {
                 }
             }
          }
-
         */
         stage("Docker Push") {
             // If, we are on branch master, and tests passed, push to artifactory, using "push names"
@@ -124,9 +127,9 @@ pipeline {
                             set -e
                             docker tag "${buildTag}" "${pushTag}"
                         """
-			        }
-                        /*
-			            // This project also needs a latest tag.
+                    }
+                    /*
+			              // This project also needs a latest tag.
                         pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, "latest")
                         echo "Retagging $buildTag to $pushTag"
                         ansiColor("xterm") {
@@ -135,8 +138,7 @@ pipeline {
                             docker tag "${buildTag}" "${pushTag}"
                         """
                         }
-                        */
-                    }
+                    */
 
                     echo "Pushing images to repository"
                     for (int i = 0; i < tags.size(); i++) {
@@ -171,13 +173,32 @@ pipeline {
                         echo "=>  $pushTag"
                         */
                     }
-
-
                     currentBuild.displayName = "Pushed *-${VERSION}:${DOCKER_PUSH_TAG}"
                 }
             }
         }
-
+        stage("Update DIT") {
+            agent {
+                docker {
+                    label workerNode
+                    image "docker.dbc.dk/build-env:latest"
+                    alwaysPull true
+                }
+            }
+            when {
+                expression {
+                    (currentBuild.result == null || currentBuild.result == 'SUCCESS') && env.BRANCH_NAME ==~ /master|Version5.2/
+                }
+            }
+            steps {
+                script {
+                    dir("deploy") {
+                        sh "set-new-version services/search/opensearch.yaml ${env.GITLAB_PRIVATE_TOKEN} metascrum/dit-gitops-secrets ${DOCKER_PUSH_TAG} -b master"
+                        sh "set-new-version services/search/opensearch-dbckat.yaml ${env.GITLAB_PRIVATE_TOKEN} metascrum/dit-gitops-secrets ${DOCKER_PUSH_TAG} -b master"
+                    }
+                }
+            }
+        }
     }
 
     post {
