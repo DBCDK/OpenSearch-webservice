@@ -127,8 +127,8 @@ pipeline {
                             set -e
                             docker tag "${buildTag}" "${pushTag}"
                         """
-                    }
-                    /*
+                        }
+                        /*
 			              // This project also needs a latest tag.
                         pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, "latest")
                         echo "Retagging $buildTag to $pushTag"
@@ -138,7 +138,8 @@ pipeline {
                             docker tag "${buildTag}" "${pushTag}"
                         """
                         }
-                    */
+                        */
+                    }
 
                     echo "Pushing images to repository"
                     for (int i = 0; i < tags.size(); i++) {
