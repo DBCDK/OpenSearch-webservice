@@ -3,11 +3,16 @@ FROM docker.dbc.dk/dbc-apache-php7:latest
 
 LABEL maintainer="Team Search <os-team@dbc.dk>" \
       AAA_IP_LIST="Sets AAA access for this IP pattern. Default is full access for everybody [0.0.0.0-255.255.255.255]" \
-      AGENCY_CACHE_SETTINGS="cache host, port and timeout to cache openAgency calls; use CACHE_SETTINGS if not set" \
-      AGENCY_END_POINT="The full url for the openAgency service" \
+      AGENCY_END_POINT="The full url for the OpenAgency service" \
       AGENCY_FALLBACK="Default agency fallback code - for development and testing only" \
       AGENCY_PROFILE_FALLBACK="Default search profile fallback - for development and testing only" \
+      AGENCY_CACHE_HOST="OpenAgency calls memcache host [localhost]" \
+      AGENCY_CACHE_PORT="OpenAgency calls memcache port [11211]" \
+      AGENCY_CACHE_EXPIRE="OpenAgency calls mencache expiration [3600]" \
       CACHE_SETTINGS="cache host, port and timeout to cache search-structures" \
+      CACHE_HOST="Search results memcache host [localhost]" \
+      CACHE_PORT="Search results memcache port [11211]" \
+      CACHE_EXPIRE="Search results memcache expiration [600]" \
       FEDORA="Url to the corepo server" \
       FORMAT_JS_SERVER_BLOCK="To include openFormat code in opensearch - only for special circumstances" \
       FORMAT_CURL_TIMEOUT="timeout (in seconds) if openFormat is included" \
@@ -38,7 +43,8 @@ COPY --chown=sideejer:sideejer src/includes/ ${DBC_PHP_INSTALL_DIR}/includes/
 COPY --chown=sideejer:sideejer src/*.xsd ${DBC_PHP_INSTALL_DIR}/
 COPY --chown=sideejer:sideejer src/*.html ${DBC_PHP_INSTALL_DIR}/
 COPY --chown=sideejer:sideejer src/*_INSTALL ${DBC_PHP_INSTALL_DIR}/
-COPY --chown=sideejer:sideejer src/*.php ${DBC_PHP_INSTALL_DIR}/
+# This is slight hack - if BUILDNUMBER exists, it is copied. If not, it is not.
+COPY --chown=sideejer:sideejer BUILDNUMBE? src/*.php ${DBC_PHP_INSTALL_DIR}/
 # Would be nice to not have to have this file?
 RUN ln -s ${DBC_PHP_INSTALL_DIR}/server.php ${DBC_PHP_INSTALL_DIR}/index.php && chown sideejer:sideejer ${DBC_PHP_INSTALL_DIR}/index.php
 
@@ -47,9 +53,13 @@ ENV USE_MEMCACHE=yes
 
 # openSearch default settings
 ENV AGENCY_FALLBACK="" \
-    AGENCY_CACHE_SETTINGS="agency[cache_host] = localhost\nagency[cache_port] = 11211\nagency[cache_expire] = 300" \
     AGENCY_PROFILE_FALLBACK="" \
-    CACHE_SETTINGS="cache_host = localhost\ncache_port = 11211\ncache_expire = 600" \
+    AGENCY_CACHE_HOST="localhost" \
+    AGENCY_CACHE_PORT=11211 \
+    AGENCY_CACHE_EXPIRE=3600 \
+    CACHE_HOST="localhost" \
+    CACHE_PORT=11211 \
+    CACHE_EXPIRE=600 \
     FORMAT_JS_SERVER_BLOCK="" \
     FORMAT_CURL_TIMEOUT="" \
     FORMAT_CACHE_SETTINGS_BLOCK="" \
@@ -63,7 +73,3 @@ ENV AGENCY_FALLBACK="" \
     SERVICE_LOCATION="" \
     USE_HOLDING_BLOCK_JOIN="yes" \
     VERBOSE_LEVEL="WARNING+ERROR+FATAL+STAT+TIMER"
-
-
-
-

@@ -1,8 +1,11 @@
+def workerNode = 'devel10'
+
 pipeline {
     agent {
         label "devel10"
     }
     environment {
+        // TODO: This needs to be visited, when Version5.2 is merged to master.
         VERSION = "5.2"
 
         // This is the prefix used by the docker container builds. If you need to change this,
@@ -18,9 +21,14 @@ pipeline {
         // This is how we wish to mark the pushed tags
         DOCKER_PUSH_TAG = "${env.BUILD_NUMBER}"
 
+        // BUILD_NUMBER is used later in the build process
+        BUILD_NUMBER = "${env.BUILD_NUMBER}"
+
         // The registry to push images to
         registry = "https://docker-os.dbc.dk"
         registryCredential = "docker"
+
+        GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
     }
     triggers {
         pollSCM("H/3 * * * *")
@@ -58,6 +66,7 @@ pipeline {
                 ansiColor("xterm") {
                     sh """#!/usr/bin/env bash
                     set -e
+                    echo ${BUILD_NUMBER} > BUILDNUMBER
                     build-dockers.py --debug --pull --tag ${DOCKER_BUILD_TAG} --output tags-to-push.json
                     """
                 }
@@ -88,13 +97,12 @@ pipeline {
                 }
             }
          }
-
         */
         stage("Docker Push") {
             // If, we are on branch master, and tests passed, push to artifactory, using "push names"
-            // TODO: This may need to be changed to Version 5.2
+            // TODO: This needs to be visited, when we merge Version5.2 to master.
             when {
-                branch "SE-2803_mbd_patch"
+                branch "Version5.2"
             }
             steps {
                 script {
@@ -119,9 +127,9 @@ pipeline {
                             set -e
                             docker tag "${buildTag}" "${pushTag}"
                         """
-			        }
+                        }
                         /*
-			            // This project also needs a latest tag.
+			              // This project also needs a latest tag.
                         pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, "latest")
                         echo "Retagging $buildTag to $pushTag"
                         ansiColor("xterm") {
@@ -166,13 +174,32 @@ pipeline {
                         echo "=>  $pushTag"
                         */
                     }
-
-
                     currentBuild.displayName = "Pushed *-${VERSION}:${DOCKER_PUSH_TAG}"
                 }
             }
         }
-
+        stage("Update DIT") {
+            agent {
+                docker {
+                    label workerNode
+                    image "docker.dbc.dk/build-env:latest"
+                    alwaysPull true
+                }
+            }
+            when {
+                expression {
+                    (currentBuild.result == null || currentBuild.result == 'SUCCESS') && env.BRANCH_NAME ==~ /Version5.2/
+                }
+            }
+            steps {
+                script {
+                    dir("deploy") {
+                        sh "set-new-version services/search/opensearch.yaml ${env.GITLAB_PRIVATE_TOKEN} metascrum/dit-gitops-secrets ${DOCKER_PUSH_TAG} -b master"
+                        sh "set-new-version services/search/opensearch-dbckat.yaml ${env.GITLAB_PRIVATE_TOKEN} metascrum/dit-gitops-secrets ${DOCKER_PUSH_TAG} -b master"
+                    }
+                }
+            }
+        }
     }
 
     post {
@@ -256,8 +283,8 @@ pipeline {
 // Takes an image, and substitutes the prefix and tag
 def toPushTag(tag, prefixFrom, prefixTo, tagFrom, tagTo) {
     tag = tag.replaceFirst(/^$prefixFrom/, prefixTo)
-    // More 5.2. weirdness.
-    tag = tag.replaceFirst(/:$tagFrom$/, "-5.2-do-not-use:$tagTo")
+    // TODO: More 5.2./version weirdness.
+    tag = tag.replaceFirst(/:$tagFrom$/, "-$VERSION:$tagTo")
     return tag
 }
 

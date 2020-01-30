@@ -302,8 +302,9 @@ solr_file[select] = admin/file?file=%s&contentType=text/xml;charset=utf-8
 ;cache_host = localhost
 ;cache_port = 11211
 ;cache_expire = 600
-${CACHE_SETTINGS}
-
+cache_host = ${CACHE_HOST}
+cache_port = ${CACHE_PORT}
+cache_expire = ${CACHE_EXPIRE}
 ; --------------
 ; memcache for solr_file - if not set cache_* will be used if set
 solr_file_cache_host = localhost
@@ -327,7 +328,9 @@ agency[searchProfile] = ?action=openSearchProfile&agencyId=%s&profileVersion=%s&
 ;agency[cache_host] = localhost
 ;agency[cache_port] = 11211
 ;agency[cache_expire] = 300
-${AGENCY_CACHE_SETTINGS}
+agency[cache_host] = ${AGENCY_CACHE_HOST}
+agency[cache_port] = ${AGENCY_CACHE_PORT}
+agency[cache_expire] = ${AGENCY_CACHE_EXPIRE}
 ;
 ; timeout for agency call - defaults to 10 seconds
 agency[timeout] = 15
