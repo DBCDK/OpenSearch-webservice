@@ -54,7 +54,8 @@ function check_timings() {
 
     echo "[" > ${JSONFILE}
     docker logs ${WS_CONTAINERID} 2> /dev/null | \
-      grep '"level":"TIMER"' | grep '"timing":{' | awk '{print $0","}' | sed '$ s/,$//' >> ${JSONFILE}
+      grep '"level":"TIMER"' | grep '"timing":{' | awk '{print $0","}' | sed '$ s/,$//' >> ${JSONFILE} \
+      || die "No duration timings found in log - did you enable this in the abstract webserver class?"
     echo "]"  >> ${JSONFILE}
 
     exec ${SCRIPT_DIR}/analyze-timings.py  ${JSONFILE}
