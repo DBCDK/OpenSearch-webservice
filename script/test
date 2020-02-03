@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# TODO: No systemtest - yet.
+
+which dirname &> /dev/null || die "Unable to run dirname command - please install it"
+export SCRIPTNAME="test"
+export SCRIPT_DIR=$(dirname "$(readlink -f "$0")") || { echo "Unable to identify basedir from $0" ; exit 1; }
+exec ${SCRIPT_DIR}/../run-system-test.sh "$@"

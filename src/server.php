@@ -74,6 +74,7 @@ class OpenSearch extends webServiceServer {
   public function __construct() {
     webServiceServer::__construct('opensearch.ini');
 
+    $this->watch->start("construct");
     $this->curl = new curl();
     $this->curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
     $this->open_agency = new OpenAgency($this->config->get_value('agency', 'setup'));
@@ -94,6 +95,7 @@ class OpenSearch extends webServiceServer {
     define('MAX_OBJECTS_IN_WORK', 100);
     define('AND_OP', ' AND ');
     define('OR_OP', ' OR ');
+    $this->watch->stop("construct");
   }
 
   public function getDkabm($param) {
@@ -164,163 +166,181 @@ class OpenSearch extends webServiceServer {
   public function search($param) {
     $ret_error = new stdClass();
     // set some defines
-    if (!$this->aaa->has_right('opensearch', 500)) {
-      _Object::set_value($ret_error->searchResponse->_value, 'error', 'authentication_error');
-      return $ret_error;
-    }
-
-    // check for unsupported stuff
-    $ret_error->searchResponse->_value->error->_value = &$unsupported;
-    if (empty($param->query->_value)) {
-      $unsupported = 'Error: No query found in request';
-    }
-
-    // for testing and group all
-    if (count($this->aaa->aaa_ip_groups) == 1 && isset($this->aaa->aaa_ip_groups['all'])) {
-      _Object::set_value($param, 'agency', '100200');
-      _Object::set_value($param, 'profile', 'test');
-    }
-    if (empty($param->agency->_value) && empty($param->profile)) {
-      _Object::set_value($param, 'agency', $this->config->get_value('agency_fallback', 'setup'));
-      _Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
-    }
-    if ($param->profile && !is_array($param->profile)) {
-      $param->profile = array($param->profile);
-    }
-    if (empty($param->agency->_value)) {
-      $unsupported = 'Error: No agency in request';
-    }
-    elseif (isset($param->sort) && (strtolower($param->sort->_value) == 'random')) {
-      $unsupported = 'Error: random sort is currently disabled';
-    }
-    elseif (empty($param->profile)) {
-      $unsupported = 'Error: No profile in request';
-    }
-    elseif (!($this->search_profile = self::fetch_profile_from_agency($param->agency->_value, $param->profile))) {
-      $unsupported = 'Error: Cannot fetch profile(s): ' . self::stringify_obj_array($param->profile) .
-        ' for ' . $param->agency->_value;
-    }
-    $this->user_param = $param;
-    $this->agency = $param->agency->_value;
-    if ($repository_error = self::set_repositories($param->repository->_value)) {
-      $unsupported = $repository_error;
-    }
-
-    if ($unsupported) return $ret_error;
-
-    $this->show_agency = self::value_or_default($param->showAgency->_value, $this->agency);
-    $this->profile = $param->profile;
-    $this->agency_catalog_source = $this->agency . '-katalog';
-    $this->filter_agency = self::set_solr_filter($this->search_profile);
-    $this->split_holdings_include = self::split_collections_for_holdingsitem($this->search_profile);
-    self::set_valid_relations_and_sources($this->search_profile);
-    // self::set_search_filters_for_800000_collection($param->forceFilter->_value);
-
-    $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
-
-    $this->format = self::set_format($param->objectFormat,
-                                     $this->config->get_value('open_format', 'setup'),
-                                     $this->config->get_value('open_format_force_namespace', 'setup'),
-                                     $this->config->get_value('solr_format', 'setup'));
-
-    $use_work_collection = ($param->collectionType->_value <> 'manifestation');
-    if ($this->repository['rawrepo']) {
-      $fetch_raw_records = (!$this->format['found_solr_format'] || $this->format['marcxchange']['user_selected']);
-      if ($fetch_raw_records) {
-        define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
-      }
-      else {
-        define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_rawrepo', 'setup'), 1000));
-      }
-    }
-    elseif ($use_work_collection) {
-      define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_collections', 'setup'), 50));
-    }
-    else {
-      define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
-    }
-
-    $sort = [];
-    $rank_types = $this->config->get_value('rank', 'setup');
-    if (!self::parse_for_ranking($param, $rank, $rank_types)) {
-      if ($unsupported = self::parse_for_sorting($param, $sort, $sort_types)) {
+    $this->watch->start('aaa');
+    try {
+      if (!$this->aaa->has_right('opensearch', 500)) {
+        _Object::set_value($ret_error->searchResponse->_value, 'error', 'authentication_error');
         return $ret_error;
       }
+    } finally {
+      $this->watch->stop('aaa');
     }
-    $boost_q = self::boostUrl($param->userDefinedBoost);
 
-    if ($unsupported) return $ret_error;
+    $this->watch->start('preamble');
+    try {
+      // check for unsupported stuff
+      $ret_error->searchResponse->_value->error->_value = &$unsupported;
+      if (empty($param->query->_value)) {
+        $unsupported = 'Error: No query found in request';
+      }
 
-    $ret_error->searchResponse->_value->error->_value = &$error;
-    $start = $param->start->_value;
-    $step_value = min($param->stepValue->_value, MAX_STEP_VALUE);
-    if (empty($start) && $step_value) {
-      $start = 1;
+      // for testing and group all
+      if (count($this->aaa->aaa_ip_groups) == 1 && isset($this->aaa->aaa_ip_groups['all'])) {
+        _Object::set_value($param, 'agency', '100200');
+        _Object::set_value($param, 'profile', 'test');
+      }
+      if (empty($param->agency->_value) && empty($param->profile)) {
+        _Object::set_value($param, 'agency', $this->config->get_value('agency_fallback', 'setup'));
+        _Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
+      }
+      if ($param->profile && !is_array($param->profile)) {
+        $param->profile = array($param->profile);
+      }
+      $this->watch->start('preamble.profile_filter');
+      try {
+        if (empty($param->agency->_value)) {
+          $unsupported = 'Error: No agency in request';
+        } elseif (isset($param->sort) && (strtolower($param->sort->_value) == 'random')) {
+          $unsupported = 'Error: random sort is currently disabled';
+        } elseif (empty($param->profile)) {
+          $unsupported = 'Error: No profile in request';
+        } elseif (!($this->search_profile = self::fetch_profile_from_agency($param->agency->_value, $param->profile))) {
+          $unsupported = 'Error: Cannot fetch profile(s): ' . self::stringify_obj_array($param->profile) .
+            ' for ' . $param->agency->_value;
+        }
+        $this->user_param = $param;
+        $this->agency = $param->agency->_value;
+        if ($repository_error = self::set_repositories($param->repository->_value)) {
+          $unsupported = $repository_error;
+        }
+
+        if ($unsupported) return $ret_error;
+
+        $this->show_agency = self::value_or_default($param->showAgency->_value, $this->agency);
+        $this->profile = $param->profile;
+        $this->agency_catalog_source = $this->agency . '-katalog';
+        $this->filter_agency = self::set_solr_filter($this->search_profile);
+        $this->split_holdings_include = self::split_collections_for_holdingsitem($this->search_profile);
+        self::set_valid_relations_and_sources($this->search_profile);
+        // self::set_search_filters_for_800000_collection($param->forceFilter->_value);
+
+      } finally {
+        $this->watch->stop('preamble.profile_filter');
+      }
+      $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
+
+      $this->format = self::set_format($param->objectFormat,
+        $this->config->get_value('open_format', 'setup'),
+        $this->config->get_value('open_format_force_namespace', 'setup'),
+        $this->config->get_value('solr_format', 'setup'));
+
+      $use_work_collection = ($param->collectionType->_value <> 'manifestation');
+      if ($this->repository['rawrepo']) {
+        $fetch_raw_records = (!$this->format['found_solr_format'] || $this->format['marcxchange']['user_selected']);
+        if ($fetch_raw_records) {
+          define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
+        } else {
+          define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_rawrepo', 'setup'), 1000));
+        }
+      } elseif ($use_work_collection) {
+        define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_collections', 'setup'), 50));
+      } else {
+        define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
+      }
+
+      $sort = [];
+      $rank_types = $this->config->get_value('rank', 'setup');
+      if (!self::parse_for_ranking($param, $rank, $rank_types)) {
+        if ($unsupported = self::parse_for_sorting($param, $sort, $sort_types)) {
+          return $ret_error;
+        }
+      }
+      $boost_q = self::boostUrl($param->userDefinedBoost);
+      if (is_numeric($boost_q) && $boost_q < 0) {
+        Object::set_value($ret_error->searchResponse->_value, 'error', 'Only positive float value allowed');
+        return $ret_error;
+      }
+
+#AF hvor kan den unsupported komme fra ?
+      if ($unsupported) return $ret_error;
+
+      $ret_error->searchResponse->_value->error->_value = &$error;
+      $start = $param->start->_value;
+      $step_value = min($param->stepValue->_value, MAX_STEP_VALUE);
+      if (empty($start) && $step_value) {
+        $start = 1;
+      }
+      if ($param->queryLanguage->_value) {
+        $this->query_language = $param->queryLanguage->_value;
+      }
+      $this->debug_query = $this->xs_boolean($param->queryDebug->_value);
+
+    } finally {
+      $this->watch->stop('preamble');
     }
-    if ($param->queryLanguage->_value) {
-      $this->query_language = $param->queryLanguage->_value;
-    }
-    $this->debug_query = $this->xs_boolean($param->queryDebug->_value);
 
     if ($this->repository['rawrepo']) {
       $this->watch->start('rawrepo');
-      $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language);
-      $this->watch->start('cql');
-      $solr_query = $this->cql2solr->parse($param->query->_value);
-      $this->watch->stop('cql');
-      if ($solr_query['error']) {
-        $error = self::cql2solr_error_to_string($solr_query['error']);
-        return $ret_error;
-      }
-      VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
-      $q = implode(AND_OP, $solr_query['edismax']['q']);
-      if (!in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), []))) {
-        $filter = rawurlencode(RR_MARC_001_B . ':(870970 OR ' . $this->agency . ')');
-      }
-      if ($sort) {
-        foreach ($sort as $s) {
-          $ss[] = urlencode($sort_types[$s]);
+      try {
+        $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language);
+        $this->watch->start('cql');
+        $solr_query = $this->cql2solr->parse($param->query->_value);
+        $this->watch->stop('cql');
+        if ($solr_query['error']) {
+          $error = self::cql2solr_error_to_string($solr_query['error']);
+          return $ret_error;
         }
-        $sort_q = '&sort=' . implode(',', $ss);
+        VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
+        $q = implode(AND_OP, $solr_query['edismax']['q']);
+        if (!in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), []))) {
+          $filter = rawurlencode(RR_MARC_001_B . ':(870970 OR ' . $this->agency . ')');
+        }
+        if ($sort) {
+          foreach ($sort as $s) {
+            $ss[] = urlencode($sort_types[$s]);
+          }
+          $sort_q = '&sort=' . implode(',', $ss);
+        }
+        foreach ($solr_query['edismax']['fq'] as $fq) {
+          $filter .= '&fq=' . rawurlencode($fq);
+        }
+        $solr_urls[0]['url'] = $this->repository['solr'] .
+          '?q=' . urlencode($q) .
+          '&fq=' . $filter .
+          '&start=' . ($start - 1) .
+          '&rows=' . $step_value . $sort_q .
+          '&defType=edismax&wt=phps&fl=' . ($this->debug_query ? '&debugQuery=on' : '');
+        $solr_urls[0]['debug'] = str_replace('wt=phps', 'wt=xml', $solr_urls[0]['url']);
+        if ($err = self::do_solr($solr_urls, $solr_arr)) {
+          $error = $err;
+          return $ret_error;
+        }
+        $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), []);
+        if ($fetch_raw_records) {
+          $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $solr_arr['response'], in_array($this->agency, $s11_agency));
+        }
+        if (is_scalar($collections)) {
+          $error = $collections;
+          return $ret_error;
+        }
+        $result = &$ret->searchResponse->_value->result->_value;
+        if (!empty($this->format['found_solr_format'])) {
+          self::collections_from_solr($collections, $solr_arr['response']);
+        }
+        _Object::set_value($result, 'hitCount', self::get_num_found($solr_arr));
+        _Object::set_value($result, 'collectionCount', count($collections));
+        _Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
+        $result->searchResult = &$collections;
+        _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
+        _Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
+        if ($this->debug_query) {
+          _Object::set_value($result, 'queryDebugResult', self::set_debug_info($solr_arr['debug']));
+        }
+        self::log_stat_search();
+        return $ret;
+      } finally {
+        $this->watch->stop('rawrepo');
       }
-      foreach ($solr_query['edismax']['fq'] as $fq) {
-        $filter .= '&fq=' . rawurlencode($fq);
-      }
-      $solr_urls[0]['url'] = $this->repository['solr'] .
-        '?q=' . urlencode($q) .
-        '&fq=' . $filter .
-        '&start=' . ($start - 1) .
-        '&rows=' . $step_value . $sort_q . 
-        '&defType=edismax&wt=phps&fl=' . ($this->debug_query ? '&debugQuery=on' : '');
-      $solr_urls[0]['debug'] = str_replace('wt=phps', 'wt=xml', $solr_urls[0]['url']);
-      if ($err = self::do_solr($solr_urls, $solr_arr)) {
-        $error = $err;
-        return $ret_error;
-      }
-      $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), []);
-      if ($fetch_raw_records) {
-        $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $solr_arr['response'], in_array($this->agency, $s11_agency));
-      }
-      $this->watch->stop('rawrepo');
-      if (is_scalar($collections)) {
-        $error = $collections;
-        return $ret_error;
-      }
-      $result = &$ret->searchResponse->_value->result->_value;
-      if (!empty($this->format['found_solr_format'])) {
-        self::collections_from_solr($collections, $solr_arr['response']);
-      }
-      _Object::set_value($result, 'hitCount', self::get_num_found($solr_arr));
-      _Object::set_value($result, 'collectionCount', count($collections));
-      _Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
-      $result->searchResult = &$collections;
-      _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-      _Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
-      if ($this->debug_query) {
-        _Object::set_value($result, 'queryDebugResult', self::set_debug_info($solr_arr['debug']));
-      }
-      self::log_stat_search();
-      return $ret;
     }
 
     /**
@@ -333,11 +353,15 @@ class OpenSearch extends webServiceServer {
      *  e) Build result from buffers, include relations and formatted records if requested
      */
 
+    $this->watch->start('precql');
     $use_work_collection |= $sort_types[$sort[0]] == 'random';
     $key_work_struct = md5($param->query->_value . $this->repository_name . $this->filter_agency . self::xs_boolean($param->allObjects->_value) .
                            $use_work_collection . implode('', $sort) . $rank . $boost_q . $this->config->get_inifile_hash());
 
+    $this->watch->start('precql.newsolrquery');
     $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language, $this->split_holdings_include);
+    $this->watch->stop('precql.newsolrquery');
+    $this->watch->stop('precql');
     $this->watch->start('cql');
     if ($param->skipFilter->_value == '1')    // for test
       $solr_query = $this->cql2solr->parse($param->query->_value);
@@ -346,65 +370,68 @@ class OpenSearch extends webServiceServer {
     self::modify_query_and_filter_agency($solr_query);
 //var_dump($solr_query); var_dump($this->split_holdings_include); var_dump($this->search_filter_for_800000); die();
     $this->watch->stop('cql');
-    if ($solr_query['error']) {
-      $error = self::cql2solr_error_to_string($solr_query['error']);
-      return $ret_error;
-    }
-    if (!count($solr_query['operands'])) {
-      $error = 'Error: No query found in request';
-      return $ret_error;
-    }
-
-    if ($this->filter_agency) {
-      $filter_q = rawurlencode($this->filter_agency);
-    }
-
-    if (is_array($solr_query['edismax']['ranking'])) {
-      if (!$rank_cql = $rank_types['rank_cql'][reset($solr_query['edismax']['ranking'])]) {
-        $rank_cql = $rank_types['rank_cql']['default'];
+    $this->watch->start('postcql');
+    try {
+      if ($solr_query['error']) {
+        $error = self::cql2solr_error_to_string($solr_query['error']);
+        return $ret_error;
       }
-      if ($rank_cql) {
-        $rank = $rank_cql;
+      if (!count($solr_query['operands'])) {
+        $error = 'Error: No query found in request';
+        return $ret_error;
       }
-    }
-    $sort_q = '';
-    if ($this->query_language == 'bestMatch') {
-      $sort_q .= '&mm=1';
-      $solr_query['edismax'] = $solr_query['best_match'];
-      foreach ($solr_query['best_match']['sort'] as $key => $val) {
-        $sort_q .= '&' . $key . '=' . urlencode($val);
-        _Object::set_value($best_match_debug, $key, $val);
-      }
-    }
-    elseif ($sort) {
-      foreach ($sort as $s) {
-        $ss[] = urlencode($sort_types[$s]);
-      }
-      $sort_q = '&sort=' . implode(',', $ss);
-    }
-    if ($rank == 'rank_frequency') {
-      if ($new_rank = self::guess_rank($solr_query, $rank_types, $filter_q)) {
-        $rank = $new_rank;
-      }
-      else {
-        $rank = 'rank_none';
-      }
-    }
-    $rank_q = '';
-    if ($rank_types[$rank]) {
-      $rank_qf = $this->cql2solr->make_boost($rank_types[$rank]['word_boost']);
-      $rank_pf = $this->cql2solr->make_boost($rank_types[$rank]['phrase_boost']);
-      $rank_tie = $rank_types[$rank]['tie'];
-      $rank_q = '&qf=' . urlencode($rank_qf) . '&pf=' . urlencode($rank_pf) . '&tie=' . $rank_tie;
-    }
 
-    $facet_q = empty($param->facets) ? '' : self::set_solr_facet_parameters($param->facets->_value);
+      if ($this->filter_agency) {
+        $filter_q = rawurlencode($this->filter_agency);
+      }
 
-    // TODO rows should max to like 5000 and use cursorMark to page forward. cursorMark need a sort paramater to work
-    $rows = $step_value ? (($start + $step_value + 100) * 2) + 100 : 0;
+      if (is_array($solr_query['edismax']['ranking'])) {
+        if (!$rank_cql = $rank_types['rank_cql'][reset($solr_query['edismax']['ranking'])]) {
+          $rank_cql = $rank_types['rank_cql']['default'];
+        }
+        if ($rank_cql) {
+          $rank = $rank_cql;
+        }
+      }
+      $sort_q = '';
+      if ($this->query_language == 'bestMatch') {
+        $sort_q .= '&mm=1';
+        $solr_query['edismax'] = $solr_query['best_match'];
+        foreach ($solr_query['best_match']['sort'] as $key => $val) {
+          $sort_q .= '&' . $key . '=' . urlencode($val);
+          _Object::set_value($best_match_debug, $key, $val);
+        }
+      } elseif ($sort) {
+        foreach ($sort as $s) {
+          $ss[] = urlencode($sort_types[$s]);
+        }
+        $sort_q = '&sort=' . implode(',', $ss);
+      }
+      if ($rank == 'rank_frequency') {
+        if ($new_rank = self::guess_rank($solr_query, $rank_types, $filter_q)) {
+          $rank = $new_rank;
+        } else {
+          $rank = 'rank_none';
+        }
+      }
+      $rank_q = '';
+      if ($rank_types[$rank]) {
+        $rank_qf = $this->cql2solr->make_boost($rank_types[$rank]['word_boost']);
+        $rank_pf = $this->cql2solr->make_boost($rank_types[$rank]['phrase_boost']);
+        $rank_tie = $rank_types[$rank]['tie'];
+        $rank_q = '&qf=' . urlencode($rank_qf) . '&pf=' . urlencode($rank_pf) . '&tie=' . $rank_tie;
+      }
 
-    VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
+      $facet_q = empty($param->facets) ? '' : self::set_solr_facet_parameters($param->facets->_value);
 
+      // TODO rows should max to like 5000 and use cursorMark to page forward. cursorMark need a sort paramater to work
+      $rows = $step_value ? (($start + $step_value + 100) * 2) + 100 : 0;
+
+      VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
+
+    } finally {
+      $this->watch->stop('postcql');
+    }
     // do the query
     $this->watch->start('Solr_ids');
     if ($sort[0] == 'random') {
@@ -428,282 +455,309 @@ class OpenSearch extends webServiceServer {
       }
     }
     $this->watch->stop('Solr_ids');
+    $this->watch->start('post_Solr_ids');
+    try {
+      if ($error) return $ret_error;
 
-    if ($error) return $ret_error;
+      if ($this->debug_query) {
+        $debug_result = self::set_debug_info($solr_arr['debug'], $this->rank_frequence_debug, $best_match_debug);
+      }
+      if ($solr_arr['debug']) {
+        $solr_timing = $solr_arr['debug']['timing'];
+      }
 
-    if ($this->debug_query) {
-      $debug_result = self::set_debug_info($solr_arr['debug'], $this->rank_frequence_debug, $best_match_debug);
+      $facets = '';
+      if ($facet_q) {
+        $facets = self::parse_for_facets($solr_arr);
+      }
+    } finally {
+      $this->watch->stop('post_Solr_ids');
     }
-    if ($solr_arr['debug']) {
-      $solr_timing = $solr_arr['debug']['timing'];
-    }
-
-    $facets = '';
-    if ($facet_q) {
-      $facets = self::parse_for_facets($solr_arr);
-    }
-
     $this->watch->start('Build_id');
-    $work_ids = $used_search_fids = [];
-    if ($sort[0] == 'random') {
-      $rows = min($step_value, $numFound);
-      $more = $step_value < $numFound;
-      for ($w_idx = 0; $w_idx < $rows; $w_idx++) {
-        do {
-          $no = rand(0, $numFound - 1);
-        } while (isset($used_search_fid[$no]));
-        $used_search_fid[$no] = TRUE;
-        self::get_solr_array($solr_query['edismax'], $no, 1, '', '', '', $filter_q, '', $solr_arr);
-        $uid = self::get_first_solr_element($solr_arr, FIELD_UNIT_ID);
-        $work_ids[] = [$uid];
-      }
-    }
-    else {
-      $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
-                               $this->config->get_value('cache_port', 'setup'),
-                               $this->config->get_value('cache_expire', 'setup'));
-      $work_cache_struct = [];
-      if (empty($_GET['skipCache'])) {
-        if ($work_cache_struct = $this->cache->get($key_work_struct)) {
-          VerboseJson::log(TRACE, 'Cache hit lines' . count($work_cache_struct));
+    try {
+      $work_ids = $used_search_fids = [];
+      if ($sort[0] == 'random') {
+        $rows = min($step_value, $numFound);
+        $more = $step_value < $numFound;
+        for ($w_idx = 0; $w_idx < $rows; $w_idx++) {
+          do {
+            $no = rand(0, $numFound - 1);
+          } while (isset($used_search_fid[$no]));
+          $used_search_fid[$no] = TRUE;
+          self::get_solr_array($solr_query['edismax'], $no, 1, '', '', '', $filter_q, '', $solr_arr);
+          $uid = self::get_first_solr_element($solr_arr, FIELD_UNIT_ID);
+          $work_ids[] = [$uid];
         }
-        else {
-          $work_cache_struct = [];
-          VerboseJson::log(TRACE, 'work_struct cache miss');
+      } else {
+        $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
+          $this->config->get_value('cache_port', 'setup'),
+          $this->config->get_value('cache_expire', 'setup'));
+        $work_cache_struct = [];
+        if (empty($_GET['skipCache'])) {
+          if ($work_cache_struct = $this->cache->get($key_work_struct)) {
+            VerboseJson::log(TRACE, 'Cache hit lines' . count($work_cache_struct));
+          } else {
+            $work_cache_struct = [];
+            VerboseJson::log(TRACE, 'work_struct cache miss');
+          }
+        }
+
+        if (DEBUG_ON) {
+          echo 'solr_work_ids: ';
+          print_r($solr_work_ids);
+        }
+
+        if (empty($step_value)) {
+          $more = ($numFound >= $start);   // no need to find records, only hit count is returned and maybe facets
+        } else {
+          if ($err = self::build_work_struct_from_solr($work_cache_struct, $work_ids, $more, $solr_work_ids, $solr_query['edismax'], $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, self::xs_boolean($param->allObjects->_value), $numFound, $this->debug_query)) {
+            $error = $err;
+            return $ret_error;
+          }
         }
       }
-
-      if (DEBUG_ON) { echo 'solr_work_ids: '; print_r($solr_work_ids); }
-
-      if (empty($step_value)) {
-        $more = ($numFound >= $start);   // no need to find records, only hit count is returned and maybe facets
+      if ($this->cache && $this->cache->check()) {
+        VerboseJson::log(TRACE, array('Cache set # work' => count($work_cache_struct)));
+        $this->cache->set($key_work_struct, $work_cache_struct);
       }
-      else {
-        if ($err = self::build_work_struct_from_solr($work_cache_struct, $work_ids, $more, $solr_work_ids, $solr_query['edismax'], $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, self::xs_boolean($param->allObjects->_value), $numFound, $this->debug_query)) {
-          $error = $err;
-          return $ret_error;
-        }
+    } finally {
+      $this->watch->stop('Build_id');
+    }
+
+    $this->watch->start('post_Build_id');
+    try {
+      if (count($work_ids) < $step_value && count($solr_work_ids) < $numFound) {
+        VerboseJson::log(WARNING, 'To few search_ids found in solr. Query' . implode(AND_OP, $solr_query['edismax']['q']));
       }
-    }
-    if ($this->cache && $this->cache->check()) {
-      VerboseJson::log(TRACE, array('Cache set # work' => count($work_cache_struct)));
-      $this->cache->set($key_work_struct, $work_cache_struct);
-    }
-    $this->watch->stop('Build_id');
 
-    if (count($work_ids) < $step_value && count($solr_work_ids) < $numFound) {
-      VerboseJson::log(WARNING, 'To few search_ids found in solr. Query' . implode(AND_OP, $solr_query['edismax']['q']));
-    }
-
-    if (DEBUG_ON) { echo PHP_EOL . 'work_ids:' . PHP_EOL; var_dump($work_ids); };
+      if (DEBUG_ON) {
+        echo PHP_EOL . 'work_ids:' . PHP_EOL;
+        var_dump($work_ids);
+      };
 
 // fetch data to sort_keys and (if needed) sorl display format(s)
-    $units_in_result = [];
-    foreach ($work_ids as $work) {
-      foreach ($work as $unit_id => $unit_pids) {
-        $units_in_result[$unit_id] = '"' . $unit_id . '"';
+      $units_in_result = [];
+      foreach ($work_ids as $work) {
+        foreach ($work as $unit_id => $unit_pids) {
+          $units_in_result[$unit_id] = '"' . $unit_id . '"';
+        }
       }
+      $add_queries = [FIELD_UNIT_ID . ':(' . implode(OR_OP, $units_in_result) . ')'];
+    } finally {
+      $this->watch->stop('post_Build_id');
     }
-    $add_queries = [FIELD_UNIT_ID . ':(' . implode(OR_OP, $units_in_result) . ')'];
     $this->watch->start('Solr_disp');
     $display_solr_arr = self::do_add_queries_and_fetch_solr_data_fields($add_queries, '*', self::xs_boolean($param->allObjects->_value), '');
     $this->watch->stop('Solr_disp');
-    $found_primary = array();
-    foreach ($display_solr_arr as $d_s_a) {
-      foreach ($d_s_a['response']['docs'] as $solr_rec) {
-        $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
-        if ($solr_rec['sort.complexKey'] && !$found_primary[$unit_id]) {
-          $unit_sort_keys[$unit_id] = $solr_rec['sort.complexKey'] . '  ' . $unit_id;
-          $source = self::record_source_from_pid($solr_rec[FIELD_FEDORA_PID]);
-          $found_primary[$unit_id] = (self::scalar_or_first_elem($solr_rec['unit.isPrimaryObject']) == 'true') &&
-                                     in_array($source, $solr_rec[FIELD_COLLECTION_INDEX]);
-        }
-      }
-    }
-    if ($this->debug_query) {
-      $explain_keys = array_keys($solr_arr['debug']['explain']);
-      foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
-        $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
-        if ($units_in_result[$unit_id]) {
-          $explain[$unit_id] = $solr_arr['debug']['explain'][$explain_keys[$solr_idx]];
-        }
-      }
-    }
-
-    // work_ids now contains the work-records and the fedoraPids they consist of
-    // now fetch the records for each work/collection
-    $collections = [];
-    $rec_no = max(1, $start);
-    $use_sort_complex_key = in_array($this->agency, self::value_or_default($this->config->get_value('use_sort_complex_key', 'setup'), []));
-
-    // fetch all addi and hierarchi records for all units in work_ids
-    foreach ($work_ids as $idx => $work) {
-      if (count($work) >= MAX_OBJECTS_IN_WORK) {
-        VerboseJson::log(WARNING, 'record_repo work-record containing' . reset($work) . ' contains ' . count($work) . ' units. Cut work to first ' . MAX_OBJECTS_IN_WORK . ' units');
-        array_splice($work_ids[$idx], MAX_OBJECTS_IN_WORK);
-      }
-    }
-
-    // find and read best record in unit's. Fetch addi records if relations is part of the request
-    list($raw_res, $primary_pids, $unit_info, $relation_units) = self::read_records_and_extract_data($work_ids, $param, 'UNIT');
-
-    // modify order of pids to reflect show priority, as returned from corepo
-    foreach ($unit_info as $info_uid => $info) {
-      if (count($info[0] > 1)) {
-        foreach ($work_ids as $w => $work) {
-          foreach ($work as $unit_id => $pids) {
-            if ($info_uid == $unit_id) {
-              $work_ids[$w][$unit_id] = $info[0];
-            }
+    $this->watch->start('buildresponse');
+    try {
+      $found_primary = array();
+      foreach ($display_solr_arr as $d_s_a) {
+        foreach ($d_s_a['response']['docs'] as $solr_rec) {
+          $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
+          if ($solr_rec['sort.complexKey'] && !$found_primary[$unit_id]) {
+            $unit_sort_keys[$unit_id] = $solr_rec['sort.complexKey'] . '  ' . $unit_id;
+            $source = self::record_source_from_pid($solr_rec[FIELD_FEDORA_PID]);
+            $found_primary[$unit_id] = (self::scalar_or_first_elem($solr_rec['unit.isPrimaryObject']) == 'true') &&
+              in_array($source, $solr_rec[FIELD_COLLECTION_INDEX]);
           }
         }
       }
-    }
-
-    // If relations is asked for, build a search to find available records using "full" search profile
-    list($rel_res, $rel_unit_pids) = self::fetch_valid_relation_records($relation_units);
-
-    // collect holdings if needed or directly requested
-    $holdings_res = self::collect_holdings($work_ids, $param->includeHoldingsCount, 'UNIT', $use_sort_complex_key, $unit_sort_keys);
-
-    $record_repo_dom = new DomDocument();
-    $record_repo_dom->preserveWhiteSpace = FALSE;
-    $missing_record = $this->config->get_value('missing_record', 'setup');
-    foreach ($work_ids as $work) {
-      $objects = [];
-      foreach ($work as $unit_id => $pids) {
-        $rec_id = reset($pids);
-        $sort_holdings = ' ';
-        if ($holdings_res[$unit_id] && $use_sort_complex_key && (strpos($unit_sort_keys[$unit_id], HOLDINGS) !== FALSE)) {
-          $sort_holdings = sprintf(' %04d ', 9999 - intval($holdings_res[$unit_id]['lend']));
-        }
-        $sort_key = str_replace(HOLDINGS, $sort_holdings, $unit_sort_keys[$unit_id]);
-        $objects[$sort_key] = new stdClass();
-        unset($rec_error);
-        if (@ !$record_repo_dom->loadXML($raw_res[$unit_id])) {
-          VerboseJson::log(FATAL, 'Cannot load recid ' . $rec_id . ' into DomXml');
-          if ($missing_record) {
-            $record_repo_dom->loadXML(sprintf($missing_record, $rec_id));
-          }
-          else {
-            _Object::set_value($rec_error->object->_value, 'error', 'unknown/missing/inaccessible record: ' . reset($pids));
-            _Object::set_value($rec_error->object->_value, 'identifier', reset($pids));
+      if ($this->debug_query) {
+        $explain_keys = array_keys($solr_arr['debug']['explain']);
+        foreach ($solr_arr['response']['docs'] as $solr_idx => $solr_rec) {
+          $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
+          if ($units_in_result[$unit_id]) {
+            $explain[$unit_id] = $solr_arr['debug']['explain'][$explain_keys[$solr_idx]];
           }
         }
-        if ($rec_error) {
-          $objects[$sort_key]->_value = $rec_error;
-        } 
-        else {
-          $objects[$sort_key]->_value = self::build_record_object($record_repo_dom,
-                                                                  $raw_res[$unit_id],
-                                                                  reset($pids),
-                                                                  $rel_res,
-                                                                  $relation_units[$unit_id],
-                                                                  $rel_unit_pids,
-                                                                  $primary_pids[$unit_id],
-                                                                  $holdings_res[$unit_id],
-                                                                  $param);
-        } 
-        if (empty($param->includeHoldingsCount) || !self::xs_boolean($param->includeHoldingsCount->_value)) {
-          unset($objects[$sort_key]->_value->holdingsCount);
-          unset($objects[$sort_key]->_value->lendingLibraries);
-        }
-        foreach ($pids as $um) {
-          _Object::set_array_value($u_member, 'identifier', $um);
-        }
-        _Object::set_value($objects[$sort_key]->_value, 'objectsAvailable', $u_member);
-        unset($u_member);
-        if (isset($explain[$unit_id])) {
-          _Object::set_value($objects[$sort_key]->_value, 'queryResultExplanation', $explain[$unit_id]);
-        }
       }
-      $o = new stdClass();
-      _Object::set_value($o->collection->_value, 'resultPosition', $rec_no++);
-      _Object::set_value($o->collection->_value, 'numberOfObjects', count($objects));
-      if (count($objects) > 1) {
-        ksort($objects);
-      }
-      $o->collection->_value->object = $objects;
-      _Object::set($collections[], '_value', $o);
-      unset($o);
-    }
-    if (DEBUG_ON) {
-      echo PHP_EOL . 'unit_sort_keys:' . PHP_EOL; var_dump($unit_sort_keys);
-      echo PHP_EOL . 'holdings_res:' . PHP_EOL; var_dump($holdings_res);
-      echo PHP_EOL . 'raw_res:' . PHP_EOL; var_dump($raw_res);
-      echo PHP_EOL . 'relation_units (relations found in records):' . PHP_EOL; var_dump($relation_units);
-      echo PHP_EOL . 'rel_unit_pids (relations in search profile):' . PHP_EOL; var_dump($rel_unit_pids);
-      echo PHP_EOL . 'rel_res (relation records):' . PHP_EOL; var_dump($rel_res);
-      echo PHP_EOL . 'work_ids:' . PHP_EOL; var_dump($work_ids);
-      echo PHP_EOL . 'unit_info:' . PHP_EOL; var_dump($unit_info);
-      echo PHP_EOL . 'relations:' . PHP_EOL; var_dump($relations);
-      echo PHP_EOL . 'solr_arr:' . PHP_EOL; var_dump($solr_arr);
-    }
 
-    if (isset($param->collectionType) && ($param->collectionType->_value == 'work-1')) {
-      foreach ($collections as &$c) {
-        $collection_no = 0;
-        foreach ($c->_value->collection->_value->object as &$o) {
-          if ($collection_no++) {
-            foreach ($o->_value as $tag => $val) {
-              if (!in_array($tag, ['identifier', 'creationDate', 'formatsAvailable'])) {
-                unset($o->_value->$tag);
+      // work_ids now contains the work-records and the fedoraPids they consist of
+      // now fetch the records for each work/collection
+      $collections = [];
+      $rec_no = max(1, $start);
+      $use_sort_complex_key = in_array($this->agency, self::value_or_default($this->config->get_value('use_sort_complex_key', 'setup'), []));
+
+      // fetch all addi and hierarchi records for all units in work_ids
+      foreach ($work_ids as $idx => $work) {
+        if (count($work) >= MAX_OBJECTS_IN_WORK) {
+          VerboseJson::log(WARNING, 'record_repo work-record containing' . reset($work) . ' contains ' . count($work) . ' units. Cut work to first ' . MAX_OBJECTS_IN_WORK . ' units');
+          array_splice($work_ids[$idx], MAX_OBJECTS_IN_WORK);
+        }
+      }
+
+      // find and read best record in unit's. Fetch addi records if relations is part of the request
+      list($raw_res, $primary_pids, $unit_info, $relation_units) = self::read_records_and_extract_data($work_ids, $param, 'UNIT');
+
+      // modify order of pids to reflect show priority, as returned from corepo
+      foreach ($unit_info as $info_uid => $info) {
+        if (count($info[0] > 1)) {
+          foreach ($work_ids as $w => $work) {
+            foreach ($work as $unit_id => $pids) {
+              if ($info_uid == $unit_id) {
+                $work_ids[$w][$unit_id] = $info[0];
               }
             }
           }
         }
       }
-    }
 
-    if ($step_value) {
-      if (!empty($this->format['found_open_format'])) {
-        self::format_records($collections);
+      // If relations is asked for, build a search to find available records using "full" search profile
+      list($rel_res, $rel_unit_pids) = self::fetch_valid_relation_records($relation_units);
+
+      // collect holdings if needed or directly requested
+      $holdings_res = self::collect_holdings($work_ids, $param->includeHoldingsCount, 'UNIT', $use_sort_complex_key, $unit_sort_keys);
+
+      $record_repo_dom = new DomDocument();
+      $record_repo_dom->preserveWhiteSpace = FALSE;
+      $missing_record = $this->config->get_value('missing_record', 'setup');
+      foreach ($work_ids as $work) {
+        $objects = [];
+        foreach ($work as $unit_id => $pids) {
+          $rec_id = reset($pids);
+          $sort_holdings = ' ';
+          if ($holdings_res[$unit_id] && $use_sort_complex_key && (strpos($unit_sort_keys[$unit_id], HOLDINGS) !== FALSE)) {
+            $sort_holdings = sprintf(' %04d ', 9999 - intval($holdings_res[$unit_id]['lend']));
+          }
+          $sort_key = str_replace(HOLDINGS, $sort_holdings, $unit_sort_keys[$unit_id]);
+          $objects[$sort_key] = new stdClass();
+          unset($rec_error);
+          if (@ !$record_repo_dom->loadXML($raw_res[$unit_id])) {
+            VerboseJson::log(FATAL, 'Cannot load recid ' . $rec_id . ' into DomXml');
+            if ($missing_record) {
+              $record_repo_dom->loadXML(sprintf($missing_record, $rec_id));
+            } else {
+              _Object::set_value($rec_error->object->_value, 'error', 'unknown/missing/inaccessible record: ' . reset($pids));
+              _Object::set_value($rec_error->object->_value, 'identifier', reset($pids));
+            }
+          }
+          if ($rec_error) {
+            $objects[$sort_key]->_value = $rec_error;
+          } else {
+            $objects[$sort_key]->_value = self::build_record_object($record_repo_dom,
+              $raw_res[$unit_id],
+              reset($pids),
+              $rel_res,
+              $relation_units[$unit_id],
+              $rel_unit_pids,
+              $primary_pids[$unit_id],
+              $holdings_res[$unit_id],
+              $param);
+          }
+          if (empty($param->includeHoldingsCount) || !self::xs_boolean($param->includeHoldingsCount->_value)) {
+            unset($objects[$sort_key]->_value->holdingsCount);
+            unset($objects[$sort_key]->_value->lendingLibraries);
+          }
+          foreach ($pids as $um) {
+            _Object::set_array_value($u_member, 'identifier', $um);
+          }
+          _Object::set_value($objects[$sort_key]->_value, 'objectsAvailable', $u_member);
+          unset($u_member);
+          if (isset($explain[$unit_id])) {
+            _Object::set_value($objects[$sort_key]->_value, 'queryResultExplanation', $explain[$unit_id]);
+          }
+        }
+        $o = new stdClass();
+        _Object::set_value($o->collection->_value, 'resultPosition', $rec_no++);
+        _Object::set_value($o->collection->_value, 'numberOfObjects', count($objects));
+        if (count($objects) > 1) {
+          ksort($objects);
+        }
+        $o->collection->_value->object = $objects;
+        _Object::set($collections[], '_value', $o);
+        unset($o);
       }
-      if (!empty($this->format['found_solr_format'])) {
-        self::format_solr($collections, $display_solr_arr);
+      if (DEBUG_ON) {
+        echo PHP_EOL . 'unit_sort_keys:' . PHP_EOL;
+        var_dump($unit_sort_keys);
+        echo PHP_EOL . 'holdings_res:' . PHP_EOL;
+        var_dump($holdings_res);
+        echo PHP_EOL . 'raw_res:' . PHP_EOL;
+        var_dump($raw_res);
+        echo PHP_EOL . 'relation_units (relations found in records):' . PHP_EOL;
+        var_dump($relation_units);
+        echo PHP_EOL . 'rel_unit_pids (relations in search profile):' . PHP_EOL;
+        var_dump($rel_unit_pids);
+        echo PHP_EOL . 'rel_res (relation records):' . PHP_EOL;
+        var_dump($rel_res);
+        echo PHP_EOL . 'work_ids:' . PHP_EOL;
+        var_dump($work_ids);
+        echo PHP_EOL . 'unit_info:' . PHP_EOL;
+        var_dump($unit_info);
+        echo PHP_EOL . 'relations:' . PHP_EOL;
+        var_dump($relations);
+        echo PHP_EOL . 'solr_arr:' . PHP_EOL;
+        var_dump($solr_arr);
       }
-      self::remove_unselected_formats($collections);
+
+      if (isset($param->collectionType) && ($param->collectionType->_value == 'work-1')) {
+        foreach ($collections as &$c) {
+          $collection_no = 0;
+          foreach ($c->_value->collection->_value->object as &$o) {
+            if ($collection_no++) {
+              foreach ($o->_value as $tag => $val) {
+                if (!in_array($tag, ['identifier', 'creationDate', 'formatsAvailable'])) {
+                  unset($o->_value->$tag);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      if ($step_value) {
+        if (!empty($this->format['found_open_format'])) {
+          self::format_records($collections);
+        }
+        if (!empty($this->format['found_solr_format'])) {
+          self::format_solr($collections, $display_solr_arr);
+        }
+        self::remove_unselected_formats($collections);
+      }
+
+      if (isset($_REQUEST['work']) && ($_REQUEST['work'] == 'debug')) {
+        echo "returned_work_ids: \n";
+        print_r($work_ids);
+        echo "cache: \n";
+        print_r($work_cache_struct);
+        die();
+      }
+
+      $result = &$ret->searchResponse->_value->result->_value;
+      _Object::set_value($result, 'hitCount', $numFound);
+      _Object::set_value($result, 'collectionCount', count($collections));
+      _Object::set_value($result, 'more', ($more ? 'true' : 'false'));
+      self::set_sortUsed($result, $rank, $sort, $sort_types);
+      $result->searchResult = $collections;
+      _Object::set_value($result, 'facetResult', $facets);
+      if ($this->debug_query && $debug_result) {
+        _Object::set_value($result, 'queryDebugResult', $debug_result);
+      }
+      if (isset($solr_timing)) {
+        VerboseJson::log(STAT, array('solrTiming ' => json_encode($solr_timing)));
+      }
+      _Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
+      _Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
+      _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
+      _Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
+
+      self::log_stat_search();
+
+      //var_dump($ret); die();
+      //
+      // Dump Timings log in text format for zabbix remove by end of 2018
+      $this->logOldStyleZabbixTimings('search', 'agency:' . $this->agency .
+        ' profile:' . self::stringify_obj_array($param->profile) .
+        ' ip:' . $_SERVER['REMOTE_ADDR'] .
+        ' repoRecs:' . $this->number_of_record_repo_calls .
+        ' repoCache:' . $this->number_of_record_repo_cached .
+        ' ' . $this->watch->dump());
+
+      return $ret;
+    } finally {
+      $this->watch->stop('buildresponse');
     }
-
-    if (isset($_REQUEST['work']) && ($_REQUEST['work'] == 'debug')) {
-      echo "returned_work_ids: \n";
-      print_r($work_ids);
-      echo "cache: \n";
-      print_r($work_cache_struct);
-      die();
-    }
-
-    $result = &$ret->searchResponse->_value->result->_value;
-    _Object::set_value($result, 'hitCount', $numFound);
-    _Object::set_value($result, 'collectionCount', count($collections));
-    _Object::set_value($result, 'more', ($more ? 'true' : 'false'));
-    self::set_sortUsed($result, $rank, $sort, $sort_types);
-    $result->searchResult = $collections;
-    _Object::set_value($result, 'facetResult', $facets);
-    if ($this->debug_query && $debug_result) {
-      _Object::set_value($result, 'queryDebugResult', $debug_result);
-    }
-    if (isset($solr_timing)) {
-      VerboseJson::log(STAT, array('solrTiming ' => json_encode($solr_timing)));
-    }
-    _Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
-    _Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
-    _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-    _Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
-
-    self::log_stat_search();
-
-    //var_dump($ret); die();
-    //
-    // Dump Timings log in text format for zabbix remove by end of 2018
-    $this->logOldStyleZabbixTimings('search', 'agency:' . $this->agency .
-                             ' profile:' . self::stringify_obj_array($param->profile) .
-                             ' ip:' . $_SERVER['REMOTE_ADDR'] .
-                             ' repoRecs:' . $this->number_of_record_repo_calls .
-                             ' repoCache:' . $this->number_of_record_repo_cached .
-                             ' ' . $this->watch->dump());
-
-    return $ret;
   }
 
 
@@ -723,151 +777,174 @@ class OpenSearch extends webServiceServer {
   public function getObject($param) {
     $ret_error = new stdClass();
     $ret_error->searchResponse->_value->error->_value = &$error;
-    if (!$this->aaa->has_right('opensearch', 500)) {
-      $error = 'authentication_error';
-      return $ret_error;
+    $this->watch->start('aaa');
+    try {
+      if (!$this->aaa->has_right('opensearch', 500)) {
+        $error = 'authentication_error';
+        return $ret_error;
+      }
+    } finally {
+      $this->watch->stop('aaa');
     }
-    if (empty($param->agency->_value) && empty($param->profile)) {
-      _Object::set_value($param, 'agency', $this->config->get_value('agency_fallback', 'setup'));
-      _Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
-    }
-    if (empty($param->agency->_value)) {
+
+    $this->watch->start('preamble');
+    try {
+      if (empty($param->agency->_value) && empty($param->profile)) {
+        _Object::set_value($param, 'agency', $this->config->get_value('agency_fallback', 'setup'));
+        _Object::set_value($param, 'profile', $this->config->get_value('profile_fallback', 'setup'));
+      }
+      if (empty($param->agency->_value)) {
         $error = 'Error: no agency specified';
         return $ret_error;
-    }
-    if (empty($param->profile->_value) && !is_array($param->profile)) {
+      }
+      if (empty($param->profile->_value) && !is_array($param->profile)) {
         $error = 'Error: no profile specified';
         return $ret_error;
-    }
-    if ($param->profile && !is_array($param->profile)) {
-      $param->profile = array($param->profile);
-    }
-    $this->user_param = $param;
-    if ($this->agency = $param->agency->_value) {
-      $this->profile = $param->profile;
-      if ($this->profile) {
-        if (!($this->search_profile = self::fetch_profile_from_agency($this->agency, $this->profile))) {
-          $error = 'Error: Cannot fetch profile(s): ' . self::stringify_obj_array($this->profile) . ' for ' . $this->agency;
-          return $ret_error;
-        }
       }
-      if (!$this->filter_agency = self::set_solr_filter($this->search_profile, TRUE)) {
-        $error = 'Error: Unknown agency: ' . $this->agency;
+      if ($param->profile && !is_array($param->profile)) {
+        $param->profile = array($param->profile);
+      }
+      $this->user_param = $param;
+      $this->watch->start('preamble.profile_filter');
+      try {
+
+        if ($this->agency = $param->agency->_value) {
+          $this->profile = $param->profile;
+          if ($this->profile) {
+            if (!($this->search_profile = self::fetch_profile_from_agency($this->agency, $this->profile))) {
+              $error = 'Error: Cannot fetch profile(s): ' . self::stringify_obj_array($this->profile) . ' for ' . $this->agency;
+              return $ret_error;
+            }
+          }
+          if (!$this->filter_agency = self::set_solr_filter($this->search_profile, TRUE)) {
+            $error = 'Error: Unknown agency: ' . $this->agency;
+            return $ret_error;
+          }
+          self::set_valid_relations_and_sources($this->search_profile);
+          // self::set_search_filters_for_800000_collection();
+        }
+      } finally {
+        $this->watch->stop('preamble.profile_filter');
+      }
+      if ($error = self::set_repositories($param->repository->_value)) {
+        VerboseJson::log(FATAL, $error);
         return $ret_error;
       }
-      self::set_valid_relations_and_sources($this->search_profile);
-      // self::set_search_filters_for_800000_collection();
-    }
-    if ($error = self::set_repositories($param->repository->_value)) {
-      VerboseJson::log(FATAL, $error);
-      return $ret_error;
-    }
-    $this->show_agency = self::value_or_default($param->showAgency->_value, $this->agency);
-    if ($this->filter_agency) {
-      $filter_q = rawurlencode($this->filter_agency);
-    }
+      $this->show_agency = self::value_or_default($param->showAgency->_value, $this->agency);
+      if ($this->filter_agency) {
+        $filter_q = rawurlencode($this->filter_agency);
+      }
 
-    $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
+      $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
-    $this->agency_catalog_source = $this->agency . '-katalog';
-    $this->format = self::set_format($param->objectFormat,
-                                     $this->config->get_value('open_format', 'setup'),
-                                     $this->config->get_value('open_format_force_namespace', 'setup'),
-                                     $this->config->get_value('solr_format', 'setup'));
-    $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
-                             $this->config->get_value('cache_port', 'setup'),
-                             $this->config->get_value('cache_expire', 'setup'));
+      $this->agency_catalog_source = $this->agency . '-katalog';
+      $this->format = self::set_format($param->objectFormat,
+        $this->config->get_value('open_format', 'setup'),
+        $this->config->get_value('open_format_force_namespace', 'setup'),
+        $this->config->get_value('solr_format', 'setup'));
+      $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
+        $this->config->get_value('cache_port', 'setup'),
+        $this->config->get_value('cache_expire', 'setup'));
 
-    $fpids = self::as_array($param->identifier);
-    $lpids = self::as_array($param->localIdentifier);
-    $alpids = self::as_array($param->agencyAndLocalIdentifier);
+      $fpids = self::as_array($param->identifier);
+      $lpids = self::as_array($param->localIdentifier);
+      $alpids = self::as_array($param->agencyAndLocalIdentifier);
 
-    if ($this->repository['rawrepo']) {
-      $fetch_raw_records = (!$this->format['found_solr_format'] || $this->format['marcxchange']['user_selected']);
-      if ($fetch_raw_records) {
+      if ($this->repository['rawrepo']) {
+        $fetch_raw_records = (!$this->format['found_solr_format'] || $this->format['marcxchange']['user_selected']);
+        if ($fetch_raw_records) {
+          define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
+        } else {
+          define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_rawrepo', 'setup'), 1000));
+        }
+      } else {
         define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
       }
-      else {
-        define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_rawrepo', 'setup'), 1000));
+      if (MAX_STEP_VALUE <= count($fpids) + count($lpids) + count($alpids)) {
+        $error = 'getObject can fetch up to ' . MAX_STEP_VALUE . ' records. ';
+        return $ret_error;
       }
-    }
-    else {
-      define('MAX_STEP_VALUE', self::value_or_default($this->config->get_value('max_manifestations', 'setup'), 200));
-    }
-    if (MAX_STEP_VALUE <= count($fpids) + count($lpids) + count($alpids)) {
-      $error = 'getObject can fetch up to ' . MAX_STEP_VALUE . ' records. ';
-      return $ret_error;
-    }
 
-    $add_fl = '';
-    if ($this->format['found_solr_format']) {
-      foreach ($this->format as $f) {
-        if ($f['is_solr_format']) {
-          $add_fl .= ',' . $f['format_name'];
+
+      $add_fl = '';
+      if ($this->format['found_solr_format']) {
+        foreach ($this->format as $f) {
+          if ($f['is_solr_format']) {
+            $add_fl .= ',' . $f['format_name'];
+          }
         }
       }
-    }
-    foreach ($lpids as $lid) {
-      $fpid = new stdClass();
-      $fpid->_value = $this->agency_catalog_source . ':' . str_replace(' ', '', $lid->_value);
-      $fpids[] = $fpid;
-      unset($fpid);
-    }
-    if (!empty($alpids)) {
-      $agency_to_collection = self::value_or_default($this->config->get_value('agency_to_collection', 'setup'), []);
-      foreach ($alpids as $alid) {
-        if (!$collection = $agency_to_collection[$alid->_value->agency->_value]) {
-          $collection = 'katalog';
-        }
+      foreach ($lpids as $lid) {
         $fpid = new stdClass();
-        $fpid->_value = $alid->_value->agency->_value . '-' . $collection . ':' . str_replace(' ', '', $alid->_value->localIdentifier->_value);
+        $fpid->_value = $this->agency_catalog_source . ':' . str_replace(' ', '', $lid->_value);
         $fpids[] = $fpid;
         unset($fpid);
       }
-    }
-    $fpids = self::handle_sequencing($fpids);
-    if ($this->repository['rawrepo']) {
-      $id_array = array();
-      foreach ($fpids as $fpid) {
-        $id_array[] = $fpid->_value;
-        list($owner_collection, $id) = explode(':', $fpid->_value);
-        list($owner) = explode('-', $owner_collection);
-        if (($owner == $this->agency)
-          || ($owner == '870970')
-          || in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), []))
-        ) {
-          $docs['docs'][] = [RR_MARC_001_A => $id, RR_MARC_001_B => $owner, RR_MARC_001_AB => $id . ':' . $owner];
+      if (!empty($alpids)) {
+        $agency_to_collection = self::value_or_default($this->config->get_value('agency_to_collection', 'setup'), []);
+        foreach ($alpids as $alid) {
+          if (!$collection = $agency_to_collection[$alid->_value->agency->_value]) {
+            $collection = 'katalog';
+          }
+          $fpid = new stdClass();
+          $fpid->_value = $alid->_value->agency->_value . '-' . $collection . ':' . str_replace(' ', '', $alid->_value->localIdentifier->_value);
+          $fpids[] = $fpid;
+          unset($fpid);
         }
       }
-      $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), []);
-      if ($fetch_raw_records) {
-        $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $docs, in_array($this->agency, $s11_agency));
-      }
-      if (is_scalar($collections)) {
-        $error = $collections;
-        return $ret_error;
-      }
-      $result = &$ret->searchResponse->_value->result->_value;
-      if (!empty($this->format['found_solr_format'])) {
-        self::collections_from_solr($collections, $docs);
-      }
-      _Object::set_value($result, 'hitCount', count($collections));
-      _Object::set_value($result, 'collectionCount', count($collections));
-      _Object::set_value($result, 'more', 'false');
-      $result->searchResult = &$collections;
-      _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-      _Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
-      if ($this->debug_query) {
-        _Object::set_value($debug_result, 'rawQueryString', $solr_arr['debug']['rawquerystring']);
-        _Object::set_value($debug_result, 'queryString', $solr_arr['debug']['querystring']);
-        _Object::set_value($debug_result, 'parsedQuery', $solr_arr['debug']['parsedquery']);
-        _Object::set_value($debug_result, 'parsedQueryString', $solr_arr['debug']['parsedquery_toString']);
-        _Object::set_value($result, 'queryDebugResult', $debug_result);
-      }
-      self::log_stat_get_object($id_array);
-      return $ret;
-
+      $fpids = self::handle_sequencing($fpids);
+    } finally {
+      $this->watch->stop('preamble');
     }
+
+    if ($this->repository['rawrepo']) {
+      $this->watch->start('rawrepo');
+      try {
+        $id_array = array();
+        foreach ($fpids as $fpid) {
+          $id_array[] = $fpid->_value;
+          list($owner_collection, $id) = explode(':', $fpid->_value);
+          list($owner) = explode('-', $owner_collection);
+          if (($owner == $this->agency)
+            || ($owner == '870970')
+            || in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), []))
+          ) {
+            $docs['docs'][] = [RR_MARC_001_A => $id, RR_MARC_001_B => $owner, RR_MARC_001_AB => $id . ':' . $owner];
+          }
+        }
+        $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), []);
+        if ($fetch_raw_records) {
+          $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $docs, in_array($this->agency, $s11_agency));
+        }
+        if (is_scalar($collections)) {
+          $error = $collections;
+          return $ret_error;
+        }
+        $result = &$ret->searchResponse->_value->result->_value;
+        if (!empty($this->format['found_solr_format'])) {
+          self::collections_from_solr($collections, $docs);
+        }
+        _Object::set_value($result, 'hitCount', count($collections));
+        _Object::set_value($result, 'collectionCount', count($collections));
+        _Object::set_value($result, 'more', 'false');
+        $result->searchResult = &$collections;
+        _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
+        _Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
+        if ($this->debug_query) {
+          _Object::set_value($debug_result, 'rawQueryString', $solr_arr['debug']['rawquerystring']);
+          _Object::set_value($debug_result, 'queryString', $solr_arr['debug']['querystring']);
+          _Object::set_value($debug_result, 'parsedQuery', $solr_arr['debug']['parsedquery']);
+          _Object::set_value($debug_result, 'parsedQueryString', $solr_arr['debug']['parsedquery_toString']);
+          _Object::set_value($result, 'queryDebugResult', $debug_result);
+        }
+        self::log_stat_get_object($id_array);
+        return $ret;
+      } finally {
+        $this->watch->stop('rawrepo');
+      }
+    }
+
+    $this->watch->start('precql');
     foreach ($fpids as $fpid) {
       $id_array[] = $fpid->_value;
       list($owner_collection, $id) = explode(':', $fpid->_value);
@@ -879,10 +956,14 @@ class OpenSearch extends webServiceServer {
         $localdata_object[$fpid->_value] = '870970-basis:' . $id;
       }
     }
+    $this->watch->start('precql.newsolrquery');
     $this->cql2solr = new SolrQuery($this->repository, $this->config);
+    $this->watch->stop('precql.newsolrquery');
+    $this->watch->stop('precql');
     $this->watch->start('cql');
     $chk_query = $this->cql2solr->parse('rec.id=(' . implode(OR_OP, $id_array) . ')');
     $this->watch->stop('cql');
+    $this->watch->start('solrq');
     $solr_q = 'wt=phps' .
       '&q=' . urlencode(implode(AND_OP, $chk_query['edismax']['q'])) .
       '&fq=' . $filter_q .
@@ -895,118 +976,134 @@ class OpenSearch extends webServiceServer {
     $curl = new curl();
     $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
     $curl->set_post($solr_q); // use post here because query can be very long. curl has current 8192 as max length get url
+    $this->watch->start("solrq.curl");
     $solr_result = $curl->get($this->repository['solr']);
+    $this->watch->stop("solrq.curl");
     $curl->close();
+    $this->watch->start("solrq.unserialize");
     $solr_2_arr[] = unserialize($solr_result);
+    $this->watch->stop("solrq.unserialize");
+    $this->watch->stop('solrq');
 
-    $work_ids = array();
-    foreach ($fpids as $fpid_number => $fpid) {
-      $pid = $basis_pid = array();
-      $work_ids[$fpid_number] = array('NotFound' => array($fpid->_value => $fpid->_value));
-      $localdata_pid = $localdata_object[$fpid->_value];
-      foreach ($solr_2_arr as $s_2_a) {
-        if ($s_2_a['response']['docs']) {
-          foreach ($s_2_a['response']['docs'] as $fdoc) {
-            $rec_id = $fdoc[FIELD_REC_ID];
-            $unit_id = self::scalar_or_first_elem($fdoc[FIELD_UNIT_ID]);
-            if (in_array($fpid->_value, $rec_id)) {
-              $work_ids[$fpid_number] = array($unit_id => array($fpid->_value => $fpid->_value));
-              break 2;
-            }
-            elseif (in_array($localdata_pid, $rec_id)) {
-              $work_ids[$fpid_number] = array($unit_id => array($localdata_pid => $localdata_pid));
+    $this->watch->start("buildresponse");
+    try {
+      $work_ids = array();
+      foreach ($fpids as $fpid_number => $fpid) {
+        $pid = $basis_pid = array();
+        $work_ids[$fpid_number] = array('NotFound' => array($fpid->_value => $fpid->_value));
+        $localdata_pid = $localdata_object[$fpid->_value];
+        foreach ($solr_2_arr as $s_2_a) {
+          if ($s_2_a['response']['docs']) {
+            foreach ($s_2_a['response']['docs'] as $fdoc) {
+              $rec_id = $fdoc[FIELD_REC_ID];
+              $unit_id = self::scalar_or_first_elem($fdoc[FIELD_UNIT_ID]);
+              if (in_array($fpid->_value, $rec_id)) {
+                $work_ids[$fpid_number] = array($unit_id => array($fpid->_value => $fpid->_value));
+                break 2;
+              } elseif (in_array($localdata_pid, $rec_id)) {
+                $work_ids[$fpid_number] = array($unit_id => array($localdata_pid => $localdata_pid));
+              }
             }
           }
         }
       }
-    }
 
-    // read requested record in unit's. Fetch addi records if relations is part of the request
-    list($raw_res, $primary_pids, $unit_info, $relation_units) = self::read_records_and_extract_data($work_ids, $param, 'PID');
+      // read requested record in unit's. Fetch addi records if relations is part of the request
+      list($raw_res, $primary_pids, $unit_info, $relation_units) = self::read_records_and_extract_data($work_ids, $param, 'PID');
 
-    // If relations is asked for, build a search to find available records using "full" search profile
-    list($rel_res, $rel_unit_pids) = self::fetch_valid_relation_records($relation_units);
+      // If relations is asked for, build a search to find available records using "full" search profile
+      list($rel_res, $rel_unit_pids) = self::fetch_valid_relation_records($relation_units);
 
-    // collect holdings if requested
-    $holdings_res = self::collect_holdings($work_ids, $param->includeHoldingsCount, 'PID');
+      // collect holdings if requested
+      $holdings_res = self::collect_holdings($work_ids, $param->includeHoldingsCount, 'PID');
 
-    if (DEBUG_ON) {
-      echo PHP_EOL . 'fpids:' . PHP_EOL; var_dump($fpids);
-      echo PHP_EOL . 'holdings_res:' . PHP_EOL; var_dump($holdings_res);
-      echo PHP_EOL . 'raw_res:' . PHP_EOL; var_dump($raw_res);
-      echo PHP_EOL . 'relation_units (relations found in records):' . PHP_EOL; var_dump($relation_units);
-      echo PHP_EOL . 'rel_unit_pids (relations in search profile):' . PHP_EOL; var_dump($rel_unit_pids);
-      echo PHP_EOL . 'rel_res (relation records):' . PHP_EOL; var_dump($rel_res);
-      echo PHP_EOL . 'work_ids:' . PHP_EOL; var_dump($work_ids);
-    }
-
-    $record_repo_dom = new DomDocument();
-    $record_repo_dom->preserveWhiteSpace = FALSE;
-    $missing_record = $this->config->get_value('missing_record_getObject', 'setup');
-    foreach ($work_ids as $rec_no => &$work) {
-      foreach ($work as $unit_id => $pids) {
-        $key = reset($pids);
-        _Object::set_value($o->collection->_value, 'resultPosition', $rec_no + 1);
-        _Object::set_value($o->collection->_value, 'numberOfObjects', 1);
-
-        if (@ !$record_repo_dom->loadXML($raw_res[$key])) {
-          VerboseJson::log(FATAL, 'Cannot load recid ' . reset($pids) . ' into DomXml');
-          if ($missing_record) {
-            $record_repo_dom->loadXML(sprintf($missing_record, reset($pids)));
-          }
-          else {
-            _Object::set_value($o->collection->_value->object->_value, 'error', 'unknown/missing/inaccessible record: ' . reset($pids));
-            _Object::set_value($o->collection->_value->object->_value, 'identifier', reset($pids));
-          }
-        }
-        if (empty($o->collection->_value->object)) {
-          _Object::set($o->collection->_value->object[], '_value',
-                      self::build_record_object($record_repo_dom,
-                                                $raw_res[$key],
-                                                reset($pids),
-                                                $rel_res,
-                                                $relation_units[$key],
-                                                $rel_unit_pids,
-                                                $primary_pids[$key],
-                                                $holdings_res[$key],
-                                                $param));
-        }
-        _Object::set($collections[], '_value', $o);
-        unset($o);
+      if (DEBUG_ON) {
+        echo PHP_EOL . 'fpids:' . PHP_EOL;
+        var_dump($fpids);
+        echo PHP_EOL . 'holdings_res:' . PHP_EOL;
+        var_dump($holdings_res);
+        echo PHP_EOL . 'raw_res:' . PHP_EOL;
+        var_dump($raw_res);
+        echo PHP_EOL . 'relation_units (relations found in records):' . PHP_EOL;
+        var_dump($relation_units);
+        echo PHP_EOL . 'rel_unit_pids (relations in search profile):' . PHP_EOL;
+        var_dump($rel_unit_pids);
+        echo PHP_EOL . 'rel_res (relation records):' . PHP_EOL;
+        var_dump($rel_res);
+        echo PHP_EOL . 'work_ids:' . PHP_EOL;
+        var_dump($work_ids);
       }
+
+      $record_repo_dom = new DomDocument();
+      $record_repo_dom->preserveWhiteSpace = FALSE;
+      $missing_record = $this->config->get_value('missing_record_getObject', 'setup');
+      foreach ($work_ids as $rec_no => &$work) {
+        foreach ($work as $unit_id => $pids) {
+          $key = reset($pids);
+          _Object::set_value($o->collection->_value, 'resultPosition', $rec_no + 1);
+          _Object::set_value($o->collection->_value, 'numberOfObjects', 1);
+
+          if (@ !$record_repo_dom->loadXML($raw_res[$key])) {
+            VerboseJson::log(FATAL, 'Cannot load recid ' . reset($pids) . ' into DomXml');
+            if ($missing_record) {
+              $record_repo_dom->loadXML(sprintf($missing_record, reset($pids)));
+            } else {
+              _Object::set_value($o->collection->_value->object->_value, 'error', 'unknown/missing/inaccessible record: ' . reset($pids));
+              _Object::set_value($o->collection->_value->object->_value, 'identifier', reset($pids));
+            }
+          }
+          if (empty($o->collection->_value->object)) {
+            _Object::set($o->collection->_value->object[], '_value',
+              self::build_record_object($record_repo_dom,
+                $raw_res[$key],
+                reset($pids),
+                $rel_res,
+                $relation_units[$key],
+                $rel_unit_pids,
+                $primary_pids[$key],
+                $holdings_res[$key],
+                $param));
+          }
+          _Object::set($collections[], '_value', $o);
+          unset($o);
+        }
+      }
+
+      //var_dump($corepo_urls); var_dump($corepo_res); var_dump($fpids); var_dump($match); var_dump($solr_2_arr); die();
+
+      if ($this->format['found_open_format']) {
+        self::format_records($collections);
+      }
+      if ($this->format['found_solr_format']) {
+        self::format_solr($collections, $solr_2_arr);
+      }
+      self::remove_unselected_formats($collections);
+
+      $result = &$ret->searchResponse->_value->result->_value;
+      _Object::set_value($result, 'hitCount', count($collections));
+      _Object::set_value($result, 'collectionCount', count($collections));
+      _Object::set_value($result, 'more', 'false');
+      $result->searchResult = $collections;
+      _Object::set_value($result, 'facetResult', '');
+      _Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
+      _Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
+      _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
+      _Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
+
+      self::log_stat_get_object($id_array);
+      // Dump Timings log in text format for zabbix remove by end of 2018
+      $this->logOldStyleZabbixTimings('getObject', 'agency:' . $this->agency .
+        ' profile:' . self::stringify_obj_array($this->profile) .
+        ' ip:' . $_SERVER['REMOTE_ADDR'] .
+        ' repoRecs:' . $this->number_of_record_repo_calls .
+        ' repoCache:' . $this->number_of_record_repo_cached .
+        ' ' . $this->watch->dump());
+
+      return $ret;
+    } finally {
+      $this->watch->stop('buildresponse');
     }
 
-    //var_dump($corepo_urls); var_dump($corepo_res); var_dump($fpids); var_dump($match); var_dump($solr_2_arr); die();
-
-    if ($this->format['found_open_format']) {
-      self::format_records($collections);
-    }
-    if ($this->format['found_solr_format']) {
-      self::format_solr($collections, $solr_2_arr);
-    }
-    self::remove_unselected_formats($collections);
-
-    $result = &$ret->searchResponse->_value->result->_value;
-    _Object::set_value($result, 'hitCount', count($collections));
-    _Object::set_value($result, 'collectionCount', count($collections));
-    _Object::set_value($result, 'more', 'false');
-    $result->searchResult = $collections;
-    _Object::set_value($result, 'facetResult', '');
-    _Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
-    _Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
-    _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
-    _Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
-
-    self::log_stat_get_object($id_array);
-    // Dump Timings log in text format for zabbix remove by end of 2018
-    $this->logOldStyleZabbixTimings('getObject','agency:' . $this->agency .
-                         ' profile:' . self::stringify_obj_array($this->profile) .
-                         ' ip:' . $_SERVER['REMOTE_ADDR'] .
-                         ' repoRecs:' . $this->number_of_record_repo_calls .
-                         ' repoCache:' . $this->number_of_record_repo_cached .
-                         ' ' . $this->watch->dump());
-    
-    return $ret;
   }
 
   /** \brief Entry info: collect info
@@ -1015,17 +1112,22 @@ class OpenSearch extends webServiceServer {
    * @return object - the answer to the request
    */
   public function info($param) {
-    $result = &$ret->infoResponse->_value;
-    _Object::set_value($result->infoGeneral->_value, 'defaultRepository', $this->config->get_value('default_repository', 'setup'));
-    $result->infoRepositories = self::get_repository_info();
-    $result->infoObjectFormats = self::get_object_format_info();
-    $result->infoSearchProfile = self::get_search_profile_info($param->agency->_value, $param->profile);
-    $result->infoSorts = self::get_sort_info();
-    $result->infoNameSpaces = self::get_namespace_info();
-    VerboseJson::log(STAT, array('agency' => $this->agency,
-                                 'profile' => self::stringify_obj_array($param->profile),
-                                 'timings' => $this->watch->get_timers()));
-    return $ret;
+    $this->watch->start('info');
+    try {
+      $result = &$ret->infoResponse->_value;
+      _Object::set_value($result->infoGeneral->_value, 'defaultRepository', $this->config->get_value('default_repository', 'setup'));
+      $result->infoRepositories = self::get_repository_info();
+      $result->infoObjectFormats = self::get_object_format_info();
+      $result->infoSearchProfile = self::get_search_profile_info($param->agency->_value, $param->profile);
+      $result->infoSorts = self::get_sort_info();
+      $result->infoNameSpaces = self::get_namespace_info();
+      VerboseJson::log(STAT, array('agency' => $this->agency,
+        'profile' => self::stringify_obj_array($param->profile),
+        'timings' => $this->watch->get_timers()));
+      return $ret;
+    } finally {
+      $this->watch->stop('info');
+    }
   }
 
   /*
@@ -1149,6 +1251,11 @@ class OpenSearch extends webServiceServer {
     return $ret;
   }
 
+  private static function set_app_id() {
+    $pod_name = getenv('POD_NAME') ?: 'NO_POD';
+    $namespace = getenv('POD_NAMESPACE') ?: 'NO_NAMESPACE';
+    return $namespace . '-' .$pod_name;
+  }
   /** \brief Build Solr filter_query parm
    *
    * @param array $profile - the users search profile
@@ -1218,9 +1325,9 @@ class OpenSearch extends webServiceServer {
       foreach ($boosts as $bf) {
         $weight = floatval($bf->_value->weight->_value) ? : 1;
         if ($weight < 0) {
-          $weight = 0.01 / ($weight * $weight);
+           return $weight;
+           break;
         }
-        $weight = max(0.00001, $weight);
         if (empty($bf->_value->fieldValue->_value)) {
           $ret .= '&bf=' .
             urlencode('product(' . $bf->_value->fieldName->_value . ',' . sprintf('%.5f', $weight) . ')');
@@ -2018,8 +2125,9 @@ class OpenSearch extends webServiceServer {
    * @return string - error if any, NULL otherwise
    */
   private function do_solr($urls, &$solr_arr) {
+    $solr_appid = self::set_app_id();
     foreach ($urls as $no => $url) {
-      $url['url'] .= '&trackingId=' . VerboseJson::$tracking_id;
+      $url['url'] .= '&trackingId=' . VerboseJson::$tracking_id . '&appId=' . $solr_appid;
       VerboseJson::log(TRACE, 'Query: ' . $url['url']);
       if ($url['debug']) VerboseJson::log(DEBUG, 'Query: ' . $url['debug']);
       $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded; charset=utf-8'], $no);

@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+which dirname &> /dev/null || die "Unable to run dirname command - please install it"
+export SCRIPTNAME="test-timings"
+export SCRIPT_DIR=$(dirname "$(readlink -f "$0")") || { echo "Unable to identify basedir from $0" ; exit 1; }
+. "${SCRIPT_DIR}/shared.sh" || { echo "Unable to load shared file shared.sh" ; exit 1; }
+
+# Script to run a number of requests against a running server, and then check the log for
+# This is a very crude script
+
+check_on_path curl
+check_on_path bc
+check_on_path jq
+
+set -e
+set -o pipefail
+
+debug "Finding server"
+
+# Note: This is not intended to run in Jenkins - at least not a multibranch setup.
+export WS_SERVICE=opensearch-webservice
+WS_CONTAINERID=$(docker-compose -f ${PROJECT_DIR}/docker/docker-compose.yml ps -q ${WS_SERVICE}) \
+  || die "Unable to obtain container id for compose service ${WS_SERVICE}"
+debug "Container id found to ${WS_CONTAINERID}"
+WS_SERVICE_PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' ${WS_CONTAINERID}) \
+  || die "Unable to get ws service port mapping for container ${WS_CONTAINERID} for compose service ${WS_SERVICE}. Did you forget to run 'server'?"
+debug "WS port found to ${WS_SERVICE_PORT}"
+
+URL="http://localhost:${WS_SERVICE_PORT}/5.2/"
+
+function run_requests() {
+
+    info "Running requests against server at ${URL}"
+
+    for FILE in ${SCRIPT_DIR}/../tests/requests/example/*.xml; do
+        debug "Running curl -X port --data @${FILE} -H 'Content-Type: text/xml' -H 'Accept: text/xml' ${URL}"
+        if curl -X port --data @${FILE} -H 'Content-Type: text/xml' -H 'Accept: text/xml' ${URL} &> /dev/null ; then
+            true
+        else
+            warn "Problem running curl -X port --data @${FILE} -H 'Content-Type: text/xml' -H 'Accept: text/xml' ${URL}"
+        fi
+    done
+
+}
+
+# Set a threshold of "less than a microsecond"
+threshold=0.0000009
+
+function check_timings() {
+    info "Checking log for container for TIMER statements"
+
+    JSONFILE=$(mktemp /tmp/tmp.test-timings.XXXXXX.json) || die "Unable to create temp JSON file with timing output"
+    debug "Creating JSON file in ${JSONFILE}"
+
+    echo "[" > ${JSONFILE}
+    docker logs ${WS_CONTAINERID} 2> /dev/null | \
+      grep '"level":"TIMER"' | grep '"timing":{' | awk '{print $0","}' | sed '$ s/,$//' >> ${JSONFILE} \
+      || die "No duration timings found in log - did you enable this in the abstract webserver class?"
+    echo "]"  >> ${JSONFILE}
+
+    exec ${SCRIPT_DIR}/analyze-timings.py  ${JSONFILE}
+
+}
+
+run_requests
+check_timings
