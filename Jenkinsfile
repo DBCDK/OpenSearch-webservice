@@ -5,7 +5,7 @@ pipeline {
         label "devel10"
     }
     environment {
-        // TODO: This needs to be visited, when Version5.2 is merged to master.
+        // Set the version - this is appended to image names, before push.
         VERSION = "5.2"
 
         // This is the prefix used by the docker container builds. If you need to change this,
@@ -100,9 +100,8 @@ pipeline {
         */
         stage("Docker Push") {
             // If, we are on branch master, and tests passed, push to artifactory, using "push names"
-            // TODO: This needs to be visited, when we merge Version5.2 to master.
             when {
-                branch "Version5.2"
+                branch "master"
             }
             steps {
                 script {
@@ -283,7 +282,7 @@ pipeline {
 // Takes an image, and substitutes the prefix and tag
 def toPushTag(tag, prefixFrom, prefixTo, tagFrom, tagTo) {
     tag = tag.replaceFirst(/^$prefixFrom/, prefixTo)
-    // TODO: More 5.2./version weirdness.
+    // Update the image name to contain the version
     tag = tag.replaceFirst(/:$tagFrom$/, "-$VERSION:$tagTo")
     return tag
 }
