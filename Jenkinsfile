@@ -1,13 +1,7 @@
-def workerNode = 'devel10'
-
 pipeline {
     agent { label "devel8" }
     tools {
         maven "maven 3.5"
-    }
-    environment {
-        DOCKER_PUSH_TAG = "${env.BUILD_NUMBER}"
-        GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
     }
     triggers {
         pollSCM("H/3 * * * *")
@@ -28,6 +22,7 @@ pipeline {
                     }
 
                 }
+
                 sh """                     
                     ./build.sh                                                                                    
                 """
@@ -65,37 +60,29 @@ pipeline {
                 }
             }
         }
-    } // stages
-
-    post {
-        failure {
-            script {
-                if ("${env.BRANCH_NAME}" == 'master') {
-                    emailext(
-                            recipientProviders: [developers(), culprits()],
-                            to: "os-team@dbc.dk",
-                            subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} failed",
-                            mimeType: 'text/html; charset=UTF-8',
-                            body: "<p>The master build failed. Log attached. </p><p><a href=\"${env.BUILD_URL}\">Build information</a>.</p>",
-                            attachLog: true,
-                    )
-                    slackSend(channel: 'search',
-                            color: 'warning',
-                            message: "${env.JOB_NAME} #${env.BUILD_NUMBER} failed and needs attention: ${env.BUILD_URL}",
-                            tokenCredentialId: 'slack-global-integration-token')
-
-                } else {
-                    // this is some other branch, only send to developer
-                    emailext(
-                            recipientProviders: [developers()],
-                            subject: "[Jenkins] ${env.BUILD_TAG} failed and needs your attention",
-                            mimeType: 'text/html; charset=UTF-8',
-                            body: "<p>${env.BUILD_TAG} failed and needs your attention. </p><p><a href=\"${env.BUILD_URL}\">Build information</a>.</p>",
-                            attachLog: false,
-                    )
+        stage("Inform #search on Slack"){
+            steps {
+                script {
+                    def changeLogSets = currentBuild.changeSets
+                    def message = "${env.JOB_NAME}: build #${env.BUILD_NUMBER}\n\n"
+                    for (int i = 0; i < changeLogSets.size(); i++) {
+                        message += "ChangeSet ${i}\n\n"
+                        def entries = changeLogSets[i].items
+                        for (int j = 0; j < entries.length; j++) {
+                            def entry = entries[j]
+                            message += "${entry.commitId} by ${entry.author} on ${new Date(entry.timestamp)}:\n" +
+                                    "    ${entry.msg}\n\n"
+                            // Following commented code shows how to extract information about which files changed
+                            //def files = new ArrayList(entry.affectedFiles)
+                            //for (int k = 0; k < files.size(); k++) {
+                            //    def file = files[k]
+                            //    message += "  ${file.editType.name} ${file.path}\n"
+                            //}
+                        }
+                    }
+                    slackSend baseUrl: 'https://dbcdk.slack.com/services/hooks/jenkins-ci/', channel: '#search', message: message, token: 'ILw3OJoa6a9sniVqMuomJ8AP'
                 }
             }
         }
-    } // post
-
-} // pipeline
+    }
+}
