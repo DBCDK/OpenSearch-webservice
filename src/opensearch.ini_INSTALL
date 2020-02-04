@@ -881,6 +881,7 @@ aaa_ip_rights[dbc][ressource][opensearch] = 500
 ;
 ; uri for a fors rights webservice - aaa_fors_rights have precedence over aaa_credentials
 ;aaa_fors_rights = http://forsrights.some.server/?action=forsRights&outputType=php&userIdAut=%s&groupIdAut=%s&passwordAut=%s&ipAddress=%s
+aaa_fors_rights = ${AAA_FORS_RIGHTS}
 ;
 ; oci credentials for FORS server
 ;aaa_credentials = ora_user/ora_passwd@some.server.dk

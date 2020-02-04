@@ -2,7 +2,8 @@
 FROM docker.dbc.dk/dbc-apache-php7:latest
 
 LABEL maintainer="Team Search <os-team@dbc.dk>" \
-      AAA_IP_LIST="Sets AAA access for this IP pattern. Default is full access for everybody [0.0.0.0-255.255.255.255]" \
+      AAA_IP_LIST="Sets AAA access for this IP pattern. Default is full access for localhost [127.0.0.1]" \
+      AAA_FORS_RIGHTS="Sets the URL for aaa_fors_rights. Default is the empty string, which is 'not set'. []" \
       AGENCY_END_POINT="The full url for the OpenAgency service" \
       AGENCY_FALLBACK="Default agency fallback code - for development and testing only" \
       AGENCY_PROFILE_FALLBACK="Default search profile fallback - for development and testing only" \
@@ -64,7 +65,8 @@ ENV AGENCY_FALLBACK="" \
     FORMAT_CACHE_SETTINGS_BLOCK="" \
     MY_DOMAIN=".dbc.dk" \
     MY_DOMAIN_IP_LIST="127.0.0.1;172.16.0.0-172.31.255.255;193.111.162.0-193.111.162.255" \
-    AAA_IP_LIST="0.0.0.0-255.255.255.255" \
+    AAA_IP_LIST="127.0.0.1" \
+    AAA_FORS_RIGHTS="" \
     EXTRA_REPOSITORIES="" \
     LOGFILE="php://stdout" \
     RAW_RECORD_REPOSITORY_NAME="rawrepo" \
