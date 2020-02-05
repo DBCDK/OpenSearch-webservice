@@ -196,7 +196,7 @@ class OpenSearch extends webServiceServer {
       if ($param->profile && !is_array($param->profile)) {
         $param->profile = array($param->profile);
       }
-      $this->watch->start('preamble.profile_filter');
+      $this->watch->start('preamble_profile_filter');
       try {
         if (empty($param->agency->_value)) {
           $unsupported = 'Error: No agency in request';
@@ -225,7 +225,7 @@ class OpenSearch extends webServiceServer {
         // self::set_search_filters_for_800000_collection($param->forceFilter->_value);
 
       } finally {
-        $this->watch->stop('preamble.profile_filter');
+        $this->watch->stop('preamble_profile_filter');
       }
       $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
@@ -358,9 +358,9 @@ class OpenSearch extends webServiceServer {
     $key_work_struct = md5($param->query->_value . $this->repository_name . $this->filter_agency . self::xs_boolean($param->allObjects->_value) .
                            $use_work_collection . implode('', $sort) . $rank . $boost_q . $this->config->get_inifile_hash());
 
-    $this->watch->start('precql.newsolrquery');
+    $this->watch->start('precql_newsolrquery');
     $this->cql2solr = new SolrQuery($this->repository, $this->config, $this->query_language, $this->split_holdings_include);
-    $this->watch->stop('precql.newsolrquery');
+    $this->watch->stop('precql_newsolrquery');
     $this->watch->stop('precql');
     $this->watch->start('cql');
     if ($param->skipFilter->_value == '1')    // for test
@@ -805,7 +805,7 @@ class OpenSearch extends webServiceServer {
         $param->profile = array($param->profile);
       }
       $this->user_param = $param;
-      $this->watch->start('preamble.profile_filter');
+      $this->watch->start('preamble_profile_filter');
       try {
 
         if ($this->agency = $param->agency->_value) {
@@ -824,7 +824,7 @@ class OpenSearch extends webServiceServer {
           // self::set_search_filters_for_800000_collection();
         }
       } finally {
-        $this->watch->stop('preamble.profile_filter');
+        $this->watch->stop('preamble_profile_filter');
       }
       if ($error = self::set_repositories($param->repository->_value)) {
         VerboseJson::log(FATAL, $error);
@@ -956,9 +956,9 @@ class OpenSearch extends webServiceServer {
         $localdata_object[$fpid->_value] = '870970-basis:' . $id;
       }
     }
-    $this->watch->start('precql.newsolrquery');
+    $this->watch->start('precql_newsolrquery');
     $this->cql2solr = new SolrQuery($this->repository, $this->config);
-    $this->watch->stop('precql.newsolrquery');
+    $this->watch->stop('precql_newsolrquery');
     $this->watch->stop('precql');
     $this->watch->start('cql');
     $chk_query = $this->cql2solr->parse('rec.id=(' . implode(OR_OP, $id_array) . ')');
@@ -976,13 +976,13 @@ class OpenSearch extends webServiceServer {
     $curl = new curl();
     $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
     $curl->set_post($solr_q); // use post here because query can be very long. curl has current 8192 as max length get url
-    $this->watch->start("solrq.curl");
+    $this->watch->start("solrq_curl");
     $solr_result = $curl->get($this->repository['solr']);
-    $this->watch->stop("solrq.curl");
+    $this->watch->stop("solrq_curl");
     $curl->close();
-    $this->watch->start("solrq.unserialize");
+    $this->watch->start("solrq_unserialize");
     $solr_2_arr[] = unserialize($solr_result);
-    $this->watch->stop("solrq.unserialize");
+    $this->watch->stop("solrq_unserialize");
     $this->watch->stop('solrq');
 
     $this->watch->start("buildresponse");
