@@ -30,6 +30,37 @@ function check_on_path() {
     done
 }
 
+# Get the container ID for a specific docker compose service. This respects the COMPOSE_PROJECT_NAME
+function get_compose_container_id() {
+    compose_file=${1}
+    service=${2}
+    test -z "${service}" && { error "Usage: get_compose_container_id <compose-file> <service>" ; return 1; }
+    docker-compose -f ${compose_file} ps -q ${service}
+}
+
+# Get the mapped port for a specific docker container
+function get_docker_container_port() {
+    container_id=${1}
+    port=${2}
+    test -z "${port}" && { error "Usage: get_docker_container_port <container-id> <port>" ; return 1; }
+    docker inspect --format='{{(index (index .NetworkSettings.Ports "'${port}'/tcp") 0).HostPort}}' ${container_id}
+}
+
+# Get the port for an exposed (running) service, using a specific compose file. Respect COMPOSE_PROJECT_NAME
+function get_compose_service_port() {
+    compose_file=${1}
+    service=${2}
+    port=${3}
+    test -z "${port}" && { error "Usage: get_compose_service_port <compose-file> <container-id> <port>" ; return 1; }
+    container_id=$(get_compose_container_id ${compose_file} ${service}) \
+      || { error "Unable to get a container id for ${service} using compose file ${compose_file}" ; return 1; }
+    res=$(get_docker_container_port ${container_id} ${port}) \
+      || {
+        error "Unable to get port mapping for port ${port} for container with id ${container_id}, service ${service}" ;
+        return 1;
+        }
+    echo ${res}
+}
 
 # Set some variables on load
 function sharedOnLoad() {

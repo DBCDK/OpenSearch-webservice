@@ -17,16 +17,9 @@ set -o pipefail
 
 debug "Finding server"
 
-# Note: This is not intended to run in Jenkins - at least not a multibranch setup.
-export WS_SERVICE=opensearch-webservice
-WS_CONTAINERID=$(docker-compose -f ${PROJECT_DIR}/docker/docker-compose.yml ps -q ${WS_SERVICE}) \
-  || die "Unable to obtain container id for compose service ${WS_SERVICE}"
-debug "Container id found to ${WS_CONTAINERID}"
-WS_SERVICE_PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' ${WS_CONTAINERID}) \
-  || die "Unable to get ws service port mapping for container ${WS_CONTAINERID} for compose service ${WS_SERVICE}. Did you forget to run 'server'?"
-debug "WS port found to ${WS_SERVICE_PORT}"
-
-URL="http://localhost:${WS_SERVICE_PORT}/5.2/"
+# Get information about the exposed port of the service from the compose file.
+port=$(get_compose_service_port ${PROJECT_DIR}/docker/docker-compose.yml opensearch-webservice 80)
+URL="http://localhost:${port}/5.2/"
 
 function run_requests() {
 
