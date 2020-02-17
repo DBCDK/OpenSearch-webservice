@@ -1436,20 +1436,6 @@ class OpenSearch extends webServiceServer {
       if (empty($this->repository['filter'])) {
         $this->repository['filter'] = [];
       }
-      if ($this->repository['add_filter'] && $this->agency) {
-        foreach ($this->repository['add_filter'] as $agency_rule => $filter) {
-          list($rule, $bool) = explode(':', trim($agency_rule), 2);
-          if ((strtolower($bool) == 'true') === self::agency_rule($this->agency, $rule)) {
-            foreach ($filter as $agency => $format_and_spec) {
-              foreach ($format_and_spec as $format => $spec) {
-                foreach ($spec as $field => $subfield) {
-                  $this->repository['filter'][$agency][$format][$field] = $subfield;
-                }
-              }
-            }
-          }
-        }
-      }
     }
     else {
       return 'Error: Unknown repository: ' . $this->repository_name;

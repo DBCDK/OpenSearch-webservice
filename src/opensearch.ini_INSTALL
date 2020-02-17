@@ -152,10 +152,6 @@ default_repository = ${REPOSITORY_NAME}
 
 repository[defaults][fedora_get_rels_addi] = objects/%s/datastreams/RELS-EXT/content
 repository[defaults][corepo_get] = opensearch/unit?unit=%s&pids=%s&agencyId=%s
-; filter 870970 records only
-; repository[defaults][add_filter][view_metacompass:false][870970][marcxchange][665] = .
-; filter all records 
-repository[defaults][add_filter][view_metacompass:false][.][marcxchange][665] = .
 
 
 ; cql file - xml file containing useable registers and cql operators.
@@ -257,16 +253,6 @@ repository[${REPOSITORY_NAME}][handler_format][holding_block_join][q] = _query_:
 repository[${REPOSITORY_NAME}][filter]['870976-anmeld'][marcxchange]['^559'] = i
 ; filter docbook section with title = "Til bibliotekaren" from collectionIdentier 870976-anmeld
 repository[${REPOSITORY_NAME}][filter]['870976-anmeld'][docbook]['section/title'] = Til bibliotekaren
-
-; add filter depending on library_rules
-;repository[my_repository][add_filter][view_metacompass:false][owner][marcxchange][665] = .
-; will add a filter if the library rule view_metacompass is false - NB anything but true (after the :) will evaluate as false
-; 
-; Higher up
-; repository[defaults][add_filter][view_metacompass:false][870970][marcxchange][665] = .
-; is set as default, since field 665 should only be shown to libraries where view_metacompass is set
-; 
-
 
 ; Raw record repositories
 ; repository for Raw repository, a sql base indexed by solr
