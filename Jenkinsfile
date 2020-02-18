@@ -187,7 +187,7 @@ pipeline {
             }
             when {
                 expression {
-                    (currentBuild.result == null || currentBuild.result == 'SUCCESS') && env.BRANCH_NAME ==~ /Version5.2/
+                    (currentBuild.result == null || currentBuild.result == 'SUCCESS') && env.BRANCH_NAME == 'master'
                 }
             }
             steps {
