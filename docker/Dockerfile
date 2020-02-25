@@ -1,5 +1,4 @@
-# FROM mbd/dbc-apache-php7:latest
-FROM docker.dbc.dk/dbc-apache-php7:latest
+FROM docker.dbc.dk/dbc-apache-php7:buster_php73-8
 
 LABEL maintainer="Team Search <os-team@dbc.dk>" \
       AAA_IP_LIST="Sets AAA access for this IP pattern. Default is full access for localhost [127.0.0.1]" \
