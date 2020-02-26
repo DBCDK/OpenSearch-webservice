@@ -4,20 +4,20 @@
 echo "<h1>Memcache info</h1>";
 
 echo "<p><ul>";
-echo "<li>Host cache at ". getenv("CACHE_HOST") . ":" . getenv("CACHE_PORT") ."</li>";
-echo "<li>Agency cache at ".getenv("AGENCY_CACHE_HOST") . ":" . getenv("AGENCY_CACHE_PORT") ."</li>";
+echo "<li>Host cache at ". trim(getenv("CACHE_HOST"), '"') . ":" . trim(getenv("CACHE_PORT"), '"') ."</li>";
+echo "<li>Agency cache at ".trim(getenv("AGENCY_CACHE_HOST"), '"') . ":" . trim(getenv("AGENCY_CACHE_PORT"), '"') ."</li>";
 echo "</ul></p>";
 
 echo "<p><em>The settings for this page is picked from environment variables, not ini files.</em></p>";
 
 echo "<h2>Host cache info</h2>";
 $memcache_obj = new Memcache;
-$memcache_obj->connect(getenv("CACHE_HOST"), getenv("CACHE_PORT") );
+$memcache_obj->connect(trim(getenv("CACHE_HOST"), '"'), trim(getenv("CACHE_PORT"), '"') );
 cache_info($memcache_obj->getStats());
 
 echo "<h2>Agency cache info</h2>";
 $memcache_obj = new Memcache;
-$memcache_obj->connect(getenv("AGENCY_CACHE_HOST"), getenv("AGENCY_CACHE_PORT") );
+$memcache_obj->connect(trim(getenv("AGENCY_CACHE_HOST"), '"'), trim(getenv("AGENCY_CACHE_PORT"), '"') );
 cache_info($memcache_obj->getStats());
 
 
