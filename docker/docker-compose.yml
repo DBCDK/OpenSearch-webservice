@@ -64,8 +64,8 @@ services:
       - URL_PATH=5.2
       # Use external memcache
       - USE_MEMCACHE=no
-      - AGENCY_CACHE_HOST="memcached"
-      - CACHE_HOST="memcached"
+      - AGENCY_CACHE_HOST=memcached
+      - CACHE_HOST=memcached
     expose:
       - 80
     ports:
