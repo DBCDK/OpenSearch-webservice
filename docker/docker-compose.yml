@@ -32,13 +32,27 @@ services:
       - 80
 
   # A memcache service - can be used for testing external memcache
-  # NOTE: Uses version :2 of this service - there is no latest. We may need to change this.
-  memcached:
-    image: docker-os.dbc.dk/dbc-memcached:2
+  # NOTE: Uses version :5 of this service - there is no latest. We may need to change this.
+  memcached-1:
+    image: docker-os.dbc.dk/dbc-memcached:5
+    environment:
+      - EXTRAOPTS=-t 8 -n 256 -v
     expose:
       - 11211
     ports:
       - 11211
+
+  # A memcache service - can be used for testing external memcache
+  # NOTE: Uses version :5 of this service - there is no latest. We may need to change this.
+  memcached-2:
+    image: docker-os.dbc.dk/dbc-memcached:5
+    environment:
+      - EXTRAOPTS=-t 8 -n 256 -v
+    expose:
+      - 11211
+    ports:
+      - 11211
+
 
   # Opensearch with external memcache - for local testing.
   opensearch-webservice-em:
@@ -62,11 +76,11 @@ services:
       - OPEN_FORMAT=http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
       - OLD_OPEN_FORMAT=http://openformat.addi.dk/0.2/
       - URL_PATH=5.2
-      # Use external memcache
-      - USE_MEMCACHE=no
+      # Never set to no as this will stop running the local memcache used for fors and solr_file
+      # - USE_MEMCACHE=no
       # The script should strip " from strings.
-      - AGENCY_CACHE_HOST="memcached"
-      - CACHE_HOST=memcached
+      - AGENCY_CACHE_HOST="memcached-2"
+      - CACHE_HOST=memcached-1
     expose:
       - 80
     ports:

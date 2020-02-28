@@ -8,16 +8,21 @@ echo "<li>Host cache at ". trim(getenv("CACHE_HOST"), '"') . ":" . trim(getenv("
 echo "<li>Agency cache at ".trim(getenv("AGENCY_CACHE_HOST"), '"') . ":" . trim(getenv("AGENCY_CACHE_PORT"), '"') ."</li>";
 echo "</ul></p>";
 
-echo "<p><em>The settings for this page is picked from environment variables, not ini files.</em></p>";
+echo "<p><em>The settings for this page is picked from environment variables, not ini files. NOTE: OpenSearch *always* use a local cache at 11211 for aaa/fors and solr_file entries. Also NOTE: All caches can point to the same actual cache. This is not checked by this script.</em></p>";
 
-echo "<h2>Host cache info</h2>";
+echo "<h2>Host cache info (CACHE_HOST)</h2>";
 $memcache_obj = new Memcache;
 $memcache_obj->connect(trim(getenv("CACHE_HOST"), '"'), trim(getenv("CACHE_PORT"), '"') );
 cache_info($memcache_obj->getStats());
 
-echo "<h2>Agency cache info</h2>";
+echo "<h2>Agency cache info (AGENCY_CACHE_HOST)</h2>";
 $memcache_obj = new Memcache;
 $memcache_obj->connect(trim(getenv("AGENCY_CACHE_HOST"), '"'), trim(getenv("AGENCY_CACHE_PORT"), '"') );
+cache_info($memcache_obj->getStats());
+
+echo "<h2>Localhost cache info (localhost:11211)</h2>";
+$memcache_obj = new Memcache;
+$memcache_obj->connect("localhost", 11211);
 cache_info($memcache_obj->getStats());
 
 
