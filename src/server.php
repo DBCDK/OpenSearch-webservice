@@ -50,7 +50,7 @@ class OpenSearch extends webServiceServer {
   protected $number_of_record_repo_cached = 0;
   protected $agency_catalog_source = '';
   protected $filter_agency = '';
-  protected $format = '';
+  protected $format = [];
   protected $which_rec_id = '';
   protected $separate_field_query_style = TRUE; // seach as field:(a OR b) ie FALSE or (field:a OR field:b) ie TRUE
   protected $valid_relation = [];
@@ -65,10 +65,11 @@ class OpenSearch extends webServiceServer {
   protected $feature_sw = [];
   protected $user_param;
   protected $debug_query = FALSE;
-  protected $corepo_timers = [];  
+  protected $corepo_timers = [];
+  protected $split_holdings_include;
 
 
-  /**
+    /**
    * openSearch constructor.
    */
   public function __construct() {
@@ -143,10 +144,9 @@ class OpenSearch extends webServiceServer {
     }
     $urls[] = self::corepo_get_url('', $pids);
     $recs = self::read_record_repo_all_urls($urls);
-        $help = json_decode($recs[0]);
-        $rec = $help->dataStream;
-        $primary_pid = $help->primaryPid;
-        $prio_pids = $help->pids;
+    $help = json_decode($recs[0]);
+    $rec = $help->dataStream;
+    $prio_pids = $help->pids;
     if (empty($dom)) {
       $dom = new DomDocument();
     }
@@ -154,7 +154,7 @@ class OpenSearch extends webServiceServer {
     $this->format['dkabm'] = [];
     $obj = self::extract_record($dom, $prio_pids[0]);
     $result = $obj;
-//var_dump($prio_pids); var_dump($primary_pid); var_dump($rec); var_dump($obj); var_dump($ret); die();
+//var_dump($prio_pids); var_dump($help->primaryPid); var_dump($rec); var_dump($obj); var_dump($ret); die();
     return $ret;
   }
 
@@ -521,7 +521,7 @@ class OpenSearch extends webServiceServer {
         if (empty($step_value)) {
           $more = ($numFound >= $start);   // no need to find records, only hit count is returned and maybe facets
         } else {
-          if ($err = self::build_work_struct_from_solr($work_cache_struct, $work_ids, $more, $solr_work_ids, $solr_query['edismax'], $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, self::xs_boolean(isset($param->allObjects) ? $param->allObjects->_value : NULL), $numFound, $this->debug_query)) {
+          if ($err = self::build_work_struct_from_solr($work_cache_struct, $work_ids, $more, $solr_work_ids, $solr_query['edismax'], $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, self::xs_boolean(isset($param->allObjects) ? $param->allObjects->_value : NULL), $numFound)) {
             $error = $err;
             return $ret_error;
           }
@@ -697,8 +697,6 @@ class OpenSearch extends webServiceServer {
         var_dump($work_ids);
         echo PHP_EOL . 'unit_info:' . PHP_EOL;
         var_dump($unit_info);
-        echo PHP_EOL . 'relations:' . PHP_EOL;
-        var_dump($relations);
         echo PHP_EOL . 'solr_arr:' . PHP_EOL;
         var_dump($solr_arr);
       }
@@ -1182,7 +1180,7 @@ class OpenSearch extends webServiceServer {
   /** \brief parse input for sort parameters
    *
    * @param object $param -       The request
-   * @param string $sort -        Name of sort used by request
+   * @param array $sort -        Name of sort used by request
    * @param array $sort_types -   Settings for the given sort
    * @return mixed - error or NULL
    */
@@ -1203,9 +1201,9 @@ class OpenSearch extends webServiceServer {
         if ($random && count($sort)) {
           return 'Error: Random sorting can only be used alone';
         }
-        if (empty($repo_sorts[$s->_value])) {
+        // if (empty($repo_sorts[$s->_value])) {
           // 2DO - this should be reported as such in the next version
-        }
+        // }
         else {
           if (is_array($sort_types[$s->_value])) {
             foreach ($sort_types[$s->_value] as $item) {
@@ -2162,7 +2160,7 @@ class OpenSearch extends webServiceServer {
 
   /** \brief Selects a ranking scheme depending on some register frequency lookups
    *
-   * @param array $solr_query - the parsed user query
+   * @param struct $solr_query - the parsed user query
    * @param array $ranks - list of defined rankings
    * @param string $user_filter - filter query as set by users profile
    *
@@ -2437,7 +2435,7 @@ class OpenSearch extends webServiceServer {
    * @return string
    */
   private function corepo_get_url($unit_id, $pids) {
-    return sprintf($this->repository['corepo_get'], $unit_id, implode(',', $pids), $this->show_agency);
+    return sprintf($this->repository['corepo_get'], $unit_id, implode(',', $pids), $this->show_agency, VerboseJson::$tracking_id);
   }
 
   /** \brief Create record_repo url from settings and given id
@@ -3541,6 +3539,7 @@ class OpenSearch extends webServiceServer {
    * @return object
    */
   private function get_namespace_info() {
+    $nss = new stdClass();
     foreach ($this->config->get_value('xmlns', 'setup') as $prefix => $namespace) {
       _Object::set_value($ns, 'prefix', $prefix);
       _Object::set_value($ns, 'uri', $namespace);
@@ -3600,6 +3599,7 @@ class OpenSearch extends webServiceServer {
    * @return object
    */
   private function collect_rank_boost($rank) {
+    $iaw = new stdClass();
     if (is_array($rank)) {
       foreach ($rank as $reg => $weight) {
         _Object::set_value($rw, 'fieldName', $reg);
@@ -3662,7 +3662,7 @@ class OpenSearch extends webServiceServer {
     $luke_result = self::get_solr_file('solr_luke');
     $this->curl->close();
     if (!$luke_result) {
-      die('Cannot fetch register info from solr: ' . $luke_url);
+      die('Cannot fetch register info from solr: ');
     }
     $luke_result = json_decode($luke_result);
     @ $luke_fields = &$luke_result->fields;
@@ -3687,7 +3687,7 @@ class OpenSearch extends webServiceServer {
       }
     }
 
-    echo '<html><body><h1>Found in ' . $this->repository['cql_file'] . ' but not in Solr for repository ' . $this->repository_name . '</h1>';
+    echo '<html lang="da"><body><h1>Found in ' . $this->repository['cql_file'] . ' but not in Solr for repository ' . $this->repository_name . '</h1>';
     foreach ($cql_regs as $cr)
       echo $cr . '</br>';
     echo '</br><h1>Found in Solr but not in ' . $this->repository['cql_file'] . ' for repository ' . $this->repository_name . '</h1>';

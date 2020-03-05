@@ -151,7 +151,7 @@ default_repository = ${REPOSITORY_NAME}
 ; The user can specify the repository to use in the request and override the default_repository setting
 
 repository['defaults']['fedora_get_rels_addi'] = objects/%s/datastreams/RELS-EXT/content
-repository['defaults']['corepo_get'] = opensearch/unit?unit=%s&pids=%s&agencyId=%s
+repository['defaults']['corepo_get'] = opensearch/unit?unit=%s&pids=%s&agencyId=%s&trackingId=%s
 
 
 ; cql file - xml file containing useable registers and cql operators.
