@@ -234,19 +234,19 @@ repository['${REPOSITORY_NAME}']['handler_format']['holding_block_join']['q'] = 
 ; repository['my_repository']['filter']['owner']['marcxchange']['regexp matching field(s)'] = regexp matching subfield(s)
 ; 
 ; Remove all fields that starts with a-z like
-;repository['my_repository']['filter']['owner']['marcxchange']['^['a-z']'] = .
+;repository['my_repository']['filter']['owner']['marcxchange']['^[\'a-z\']'] = .
 ;
 ; Remove all & subfields in field 100 like, the second parameter is the regex specifying the tag(s)
 ;repository['my_repository']['filter']['owner']['marcxchange']['100'] = &
 ;
 ; Remove all & subfields in all 3 digit numeric fields
-;repository['my_repository']['filter']['owner']['marcxchange']['['0-9']{3}'] = &
+;repository['my_repository']['filter']['owner']['marcxchange']['[\'0-9\']{3}'] = &
 ; or in all 3 character field
 ;repository['my_repository']['filter']['owner']['marcxchange']['^...$'] = &
 ; or in all fields (if some are not 3 characters)
 ;repository['my_repository']['filter']['owner']['marcxchange']['.*'] = &
 ; or remove subfields a and b in all field 7XX
-;repository['my_repository']['filter']['owner']['marcxchange']['^7..$'] = ['ab']
+;repository['my_repository']['filter']['owner']['marcxchange']['^7..$'] = [ab]
 ;
 
 ; filter marcxchange tag 559 subfield i from collectionIdentier 870976-anmeld
@@ -268,7 +268,8 @@ repository['${RAW_RECORD_REPOSITORY_NAME}']['cql_file'] = rawrecord_cql.xml
 repository['${RAW_RECORD_REPOSITORY_NAME}']['filter']['870970']['marcxchange']['^[\'a-z\']'] = .
 ; OBS: Dette fungerer muligvis ikke længere korrekt - FVS vil kigge på det.
 ; OBS: REttelse fredag - skal testes. Hvis '[&]' ikke virker, så fjern klammerne og skriv alene &
-repository['${RAW_RECORD_REPOSITORY_NAME}']['filter']['870970']['marcxchange']['^...$'] = '[&]'
+; NB det er plingerne som giver problemer, så væk med dem
+repository['${RAW_RECORD_REPOSITORY_NAME}']['filter']['870970']['marcxchange']['^...$'] = [&]
 
 repository['${RAW_RECORD_REPOSITORY_NAME}']['sort']['exclude'][] = ALL
 repository['${RAW_RECORD_REPOSITORY_NAME}']['sort']['include'][] = solr_001d_ascending

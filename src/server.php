@@ -619,7 +619,7 @@ class OpenSearch extends webServiceServer {
       list($rel_res, $rel_unit_pids) = self::fetch_valid_relation_records($relation_units);
 
       // collect holdings if needed or directly requested
-      $holdings_res = self::collect_holdings($work_ids, isset($param->includeHoldingsCount) ? $param->includeHoldingsCount : [], 'UNIT', $use_sort_complex_key, $unit_sort_keys);
+      $holdings_res = self::collect_holdings($work_ids, isset($param->includeHoldingsCount) ? $param->includeHoldingsCount : '', 'UNIT', $use_sort_complex_key, $unit_sort_keys);
 
       $record_repo_dom = new DomDocument();
       $record_repo_dom->preserveWhiteSpace = FALSE;
@@ -651,10 +651,10 @@ class OpenSearch extends webServiceServer {
               $raw_res[$unit_id],
               reset($pids),
               $rel_res,
-              isset($relation_units[$unit_id]) ? $relation_units[$unit_id] : [],
+              !empty($relation_units[$unit_id]) ? $relation_units[$unit_id] : NULL,
               $rel_unit_pids,
-              isset($primary_pids[$unit_id]) ? $primary_pids[$unit_id] : [],
-              isset($holdings_res[$unit_id]) ? $holdings_res[$unit_id] : [],
+              !empty($primary_pids[$unit_id]) ? $primary_pids[$unit_id] : NULL,
+              !empty($holdings_res[$unit_id]) ? $holdings_res[$unit_id] : NULL,
               $param);
           }
           if (empty($param->includeHoldingsCount) || !self::xs_boolean($param->includeHoldingsCount->_value)) {
@@ -1069,10 +1069,10 @@ class OpenSearch extends webServiceServer {
                 $raw_res[$key],
                 reset($pids),
                 $rel_res,
-                isset($relation_units[$key]) ? $relation_units[$key] : [],
+                !empty($relation_units[$key]) ? $relation_units[$key] : NULL,
                 $rel_unit_pids,
-                isset($primary_pids[$key]) ? $primary_pids[$key] : [],
-                isset($holdings_res[$key]) ? $holdings_res[$key] : [],
+                !empty($primary_pids[$key]) ? $primary_pids[$key] : NULL,
+                !empty($holdings_res[$key]) ? $holdings_res[$key] : NULL,
                 $param));
           }
           _Object::set($collections[], '_value', $o);
