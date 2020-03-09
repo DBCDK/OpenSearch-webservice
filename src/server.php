@@ -26,7 +26,8 @@
 
 //-----------------------------------------------------------------------------
 require_once('OLS_class_lib/webServiceServer_class.php');
-require_once 'OLS_class_lib/memcache_class.php';
+//require_once 'OLS_class_lib/memcache_class.php';
+require_once 'OLS_class_lib/rediscache_class.php';
 require_once 'OLS_class_lib/solr_query_class.php';
 require_once 'OLS_class_lib/open_agency_v2_class.php';
 
@@ -500,7 +501,7 @@ class OpenSearch extends webServiceServer {
           $work_ids[] = [$uid];
         }
       } else {
-        $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
+        $this->cache = new rediscache($this->config->get_value('cache_host', 'setup'),
           $this->config->get_value('cache_port', 'setup'),
           $this->config->get_value('cache_expire', 'setup'));
         $work_cache_struct = [];
@@ -853,7 +854,7 @@ class OpenSearch extends webServiceServer {
         $this->config->get_value('open_format', 'setup'),
         $this->config->get_value('open_format_force_namespace', 'setup'),
         $this->config->get_value('solr_format', 'setup'));
-      $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
+      $this->cache = new rediscache($this->config->get_value('cache_host', 'setup'),
         $this->config->get_value('cache_port', 'setup'),
         $this->config->get_value('cache_expire', 'setup'));
 
