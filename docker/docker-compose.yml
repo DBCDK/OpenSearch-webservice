@@ -32,9 +32,8 @@ services:
       - 80
 
   # A memcache service - can be used for testing external memcache
-  # NOTE: Uses version :5 of this service - there is no latest. We may need to change this.
   memcached-1:
-    image: docker-os.dbc.dk/dbc-memcached:5
+    image: docker.dbc.dk/dbc-memcached:latest
     environment:
       - EXTRAOPTS=-t 8 -n 256 -v
     expose:
@@ -43,9 +42,8 @@ services:
       - 11211
 
   # A memcache service - can be used for testing external memcache
-  # NOTE: Uses version :5 of this service - there is no latest. We may need to change this.
   memcached-2:
-    image: docker-os.dbc.dk/dbc-memcached:5
+    image: docker.dbc.dk/dbc-memcached:latest
     environment:
       - EXTRAOPTS=-t 8 -n 256 -v
     expose:
@@ -53,6 +51,15 @@ services:
     ports:
       - 11211
 
+  # A redis service - can be used for testing external memcache
+  redis:
+    image: docker.dbc.dk/dbc-redis:latest
+    expose:
+      - 6379
+    ports:
+      - 6379
+
+  # A rediscache service - can be used for testing external cache with redis
 
   # Opensearch with external memcache - for local testing.
   opensearch-webservice-em:
@@ -79,8 +86,12 @@ services:
       # Never set to no as this will stop running the local memcache used for fors and solr_file
       # - USE_MEMCACHE=no
       # The script should strip " from strings.
-      - AGENCY_CACHE_HOST="memcached-2"
-      - CACHE_HOST=memcached-1
+      #- AGENCY_CACHE_HOST="memcached-2"
+      #- CACHE_HOST=memcached-1
+      - AGENCY_CACHE_HOST=redis
+      - AGENCY_CACHE_PORT=6379
+      - CACHE_HOST=redis
+      - CACHE_PORT=6379
     expose:
       - 80
     ports:
