@@ -266,9 +266,6 @@ repository['${RAW_RECORD_REPOSITORY_NAME}']['solr'] = ${RAW_RECORD_SOLR}
 repository['${RAW_RECORD_REPOSITORY_NAME}']['rawrepo'] = ${RAW_RECORD_CONTENT_SERVICE}
 repository['${RAW_RECORD_REPOSITORY_NAME}']['cql_file'] = rawrecord_cql.xml
 repository['${RAW_RECORD_REPOSITORY_NAME}']['filter']['870970']['marcxchange']['^[\'a-z\']'] = .
-; OBS: Dette fungerer muligvis ikke længere korrekt - FVS vil kigge på det.
-; OBS: REttelse fredag - skal testes. Hvis '[&]' ikke virker, så fjern klammerne og skriv alene &
-; NB det er plingerne som giver problemer, så væk med dem
 repository['${RAW_RECORD_REPOSITORY_NAME}']['filter']['870970']['marcxchange']['^...$'] = [&]
 
 repository['${RAW_RECORD_REPOSITORY_NAME}']['sort']['exclude'][] = ALL
