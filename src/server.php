@@ -2437,7 +2437,7 @@ class OpenSearch extends webServiceServer {
    * @return string
    */
   private function corepo_get_url($unit_id, $pids) {
-    return sprintf($this->repository['corepo_get'], $unit_id, implode(',', $pids), $this->show_agency, VerboseJson::$tracking_id);
+    return sprintf($this->repository['corepo_get'], $unit_id, implode(',', $pids), $this->show_agency);
   }
 
   /** \brief Create record_repo url from settings and given id
@@ -2467,6 +2467,7 @@ class OpenSearch extends webServiceServer {
     $ret = [];
     $res_map = [];
     $no = 0;
+    $trackingId = '&trackingId=' . VerboseJson::$tracking_id;
     foreach ($urls as $key => $uri) {
       VerboseJson::log(TRACE, 'repo_read: ' . $uri);
       if (DEBUG_ON) echo __FUNCTION__ . ':: ' . $uri . "\n";
@@ -2476,7 +2477,7 @@ class OpenSearch extends webServiceServer {
       else {
         $this->number_of_record_repo_calls++;
         $res_map[$no] = $key;
-        $curl->set_url($uri, $no);
+        $curl->set_url($uri . $trackingId, $no);
         $no++;
       }
     }
