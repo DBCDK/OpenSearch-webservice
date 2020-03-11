@@ -5,7 +5,7 @@ services:
 
 
   # The image under test - using internal memcache
-  opensearch-webservice:
+  opensearch-webservice-internal-cache:
     image: opensearch-ws-local/opensearch-webservice${DOCKER_IMAGE_TAG}
     environment:
       - AAA_IP_LIST=0.0.0.0-255.255.255.255
@@ -59,10 +59,8 @@ services:
     ports:
       - 6379
 
-  # A rediscache service - can be used for testing external cache with redis
-
-  # Opensearch with external memcache - for local testing.
-  opensearch-webservice-em:
+  # Opensearch with external rediscache - for local testing.
+  opensearch-webservice:
     image: opensearch-ws-local/opensearch-webservice${DOCKER_IMAGE_TAG}
     environment:
       - AAA_IP_LIST=0.0.0.0-255.255.255.255
