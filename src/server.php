@@ -2784,7 +2784,7 @@ class OpenSearch extends webServiceServer {
               $debug_no = 'no ';
               foreach ($relations_in_to_unit[$unit_id] as $rel) {
                 foreach ($collections as $rc) {
-                  if ($this->valid_relation[$rc][$rel]) {
+                  if (isset($this->valid_relation[$rc][$rel])) {
                     $debug_no = '';
                     $rel_unit_pids[$unit_id][$rec_id] = $rec_id;;
                     break 2;
@@ -2800,7 +2800,8 @@ class OpenSearch extends webServiceServer {
       foreach ($relation_units as $u_id_from => $unit_rels) {
         $relation_count = [];
         foreach ($unit_rels as $u_id_to => $rel) {
-          if ($rel_unit_pids[$u_id_to]) {
+          if (isset($rel_unit_pids[$u_id_to])) {
+            if (!isset($relation_count[$rel])) $relation_count[$rel] = 0;
             if (++$relation_count[$rel] > MAX_IDENTICAL_RELATIONS) {
               unset($rel_unit_pids[$u_id_to]);
             }
