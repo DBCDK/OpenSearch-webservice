@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Locates the running redis server, and start a client inside the container
+
+which dirname &> /dev/null || die "Unable to run dirname command - please install it"
+export SCRIPTNAME="client"
+export SCRIPT_DIR=$(dirname "$(readlink -f "$0")") || { echo "Unable to identify basedir from $0" ; exit 1; }
+. "${SCRIPT_DIR}/shared.sh" || { echo "Unable to load shared file shared.sh" ; exit 1; }
+
+set -e
+
+# Get information about the exposed port of the service from the compose file.
+cid=$(get_compose_container_id ${PROJECT_DIR}/docker/docker-compose.yml redis)
+info "Starting redis client in container ${cid}"
+info "try 'keys *' and 'help'"
+docker exec -it ${cid} /bin/bash -c "redis-cli"
