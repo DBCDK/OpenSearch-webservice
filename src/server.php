@@ -296,6 +296,7 @@ class OpenSearch extends webServiceServer {
         if (!in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), []))) {
           $filter = rawurlencode(RR_MARC_001_B . ':(870970 OR ' . $this->agency . ')');
         }
+        $sort_q = '';
         if ($sort) {
           foreach ($sort as $s) {
             $ss[] = urlencode($sort_types[$s]);
@@ -404,8 +405,8 @@ class OpenSearch extends webServiceServer {
         }
       }
       $sort_q = '';
-        $best_match_debug = '';
-        if ($this->query_language == 'bestMatch') {
+      $best_match_debug = '';
+      if ($this->query_language == 'bestMatch') {
         $sort_q .= '&mm=1';
         $solr_query['edismax'] = $solr_query['best_match'];
         foreach ($solr_query['best_match']['sort'] as $key => $val) {
@@ -1193,6 +1194,8 @@ class OpenSearch extends webServiceServer {
       $random = FALSE;
       $sorts = (is_array($param->sort) ? $param->sort : [$param->sort]);
       $sort_types = $this->config->get_value('sort', 'setup');
+      // Get information about limitations in sort for this repo.
+      $repo_sorts = self::fetch_sortfields_in_repository();
       foreach ($sorts as $s) {
         if (!isset($sort_types[$s->_value])) {
           return 'Error: Unknown sort: ' . $s->_value;
@@ -1201,10 +1204,13 @@ class OpenSearch extends webServiceServer {
         if ($random && count($sort)) {
           return 'Error: Random sorting can only be used alone';
         }
-        // $repo_sorts = self::fetch_sortfields_in_repository();
-        // if (empty($repo_sorts[$s->_value])) {
-          // 2DO - this should be reported as such in the next version
-        // }
+        // If this specific sort "vector" is disabled for this repo, then ignore it, and skip to the next
+        if (empty($repo_sorts[$s->_value])) {
+          VerboseJson::log(DEBUG, "Request for sort on element '"
+            . $s->_value
+            . "'' requested, but this sort element is not supported in configuration for repository. "
+            . "Element is ignored in sort.");
+        }
         else {
           if (is_array($sort_types[$s->_value])) {
             foreach ($sort_types[$s->_value] as $item) {
