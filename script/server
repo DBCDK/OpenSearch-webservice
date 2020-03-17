@@ -14,3 +14,7 @@ docker-compose up --force-recreate -d redis
 info "Starting ws service, based on compose file in $(pwd)"
 docker-compose up --force-recreate opensearch-webservice
 
+# If the users shuts down using Ctrl+C, we can shut down the redis service too
+info "Shutting down docker compose containers and services"
+docker-compose down
+
