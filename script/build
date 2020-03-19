@@ -9,5 +9,10 @@ set -e
 
 cd ${PROJECT_DIR}
 check_on_path build-dockers.py
-info "Building ws docker container"
-build-dockers.py "$@" || die "Unable to build ws docker container"
+info "Building ws docker container using build-dockers.py"
+MY_TAG=
+if test -n "${GIT_BRANCH}" ; then
+    MY_TAG="-t ${GIT_BRANCH}"
+fi
+# If the users sets a tag, it will override our branch tag. This is by intention.
+build-dockers.py ${MY_TAG} "$@" || die "Unable to build ws docker container"
