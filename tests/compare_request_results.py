@@ -269,8 +269,8 @@ def compare(request_file, url1, url2):
     diff = generate_diff(response1, response2)
     if diff != '':
         error("Test failed")
-        debug("reponse from " + url1 + "\n" + response1)
-        debug("reponse from " + url2 + "\n" + response2)
+        debug("reponse from " + url1 + "\n" + response1.decode())
+        debug("reponse from " + url2 + "\n" + response2.decode())
         raise AssertionError("comparison produced diff: \n%s" % diff)
     else:
         info("No differences found for request_file " + request_file)
@@ -342,8 +342,8 @@ def main():
         info("Number of tests passed : " + str(result["passed"]))
         info("Number of tests failed : " + str(result["failed"]))
 
-        info("Passed files: " + ", ".join(result["passed_files"]))
-        info("Failed files: " + ", ".join(result["failed_files"]))
+        info("Passed files: " + " ".join(result["passed_files"]))
+        info("Failed files: " + " ".join(result["failed_files"]))
 
         if result["failed"] > 0:
             error("One or more tests failed")
