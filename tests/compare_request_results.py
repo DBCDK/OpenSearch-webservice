@@ -49,6 +49,10 @@ script_name = "compare-request-results"
 do_debug = False
 do_trace = False
 
+# Use these global variables to track elapsed time for the urls
+elapsed_time_url1 = datetime.timedelta(0)
+elapsed_time_url2 = datetime.timedelta(0)
+
 
 ################################################################################
 # LOG AND OUTPUT STUFF
@@ -229,13 +233,17 @@ def generate_diff(response1, response2):
     return '\n'.join([x for x in diff])
 
 
-def retrieve_response(url, request_string):
+def retrieve_response(url, request_string, desc, d: dict):
     """ POSTS request to server at url and returns response"""
     trace()
+    start_time = datetime.datetime.now()
     request = urllib.request.Request(url,
                                      request_string.encode('utf-8'),
                                      headers={'Content-type': 'text/xml; charset=utf-8'})
     response = urllib.request.urlopen(request)
+    stop_time = datetime.datetime.now()
+    info("Time passed retriving from '" + desc + "' : " + str(stop_time - start_time))
+    d["res"] += (stop_time - start_time)
     return response.read()
 
 
@@ -253,18 +261,26 @@ def prune_and_prettyprint(xml_string):
 
         return etree.tostring(xml, pretty_print=True)
     except Exception:
-        error("Exception while parsing response. xml_string is : \n" + xml_string)
+        error("Exception while parsing response. xml_string is : \n" + xml_string.decode())
         raise
 
 
 def compare(request_file, url1, url2):
     """ Compare function. Raises an assertionError if diff is found between request_file and response_file """
     trace()
+    global elapsed_time_url1
+    global elapsed_time_url2
+
     info("Getting results for request_file " + request_file)
     debug("Calling url1: " + url1)
-    response1 = prune_and_prettyprint(retrieve_response(url1, read_file(request_file)))
+    # Sometimes I think Python is really, really heavy
+    d = {'res': elapsed_time_url1}
+    response1 = prune_and_prettyprint(retrieve_response(url1, read_file(request_file), "golden", d))
+    elapsed_time_url1 = d["res"]
     debug("Calling url2: " + url2)
-    response2 = prune_and_prettyprint(retrieve_response(url2, read_file(request_file)))
+    d = {'res': elapsed_time_url2}
+    response2 = prune_and_prettyprint(retrieve_response(url2, read_file(request_file), "tested", d))
+    elapsed_time_url2 = d["res"]
     debug("Generating diff")
     diff = generate_diff(response1, response2)
     if diff != '':
@@ -304,8 +320,8 @@ def get_args() -> argparse.Namespace:
     """
     trace()
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("url1", help="Server url 1")
-    parser.add_argument("url2", help="Server url 2")
+    parser.add_argument("url1", help="Server url 1 - golden")
+    parser.add_argument("url2", help="Server url 2 - tested")
     parser.add_argument("requests", help="Toplevel request folder")
     parser.add_argument("-d", "--debug", action="store_true",
                         help="Output extra debug information")
@@ -344,12 +360,16 @@ def main():
 
         info("Passed files: " + " ".join(result["passed_files"]))
         info("Failed files: " + " ".join(result["failed_files"]))
+        stop_time = datetime.datetime.now()
+        info("Time passed: " + str(stop_time - start_time))
+        info("Request time, url1 (golden): " + str(elapsed_time_url1))
+        info("Request time, url2 (tested): " + str(elapsed_time_url2))
 
         if result["failed"] > 0:
-            error("One or more tests failed")
+            error("One or more tests failed. Result is failure.")
             sys.exit(1)
         else:
-            info("All requests returned identical answers")
+            info("All requests returned identical answers. Result is success.")
             sys.exit(0)
 
     except Exception:
