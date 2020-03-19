@@ -234,7 +234,7 @@ class OpenSearch extends webServiceServer {
         $this->config->get_value('open_format_force_namespace', 'setup'),
         $this->config->get_value('solr_format', 'setup'));
 
-      $use_work_collection = ($param->collectionType->_value ?? '' <> 'manifestation');
+      $use_work_collection = (($param->collectionType->_value ?? '') <> 'manifestation');
       if (isset($this->repository['rawrepo'])) {
         $fetch_raw_records = (!$this->format['found_solr_format'] || $this->format['marcxchange']['user_selected']);
         if ($fetch_raw_records) {
