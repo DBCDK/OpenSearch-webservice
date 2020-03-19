@@ -261,8 +261,7 @@ class OpenSearch extends webServiceServer {
         Object::set_value($ret_error->searchResponse->_value, 'error', 'Only positive float value allowed');
         return $ret_error;
       }
-
-#AF hvor kan den unsupported komme fra ?
+// AF hvor kan den unsupported komme fra ?
       if ($unsupported) return $ret_error;
 
       $ret_error->searchResponse->_value->error->_value = &$error;
