@@ -242,15 +242,19 @@ def retrieve_response(url, request_string):
 def prune_and_prettyprint(xml_string):
     """ removed nodes found in the IGNORE list and pretty print xml"""
     trace()
-    parser = etree.XMLParser(remove_blank_text=True, encoding="UTF-8")
-    xml = etree.fromstring(xml_string, parser)
+    try:
+        parser = etree.XMLParser(remove_blank_text=True, encoding="UTF-8")
+        xml = etree.fromstring(xml_string, parser)
 
-    for path in IGNORE:
-        nodes = xml.xpath(path, namespaces=NAMESPACES)
-        for node in nodes:
-            node.getparent().remove(node)
+        for path in IGNORE:
+            nodes = xml.xpath(path, namespaces=NAMESPACES)
+            for node in nodes:
+                node.getparent().remove(node)
 
-    return etree.tostring(xml, pretty_print=True)
+        return etree.tostring(xml, pretty_print=True)
+    except Exception:
+        error("Exception while parsing response. xml_string is : \n" + xml_string)
+        raise
 
 
 def compare(request_file, url1, url2):
@@ -265,6 +269,8 @@ def compare(request_file, url1, url2):
     diff = generate_diff(response1, response2)
     if diff != '':
         error("Test failed")
+        debug("reponse from " + url1 + "\n" + response1)
+        debug("reponse from " + url2 + "\n" + response2)
         raise AssertionError("comparison produced diff: \n%s" % diff)
     else:
         info("No differences found for request_file " + request_file)
@@ -275,14 +281,20 @@ def test_webservice(url1, url2, requests_folder) -> dict:
     trace()
     passed = 0
     failed = 0
+    failed_files = []
+    passed_files = []
     for request_file in retrieve_requests_files(requests_folder):
         try:
             compare(request_file, url1, url2)
+            debug("Test passed")
+            passed_files.append(request_file)
             passed += 1
         except Exception:
+            debug("Test failed")
             output_log_msg(traceback.format_exc())
+            failed_files.append(request_file)
             failed += 1
-    return {passed: passed, failed: failed}
+    return {'passed': passed, 'failed': failed, 'passed_files': passed_files, 'failed_files': failed_files}
 
 
 def get_args() -> argparse.Namespace:
@@ -329,6 +341,9 @@ def main():
         info("Number of tests run    : " + str(result["passed"]+result["failed"]))
         info("Number of tests passed : " + str(result["passed"]))
         info("Number of tests failed : " + str(result["failed"]))
+
+        info("Passed files: " + ", ".join(result["passed_files"]))
+        info("Failed files: " + ", ".join(result["failed_files"]))
 
         if result["failed"] > 0:
             error("One or more tests failed")
