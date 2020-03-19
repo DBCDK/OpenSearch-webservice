@@ -47,6 +47,7 @@ script_name = "compare-request-results"
 # These are convenient to not have to pass to all functions, etc.
 # Could have been wrapped in a class, though.
 do_debug = False
+do_trace = False
 
 
 ################################################################################
@@ -194,7 +195,7 @@ def debug(msg: str) -> None:
 
 def retrieve_requests_files(request_folder):
     """ Generator function that yields request file paths"""
-
+    trace()
     for root, dirs, files in os.walk(request_folder):
         if '.svn' in dirs:
             dirs.remove('.svn')
@@ -209,6 +210,7 @@ def retrieve_requests_files(request_folder):
 
 def read_file(path):
     """ Reads a file and returns data """
+    trace()
     with open(path) as filepath:
         data = filepath.read()
     return data
@@ -216,6 +218,7 @@ def read_file(path):
 
 def generate_diff(response1, response2):
     """ generates diff between the responses"""
+    trace()
     rm_blanks = lambda x: x != ''
     #debug("Diffing:")
     #debug(response1.decode())
@@ -228,6 +231,7 @@ def generate_diff(response1, response2):
 
 def retrieve_response(url, request_string):
     """ POSTS request to server at url and returns response"""
+    trace()
     request = urllib.request.Request(url,
                                      request_string.encode('utf-8'),
                                      headers={'Content-type': 'text/xml; charset=utf-8'})
@@ -237,6 +241,7 @@ def retrieve_response(url, request_string):
 
 def prune_and_prettyprint(xml_string):
     """ removed nodes found in the IGNORE list and pretty print xml"""
+    trace()
     parser = etree.XMLParser(remove_blank_text=True, encoding="UTF-8")
     xml = etree.fromstring(xml_string, parser)
 
@@ -250,7 +255,8 @@ def prune_and_prettyprint(xml_string):
 
 def compare(request_file, url1, url2):
     """ Compare function. Raises an assertionError if diff is found between request_file and response_file """
-    debug("Getting results for request_file " + request_file)
+    trace()
+    info("Getting results for request_file " + request_file)
     debug("Calling url1: " + url1)
     response1 = prune_and_prettyprint(retrieve_response(url1, read_file(request_file)))
     debug("Calling url2: " + url2)
@@ -258,16 +264,25 @@ def compare(request_file, url1, url2):
     debug("Generating diff")
     diff = generate_diff(response1, response2)
     if diff != '':
+        error("Test failed")
         raise AssertionError("comparison produced diff: \n%s" % diff)
     else:
         info("No differences found for request_file " + request_file)
 
 
-def test_webservice(url1, url2, requests_folder):
+def test_webservice(url1, url2, requests_folder) -> dict:
     """ Test Generator """
-
+    trace()
+    passed = 0
+    failed = 0
     for request_file in retrieve_requests_files(requests_folder):
-        compare(request_file, url1, url2)
+        try:
+            compare(request_file, url1, url2)
+            passed += 1
+        except Exception:
+            output_log_msg(traceback.format_exc())
+            failed += 1
+    return {passed: passed, failed: failed}
 
 
 def get_args() -> argparse.Namespace:
@@ -275,12 +290,15 @@ def get_args() -> argparse.Namespace:
     Configure the argument parsing system, and run it, to obtain the arguments given on the commandline.
     :return: The parsed arguments.
     """
+    trace()
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("url1", help="Server url 1")
     parser.add_argument("url2", help="Server url 2")
     parser.add_argument("requests", help="Toplevel request folder")
     parser.add_argument("-d", "--debug", action="store_true",
                         help="Output extra debug information")
+    parser.add_argument("-t", "--trace", action="store_true",
+                        help="Output trace information - implies debug")
     parser.description = "Runs all the requests in the requests folder against both urls, compare results."
     parser.epilog = """
 Examples:
@@ -299,11 +317,25 @@ def main():
         global do_debug
         do_debug = args.debug
 
-        debug("cli options: debug:" + str(args.debug))
-        test_webservice(args.url1, args.url2, args.requests)
+        global do_trace
+        do_trace = args.trace
+        if do_trace:
+            do_debug = True
 
-        info("All requests returned identical answers")
-        sys.exit(0)
+        debug("cli options: debug:" + str(args.debug))
+        info("Comparing '" + args.url1 + "' against '" + args.url2 + "' with request from '" + args.requests + "'")
+        result = test_webservice(args.url1, args.url2, args.requests)
+
+        info("Number of tests run    : " + str(result["passed"]+result["failed"]))
+        info("Number of tests passed : " + str(result["passed"]))
+        info("Number of tests failed : " + str(result["failed"]))
+
+        if result["failed"] > 0:
+            error("One or more tests failed")
+            sys.exit(1)
+        else:
+            info("All requests returned identical answers")
+            sys.exit(0)
 
     except Exception:
         output_log_msg(traceback.format_exc())

@@ -11,7 +11,7 @@ set -e
 
 # Get information about the exposed port of the service from the compose file.
 port=$(get_compose_service_port ${PROJECT_DIR}/docker/docker-compose.yml opensearch-webservice 80)
-URL="http://localhost:${port}/5.2"
+URL="http://localhost:${port}/5.2/"
 
 # Try to find a browser-open program
 URL_OPEN_PROG=$(which xdg-open || which gnome-open || which kde-open || which firefox || which chromium-browser || which chrome || which links)

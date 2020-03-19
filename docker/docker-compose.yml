@@ -81,6 +81,7 @@ services:
       - OPEN_FORMAT=http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
       - OLD_OPEN_FORMAT=http://openformat.addi.dk/0.2/
       - URL_PATH=5.2
+      - USE_HOLDING_BLOCK_JOIN=yes # No clue what this does, but matches fbstest.
       # Never set to no as this will stop running the local memcache used for fors and solr_file
       # - USE_MEMCACHE=no
       # The script should strip " from strings.
