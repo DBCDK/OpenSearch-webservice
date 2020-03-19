@@ -9,8 +9,13 @@ set -e
 
 cd ${PROJECT_DIR}/docker
 check_on_path docker docker-compose
-info "Starting redis service, used for caching"
+info "Starting redis service, used for caching - depending on config"
 docker-compose up --force-recreate -d redis
+info "Starting memcached-1 service, used for caching - depending on config"
+docker-compose up --force-recreate -d memcached-1
+info "Starting memcached-2 service, used for caching - depending on config"
+docker-compose up --force-recreate -d memcached-2
+
 info "Starting ws service, based on compose file in $(pwd)"
 docker-compose up --force-recreate opensearch-webservice
 

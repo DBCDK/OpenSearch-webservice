@@ -85,12 +85,15 @@ services:
       # Never set to no as this will stop running the local memcache used for fors and solr_file
       # - USE_MEMCACHE=no
       # The script should strip " from strings.
-      #- AGENCY_CACHE_HOST="memcached-2"
-      #- CACHE_HOST=memcached-1
+      # Leave these, to use MEMCACHE as a cache.
+      ##- AGENCY_CACHE_HOST="memcached-2"
+      ##- CACHE_HOST=memcached-1
+      # Uncomment these, to use REDIS as a cache.
       - AGENCY_CACHE_HOST=redis
       - AGENCY_CACHE_PORT=6379
       - CACHE_HOST=redis
       - CACHE_PORT=6379
+      - CACHE_TYPE=redis
     expose:
       - 80
     ports:

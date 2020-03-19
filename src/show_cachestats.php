@@ -10,30 +10,47 @@ echo "</ul></p>";
 
 echo "<p><em>The settings for this page is picked from environment variables, NOT ini files.</em></p>";
 
+$cache_type = trim(getenv("CACHE_TYPE"), '"');
+$agency_cache_host = trim(getenv("AGENCY_CACHE_HOST"), '"');
+$agency_cache_port = trim(getenv("AGENCY_CACHE_PORT"), '"');
+$cache_host = trim(getenv("CACHE_HOST"), '"');
+$cache_port = trim(getenv("CACHE_PORT"), '"');
 
 echo "<p>Cache configuration:</p>";
 echo "<table border='1'>";
 tr3_me("<em>Object type</em>", "<em>Cache type</em>", "<em>Cache host:port</em>");
 tr3_me("aaa/fors & solr_file", "memcache internal to pod", "localhost:11211");
-tr3_me("OpenAgency/VIP", "Redis cache", trim(getenv("AGENCY_CACHE_HOST"), '"') . ":" . trim(getenv("AGENCY_CACHE_PORT"), '"'));
-tr3_me("SOLR and COREPO objects", "Redis cache", trim(getenv("CACHE_HOST"), '"') . ":" . trim(getenv("CACHE_PORT"), '"'));
+tr3_me("OpenAgency/VIP", $cache_type, $agency_cache_host . ":" . $agency_cache_port );
+tr3_me("SOLR and COREPO objects", $cache_type, $cache_host . ":" . $cache_port);
 echo "</table></p>";
 
 echo "<p>OpenSearch <em>always</em> use a local memcache at 11211 for aaa/fors and solr_file entries. Due to the very static nature of this cache, the hit ratios on this cache will often be >90%.</p>";
-echo "<p>OpenSearch <em>always</em> use a redis cache for OpenAgency/VIP and SOLR/COREPO objects. These caches can be different, but this script is too stupid to know this.</p>";
+echo "<p>OpenSearch <em>always</em> use a memcache OR redis cache for OpenAgency/VIP and SOLR/COREPO objects. These caches can be different, but this script is too stupid to know this.</p>";
 
 // There are more information about the stats to get out of redis here: https://github.com/phpredis/phpredis#info
 // and here: https://redis.io/commands/info
 
-echo "<h2>OpenAgency/VIP cache info (AGENCY_CACHE_HOST)</h2>";
-$rediscache_obj = new Redis();
-$rediscache_obj->connect(trim(getenv("AGENCY_CACHE_HOST"), '"'), trim(getenv("AGENCY_CACHE_PORT"), '"') );
-rediscache_info($rediscache_obj->info("all"));
+if ($cache_type == "redis") {
+  echo "<h2>OpenAgency/VIP cache info (AGENCY_CACHE_HOST)</h2>";
+  $rediscache_obj = new Redis();
+  $rediscache_obj->connect($agency_cache_host, $agency_cache_port);
+  rediscache_info($rediscache_obj->info("all"));
 
-echo "<h2>SOLR/COREPO cache info (CACHE_HOST)</h2>";
-$rediscache_obj = new Redis();
-$rediscache_obj->connect(trim(getenv("CACHE_HOST"), '"'), trim(getenv("CACHE_PORT"), '"') );
-rediscache_info($rediscache_obj->info("all"));
+  echo "<h2>SOLR/COREPO cache info (CACHE_HOST)</h2>";
+  $rediscache_obj = new Redis();
+  $rediscache_obj->connect($cache_host, $cache_port);
+  rediscache_info($rediscache_obj->info("all"));
+} else {
+  echo "<h2>OpenAgency/VIP cache info (AGENCY_CACHE_HOST)</h2>";
+  $memcache_obj = new Memcache();
+  $memcache_obj->connect($agency_cache_host, $agency_cache_port);
+  memcache_info($memcache_obj->getStats());
+
+  echo "<h2>SOLR/COREPO cache info (CACHE_HOST)</h2>";
+  $memcache_obj = new Memcache();
+  $memcache_obj->connect($cache_host, $cache_port);
+  memcache_info($memcache_obj->getStats());
+}
 
 echo "<h2>aaa/fors & solr_file cache info (localhost:11211)</h2>";
 $memcache_obj = new Memcache;
