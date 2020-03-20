@@ -5,4 +5,17 @@
 which dirname &> /dev/null || die "Unable to run dirname command - please install it"
 export SCRIPTNAME="test"
 export SCRIPT_DIR=$(dirname "$(readlink -f "$0")") || { echo "Unable to identify basedir from $0" ; exit 1; }
-exec ${SCRIPT_DIR}/../run-system-test.sh "$@"
+. "${SCRIPT_DIR}/shared.sh" || { echo "Unable to load shared file shared.sh" ; exit 1; }
+
+set -e
+
+# We need an argument
+URL_GOLDEN="$1"
+REQ_DIR=${2:-${SCRIPT_DIR}/../tests/requests}
+
+test -z "${URL_GOLDEN}" && die "Usage: $0 <golden_url> [request_dir]"
+
+# Get information about the exposed port of the service from the compose file.
+port=$(get_compose_service_port ${PROJECT_DIR}/docker/docker-compose.yml opensearch-webservice 80)
+URL="http://localhost:${port}/5.2/"
+exec ${SCRIPT_DIR}/../tests/compare_request_results.py ${URL_GOLDEN} ${URL} ${REQ_DIR}

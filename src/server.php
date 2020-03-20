@@ -27,6 +27,7 @@
 //-----------------------------------------------------------------------------
 require_once('OLS_class_lib/webServiceServer_class.php');
 require_once 'OLS_class_lib/memcache_class.php';
+require_once 'OLS_class_lib/rediscache_class.php';
 require_once 'OLS_class_lib/solr_query_class.php';
 require_once 'OLS_class_lib/open_agency_v2_class.php';
 
@@ -78,7 +79,8 @@ class OpenSearch extends webServiceServer {
     $this->watch->start("construct");
     $this->curl = new curl();
     $this->curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
-    $this->open_agency = new OpenAgency($this->config->get_value('agency', 'setup'));
+    $this->open_agency = new OpenAgency($this->config->get_value('agency', 'setup'),
+                                        $this->config->get_value('cache_type', 'setup'));
 
     define('FIELD_UNIT_ID', 'unit.id');
     define('FIELD_FEDORA_PID', 'fedoraPid');
@@ -500,9 +502,15 @@ class OpenSearch extends webServiceServer {
           $work_ids[] = [$uid];
         }
       } else {
-        $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
-          $this->config->get_value('cache_port', 'setup'),
-          $this->config->get_value('cache_expire', 'setup'));
+        if ($this->config->get_value('cache_type', 'setup') == "redis") {
+          $this->cache = new rediscache($this->config->get_value('cache_host', 'setup'),
+            $this->config->get_value('cache_port', 'setup'),
+            $this->config->get_value('cache_expire', 'setup'));
+        } else {
+          $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
+            $this->config->get_value('cache_port', 'setup'),
+            $this->config->get_value('cache_expire', 'setup'));
+        }
         $work_cache_struct = [];
         if (empty($_GET['skipCache'])) {
           if ($work_cache_struct = $this->cache->get($key_work_struct)) {
@@ -853,9 +861,15 @@ class OpenSearch extends webServiceServer {
         $this->config->get_value('open_format', 'setup'),
         $this->config->get_value('open_format_force_namespace', 'setup'),
         $this->config->get_value('solr_format', 'setup'));
-      $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
-        $this->config->get_value('cache_port', 'setup'),
-        $this->config->get_value('cache_expire', 'setup'));
+      if ($this->config->get_value('cache_type', 'setup') == "redis") {
+        $this->cache = new rediscache($this->config->get_value('cache_host', 'setup'),
+          $this->config->get_value('cache_port', 'setup'),
+          $this->config->get_value('cache_expire', 'setup'));
+      } else {
+        $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
+          $this->config->get_value('cache_port', 'setup'),
+          $this->config->get_value('cache_expire', 'setup'));
+      }
 
       $fpids = self::as_array($param->identifier ?? '');
       $lpids = self::as_array($param->localIdentifier ?? '');

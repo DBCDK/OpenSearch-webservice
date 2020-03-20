@@ -77,6 +77,16 @@ function sharedOnLoad() {
   #debug "PROJECT_DIR='${PROJECT_DIR}'"
   export HOST_IP=$(ip addr show | grep -A 99 '^2' | grep inet | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' |grep -v '^127.0.0.1' | head -1)
   #debug "Using host IP: ${HOST_IP}"
+
+  # Some changes, to support starting servers on different branches
+  # We limit to 128 chars, to be able to use it with docker
+  GIT_BRANCH=$(cd ${PROJECT_DIR} &> /dev/null && git rev-parse --abbrev-ref HEAD | cut -c -128) # Ignore errors, will just give us the empty string.
+  if test -n "${GIT_BRANCH}" -a -t 1 ; then
+    export DOCKER_IMAGE_TAG=:${GIT_BRANCH}
+    export COMPOSE_PROJECT_NAME=${GIT_BRANCH}
+    info "GIT branch name found in interactive mode, using it for naming docker artifacts, and docker-compose sessions"
+    info "GIT_BRANCH: ${GIT_BRANCH}"
+  fi
 }
 sharedOnLoad
 

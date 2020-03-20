@@ -47,6 +47,11 @@ script_name = "compare-request-results"
 # These are convenient to not have to pass to all functions, etc.
 # Could have been wrapped in a class, though.
 do_debug = False
+do_trace = False
+
+# Use these global variables to track elapsed time for the urls
+elapsed_time_url1 = datetime.timedelta(0)
+elapsed_time_url2 = datetime.timedelta(0)
 
 
 ################################################################################
@@ -194,7 +199,7 @@ def debug(msg: str) -> None:
 
 def retrieve_requests_files(request_folder):
     """ Generator function that yields request file paths"""
-
+    trace()
     for root, dirs, files in os.walk(request_folder):
         if '.svn' in dirs:
             dirs.remove('.svn')
@@ -209,6 +214,7 @@ def retrieve_requests_files(request_folder):
 
 def read_file(path):
     """ Reads a file and returns data """
+    trace()
     with open(path) as filepath:
         data = filepath.read()
     return data
@@ -216,6 +222,7 @@ def read_file(path):
 
 def generate_diff(response1, response2):
     """ generates diff between the responses"""
+    trace()
     rm_blanks = lambda x: x != ''
     #debug("Diffing:")
     #debug(response1.decode())
@@ -226,48 +233,86 @@ def generate_diff(response1, response2):
     return '\n'.join([x for x in diff])
 
 
-def retrieve_response(url, request_string):
+def retrieve_response(url, request_string, desc, d: dict):
     """ POSTS request to server at url and returns response"""
+    trace()
+    start_time = datetime.datetime.now()
     request = urllib.request.Request(url,
                                      request_string.encode('utf-8'),
                                      headers={'Content-type': 'text/xml; charset=utf-8'})
     response = urllib.request.urlopen(request)
+    stop_time = datetime.datetime.now()
+    info("Time passed retrieving from '" + desc + "' : " + str(stop_time - start_time))
+    d["res"] += (stop_time - start_time)
     return response.read()
 
 
 def prune_and_prettyprint(xml_string):
     """ removed nodes found in the IGNORE list and pretty print xml"""
-    parser = etree.XMLParser(remove_blank_text=True, encoding="UTF-8")
-    xml = etree.fromstring(xml_string, parser)
+    trace()
+    try:
+        parser = etree.XMLParser(remove_blank_text=True, encoding="UTF-8")
+        xml = etree.fromstring(xml_string, parser)
 
-    for path in IGNORE:
-        nodes = xml.xpath(path, namespaces=NAMESPACES)
-        for node in nodes:
-            node.getparent().remove(node)
+        for path in IGNORE:
+            nodes = xml.xpath(path, namespaces=NAMESPACES)
+            for node in nodes:
+                node.getparent().remove(node)
 
-    return etree.tostring(xml, pretty_print=True)
+        return etree.tostring(xml, pretty_print=True)
+    except Exception:
+        # Output the argument, so we have a change to determine what happened.
+        error("Exception while parsing response. xml_string is : \n" + xml_string.decode())
+        # Rethrow to let later stage handle the actual error.
+        raise
 
 
 def compare(request_file, url1, url2):
     """ Compare function. Raises an assertionError if diff is found between request_file and response_file """
-    debug("Getting results for request_file " + request_file)
+    trace()
+    global elapsed_time_url1
+    global elapsed_time_url2
+
+    info("Getting results for request_file " + request_file)
     debug("Calling url1: " + url1)
-    response1 = prune_and_prettyprint(retrieve_response(url1, read_file(request_file)))
+    # Sometimes I think Python is really, really heavy
+    d = {'res': elapsed_time_url1}
+    response1 = prune_and_prettyprint(retrieve_response(url1, read_file(request_file), "golden", d))
+    elapsed_time_url1 = d["res"]
     debug("Calling url2: " + url2)
-    response2 = prune_and_prettyprint(retrieve_response(url2, read_file(request_file)))
+    d = {'res': elapsed_time_url2}
+    response2 = prune_and_prettyprint(retrieve_response(url2, read_file(request_file), "tested", d))
+    elapsed_time_url2 = d["res"]
     debug("Generating diff")
     diff = generate_diff(response1, response2)
     if diff != '':
+        error("Test failed")
+        debug("reponse from " + url1 + "\n" + response1.decode())
+        debug("reponse from " + url2 + "\n" + response2.decode())
         raise AssertionError("comparison produced diff: \n%s" % diff)
     else:
         info("No differences found for request_file " + request_file)
 
 
-def test_webservice(url1, url2, requests_folder):
+def test_webservice(url1, url2, requests_folder) -> dict:
     """ Test Generator """
-
+    trace()
+    passed = 0
+    failed = 0
+    failed_files = []
+    passed_files = []
     for request_file in retrieve_requests_files(requests_folder):
-        compare(request_file, url1, url2)
+        try:
+            compare(request_file, url1, url2)
+            debug("Test passed")
+            passed_files.append(request_file)
+            passed += 1
+        except Exception:
+            debug("Test failed")
+            output_log_msg(traceback.format_exc())
+            failed_files.append(request_file)
+            failed += 1
+    return {'passed': passed, 'failed': failed, 'passed_files': passed_files, 'failed_files': failed_files}
 
 
 def get_args() -> argparse.Namespace:
@@ -275,12 +320,15 @@ def get_args() -> argparse.Namespace:
     Configure the argument parsing system, and run it, to obtain the arguments given on the commandline.
     :return: The parsed arguments.
     """
+    trace()
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("url1", help="Server url 1")
-    parser.add_argument("url2", help="Server url 2")
+    parser.add_argument("url1", help="Server url 1 - golden")
+    parser.add_argument("url2", help="Server url 2 - tested")
     parser.add_argument("requests", help="Toplevel request folder")
     parser.add_argument("-d", "--debug", action="store_true",
                         help="Output extra debug information")
+    parser.add_argument("-t", "--trace", action="store_true",
+                        help="Output trace information - implies debug")
     parser.description = "Runs all the requests in the requests folder against both urls, compare results."
     parser.epilog = """
 Examples:
@@ -299,11 +347,32 @@ def main():
         global do_debug
         do_debug = args.debug
 
-        debug("cli options: debug:" + str(args.debug))
-        test_webservice(args.url1, args.url2, args.requests)
+        global do_trace
+        do_trace = args.trace
+        if do_trace:
+            do_debug = True
 
-        info("All requests returned identical answers")
-        sys.exit(0)
+        debug("cli options: debug:" + str(args.debug))
+        info("Comparing '" + args.url1 + "' against '" + args.url2 + "' with request from '" + args.requests + "'")
+        result = test_webservice(args.url1, args.url2, args.requests)
+
+        info("Number of tests run    : " + str(result["passed"]+result["failed"]))
+        info("Number of tests passed : " + str(result["passed"]))
+        info("Number of tests failed : " + str(result["failed"]))
+
+        info("Passed files: " + " ".join(result["passed_files"]))
+        info("Failed files: " + " ".join(result["failed_files"]))
+        stop_time = datetime.datetime.now()
+        info("Time passed: " + str(stop_time - start_time))
+        info("Request time, url1 (golden): " + str(elapsed_time_url1))
+        info("Request time, url2 (tested): " + str(elapsed_time_url2))
+
+        if result["failed"] > 0:
+            error("One or more tests failed. Result is failure.")
+            sys.exit(1)
+        else:
+            info("All requests returned identical answers. Result is success.")
+            sys.exit(0)
 
     except Exception:
         output_log_msg(traceback.format_exc())

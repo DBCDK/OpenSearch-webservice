@@ -1,4 +1,3 @@
-# FROM mbd/dbc-apache-php7:latest
 FROM docker.dbc.dk/dbc-apache-php7:latest
 
 LABEL maintainer="Team Search <os-team@dbc.dk>" \
@@ -13,6 +12,7 @@ LABEL maintainer="Team Search <os-team@dbc.dk>" \
       CACHE_HOST="Search results memcache host [localhost]" \
       CACHE_PORT="Search results memcache port [11211]" \
       CACHE_EXPIRE="Search results memcache expiration [600]" \
+      CACHE_TYPE="Set to 'redis' to use Redis as a cache for external caches (casesentive). [memcache]" \
       FEDORA="Url to the corepo server" \
       FORMAT_JS_SERVER_BLOCK="To include openFormat code in opensearch - only for special circumstances" \
       FORMAT_CURL_TIMEOUT="timeout (in seconds) if openFormat is included" \
@@ -60,6 +60,7 @@ ENV AGENCY_FALLBACK="" \
     CACHE_HOST="localhost" \
     CACHE_PORT=11211 \
     CACHE_EXPIRE=600 \
+    CACHE_TYPE="memcache" \
     FORMAT_JS_SERVER_BLOCK="" \
     FORMAT_CURL_TIMEOUT="" \
     FORMAT_CACHE_SETTINGS_BLOCK="" \
