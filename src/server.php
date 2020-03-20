@@ -1600,10 +1600,12 @@ class OpenSearch extends webServiceServer {
           $format_pids = [];
           foreach ($c->_value->collection->_value->object as $o_key => $obj) {
             $pid = $obj->_value->identifier->_value ?? '';
-            $best_idx = $this->find_best_solr_rec($solr[0]['response']['docs'], FIELD_REC_ID, $pid);
-            $solr_doc = &$solr[0]['response']['docs'][$best_idx];
-            $mani = self::collect_solr_tags($format_tags, $solr_doc, $pid);
-            if ($mani) {   // should contain data, but for some odd reason it can be empty. Some bug in the solr-indexes?
+            if (!empty($pid)) {
+              $best_idx = $this->find_best_solr_rec($solr[0]['response']['docs'], FIELD_REC_ID, $pid);
+              $solr_doc = &$solr[0]['response']['docs'][$best_idx];
+              $mani = self::collect_solr_tags($format_tags, $solr_doc, $pid);
+            }
+            if (isset($mani)) {   // should contain data if pid exist, but for some odd reason it can be empty. Some bug in the solr-indexes?
               $mani->_namespace = $solr_display_ns;
               $manifestation->manifestation[$o_key] = $mani;
             }
