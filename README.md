@@ -141,7 +141,7 @@ $ script/build --pull
 $ script/server
 ```
 
-Thie above assumes that the master branch is golden.
+The above assumes that the master branch is golden (functions correctly).
 
 In another window:
 ```bash

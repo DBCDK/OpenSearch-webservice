@@ -242,7 +242,7 @@ def retrieve_response(url, request_string, desc, d: dict):
                                      headers={'Content-type': 'text/xml; charset=utf-8'})
     response = urllib.request.urlopen(request)
     stop_time = datetime.datetime.now()
-    info("Time passed retriving from '" + desc + "' : " + str(stop_time - start_time))
+    info("Time passed retrieving from '" + desc + "' : " + str(stop_time - start_time))
     d["res"] += (stop_time - start_time)
     return response.read()
 
@@ -261,7 +261,9 @@ def prune_and_prettyprint(xml_string):
 
         return etree.tostring(xml, pretty_print=True)
     except Exception:
+        # Output the argument, so we have a change to determine what happened.
         error("Exception while parsing response. xml_string is : \n" + xml_string.decode())
+        # Rethrow to let later stage handle the actual error.
         raise
 
 

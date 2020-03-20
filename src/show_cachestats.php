@@ -8,7 +8,7 @@ echo "<li>Host cache at ". trim(getenv("CACHE_HOST"), '"') . ":" . trim(getenv("
 echo "<li>Agency cache at ".trim(getenv("AGENCY_CACHE_HOST"), '"') . ":" . trim(getenv("AGENCY_CACHE_PORT"), '"') ."</li>";
 echo "</ul></p>";
 
-echo "<p><em>The settings for this page is picked from environment variables, NOT ini files.</em></p>";
+echo "<p><em>The settings for this page are picked from environment variables, NOT ini files.</em></p>";
 
 $cache_type = trim(getenv("CACHE_TYPE"), '"');
 $agency_cache_host = trim(getenv("AGENCY_CACHE_HOST"), '"');
@@ -24,8 +24,8 @@ tr3_me("OpenAgency/VIP", $cache_type, $agency_cache_host . ":" . $agency_cache_p
 tr3_me("SOLR and COREPO objects", $cache_type, $cache_host . ":" . $cache_port);
 echo "</table></p>";
 
-echo "<p>OpenSearch <em>always</em> use a local memcache at 11211 for aaa/fors and solr_file entries. Due to the very static nature of this cache, the hit ratios on this cache will often be >90%.</p>";
-echo "<p>OpenSearch <em>always</em> use a memcache OR redis cache for OpenAgency/VIP and SOLR/COREPO objects. These caches can be different, but this script is too stupid to know this.</p>";
+echo "<p>OpenSearch <em>always</em> uses a local memcache at 11211 for aaa/fors and solr_file entries. Due to the very static nature of this cache, the hit ratios on this cache will often be >90%.</p>";
+echo "<p>OpenSearch <em>always</em> uses a memcache OR redis cache for OpenAgency/VIP and SOLR/COREPO objects. These caches can be different, but this script does not make this distinction.</p>";
 
 // There are more information about the stats to get out of redis here: https://github.com/phpredis/phpredis#info
 // and here: https://redis.io/commands/info
@@ -74,7 +74,7 @@ function memcache_info($status){
   tr2_me("Number of seconds this server has been running ", $status ["uptime"]);
   tr2_me("Accumulated user time for this process ", round($status ["rusage_user"], 4)." seconds");
   tr2_me("Accumulated system time for this process ", round($status ["rusage_system"], 4)." seconds");
-  tr2_me("Total number of items stored by this server ever since it started ", $status ["total_items"]);
+  tr2_me("Total number of items stored by this server since it started ", $status ["total_items"]);
   tr2_me("Number of open connections ", $status ["curr_connections"]);
   tr2_me("Total number of connections opened since the server started running ", $status ["total_connections"]);
   tr2_me("Number of connection structures allocated by the server ", $status ["connection_structures"]);
@@ -89,15 +89,15 @@ function memcache_info($status){
   tr2_me("Number of items that have been requested and not found ", $status ["get_misses"]." ($percCacheMiss%)");
 
   $MBRead= (real)$status["bytes_read"]/(1024*1024);
-  tr2_me("Total number of bytes read by this server from network ", round($MBRead,4)." Mega Bytes");
+  tr2_me("Total number of bytes read by this server from network ", round($MBRead,4)." Megabytes");
 
   $MBWrite=(real) $status["bytes_written"]/(1024*1024);
-  tr2_me("Total number of bytes sent by this server to network ", round($MBWrite,4)." Mega Bytes");
+  tr2_me("Total number of bytes sent by this server to network ", round($MBWrite,4)." Megabytes");
 
   $MBSize=(real) $status["limit_maxbytes"]/(1024*1024) ;
-  tr2_me("Number of bytes this server is allowed to use for storage.", $MBSize." Mega Bytes");
-$MBSize=(int)( $status["bytes"]/(1024*1024) );
-tr2_me("Number of bytes currently in storage.",$MBSize." Mega Bytes");
+  tr2_me("Number of bytes this server is allowed to use for storage.", $MBSize." Megabytes");
+  $MBSize=(int)( $status["bytes"]/(1024*1024) );
+  tr2_me("Number of bytes currently in storage.",$MBSize." Megabytes");
 
   tr2_me("Number of valid items removed from cache to free memory for new items.", $status ["evictions"]);
 
@@ -107,7 +107,7 @@ tr2_me("Number of bytes currently in storage.",$MBSize." Mega Bytes");
 function rediscache_info($status){
   echo "<table border='1'>";
 
-  $interessting = array(
+  $interesting = array(
     "redis_version" => "Redis version",
     "redis_mode" => "Redis mode",
     "uptime_in_seconds" => "Uptime in seconds",
@@ -156,8 +156,8 @@ function rediscache_info($status){
 
   // Translate the keys we have, ignore the rest.
   foreach ($status as $key => $value) {
-    if (array_key_exists($key, $interessting)) {
-      tr2_me($interessting[$key], $value);
+    if (array_key_exists($key, $interesting)) {
+      tr2_me($interesting[$key], $value);
     } else {
       // Enable if you wish to see all values.
       //tr2_me($key, $value);
