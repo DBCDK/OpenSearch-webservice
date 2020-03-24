@@ -48,6 +48,7 @@ script_name = "compare-request-results"
 # Could have been wrapped in a class, though.
 do_debug = False
 do_trace = False
+do_response = False
 
 # Use these global variables to track elapsed time for the urls
 elapsed_time_url1 = datetime.timedelta(0)
@@ -83,6 +84,7 @@ class Colors:
     ERROR = RED
     DEBUG = CYAN
     TRACE = MAGENTA
+    RESPONSE = MAGENTA
     UNKNOWN = RED
     STAGENAME = BLUE
     CHECKNAME = GREEN
@@ -114,6 +116,8 @@ def format_log_msg(level: str, msg: str) -> str:
         output += Colors.DEBUG
     elif level == "TRACE":
         output += Colors.TRACE
+    elif level == "RESPONSE":
+        output += Colors.RESPONSE
     elif level == "INFO":
         output += Colors.INFO
     elif level == "DRYRUN":
@@ -195,6 +199,15 @@ def debug(msg: str) -> None:
     global do_debug
     if do_debug:
         output_log_msg(format_log_msg("DEBUG", msg))
+
+def response(msg: str) -> None:
+    """
+    Output a msg at RESPONSE level, if the global variable "do_response" is True
+    :param msg: The message to output.
+    """
+    global do_response
+    if do_response:
+        output_log_msg(format_log_msg("RESPONSE", msg))
 
 
 def retrieve_requests_files(request_folder):
@@ -279,10 +292,14 @@ def compare(request_file, url1, url2):
     d = {'res': elapsed_time_url1}
     response1 = prune_and_prettyprint(retrieve_response(url1, read_file(request_file), "golden", d))
     elapsed_time_url1 = d["res"]
+    response("Response1 is \n" + response1.decode())
+response i
     debug("Calling url2: " + url2)
     d = {'res': elapsed_time_url2}
     response2 = prune_and_prettyprint(retrieve_response(url2, read_file(request_file), "tested", d))
     elapsed_time_url2 = d["res"]
+    response("Response2 is \n" + response2.decode())
+
     debug("Generating diff")
     diff = generate_diff(response1, response2)
     if diff != '':
@@ -329,6 +346,8 @@ def get_args() -> argparse.Namespace:
                         help="Output extra debug information")
     parser.add_argument("-t", "--trace", action="store_true",
                         help="Output trace information - implies debug")
+    parser.add_argument("-r", "--response", action="store_true",
+                        help="Output response from each call")
     parser.description = "Runs all the requests in the requests folder against both urls, compare results."
     parser.epilog = """
 Examples:
@@ -346,6 +365,9 @@ def main():
 
         global do_debug
         do_debug = args.debug
+
+        global do_response
+        do_response = args.response
 
         global do_trace
         do_trace = args.trace
