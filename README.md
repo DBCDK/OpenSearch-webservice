@@ -180,6 +180,40 @@ $ script/test http://localhost:32835/5.2/
 ...
 ```
 
+### Test two Different Builds Against Eachother
+
+The file [docker-compose-compare-builds-boblebad.yml](docker/docker-compose-compare-builds-boblebad.yml)
+declares a docker-compose network, that grabs two built versions of the OpenSearch webservice, and 
+starts them against the boblebad staging environment. This can be used, together with the 
+[compare_results_results](tests/compare_request_results.py) script to check these against eachother.
+
+First, edit the [docker-compose-compare-builds-boblebad.yml](docker/docker-compose-compare-builds-boblebad.yml)
+file to match the images you wish to test against eachother. Make sure to pull the images:
+
+```bash
+cd docker
+docker-compose -f docker-compose-compare-builds-boblebad.yml pull
+```
+
+Now, in two different terminals, start the containers, like this:
+
+```bash
+cd docker
+docker-compose -f docker-compose-compare-builds-boblebad.yml up golden
+# use different terminal for the next step
+docker-compose -f docker-compose-compare-builds-boblebad.yml up tested
+```
+
+Then run the compare script like this:
+
+```bash
+./tests/compare_request_results.py http://localhost:22222/ http://localhost:33333/ tests/requests/example/
+```
+
+*NOTE:* The configuration differs from the boblebad configuration in that AAA is disabled. Also, a number
+of the requests actually fail, because the assume repository names from fbstest, etc. To get an overview, use
+the `--response` option to track responses.
+
 ### Additional test options
 
 In the [tests](tests) directory 
