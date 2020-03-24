@@ -287,13 +287,14 @@ def compare(request_file, url1, url2):
     global elapsed_time_url2
 
     info("Getting results for request_file " + request_file)
+
     debug("Calling url1: " + url1)
     # Sometimes I think Python is really, really heavy
     d = {'res': elapsed_time_url1}
     response1 = prune_and_prettyprint(retrieve_response(url1, read_file(request_file), "golden", d))
     elapsed_time_url1 = d["res"]
     response("Response1 is \n" + response1.decode())
-response i
+
     debug("Calling url2: " + url2)
     d = {'res': elapsed_time_url2}
     response2 = prune_and_prettyprint(retrieve_response(url2, read_file(request_file), "tested", d))
