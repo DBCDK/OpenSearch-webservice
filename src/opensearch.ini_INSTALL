@@ -352,14 +352,14 @@ open_format['bibliotekdkWorkDisplay']['format'] = bibliotekdkWorkDisplay
 open_format['bibliotekdkWorkDisplay']['uri'] = ${OLD_OPEN_FORMAT}
 open_format['briefWorkDisplay']['format'] = briefWorkDisplay
 open_format['briefWorkDisplay']['uri'] = ${OLD_OPEN_FORMAT}
-open_format['refWorks']['format'] = refWorks
-open_format['refWorks']['uri'] = ${OLD_OPEN_FORMAT}
-open_format['ris']['format'] = ris
-open_format['ris']['uri'] = ${OLD_OPEN_FORMAT}
 open_format['marc21ToDm2']['format'] = marc21ToDm2
 open_format['marc21ToDm2']['uri'] = ${OLD_OPEN_FORMAT}
 
 ; custom uri for formats served by k8s openformat
+open_format['refWorks']['format'] = refWorks
+open_format['refWorks']['uri'] = ${OPEN_FORMAT}
+open_format['ris']['format'] = ris
+open_format['ris']['uri'] = ${OPEN_FORMAT}
 open_format['netpunkt_brief']['format'] = netpunkt_brief
 open_format['netpunkt_brief']['uri'] = ${OPEN_FORMAT}
 open_format['netpunkt_standard']['format'] = netpunkt_standard
