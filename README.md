@@ -269,6 +269,4 @@ Copy opensearch.wsdl_INSTALL to opensearch.wsdl
 
 Create a symbolic link from index.php to server.php or modify your webserver to default to server.php
 
-Consider copying robots.txt_INSTALL to robots.txt
-
-
+Consider copying robots.txt_INSTALL to robots.txt.
