@@ -1,7 +1,7 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 //error_reporting(E_ALL & ~E_NOTICE);
 //-----------------------------------------------------------------------------
 /**
@@ -3237,6 +3237,7 @@ class OpenSearch extends webServiceServer {
     if (isset($this->collection_alias[$record_source])) {
       $record_source = $this->collection_alias[$record_source];
     }
+    $ret = NULL;
     foreach ($this->format as $format_name => $format_arr) {
       switch ($format_name) {
         case 'dkabm':
