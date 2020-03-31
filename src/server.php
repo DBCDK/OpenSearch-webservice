@@ -331,7 +331,7 @@ class OpenSearch extends webServiceServer {
           self::collections_from_solr($collections, $solr_arr['response']);
         }
         _Object::set_value($result, 'hitCount', self::get_num_found($solr_arr));
-        _Object::set_value($result, 'collectionCount', count($collections));
+        _Object::set_value($result, 'collectionCount', is_countable($collections) ? count($collections) : 0);
         _Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
         $result->searchResult = &$collections;
         _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
@@ -361,7 +361,7 @@ class OpenSearch extends webServiceServer {
       $use_work_collection |= $sort_types[$sort[0]] == 'random';
     }
     $key_work_struct = md5($param->query->_value .
-        $this->repository_name .
+        (is_scalar($this->repository_name) ? $this->repository_name : '') .
         $this->filter_agency .
         self::xs_boolean($param->allObjects->_value ?? NULL) .
         $use_work_collection .
@@ -545,7 +545,7 @@ class OpenSearch extends webServiceServer {
 
     $this->watch->start('post_Build_id');
     try {
-      if ($solr_work_ids && count($work_ids) < $step_value && count($solr_work_ids) < $numFound) {
+      if (isset($solr_work_ids) && (count($work_ids) < $step_value) && (count($solr_work_ids) < $numFound)) {
         VerboseJson::log(WARNING, 'To few search_ids found in solr. Query' . implode(AND_OP, $solr_query['edismax']['q']));
       }
 
@@ -990,8 +990,9 @@ class OpenSearch extends webServiceServer {
     $chk_query = $this->cql2solr->parse('rec.id=(' . implode(OR_OP, $id_array) . ')');
     $this->watch->stop('cql');
     $this->watch->start('solrq');
+    $edismax_q = $chk_query['edismax']['q'] ?? [];
     $solr_q = 'wt=phps' .
-      '&q=' . urlencode(implode(AND_OP, $chk_query['edismax']['q'])) .
+      '&q=' . urlencode(implode(AND_OP, $edismax_q)) .
       '&fq=' . $filter_q .
       '&start=0' .
       '&rows=500' .
@@ -1447,7 +1448,7 @@ class OpenSearch extends webServiceServer {
     if (!$this->repository_name = $repository) {
       $this->repository_name = $this->config->get_value('default_repository', 'setup');
     }
-    if ($this->repository = $repositories[$this->repository_name]) {
+    if (isset($repositories[$this->repository_name]) && ($this->repository = $repositories[$this->repository_name])) {
       foreach ($repositories['defaults'] as $key => $url_par) {
         if (empty($this->repository[$key])) {
           $this->repository[$key] = self::expand_default_repository_setting($key) ? $this->repository['fedora'] . $url_par : $url_par;
@@ -1855,8 +1856,9 @@ class OpenSearch extends webServiceServer {
     $best_idx = 0;
     $max_coll = -1;
     foreach ($s_docs as $s_idx => $s_rec) {
-      if (in_array($match, $s_rec[$field]) && ($max_coll < count($s_rec[FIELD_COLLECTION_INDEX]))) {
-        $max_coll = count($s_rec[FIELD_COLLECTION_INDEX]);
+      $no_coll = is_countable($s_rec[FIELD_COLLECTION_INDEX]) ? count($s_rec[FIELD_COLLECTION_INDEX]) : 0;
+      if (in_array($match, $s_rec[$field]) && ($max_coll < $no_coll)) {
+        $max_coll = $no_coll;
         $best_idx = $s_idx;
       }
     }
@@ -3376,7 +3378,8 @@ class OpenSearch extends webServiceServer {
    * @return boolean - return true if xs:boolean is so
    */
   private function xs_boolean($str) {
-    return (strtolower($str) == 'true' || $str == 1);
+    $str_bool = is_scalar($str) ? $str : 'false';
+    return (strtolower($str_bool) == 'true' || $str_bool == 1);
   }
 
   /** Log STAT line for search
