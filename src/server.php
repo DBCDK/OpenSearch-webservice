@@ -1,7 +1,7 @@
 <?php
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 //error_reporting(E_ALL & ~E_NOTICE);
 //-----------------------------------------------------------------------------
 /**
@@ -1448,7 +1448,10 @@ class OpenSearch extends webServiceServer {
     if (!$this->repository_name = $repository) {
       $this->repository_name = $this->config->get_value('default_repository', 'setup');
     }
-    if (isset($repositories[$this->repository_name]) && ($this->repository = $repositories[$this->repository_name])) {
+    if (!empty($this->repository_name)
+        && is_scalar($this->repository_name)
+        && isset($repositories[$this->repository_name])
+        && ($this->repository = $repositories[$this->repository_name])) {
       foreach ($repositories['defaults'] as $key => $url_par) {
         if (empty($this->repository[$key])) {
           $this->repository[$key] = self::expand_default_repository_setting($key) ? $this->repository['fedora'] . $url_par : $url_par;
@@ -1872,7 +1875,7 @@ class OpenSearch extends webServiceServer {
    */
   private function modify_query_and_filter_agency(&$solr_query) {
     foreach (['q', 'fq'] as $solr_par) {
-      if ($solr_query['edismax']) {
+      if (!empty($solr_query['edismax'])) {
         foreach ($solr_query['edismax'][$solr_par] as $q_idx => $q) {
           if (strpos($q, HOLDINGS_AGENCY_ID_FIELD . ':') === 0) {
             if (count($solr_query['edismax'][$solr_par]) == 1) {
@@ -1932,7 +1935,7 @@ class OpenSearch extends webServiceServer {
    */
   private function cql2solr_error_to_string($solr_error) {
     $str = '';
-    foreach (['no' => '|: ', 'description' => '', 'details' => ' (|)', 'pos' => ' at pos '] as $tag => $txt) {
+    foreach (['no' => '|: ', 'description' => '|', 'details' => ' (|)', 'pos' => ' at pos |'] as $tag => $txt) {
       list($pre, $post) = explode('|', $txt);
       if ($solr_error[0][$tag]) {
         $str .= $pre . $solr_error[0][$tag] . $post;
