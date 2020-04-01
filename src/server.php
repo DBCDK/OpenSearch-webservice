@@ -1708,11 +1708,12 @@ class OpenSearch extends webServiceServer {
           VerboseJson::log(TRACE, 'openFormat: ' . $format_arr['uri'] ? $format_arr['uri'] : $open_format_uri);
           $f_result = $this->curl->get($format_arr['uri'] ? $format_arr['uri'] : $open_format_uri);
           $this->curl->set_option(CURLOPT_POST, 0, 0);
-          if ($format_arr['force_namespace'] && $this->xmlns[$format_arr['force_namespace']]) {
-            $fr_obj = $this->objconvert->set_obj_namespace_on_tags(unserialize($f_result), $this->xmlns[$format_arr['force_namespace']]);
+          $force_namespace = $format_arr['force_namespace'] ?? 'of';
+          if ($force_namespace == 'SKIP') {
+            $fr_obj = unserialize($f_result);
           }
           else {
-            $fr_obj = $this->objconvert->set_obj_namespace_on_tags(unserialize($f_result), $this->xmlns['of']);
+            $fr_obj = $this->objconvert->set_obj_namespace_on_tags(unserialize($f_result), $this->xmlns[$force_namespace]);
           }
           // need to restore correct namespace
           foreach ($f_obj->formatRequest->_value->originalData as $i => &$oD) {

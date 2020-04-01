@@ -379,6 +379,8 @@ open_format['bibdkWorkDisplay']['uri'] = ${OPEN_FORMAT}
 
 ; set namespace for these formats
 ; open_format_force_namespace['open_format_name'] = namespace_prefix_from_xmlns
+; Skip namespace setting on formats, by setting it to SKIP (uppercare) like:
+; open_format_force_namespace['open_format_skip_namespace'] = SKIP
 open_format_force_namespace['bibliotekdkWorkDisplay'] = of
 open_format_force_namespace['briefWorkDisplay'] = of
 open_format_force_namespace['refWorks'] = of
