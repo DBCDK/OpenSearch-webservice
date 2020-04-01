@@ -379,8 +379,9 @@ open_format['bibdkWorkDisplay']['uri'] = ${OPEN_FORMAT}
 
 ; set namespace for these formats
 ; open_format_force_namespace['open_format_name'] = namespace_prefix_from_xmlns
-; Skip namespace setting on formats, by setting it to SKIP (uppercare) like:
+; Skip namespace setting (changes) on formats, by setting it to SKIP (uppercase) like:
 ; open_format_force_namespace['open_format_skip_namespace'] = SKIP
+; This effectively assumes that the formats returned from openFormat are OK.
 open_format_force_namespace['bibliotekdkWorkDisplay'] = of
 open_format_force_namespace['briefWorkDisplay'] = of
 open_format_force_namespace['refWorks'] = of
@@ -388,7 +389,7 @@ open_format_force_namespace['ris'] = of
 open_format_force_namespace['bob_detail'] = of
 open_format_force_namespace['netpunkt_brief'] = of
 open_format_force_namespace['netpunkt_standard'] = of
-open_format_force_namespace['netpunkt_marc21'] = mx
+open_format_force_namespace['netpunkt_marc21'] = SKIP
 
 ; --------------
 ; formats supported by solr-indexes. Comma separated list of solr tags
