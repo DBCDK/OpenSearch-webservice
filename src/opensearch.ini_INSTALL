@@ -386,6 +386,7 @@ open_format_force_namespace['ris'] = of
 open_format_force_namespace['bob_detail'] = of
 open_format_force_namespace['netpunkt_brief'] = of
 open_format_force_namespace['netpunkt_standard'] = of
+open_format_force_namespace['netpunkt_marc21'] = mx
 
 ; --------------
 ; formats supported by solr-indexes. Comma separated list of solr tags
