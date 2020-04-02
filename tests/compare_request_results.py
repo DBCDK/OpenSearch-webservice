@@ -14,10 +14,15 @@ It conceptually works the following way:
 
 """
 import difflib
+import io
+import codecs
+import json
+import csv
 import os
 import sys
 from lxml import etree
 import urllib.request
+import requests # Used for get.
 import re
 import argparse
 import datetime
@@ -246,7 +251,7 @@ def generate_diff(response1, response2):
     return '\n'.join([x for x in diff])
 
 
-def retrieve_response(url, request_string, desc, d: dict):
+def retrieve_post_response(url, request_string, desc, d: dict):
     """ POSTS request to server at url and returns response"""
     trace()
     start_time = datetime.datetime.now()
@@ -258,6 +263,18 @@ def retrieve_response(url, request_string, desc, d: dict):
     info("Time passed retrieving from '" + desc + "' : " + str(stop_time - start_time))
     d["res"] += (stop_time - start_time)
     return response.read()
+
+
+def retrieve_get_response(url: str, params: dict, desc, d: dict):
+    """ GETS request to server at url and returns response"""
+    trace()
+    start_time = datetime.datetime.now()
+    request = requests.get(url, params=params)
+    stop_time = datetime.datetime.now()
+    info("Time passed retrieving from '" + desc + "' : " + str(stop_time - start_time))
+    d["res"] += (stop_time - start_time)
+    debug("Result is '" + request.text + "'")
+    return request.content
 
 
 def prune_and_prettyprint(xml_string):
@@ -280,8 +297,7 @@ def prune_and_prettyprint(xml_string):
         raise
 
 
-def compare(request_file, url1, url2):
-    """ Compare function. Raises an assertionError if diff is found between request_file and response_file """
+def compare_xml(request_file, url1, url2):
     trace()
     global elapsed_time_url1
     global elapsed_time_url2
@@ -291,13 +307,13 @@ def compare(request_file, url1, url2):
     debug("Calling url1: " + url1)
     # Sometimes I think Python is really, really heavy
     d = {'res': elapsed_time_url1}
-    response1 = prune_and_prettyprint(retrieve_response(url1, read_file(request_file), "golden", d))
+    response1 = prune_and_prettyprint(retrieve_post_response(url1, read_file(request_file), "golden", d))
     elapsed_time_url1 = d["res"]
     response("Response1 is \n" + response1.decode())
 
     debug("Calling url2: " + url2)
     d = {'res': elapsed_time_url2}
-    response2 = prune_and_prettyprint(retrieve_response(url2, read_file(request_file), "tested", d))
+    response2 = prune_and_prettyprint(retrieve_post_response(url2, read_file(request_file), "tested", d))
     elapsed_time_url2 = d["res"]
     response("Response2 is \n" + response2.decode())
 
@@ -312,6 +328,106 @@ def compare(request_file, url1, url2):
         info("No differences found for request_file " + request_file)
 
 
+def compare_get(params: dict, url1: str, url2: str):
+    trace()
+    global elapsed_time_url1
+    global elapsed_time_url2
+
+    info("Getting results for get request: " + json.dumps(params))
+
+    debug("Calling url1: " + url1)
+    # Sometimes I think Python is really, really heavy
+    d = {'res': elapsed_time_url1}
+
+    response1 = prune_and_prettyprint(retrieve_get_response(url1, params, "golden", d))
+    elapsed_time_url1 = d["res"]
+    response("Response1 is \n" + response1.decode())
+
+    debug("Calling url2: " + url2)
+    d = {'res': elapsed_time_url2}
+    response2 = prune_and_prettyprint(retrieve_get_response(url2, params, "tested", d))
+    elapsed_time_url2 = d["res"]
+    response("Response2 is \n" + response2.decode())
+
+    debug("Generating diff")
+    diff = generate_diff(response1, response2)
+    if diff != '':
+        error("Test failed")
+        debug("reponse from " + url1 + "\n" + response1.decode())
+        debug("reponse from " + url2 + "\n" + response2.decode())
+        error("diff:\n%s" % diff)
+        raise AssertionError("comparison produced diff: \n%s" % diff)
+    else:
+        info("No differences found for request")
+
+
+def compare_csv(request_file, url1, url2, query_status: dict) -> bool:
+    """
+    Compare all requests in a BOM headed csv file against the two base urls.
+    Only search as action is supported.
+    :param request_file: The CSV file
+    :param url1: The baseurl for the golden services
+    :param url2: The baseurl for the service under test
+    :param query_status: Return value - lists of passed and failed query objects.
+    :return: True if no tests failed, False otherwise
+    """
+    trace()
+    global elapsed_time_url1
+    global elapsed_time_url2
+
+    info("Iterating requests in " + request_file)
+    res = True
+
+    with open(request_file, newline='', encoding='utf-8-sig') as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=",", fieldnames=["query", "agency", "profile", "count"])
+        # Skip first row
+        next(reader)
+        for row in reader:
+            # Remove the count key, add action:search
+            row.pop("count", None)
+            row["action"] = "search"
+            # print(json.dumps(row))
+            try:
+                compare_get(row, url1, url2)
+                query_status["passed"].append(row)
+            except Exception:
+                # This eats any errors.
+                query_status["failed"].append(row)
+                res = False
+            # print(row["query"] + "\n")
+
+    return res
+
+
+def compare(request_file, url1, url2, query_status: dict) -> bool:
+    """
+    Compare request(s) from as file. If the file is .xml, a single request is posted.
+    If it is .csv, then all requests in the file is 'getted' against the urls.
+    Return code is a mess: True if nothing failed. False or exception if test failed.
+    Problem here is .xml path handles a single file, while .csv can have many queries.
+    :param request_file: The name of the file
+    :param url1: baseurl for golden service
+    :param url2: baseurl for tested service
+    :param query_status: Return value, list of passed or failed queries, if request_file is .csv
+    :return: Return code is a mess: True if nothing failed. False or exception if test failed.
+    """
+    # We need to do different things, depending on the formats (file extensions, really).
+    # .xml: assume classic post
+    # .csv: Assume BOM encoded UTF8 requests, which the first line as header, something like:
+    # Top 1000 unusual terms in query.keyword	Top 1000 unusual terms in agency.keyword	Top 1000 unusual terms in profile.keyword	Count
+    # That is: query, agency, profile, count
+    # Count is ignored.
+
+    filename, file_extension = os.path.splitext(request_file)
+    if file_extension.lower() == ".xml":
+        compare_xml(request_file, url1, url2)
+        return True
+    elif file_extension.lower() == ".csv":
+        return compare_csv(request_file, url1, url2, query_status)
+    else:
+        raise AssertionError("Unknown file extension: " + file_extension)
+
+
 def test_webservice(url1, url2, requests_folder) -> dict:
     """ Test Generator """
     trace()
@@ -319,9 +435,11 @@ def test_webservice(url1, url2, requests_folder) -> dict:
     failed = 0
     failed_files = []
     passed_files = []
+    query_status = {'passed': [], 'failed': []}
     for request_file in retrieve_requests_files(requests_folder):
         try:
-            compare(request_file, url1, url2)
+            if not compare(request_file, url1, url2, query_status):
+                raise AssertionError("One or more tests failed")
             debug("Test passed")
             passed_files.append(request_file)
             passed += 1
@@ -330,7 +448,8 @@ def test_webservice(url1, url2, requests_folder) -> dict:
             output_log_msg(traceback.format_exc())
             failed_files.append(request_file)
             failed += 1
-    return {'passed': passed, 'failed': failed, 'passed_files': passed_files, 'failed_files': failed_files}
+    return {'passed': passed, 'failed': failed, 'passed_files': passed_files, 'failed_files': failed_files,
+            'failed_queries': query_status["failed"], 'passed_queries': query_status["passed"],}
 
 
 def get_args() -> argparse.Namespace:
@@ -379,12 +498,20 @@ def main():
         info("Comparing '" + args.url1 + "' against '" + args.url2 + "' with request from '" + args.requests + "'")
         result = test_webservice(args.url1, args.url2, args.requests)
 
-        info("Number of tests run    : " + str(result["passed"]+result["failed"]))
-        info("Number of tests passed : " + str(result["passed"]))
-        info("Number of tests failed : " + str(result["failed"]))
-
         info("Passed files: " + " ".join(result["passed_files"]))
-        info("Failed files: " + " ".join(result["failed_files"]))
+        if len(result["failed_files"]) > 0:
+            warn("Failed files: " + " ".join(result["failed_files"]))
+        info("Passed queries: " + json.dumps(result["passed_queries"]))
+        if len(result["failed_queries"]) > 0:
+            warn("Failed queries: " + json.dumps(result["failed_queries"]))
+
+        info("Number of test files run    : " + str(result["passed"]+result["failed"]))
+        info("Number of test files passed : " + str(result["passed"]))
+        info("Number of test files failed : " + str(result["failed"]))
+        info("Number of get queries run    : " + str(len(result["passed_queries"])+len(result["failed_queries"])))
+        info("Number of get queries passed : " + str(len(result["passed_queries"])))
+        info("Number of get queries failed : " + str(len(result["failed_queries"])))
+
         stop_time = datetime.datetime.now()
         info("Time passed: " + str(stop_time - start_time))
         info("Request time, url1 (golden): " + str(elapsed_time_url1))
