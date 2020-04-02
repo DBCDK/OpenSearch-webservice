@@ -214,6 +214,8 @@ Then run the compare script like this:
 of the requests actually fail, because the assume repository names from fbstest, etc. To get an overview, use
 the `--response` option to track responses.
 
+There is also a similar file for the cisterne environment.
+
 ### Additional test options
 
 In the [tests](tests) directory 
