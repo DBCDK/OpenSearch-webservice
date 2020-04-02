@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:ns1="http://oss.dbc.dk/ns/opensearch">
+    <SOAP-ENV:Body>
+        <ns1:searchRequest>
+            <ns1:query>( scanterm.mainTitle=hit ) AND ( scanterm.mainTitle=med ) AND ( scanterm.mainTitle=jobbet* )
+            </ns1:query>
+            <ns1:facets>
+                <ns1:facetName>scanphrase.mainTitle</ns1:facetName>
+                <ns1:numberOfTerms>320</ns1:numberOfTerms>
+                <ns1:facetSort>count</ns1:facetSort>
+            </ns1:facets>
+            <ns1:collapseHitsThreshold>-1</ns1:collapseHitsThreshold>
+            <ns1:stepValue>0</ns1:stepValue>
+            <ns1:repository></ns1:repository>
+            <ns1:agency>150015</ns1:agency>
+            <ns1:profile>ereolmedglobal</ns1:profile>
+            <ns1:outputType></ns1:outputType>
+        </ns1:searchRequest>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
