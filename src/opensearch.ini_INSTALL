@@ -79,6 +79,7 @@ default_namespace_prefix = os
 xmlns['os'] = http://oss.dbc.dk/ns/opensearch
 xmlns['of'] = http://oss.dbc.dk/ns/openformat
 xmlns['ofo'] = http://oss.dbc.dk/ns/openformatoutput
+xmlns['bibdk'] = http://oss.dbc.dk/ns/openformatoutput/bibliotekdkdisplay
 xmlns['xs'] = http://www.w3.org/2001/XMLSchema
 xmlns['xsi'] = http://www.w3.org/2001/XMLSchema-instance
 xmlns['oss'] = http://oss.dbc.dk/ns/osstypes
@@ -389,7 +390,7 @@ open_format_force_namespace['ris'] = of
 open_format_force_namespace['bob_detail'] = of
 open_format_force_namespace['netpunkt_brief'] = of
 open_format_force_namespace['netpunkt_standard'] = of
-open_format_force_namespace['netpunkt_marc21'] = SKIP
+open_format_force_namespace['netpunkt_marc21'] = of
 
 ; --------------
 ; formats supported by solr-indexes. Comma separated list of solr tags

@@ -1713,7 +1713,7 @@ class OpenSearch extends webServiceServer {
             $fr_obj = unserialize($f_result);
           }
           else {
-            $fr_obj = $this->objconvert->set_obj_namespace_on_tags(unserialize($f_result), $this->xmlns[$force_namespace]);
+            $fr_obj = $this->objconvert->set_obj_namespace_v2(unserialize($f_result), $this->xmlns[$force_namespace]);
           }
           // need to restore correct namespace
           foreach ($f_obj->formatRequest->_value->originalData as $i => &$oD) {
