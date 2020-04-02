@@ -383,9 +383,12 @@ def compare_csv(request_file, url1, url2, query_status: dict) -> bool:
         # Skip first row
         next(reader)
         for row in reader:
-            # Remove the count key, add action:search
+            # Remove the count key, add action:search, start and stepValue
             row.pop("count", None)
             row["action"] = "search"
+            row["start"] = 0
+            row["stepValue"] = 10
+
             # print(json.dumps(row))
             try:
                 compare_get(row, url1, url2)
