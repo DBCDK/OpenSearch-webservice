@@ -32,7 +32,7 @@ x-info:
     - USE_HOLDING_BLOCK_JOIN=yes
   anchors:
     - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:268
-    - &TESTED docker-os.dbc.dk/opensearch-webservice-5.2:299
+    - &TESTED docker-os.dbc.dk/opensearch-webservice-5.2:305
 
 version: '3.4'
 
