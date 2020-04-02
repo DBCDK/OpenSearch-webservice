@@ -1,0 +1,491 @@
+﻿"Top 1000 unusual terms in query.keyword","Top 1000 unusual terms in agency.keyword","Top 1000 unusual terms in profile.keyword",Count
+peale,100200,test,7561
+"(rec.id=profiles) and holdingsitem.agencyid=""771000""",771000,opac,121
+"((Klim) or term.publisher=""Klim"")",150015,ereolmedglobal,36
+"(rec.id=js) and holdingsitem.agencyid=""721000""",721000,opac,30
+"dkcclterm.in=""1472-4049"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,27
+"(rec.id=870970-basis:55136041) and holdingsitem.agencyid=""773000""",773000,opac,26
+"(dkcclphrase.lem=""spænding"" OR facet.fictionSubject=""gys"" AND facet.type=""lydbog (net)"")",150015,ereolgomedglobal,29
+"(rec.id=870970-basis:53788157) and holdingsitem.agencyid=""773000""",773000,opac,24
+"(rec.id any ""55136041 53788157"" AND facet.acSource=bibliotekskatalog) and holdingsitem.agencyid=""773000""",773000,opac,24
+"((Grønland)) and holdingsitem.agencyid=""741000""",741000,opac,24
+"(rec.id=ting) and holdingsitem.agencyid=""771000""",771000,opac,45
+"((dk=32*) or term.publisher=""dk=32*"") AND (facet.type=""ebog"")",150015,ereolmedglobal,21
+"((facet.category=børnematerialer AND (facet.fictionSubject=fantasy OR facet.fictionSubject=""fantastiske fortællinger"")) or term.publisher=""facet.category=børnematerialer AND (facet.fictionSubject=fantasy OR facet.fictionSubject=fantastiske fortællinger)"")",150015,ereolgomedglobal,23
+"(rec.id=css) and holdingsitem.agencyid=""721000""",721000,opac,18
+"((*) or term.publisher=""*"") AND (facet.extraTitles=""ekstra titler"" AND facet.type=""lydbog (net)"" AND facet.language=""dansk"" AND facet.category=""voksenmaterialer"")",150015,ereolmedglobal,17
+"((Turbulenz) or term.publisher=""Turbulenz"")",150015,ereolmedglobal,16
+"(marc.001b=870970 OR marc.001b=870971 OR marc.001b=870979) AND (id=05940931 and marc.001b=870970)",010100,dbckat,141
+"rec.id=36555947",100200,test,15
+"rec.id=36533943",100200,test,15
+"rec.id=46863259",100200,test,15
+"rec.id=36521694",100200,test,15
+"(rec.id any ""51936868 29397880"" AND facet.acSource=bibliotekskatalog) and holdingsitem.agencyid=""773000""",773000,opac,14
+"rec.id=36518189",100200,test,14
+"rec.id=31208378",100200,test,14
+"rec.id=36514671",100200,test,14
+"((dkcclphrase.lem=""spænding"" AND facet.extraTitles=""ekstra titler"") or term.publisher=""dkcclphrase.lem=spænding AND facet.extraTitles=ekstra titler"") AND (facet.type=""lydbog (net)"")",150015,ereolmedglobal,13
+"((billedbog) or term.publisher=""billedbog"") AND (facet.type=""billedbog (net)"")",150015,ereolgomedglobal,13
+"dkcclterm.in=""1742-4801"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,13
+"(rec.id=870970-basis:29397880) and holdingsitem.agencyid=""773000""",773000,opac,13
+"(rec.id=870970-basis:51936868) and holdingsitem.agencyid=""773000""",773000,opac,13
+"((Harry and hole)) and holdingsitem.agencyid=""724000""",724000,opac,12
+"(rec.id=150015-forlag:9788702226621) and holdingsitem.agencyid=""775100""",775100,opac,12
+"((*) or term.publisher=""*"") AND (facet.category=""voksenmaterialer"" AND facet.language=""dansk"" AND facet.date=""2020"")",150015,ereolmedglobal,12
+"((rim and og and remser)) and holdingsitem.agencyid=""773000""",773000,opac,12
+"((ensomhed) or term.publisher=""ensomhed"") AND (facet.subject=""ensomhed"" AND facet.type=""ebog"")",150015,ereolmedglobal,11
+"((jul) or term.publisher=""jul"" or (Christmas OR Elf OR ""Santa Claus""))",150015,ereolgomedglobal,11
+"((*) and (ma=xe and term.type=ebog and sp=dan)) and holdingsitem.agencyid=""775100""",775100,opac,11
+"((dkcclphrase.lem=""spænding"") or term.publisher=""dkcclphrase.lem=spænding"") AND (facet.subject=""spænding"")",150015,ereolgomedglobal,13
+"((facet.category=børnematerialer and facet.genreCategory=nonfiktion and term.type=ebog and år>2019)) and holdingsitem.agencyid=""773000""",773000,opac,12
+"dkcclterm.in=""0017-8012"" AND term.date=""2007""",820050,linkresolver,11
+"((2020) or term.publisher=""2020"") AND (facet.language=""dansk"" AND facet.date=""2020"" AND facet.category=""voksenmaterialer"")",150015,ereolmedglobal,10
+"dkcclterm.in=""1071-5754"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,10
+"((phrase.subject=forelskelse) or term.publisher=""phrase.subject=forelskelse"")",150015,ereolmedglobal,10
+"(rec.id=modules) and holdingsitem.agencyid=""771000""",771000,opac,9
+"((skolen) or term.publisher=""skolen"") AND (facet.type=""ebog"" AND facet.language=""dansk"")",150015,ereolmedglobal,9
+"((skolen) or term.publisher=""skolen"") AND (facet.type=""lydbog (net)"")",150015,ereolmedglobal,9
+"((hjernen) or term.publisher=""hjernen"") AND (facet.type=""ebog"" AND facet.language=""dansk"" AND facet.category=""voksenmaterialer"")",150015,ereolmedglobal,9
+"holdingsitem.agencyid=830380 and rec.id any ""51022084 46852958 27931065 51061594 52161568 53215122 46994124 46076486 47613515"" AND facet.acSource=bibliotekskatalog",830380,opac,9
+"dkcclterm.in=""1936-8623"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,8
+"((dkcclphrase.lem=""spænding"") or term.publisher=""dkcclphrase.lem=spænding"") AND (facet.subject=""spænding"" AND facet.audienceCategory=""for 9 år"" AND facet.language=""dansk"")",150015,ereolgomedglobal,8
+"((Heste) or term.publisher=""Heste"")",150015,ereolgomedglobal,10
+"((facet.category=børnematerialer and bdo=seriebog and (em=""for 10 år"" or em=""for 11 år"" or em=""for 12 år"" or em=""for 13 år"") and år>2018 and term.type=ebog)) and holdingsitem.agencyid=""773000""",773000,opac,12
+"((f46006208 or 46563352 or 46071956 or 47722721 or 46265238 or 46510658 or 46921798 or 46415531 or 46492021 or 47276322 or 46214366 or 47508185 or 47794676)) and holdingsitem.agencyid=""773000""",773000,opac,8
+"((på and landsholdet) or term.publisher=""på landsholdet"")",150015,ereolgomedglobal,7
+"((kim and fupz) or term.publisher=""kim fupz"") AND (facet.type=""lydbog (net)"")",150015,ereolmedglobal,6
+"((krig) or term.publisher=""krig"")",150015,ereolmedglobal,7
+"((term.acsource=comics) AND (facet.acSource=""comics plus"")) and holdingsitem.agencyid=""725300""",725300,opac,7
+"((Valgret)) and holdingsitem.agencyid=""724000""",724000,opac,7
+"holdingsitem.agencyid=830380 and (Sundhedsfremme) AND facet.type=""tidsskriftsartikel"" AND facet.language=""dansk""",830380,opac,7
+"((Pony) AND (facet.type=""ebog"" AND facet.category=""børnematerialer"")) and holdingsitem.agencyid=""782000""",782000,opac,7
+"((katte) or term.publisher=""katte"" or (Cat OR Cats))",150015,ereolgomedglobal,7
+"(facet.fictionSubject=humor OR facet.fictionSubject=""sjove bøger""  AND facet.type=""lydbog (net)"")",150015,ereolgomedglobal,8
+"((facet.category=voksenmaterialer and ma=xx and bad>=""NOW-800DAYS"" and (phrase.subject=""pilgrimsveje"" or phrase.subject=""pilgrimsvandring"" or phrase.subject=""pilgrimsrejser""))) and holdingsitem.agencyid=""773000""",773000,opac,6
+"((kunst) or term.publisher=""kunst"" or (Art))",150015,ereolmedglobal,6
+"((forbrydelse) or term.publisher=""forbrydelse"") AND (facet.type=""ebog"")",150015,ereolmedglobal,6
+"((Anne and Hjernøe)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",6
+"((nikkis and dagbog)) and holdingsitem.agencyid=""766100""",766100,opac,6
+"dkcclterm.in=""1365-182X"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,6
+"((emil and blichfeldt)) and holdingsitem.agencyid=""775100""",775100,opac,6
+"((Effect and of and erythropoietin)) and holdingsitem.agencyid=""766100""",766100,opac,6
+"((elly and griffiths)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",6
+"((piger and på and 12 and år) or term.publisher=""piger på 12 år"")",150015,ereolmedglobal,6
+"((forandringsledelse)) and holdingsitem.agencyid=""766100""",766100,opac,6
+"((cirkeline)) and holdingsitem.agencyid=""730600""",730600,opac,6
+"((term.publisher=Bibelselskabet) or term.publisher=""term.publisher=Bibelselskabet"") AND (facet.type=""lydbog (net)"")",150015,ereolmedglobal,6
+"((spiritualitet) or term.publisher=""spiritualitet"" or (""New Age"" OR ""Religion & Spirituality"")) AND (facet.subject=""spiritualitet"" AND facet.type=""ebog"")",150015,ereolmedglobal,6
+"(rec.id=misc) and holdingsitem.agencyid=""771000""",771000,opac,6
+"((*) or term.publisher=""*"") AND (facet.extraTitles=""ekstra titler"" AND facet.audienceCategory=""for 12 år"")",150015,ereolgomedglobal,6
+"((harry and potter) or term.publisher=""harry potter"") AND (facet.language=""dansk"" AND facet.subject=""harry potter-bøger"" AND facet.category=""børnematerialer"")",150015,ereolmedglobal,6
+"((Gyldendal) or term.publisher=""Gyldendal"") AND (facet.language=""dansk"")",150015,ereolmedglobal,24
+"dkcclterm.in=""0962-1067"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,9
+"((facet.category=børnematerialer and (em=""for 14 år"" or em=""for 15 år"" or em=""for 16 år"") and år>2019 and term.type=ebog)) and holdingsitem.agencyid=""773000""",773000,opac,6
+"((* not sp=dan) or term.publisher=""* not sp=dan"") AND (facet.language=""engelsk"" AND facet.subject=""young adult literature"" AND facet.subject=""fantasy"")",150015,ereolgomedglobal,6
+"((* not dk=sk) or term.publisher=""* not dk=sk"") AND (facet.type=""lydbog (net)"" AND facet.language=""dansk"")",150015,ereolgomedglobal,5
+"((""nikkis dagbog - historier fra en ik' specielt yndefuld isprinsesse"")) and holdingsitem.agencyid=""766100""",766100,opac,5
+"(rec.id=46421507 AND facet.acSource=bibliotekskatalog AND (holdingsitem.branch = (""Bølgen"" OR ""Espergærde"" OR ""Hornbæk"" OR ""Kulturværftet""))) and holdingsitem.agencyid=""721700""",721700,opac,5
+"((Drengen and med and sølvhjelmen)) and holdingsitem.agencyid=""775600""",775600,Cicero,5
+"((tænk) AND (facet.type=""tidsskriftsartikel"")) and holdingsitem.agencyid=""766100""",766100,opac,5
+"((biografi*) AND (facet.literaryForm=""faglitteratur"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,5
+"((isbjørnen) AND (facet.creator=""henrik pontoppidan"" AND facet.type=""bog"")) and holdingsitem.agencyid=""776600""",776600,easyOPAC,5
+"((omsorg) or term.publisher=""omsorg"")",150015,ereolmedglobal,5
+"(maria and helleberg)",150015,ereolen,3
+"((feminisme)) and holdingsitem.agencyid=""719000""",719000,opac,5
+"((mennesket and i and bevægelse)) and holdingsitem.agencyid=""766100""",766100,opac,5
+"((term.acsource=filmstriben)) and holdingsitem.agencyid=""725300""",725300,opac,5
+"((facet.type=""film (net)"") AND (holdingsitem.branch = (""Bredstrup-Pjedsted Hallen"" OR ""Egeskov"" OR ""Erritsø-Hallen afhentningssted"" OR ""Fredericia Bibliotek"" OR ""Taulov Bibliotek""))) and holdingsitem.agencyid=""760700""",760700,opac,5
+"(rec.id=28902239 AND facet.acSource=bibliotekskatalog AND (holdingsitem.branch = (""Bølgen"" OR ""Espergærde"" OR ""Hornbæk"" OR ""Kulturværftet""))) and holdingsitem.agencyid=""721700""",721700,opac,5
+"dkcclterm.in=""0108-8009"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830380",830380,cicero,5
+"((term.acsource=comics)) and holdingsitem.agencyid=""725300""",725300,opac,5
+"((dk=34*) or term.publisher=""dk=34*"")",150015,ereolmedglobal,5
+"((facet.category=voksenmaterialer and ma=xx and bad>=""NOW-600DAYS"" and (dk=46.4))) and holdingsitem.agencyid=""773000""",773000,opac,5
+"(rec.id=870970-basis:47468671) and holdingsitem.agencyid=""773000""",773000,opac,5
+"((em=kærlighed*) AND (facet.form=""spillefilm"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,5
+"((phrase.creator=""Line Leonhardt"")) and holdingsitem.agencyid=""714700""",714700,"drift - B3",5
+"((Drengen and med and sølv)) and holdingsitem.agencyid=""775600""",775600,Cicero,5
+"((sommerfugleværelset)) and holdingsitem.agencyid=""777900""",777900,opac,5
+"((dk=34*) or term.publisher=""dk=34*"") AND (facet.type=""ebog"")",150015,ereolmedglobal,5
+"((historisk*) AND (facet.literaryForm=""romaner"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,5
+"((facet.extratitles=""ekstra titler"") or term.publisher=""facet.extratitles=ekstra titler"") AND (facet.type=""lydbog (net)"" AND facet.subject=""gys"")",150015,ereolgomedglobal,5
+"((phrase.creator=""Adèle Geras"")) and holdingsitem.agencyid=""775600""",775600,Cicero,5
+"((isbjørnen) AND (facet.creator=""henrik pontoppidan"")) and holdingsitem.agencyid=""776600""",776600,easyOPAC,5
+"((tænk and forbrugerrådet)) and holdingsitem.agencyid=""766100""",766100,opac,5
+"((facet.category=voksenmaterialer and ma=xx and år>2016 and (dk=40.4 or 41.04) not ma=ss)) and holdingsitem.agencyid=""773000""",773000,opac,5
+"(rec.id=49226446 AND facet.acSource=bibliotekskatalog) and holdingsitem.agencyid=""773000""",773000,opac,7
+"((47519454 or 51995856 or 51722299 or 53416802 or 53744168 or 52163404 or 53753701 or 53743773 or 52915651 or 54178840 or 29744211 or 51995848 or 513419 or 53743706 or 53663869 or 46125134 or 29583706)) and holdingsitem.agencyid=""773000""",773000,opac,6
+"dkcclterm.in=""1054-8408"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,6
+"((facet.type=ebog and (lem=""for 14 år"" or lem=""for 15 år"" or lem=""for 16 år"")) or term.publisher=""facet.type=ebog and (lem=for 14 år or lem=for 15 år or lem=for 16 år)"") AND (facet.type=""ebog"")",150015,ereolmedglobal,5
+"((dkcclterm.em=""seriemordere"" AND facet.type=""lydbog (net)"") or term.publisher=""dkcclterm.em=seriemordere AND facet.type=lydbog (net)"")",150015,ereolmedglobal,5
+"((facet.category=voksenmaterialer AND facet.fictionSubject=krimi AND facet.type=""lydbog (net)"") or term.publisher=""facet.category=voksenmaterialer AND facet.fictionSubject=krimi AND facet.type=lydbog (net)"") AND (facet.type=""lydbog (net)"")",150015,ereolmedglobal,5
+"((phrase.subject=""industrial revolution*"" OR term.subject=industrialisering* OR term.subject=industrialization*)) and holdingsitem.agencyid=""775100""",775100,opac,4
+"(rec.id=870970-basis:47321018) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((kjædegaard) AND (facet.type=""bog"")) and holdingsitem.agencyid=""779100""",779100,opac,4
+"((tænk)) and holdingsitem.agencyid=""766100""",766100,opac,4
+"(rec.id=870970-basis:44784556) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((Anna and Grue) AND (facet.type=""bog"")) and holdingsitem.agencyid=""781000""",781000,cicero,4
+"((Stranden) AND (facet.type=""bog"")) and holdingsitem.agencyid=""717500""",717500,opac,4
+"((stig and rossen) AND (facet.type=""cd (musik)"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,4
+"(rec.id=870970-basis:46963482) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((dkcclphrase.lem=""let at læse"" AND facet.type=ebog and begynderlæsere) or term.publisher=""dkcclphrase.lem=let at læse AND facet.type=ebog and begynderlæsere"")",150015,ereolmedglobal,4
+"((facet.category=børnematerialer and bdo=højtlæsning and dyr and 05<=ra<=10 and år>2015 and term.type=ebog)) and holdingsitem.agencyid=""773000""",773000,opac,4
+"dkcclterm.in=""1043-7797"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830380",830380,cicero,4
+"(rec.id=870970-basis:47329256) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((epidemier)) and holdingsitem.agencyid=""778700""",778700,opac,4
+"(rec.id=870970-basis:54984499) and holdingsitem.agencyid=""773000""",773000,opac,4
+"rec.id=""150024-bibvagt:0c201b6e-93f6-485d-946c-327ca12487bf""",765700,biblioteksvagten,4
+"(rec.id=53889158 AND facet.acSource=bibliotekskatalog) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((lars and kepler)) and holdingsitem.agencyid=""725300""",725300,opac,4
+"(rec.id=773000-katalog:28813937) and holdingsitem.agencyid=""773000""",773000,opac,4
+"(((facet.subject=""alfer"" OR facet.subject=""mus""))) and holdingsitem.agencyid=""730600""",730600,opac,4
+"(rec.id=870970-basis:52369797) and holdingsitem.agencyid=""710100""",710100,opac,4
+"((sebastian) or term.publisher=""sebastian"") AND (facet.creator=""sebastian klein"")",150015,ereolmedglobal,4
+"rec.id=""150024-bibvagt:a056657e-4b80-473c-80ab-97ba8613d68c""",765700,biblioteksvagten,4
+"((avengers) AND (facet.type=""dvd"")) and holdingsitem.agencyid=""726500""",726500,easyOPAC,4
+"(marc.001b=190004) AND (v3a=""folkekirken"")",010100,dbckat,4
+"((Børnebøger) or term.publisher=""Børnebøger"" or (Kids OR ""Kids Fiction"" OR Childrens OR ""Children's Fiction"" )) AND (facet.type=""lydbog (net)"")",150015,ereolmedglobal,4
+"(potter)",190102,danbib,4
+"(rec.id=870970-basis:47329345) and holdingsitem.agencyid=""773000""",773000,opac,4
+"(rec.id=870970-basis:47329302) and holdingsitem.agencyid=""773000""",773000,opac,4
+"(rec.id=773000-katalog:24153886) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((film and biografi*) AND (facet.type=""dvd"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,4
+"((se=*) or term.publisher=""se=*"") AND (facet.type=""ebog"")",150015,ereolgomedglobal,4
+"((wilbur and smiths) AND (facet.creator=""wilbur smith"" AND facet.type=""lydbog (net)"")) and holdingsitem.agencyid=""731600""",731600,easyOPAC,4
+"(rec.id=870970-basis:41801085) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((cykelmyggen) AND (facet.type=""billedbog"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,4
+"(rec.id=870970-basis:29036799) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((skolen) or term.publisher=""skolen"") AND (facet.subject=""skolen"" AND facet.type=""lydbog (net)"")",150015,ereolgomedglobal,4
+"((facet.category=børnematerialer and bdo=højtlæsning and em=dyr* and 05<=ra<=10 and år>2015 and term.type=ebog)) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((""nikkis dagbog - historier fra et ik' specielt eventyrligt liv"")) and holdingsitem.agencyid=""766100""",766100,opac,4
+"((facet.category=børnematerialer and bdo=højtlæsning and dyr and dk=sk and 05<=ra<=10 and år>2015 and term.type=ebog)) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((dk=79.69) AND (facet.category=""voksenmaterialer"")) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((Valgret and og and Valgbarhed)) and holdingsitem.agencyid=""724000""",724000,opac,4
+"((effect and of and reythopoietin)) and holdingsitem.agencyid=""766100""",766100,opac,4
+"((politik) AND (facet.type=""bog"" AND facet.category=""voksenmaterialer"" AND facet.subject=""politik"")) and holdingsitem.agencyid=""724000""",724000,opac,4
+"((phrase.subject=""identitet"") AND (facet.type=""billedbog"")) and holdingsitem.agencyid=""779100""",779100,opac,4
+"((james and morrison) AND (facet.creator=""james morrison"")) and holdingsitem.agencyid=""775100""",775100,opac,4
+"(rec.id=870970-basis:45932222) and holdingsitem.agencyid=""773000""",773000,opac,4
+"(rec.id=870970-basis:47463017) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((sbi)) and holdingsitem.agencyid=""774600""",774600,easySuite,4
+"((facet.acsource=bibliotekskatalog and holdingsitem.sublocation=Tegneserie* and holdingsitem.accessionDate>=""NOW-6MONTHS"")) and holdingsitem.agencyid=""737600""",737600,opac,4
+"((Som and du and ser and mig)) and holdingsitem.agencyid=""766100""",766100,opac,4
+"((Danielle and Steel) or term.publisher=""Danielle Steel"")",150015,ereolmedglobal,4
+"(rec.id=870970-basis:47220785) and holdingsitem.agencyid=""773000""",773000,opac,4
+"(((dkcclterm.dk=13* OR dkcclterm.dk=37*) AND facet.type=ebog) or term.publisher=""(dkcclterm.dk=13* OR dkcclterm.dk=37*) AND facet.type=ebog"") AND (facet.subject=""pædagogik"")",150015,ereolmedglobal,4
+"(marc.001b=190004) AND (nix=""filmcensur"")",010100,dbckat,4
+"((Sjove) or term.publisher=""Sjove"") AND (facet.audienceCategory=""for 13 år"" AND facet.language=""dansk"" AND facet.type=""ebog"" AND facet.subject=""sjove bøger"")",150015,ereolgomedglobal,4
+"((""Valgret"" AND (nomer))) and holdingsitem.agencyid=""724000""",724000,opac,4
+"((kærlighed*) AND (facet.form=""spillefilm"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,4
+"((film) AND (facet.type=""film (net)"") AND (holdingsitem.branch = (""Bredstrup-Pjedsted Hallen"" OR ""Egeskov"" OR ""Erritsø-Hallen afhentningssted"" OR ""Fredericia Bibliotek"" OR ""Taulov Bibliotek""))) and holdingsitem.agencyid=""760700""",760700,opac,4
+"term.isbn=""9788741264301"" AND term.date=""2016"" AND holdingsItem.agencyid=831020",831020,cicero,4
+"((facet.category=voksenmaterialer and ma=xx and bad>=""NOW-200DAYS"" and phrase.titleSeries=""turen går til"")) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((santa and montefiore)) and holdingsitem.agencyid=""784600""",784600,opac,4
+"(rec.id=870970-basis:28997981) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((phrase.creator=""Pia Juul"")) and holdingsitem.agencyid=""775100""",775100,opac,4
+"((facet.category=voksenmaterialer and facet.genreCategory=nonfiktion and bad>=""NOW-900DAYS"" and facet.acSource=bibliotekskatalog and se=""lær det selv"" and dk=19*)) and holdingsitem.agencyid=""773000""",773000,opac,4
+"(dkcclterm.in=""1044-8004"" OR dkcclterm.in=""1532-1096"") AND term.date=""2017""",820050,linkresolver,4
+"rec.id=""150024-bibvagt:1d48f2a4-8cb8-6354-310b-1ea41af28b62""",765700,biblioteksvagten,4
+"((robinson and crusoe) AND (facet.type=""tegneserie"")) and holdingsitem.agencyid=""775100""",775100,opac,4
+"dkcclterm.in=""0261-5177"" AND term.date=""2010""",820050,linkresolver,4
+"(rec.id=870970-basis:51761375) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((historisk*) AND (facet.literaryForm=""romaner"" AND facet.subject=""historiske romaner"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,4
+"(rec.id=870970-basis:53919103) and holdingsitem.agencyid=""773000""",773000,opac,4
+"(rec.id=870970-basis:28443234) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((brætspil*) AND (facet.type=""spil"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,4
+"((Riordan) or term.publisher=""Riordan"")",150015,ereolmedglobal,4
+"((hæklet and påskepynt)) and holdingsitem.agencyid=""774600""",774600,easySuite,4
+"((Ann and cleeves)) and holdingsitem.agencyid=""772700""",772700,opac,4
+"(rec.id=773000-katalog:51524292) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((Fodbold) or term.publisher=""Fodbold"" or (Football OR Soccer))",150015,ereolgomedglobal,6
+"holdingsitem.agencyid=830380 and (47920108 OR 54542666 OR 45996476 OR 47987334 OR 47599318 OR 48013783 OR 53574416 OR 46953843 OR 46002164 OR 37992704)",830380,opac,5
+"((dkcclphrase.lem=""let at læse"" not (sp=ger or sp=eng or sp=fre)) or term.publisher=""dkcclphrase.lem=let at læse not (sp=ger or sp=eng or sp=fre)"") AND (facet.audienceCategory=""for 6 år"")",150015,ereolgomedglobal,5
+"(((dkcclterm.dk=13* OR dkcclterm.dk=37*) AND facet.type=ebog) or term.publisher=""(dkcclterm.dk=13* OR dkcclterm.dk=37*) AND facet.type=ebog"")",150015,ereolmedglobal,4
+"holdingsitem.agencyid=830380 and (Epidemiologi and og and evidens)",830380,opac,4
+"((dkcclphrase.lem=""spænding"") or term.publisher=""dkcclphrase.lem=spænding"")",150015,ereolgomedglobal,4
+"(rec.id=870970-basis:47329264) and holdingsitem.agencyid=""773000""",773000,opac,4
+"(rec.id=870970-basis:26530563) and holdingsitem.agencyid=""773000""",773000,opac,4
+"((facet.type=""lydbog (net)"" and (lem=""for 10 år"" or lem=""for 11 år"" or lem=""for 12 år"" or lem=""for 13 år"")) or term.publisher=""facet.type=lydbog (net) and (lem=for 10 år or lem=for 11 år or lem=for 12 år or lem=for 13 år)"")",150015,ereolmedglobal,5
+"((kim and fupz and aakeson) or term.publisher=""kim fupz aakeson"")",150015,ereolmedglobal,5
+"(rec.id=870970-basis:52250064) and holdingsitem.agencyid=""773000""",773000,opac,3
+"(marc.001b=190004) AND (v3a=""cirkulær økonomi"")",010100,dbckat,3
+"((anbefalinger)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((Lydbog)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"(rec.id=870970-basis:21312932) and holdingsitem.agencyid=""710100""",710100,opac,3
+"((porten and til and fremtiden)) and holdingsitem.agencyid=""781300""",781300,opac,3
+"((phrase.creator=""Märtha Louise"")) and holdingsitem.agencyid=""776600""",776600,easyOPAC,3
+"((skatteflugt)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((kvinde and 1887)) and holdingsitem.agencyid=""724000""",724000,opac,3
+"((Jensen, and Rolf) AND (facet.type=""ebog"")) and holdingsitem.agencyid=""781300""",781300,opac,3
+"((Udnyttelse and af and skriftens and betydningsprincip and - and en and genvej and til and effektiv and læsning and og and stavning)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((drømmefanger)) and holdingsitem.agencyid=""775600""",775600,Cicero,3
+"((phrase.titleSeries=""de syv søstre-serien "")) and holdingsitem.agencyid=""766100""",766100,opac,3
+"((""let at læse"" and ma=xe and begynderlæsere) AND (facet.audienceCategory=""for begynderlæsere"")) and holdingsitem.agencyid=""758000""",758000,opac,3
+"((megclayton)) and holdingsitem.agencyid=""772700""",772700,opac,3
+"((Pat and Metheny) AND (facet.type=""cd (musik)"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((til and piger and på and 11 and år) or term.publisher=""til piger på 11 år"")",150015,ereolmedglobal,3
+"((anna and og and lotte)) and holdingsitem.agencyid=""730600""",730600,opac,3
+"((homo and economicus)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((dkcclterm.op=202003* AND dkcclterm.sp=dan) or term.publisher=""dkcclterm.op=202003* AND dkcclterm.sp=dan "")",150015,ereolgomedglobal,3
+"((inger and wolf)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((james and morrison)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((phrase.title=""very short introductions"")) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"((Virgin and river)) and holdingsitem.agencyid=""719000""",719000,opac,3
+"((villads and fra and valby)) and holdingsitem.agencyid=""779100""",779100,opac,3
+"(rec.id=870970-basis:55157197) and holdingsitem.agencyid=""773000""",773000,opac,3
+"(rec.id=870970-basis:22572407) and holdingsitem.agencyid=""721700""",721700,opac,3
+"((inklusion)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((en and som and hodder) AND (facet.type=""bog"")) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"((Diætistens and low and carb)) and holdingsitem.agencyid=""751000""",751000,opac,3
+"((den and litterære and periode)) and holdingsitem.agencyid=""724000""",724000,opac,3
+"(rec.id=870970-basis:54472404) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((bente and halkier)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"(rec.id=870970-basis:29451044) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((sara and omar)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"(rec.id=870970-basis:52880408) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((wodehouse) AND (facet.type=""lydbog (net)"")) and holdingsitem.agencyid=""778700""",778700,opac,3
+"((meg and clayton)) and holdingsitem.agencyid=""772700""",772700,opac,3
+"(rec.id=870970-basis:45932419) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((katte) or term.publisher=""katte"" or (Cat OR Cats)) AND (facet.language=""dansk"")",150015,ereolgomedglobal,3
+"((Nolan) AND (facet.type=""dvd"" AND facet.creator=""christopher nolan"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((stig and rossen) AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((Philip and Pullman) AND (facet.type=""bog"" AND facet.creator=""philip pullman"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"rec.id=""150024-bibvagt:5d55d2ee-0685-4fb4-41fa-5eaff13a3116""",765700,biblioteksvagten,3
+"((Lars and kjædegaard) or term.publisher=""Lars kjædegaard"")",150015,ereolmedglobal,3
+"(rec.id=870976-anmeld:31374405) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((emil and blichfeldt) AND (facet.type=""bog"")) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((Scor and jobbet and til and samtalen)) and holdingsitem.agencyid=""722300""",722300,opac,3
+"((dubrow and diet)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"(rec.id=773000-katalog:23647737) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((Kirsten and Thorup) AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((Annette and Danielsen)) and holdingsitem.agencyid=""757500""",757500,opac,3
+"holdingsitem.agencyid=830380 and (Sundhedfremme)",830380,opac,3
+"((let and at and læse) or term.publisher=""let at læse"") AND (facet.language=""tysk"")",150015,ereolgomedglobal,3
+"((phrase.creator=""Stig Rossen"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((dubrow)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((historisk*) AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((Kærlighed) AND (facet.type=""bog"" AND facet.literaryForm=""romaner"" AND facet.subject=""kærlighed"" AND facet.language=""dansk"" AND facet.creator=""nora roberts"")) and holdingsitem.agencyid=""777900""",777900,opac,3
+"((Samfundsvidenskabernes and videnskabsteori)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((malleus and maleficarum)) and holdingsitem.agencyid=""772700""",772700,opac,3
+"((Mordet and i and genbrugsen)) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"((kulturautomat)) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"((Mort)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((E and bøger)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"holdingsitem.agencyid=830380 and rec.id any ""53805108"" AND facet.acSource=bibliotekskatalog",830380,opac,3
+"((facet.category=voksenmaterialer and ma=xx and år>2012 and (ok=79.97 or ok=79.929))) and holdingsitem.agencyid=""773000""",773000,opac,3
+"(rec.id=49414242 AND facet.acSource=bibliotekskatalog) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((brødrene and løvehjerte)) and holdingsitem.agencyid=""745000""",745000,opac,3
+"((Et and mere and enkelt and liv)) and holdingsitem.agencyid=""737600""",737600,opac,3
+"((avengers)) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"((term.acSource=""comics plus"")) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((emil and blichfeldt) AND (facet.type=""bog"" AND facet.category=""børnematerialer"" AND facet.subject=""venskab"")) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((51035879)) and holdingsitem.agencyid=""718300""",718300,opac,3
+"((bang and herman)) and holdingsitem.agencyid=""724000""",724000,opac,3
+"(marc.001b=190004) AND (v30=""emotionsforskning"")",010100,dbckat,3
+"((den and lille and heks)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((*) or term.publisher=""*"") AND (facet.audienceCategory=""for 14 år"")",150015,ereolgomedglobal,3
+"((løgstrup) or term.publisher=""løgstrup"")",150015,ereolmedglobal,3
+"((Skive)) and holdingsitem.agencyid=""777900""",777900,opac,3
+"((phrase.creator=""Lucinda Riley"") AND (facet.type=""bog"")) and holdingsitem.agencyid=""766100""",766100,opac,3
+"((bourdieu and social and kapital)) and holdingsitem.agencyid=""716500""",716500,opac,3
+"((jeg and er and william)) and holdingsitem.agencyid=""771000""",771000,opac,3
+"(rec.id=870970-basis:50514412) and holdingsitem.agencyid=""721700""",721700,opac,3
+"((twillight)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((Wonder and R.J. and Palacio)) and holdingsitem.agencyid=""781300""",781300,opac,3
+"((skal and jeg and fortælle and dig and om and demens)) and holdingsitem.agencyid=""776600""",776600,easyOPAC,3
+"(rec.id=870970-basis:54170181) and holdingsitem.agencyid=""773000""",773000,opac,3
+"(rec.id=773000-katalog:27731082) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((fodbold) or term.publisher=""fodbold"" or (Football OR Soccer)) AND (facet.type=""lydbog (net)"")",150015,ereolgomedglobal,3
+"((zero and waste)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"(rec.id=870970-basis:51363337) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((billedbøger) or term.publisher=""billedbøger"" or ""(Picture Books)"")",150015,ereolgomedglobal,3
+"((facet.category=børnematerialer and bdo=højtlæsning and facet.subject=familien and 05<=ra<=10 and facet.genreCategory=fiktion and år>2017 and term.type=ebog)) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((dkcclterm.op=202003* AND dkcclterm.sp=dan AND facet.type=""ebog"") or term.publisher=""dkcclterm.op=202003* AND dkcclterm.sp=dan AND facet.type=ebog "") AND (facet.type=""ebog"" AND facet.language=""dansk"" AND facet.subject=""venskab"")",150015,ereolmedglobal,3
+"((Jørn and lier and horst)) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"((em=kærlighed*) AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((linda and castillo)) and holdingsitem.agencyid=""745000""",745000,opac,3
+"((bjarne and reuter) AND (facet.type=""bog"")) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"((Bubbi)) and holdingsitem.agencyid=""751000""",751000,opac,3
+"((epdimeier)) and holdingsitem.agencyid=""778700""",778700,opac,3
+"(marc.001b=190004) AND (v30=""filmcensur"")",010100,dbckat,3
+"((j and k and rowling) AND (facet.creator=""joanne k. rowling"" AND facet.type=""bog"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((Kærlighed and og and hævn) AND (facet.type=""lydbog (net)"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((150070-comics:IV1383BOHe)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((skal and jeg and fortælle and dig and om and demns)) and holdingsitem.agencyid=""776600""",776600,easyOPAC,3
+"holdingsitem.agencyid=830380 and (33641974 OR 34732302 OR 34731896 OR 34607834 OR 34607788 OR 34732329 OR 34607907 OR 34732469 OR 34447063 OR 34446733)",830380,opac,3
+"((læringsglemsel)) and holdingsitem.agencyid=""721900""",721900,opac,3
+"((Betaling and rajning)) and holdingsitem.agencyid=""718300""",718300,opac,3
+"((""Harry and hole"" AND (nomer))) and holdingsitem.agencyid=""724000""",724000,opac,3
+"((troldeliv)) and holdingsitem.agencyid=""779100""",779100,opac,3
+"((gift and shop)) and holdingsitem.agencyid=""715500""",715500,opac,3
+"((Gemmesteder)) and holdingsitem.agencyid=""721900""",721900,opac,3
+"(rec.id=870970-basis:46331168) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((den and etiske and fordring) AND (facet.creator=""k. e. løgstrup"")) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((venskab, and kærlighed and og and samlivsformer)) and holdingsitem.agencyid=""724000""",724000,opac,3
+"holdingsitem.agencyId=""765700"" AND ((dk=sk OR dk>0) NOT (facet.type = ""Lyd (podcast)"")) AND 25801423",765700,opac,3
+"(rec.id any ""52250064 46414438 53574491 53188559"" AND facet.acSource=bibliotekskatalog) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((Liget and i and lyngen)) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"((christian and mørk)) and holdingsitem.agencyid=""737600""",737600,opac,3
+"((biografi*) AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((Star and wars) or term.publisher=""Star wars"")",150015,ereolmedglobal,3
+"((pædagogik)) and holdingsitem.agencyid=""745000""",745000,opac,3
+"((min and tone and i and livet)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((Kærlighed and og and hævn) AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((cikeline)) and holdingsitem.agencyid=""730600""",730600,opac,3
+"((Kærlighed and og and hævn) AND (facet.type=""bog"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((implementering)) and holdingsitem.agencyid=""779100""",779100,opac,3
+"((alle and kan and ro)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"(rec.id=870970-basis:46414438) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((Sekten)) and holdingsitem.agencyid=""771000""",771000,opac,3
+"((brætspil*) AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((phrase.creator=""Philip Prowse"")) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"(rec.id=870970-basis:29882150) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((Inklusion and og and eksklusion and i and pædagogers and arbejde)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((Ancestry.com) AND (facet.subject=""ancestry"")) and holdingsitem.agencyid=""721900""",721900,opac,3
+"((127 and timer)) and holdingsitem.agencyid=""778700""",778700,opac,3
+"((lydbøger) AND (facet.type=""lydbog (net)"")) and holdingsitem.agencyid=""771000""",771000,opac,3
+"holdingsitem.agencyid=830380 and (111950857 OR 85588095)",830380,opac,3
+"((facet.category=voksenmaterialer and ma=xx and år>2012 and (ok=62.5 or ok=69.2 or ok=68.5) not (54941811 or 53530060))) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((the and dubrow and diet)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((term.subject=""det gode"")) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((28739737)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((term.acSource=comics)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((lydbøger)) and holdingsitem.agencyid=""771000""",771000,opac,3
+"((det and store and i and det and små)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"(marc.001b=190004) AND (v3a=""prinsesser"")",010100,dbckat,3
+"((Robyn and carr)) and holdingsitem.agencyid=""719000""",719000,opac,3
+"((overskredne and lån)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((Sommerfugleværelset)) and holdingsitem.agencyid=""724000""",724000,opac,3
+"((phrase.subject=""naturen"") AND (facet.type=""bog"" AND facet.category=""voksenmaterialer"")) and holdingsitem.agencyid=""724000""",724000,opac,3
+"holdingsitem.agencyId=""765700"" AND (dk=sk OR dk>0) AND 25801423",765700,opac,3
+"((De and første and 100 and år)) and holdingsitem.agencyid=""737600""",737600,opac,3
+"(rec.id=870971:87331628) and holdingsitem.agencyid=""721700""",721700,opac,3
+"((Kirsten and Thorup)) and holdingsitem.agencyid=""777900""",777900,opac,3
+"((peter and jackson) AND (facet.type=""dvd"" AND facet.creator=""peter jackson"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((chick*) AND (facet.type=""bog"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((civiliserende and institutioner) AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((thomas and winding) AND (facet.type=""cd (musik)"" AND facet.creator=""thomas winding"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((nydelsens and geografi)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((giftshop)) and holdingsitem.agencyid=""715500""",715500,opac,3
+"((Jensen, and Rolf)) and holdingsitem.agencyid=""781300""",781300,opac,3
+"((politik) AND (facet.type=""bog"")) and holdingsitem.agencyid=""724000""",724000,opac,3
+"((alle and himlens and fugle) AND (facet.type=""bog"")) and holdingsitem.agencyid=""758000""",758000,opac,3
+"((gysensten-slot)) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"((isbjørnen)) and holdingsitem.agencyid=""776600""",776600,easyOPAC,3
+"((tragedie*) AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((""bruno nørdam"")) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"(rec.id=870970-basis:26251141) and holdingsitem.agencyid=""721700""",721700,opac,3
+"((Wonder)) and holdingsitem.agencyid=""781300""",781300,opac,3
+"((Mein and Kampf and online)) and holdingsitem.agencyid=""751000""",751000,opac,3
+"((Valgret) AND (facet.type=""artikel"")) and holdingsitem.agencyid=""724000""",724000,opac,3
+"((emil and blichfeldt) AND (facet.type=""bog"" AND facet.category=""børnematerialer"" AND facet.subject=""venskab"" AND facet.subject=""drager (fabeldyr)"")) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((Anna and Grue)) and holdingsitem.agencyid=""781000""",781000,cicero,3
+"(rec.id=870970-basis:03192563) and holdingsitem.agencyid=""773000""",773000,opac,3
+"dkcclterm.in=""0160-7383"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,3
+"((21082554)) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"((den and inkluderende and skole)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"(rec.id=870970-basis:46023137) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((referencer and til and srp)) and holdingsitem.agencyid=""721900""",721900,opac,3
+"((politik) AND (facet.type=""bog"" AND facet.category=""voksenmaterialer"" AND facet.subject=""politik"" AND facet.language=""dansk"")) and holdingsitem.agencyid=""724000""",724000,opac,3
+"((tragedie*) AND (facet.form=""spillefilm"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((epdimier)) and holdingsitem.agencyid=""778700""",778700,opac,3
+"((Hvirvelløse and dyr) AND (facet.type=""bog"")) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((steven and spielberg) AND (facet.type=""dvd"" AND facet.creator=""steven spielberg"") AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((Harry and hole) AND (facet.type=""bog"")) and holdingsitem.agencyid=""724000""",724000,opac,3
+"((phrase.titleSeries=""på stribe : din seriemorder podcast"")) and holdingsitem.agencyid=""772700""",772700,opac,3
+"((robinson and crusoe) AND (facet.creator=""daniel defoe"" AND facet.category=""børnematerialer"")) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((kaj and har and fine and gummistøvler) AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((Valgret) AND (facet.type=""bog"")) and holdingsitem.agencyid=""724000""",724000,opac,3
+"((jørn and jensen) or term.publisher=""jørn jensen"") AND (facet.type=""lydbog (net)"")",150015,ereolmedglobal,3
+"((rasmus and nikolajsen)) and holdingsitem.agencyid=""724000""",724000,opac,3
+"dkcclterm.in=""1999-768X"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,3
+"((biografi) or term.publisher=""biografi"" or (Biography OR ""Biography & Autobiography"")) AND (facet.type=""lydbog (net)"")",150015,ereolmedglobal,3
+"((otto) or term.publisher=""otto"")",150015,ereolgomedglobal,3
+"((vitello)) and holdingsitem.agencyid=""779100""",779100,opac,3
+"((""los, küss mich"") AND (facet.type=""lydbog (net)"")) and holdingsitem.agencyid=""774600""",774600,easySuite,3
+"((Danmark)) and holdingsitem.agencyid=""777900""",777900,opac,3
+"(marc.001b=190004) AND (v3a=""eventyr"")",010100,dbckat,3
+"((cGhyYXNlLm)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((Villads and fra and valby)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((epidemier) AND (facet.language=""engelsk"")) and holdingsitem.agencyid=""778700""",778700,opac,3
+"((phrase.titleSeries=""koldt blod "") or term.publisher=""phrase.titleSeries=koldt blod "") AND (facet.acSource=""netlydbog"")",150015,ereolmedglobal,3
+"((Pipi)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((øjet and der and ser)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((Problemløsende and inklusion)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((mørket and kalder)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((emil and blichfeldt) AND (facet.type=""bog"" AND facet.category=""børnematerialer"")) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((term.acsource=""comics plus"")) and holdingsitem.agencyid=""775100""",775100,opac,3
+"dkcclterm.in=""1096-3480"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,3
+"((bøger and på and engelsk and let and at and læse)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((lida and castillo)) and holdingsitem.agencyid=""745000""",745000,opac,3
+"((Lille and virgil)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((nelsons and seje and psykofætter)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((phrase.titleSeries=""åsteder : fortællinger fra gudenåen "")) and holdingsitem.agencyid=""772700""",772700,opac,3
+"((the and fairy) AND (facet.language=""engelsk"" AND facet.type=""ebog"")) and holdingsitem.agencyid=""772700""",772700,opac,3
+"((""ternet ninja"")) and holdingsitem.agencyid=""737600""",737600,opac,3
+"holdingsitem.agencyid=830380 and (126535414 OR 126170408 OR 126128827 OR 112023356 OR 06133975 OR 111970858)",830380,opac,3
+"((kvinders and valgret) AND (facet.type=""artikel"")) and holdingsitem.agencyid=""724000""",724000,opac,3
+"((47898927)) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"((phrase.subject=""identitet"")) and holdingsitem.agencyid=""779100""",779100,opac,3
+"((engelske and bøger)) and holdingsitem.agencyid=""772700""",772700,opac,3
+"dkcclterm.in=""1386-5056"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,3
+"((tænk and forbrugerrådet)) and holdingsitem.agencyid=""716300""",716300,easyOPAC,3
+"((Architekten)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"""51573013"" OR ""50630129"" OR ""53211038"" OR ""45965767"" OR ""29630429"" OR ""47584485"" OR ""27940560"" OR ""54178700""",765700,opac,3
+"dkcclterm.in=""1397-4157"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,3
+"((politik)) and holdingsitem.agencyid=""724000""",724000,opac,3
+"((den and etiske and fordring)) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((politik) AND (facet.type=""bog"" AND facet.category=""voksenmaterialer"" AND facet.subject=""politik"" AND facet.language=""dansk"" AND facet.subject=""historie"")) and holdingsitem.agencyid=""724000""",724000,opac,3
+"(term.isbn=""9781138132139"" OR term.isbn=""9780203381182"") AND term.date=""2003""",820050,linkresolver,3
+"(((facet.category=""voksenmaterialer"")) and (ma=xe and term.type=ebog and sp=dan)) and holdingsitem.agencyid=""775100""",775100,opac,3
+"((Den and store and lyveskole)) and holdingsitem.agencyid=""726500""",726500,easyOPAC,3
+"((01767593)) and holdingsitem.agencyid=""718500""",718500,easyOPAC,3
+"((lille and muko) AND (facet.creator=""lille muko"")) and holdingsitem.agencyid=""777900""",777900,opac,3
+"(marc.001b=190004) AND (v3a=""emotionsforskning"")",010100,dbckat,3
+"holdingsitem.agencyid=830380 and (modulbyggeri)",830380,opac,3
+"((phrase.titleSeries=""bag om københavn "")) and holdingsitem.agencyid=""772700""",772700,opac,3
+"holdingsitem.agencyid=830380 and (37882186)",830380,opac,3
+"((term.subject=""det gode og det onde"")) and holdingsitem.agencyid=""775100""",775100,opac,3
+"holdingsitem.agencyid=830380 and (ottosson, and J., and Lundqvist, and s. and og and Johnson, and L. and . and Wilson.)",830380,opac,3
+"term.isbn=9781139042741",820060,Findit,3
+"((volvo and lastvagnar) AND (facet.type=""lydbog (cd-mp3)"")) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"((tragedie* and film) AND (holdingsitem.branch = (""Fredensborg Bibliotek"" OR ""Humlebæk Bibliotek"" OR ""Nivå Bibliotek""))) and holdingsitem.agencyid=""721000""",721000,opac,3
+"((Løfte and ved and daggry) AND (facet.type=""dvd"")) and holdingsitem.agencyid=""737600""",737600,opac,3
+"(rec.id any ""06438741 51586395"" AND facet.acSource=bibliotekskatalog) and holdingsitem.agencyid=""773000""",773000,opac,3
+"((Wonder and R.J. and Palacio) AND (facet.language=""engelsk"")) and holdingsitem.agencyid=""781300""",781300,opac,3
+"((lille and muko and giv and dagen and dit and lys)) and holdingsitem.agencyid=""777900""",777900,opac,3
+"dkcclterm.in=""0210-5691"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,3
+"((e and bøger) AND (facet.category=""voksenmaterialer"")) and holdingsitem.agencyid=""733000""",733000,easyOPAC,3
+"((ekurser.nu) AND (facet.subject=""kultur: musik, litteratur og film"")) and holdingsitem.agencyid=""715900""",715900,opac,3
+"holdingsitem.agencyId=""765700"" AND (dk=sk OR dk>0) AND 45412318",765700,opac,3
+"((* not sp=dan) or term.publisher=""* not sp=dan"")",150015,ereolgomedglobal,4
+"((kim and fupz) or term.publisher=""kim fupz"")",150015,ereolmedglobal,5
+"dkcclterm.in=""2044-5415"" AND facets=facet.type=tidsskrift AND holdingsItem.agencyid=830370",830370,cicero,3
+"((phrase.subject=""forelskelse"") or term.publisher=""phrase.subject=forelskelse"")",150015,ereolgomedglobal,3
+"((inklusion) AND (facet.type=""ebog"")) and holdingsitem.agencyid=""714700""",714700,"drift - B3",3
+"(marc.001b=190004) AND (v3a=""dansk film"")",010100,dbckat,3
+"(marc.001b=190004) AND (six=""for 6 år"")",010100,dbckat,3
+"((dkcclterm.dk=99* AND facet.type=ebog) or term.publisher=""dkcclterm.dk=99* AND facet.type=ebog"")",150015,ereolmedglobal,3
+"((digte) or term.publisher=""digte"")",150015,ereolmedglobal,3
+"((holdingsitem.accessionDate>=""NOW-60DAYS"" and uu=nt and (facet.acsource=""bibliotekskatalog"") and (bos=krimi or bos=spænding) and facet.category=voksenmaterialer)) and holdingsitem.agencyid=""767100""",767100,opac,3
+"((facet.category=voksenmaterialer AND dkcclphrase.lem=""science fiction"" AND facet.type=""lydbog (net)""))",150015,netlydbogny,3
+"((facet.category=voksenmaterialer AND dkcclphrase.lem=""spænding"" AND facet.type=""lydbog (net)"") or term.publisher=""facet.category=voksenmaterialer AND dkcclphrase.lem=spænding AND facet.type=lydbog (net)"")",150015,ereolmedglobal,3
+"((genbrugsstation)) and holdingsitem.agencyid=""730600""",730600,opac,3
+"holdingsitem.agencyid=830380 and (autismebladet)",830380,opac,3
+"((phrase.subject=""døden"") or term.publisher=""phrase.subject=døden"")",150015,ereolgomedglobal,4
+"(marc.001b=190004) AND (v3a=""følelser"")",010100,dbckat,3
+"(marc.001b=190004) AND (v30=""dansk film"")",010100,dbckat,3
+"""29549893"" OR ""22108875"" OR ""51677951"" OR ""52608570"" OR ""51687337"" OR ""28638701"" OR ""27297390"" OR ""25877799"" OR ""53729827"" OR ""107514244"" OR ""46997441"" OR ""47463181"" OR ""47463165""",765700,opac,3
+"((*) or term.publisher=""*"") AND (facet.extraTitles=""ekstra titler"" AND facet.type=""lydbog (net)"" AND facet.subject=""spænding"")",150015,ereolmedglobal,3
+"((facet.type=ebog and (lem=""for 7 år"" or lem=""for 8 år"" or lem=""for 9 år"")) or term.publisher=""facet.type=ebog and (lem=for 7 år or lem=for 8 år or lem=for 9 år)"")",150015,ereolmedglobal,3
+"baf=""voksen"" and facet.type=""lydbog (cd)""",765700,opac,19
+"((se=*) or term.publisher=""se=*"")",150015,ereolgomedglobal,4
+"((facet.category=voksenmaterialer AND (facet.fictionSubject=erotik OR facet.fictionSubject=sex) AND facet.type=""lydbog (net)""))",150015,netlydbogny,3
+"((batman) AND (facet.subject=""comics plus"")) and holdingsitem.agencyid=""725300""",725300,opac,3
+"((facet.category=voksenmaterialer AND dkcclphrase.lem=""spænding"" AND facet.type=""lydbog (net)""))",150015,netlydbogny,3
+"((facet.type=bog)) and holdingsitem.agencyid=""757500""",757500,opac,4
+"((facet.category=voksenmaterialer AND (facet.fictionSubject=humor OR facet.fictionSubject=""sjove bøger"") AND facet.type=""lydbog (net)""))",150015,netlydbogny,3
+"((facet.category=voksenmaterialer AND facet.fictionSubject=krimi AND facet.type=""lydbog (net)""))",150015,netlydbogny,3
+"""54056087"" OR ""29725624"" OR ""27289800"" OR ""27492339"" OR ""27492398"" OR ""28217846"" OR ""47404983"" OR ""51417151"" OR ""29725624"" OR ""27289800"" OR ""25036158"" OR ""28773676"" OR ""46164814"" OR ""27662188"" OR ""45942007"" OR ""53299121"" OR ""51885856""",765700,opac,3
+"dkcclterm.in=""0268-3962"" AND term.date=""2004""",820050,linkresolver,3
+"(marc.001b=190004) AND (nix=""kristendom"")",010100,dbckat,3
+"((facet.category=voksenmaterialer AND (facet.fictionSubject=erotik OR facet.fictionSubject=sex) AND facet.type=ebog))",150015,ereolen,4

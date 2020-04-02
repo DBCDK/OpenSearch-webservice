@@ -1,0 +1,1009 @@
+﻿"Top 1000 unusual terms in query.keyword","Top 1000 unusual terms in agency.keyword","Top 1000 unusual terms in profile.keyword",Count
+peale,100200,test,177136
+"(marc.001b=870970 OR marc.001b=870971 OR marc.001b=870979) AND (id=05940931 and marc.001b=870970)",010100,dbckat,1248
+"baf=""voksen"" and facet.type=""lydbog (cd-mp3)""",765700,opac,1889
+"baf=""voksen"" and facet.type=""lydbog (cd)""",765700,opac,996
+"(marc.001b=870970 OR marc.001b=870971 OR marc.001b=870979) AND (id=03579735 and marc.001b=870970)",010100,dbckat,859
+"( facet.type=s* )",150015,ereolmedglobal,1106
+"( scanterm.mainTitle=s* )",150015,ereolmedglobal,1105
+"( scanterm.subject=s* )",150015,ereolmedglobal,1105
+"( scanterm.creator=s* )",150015,ereolmedglobal,1105
+danmark,100200,test,1348
+danmark,190101,default,24
+"holdingsitem.agencyid=830190 and (term.type=""bog"" and hs=eng not hs=dan)",830190,opac,1296
+"( scanterm.mainTitle=d* )",150015,ereolmedglobal,847
+"( facet.type=d* )",150015,ereolmedglobal,847
+"( scanterm.creator=d* )",150015,ereolmedglobal,847
+"( scanterm.subject=d* )",150015,ereolmedglobal,847
+"( facet.type=m* )",150015,ereolmedglobal,793
+"( scanterm.subject=m* )",150015,ereolmedglobal,793
+"( scanterm.creator=m* )",150015,ereolmedglobal,793
+"( scanterm.mainTitle=m* )",150015,ereolmedglobal,792
+"( scanterm.subject=l* )",150015,ereolmedglobal,700
+"( scanterm.creator=l* )",150015,ereolmedglobal,699
+"( facet.type=l* )",150015,ereolmedglobal,699
+"( scanterm.mainTitle=l* )",150015,ereolmedglobal,699
+hunkat,190104,zdanbib,645
+"( facet.type=k* )",150015,ereolmedglobal,715
+"( scanterm.subject=k* )",150015,ereolmedglobal,715
+"( scanterm.mainTitle=k* )",150015,ereolmedglobal,715
+"( scanterm.creator=k* )",150015,ereolmedglobal,715
+"holdingsitem.agencyid=830690 and ((term.type=ebog or ebook) and  (term.date=""2020""  or term.date=""2019""))",830690,opac,924
+"( scanterm.creator=h* )",150015,ereolmedglobal,682
+"( scanterm.mainTitle=h* )",150015,ereolmedglobal,682
+"( scanterm.subject=h* )",150015,ereolmedglobal,682
+"( facet.type=h* )",150015,ereolmedglobal,682
+"( facet.type=a* )",150015,ereolmedglobal,646
+"( scanterm.mainTitle=a* )",150015,ereolmedglobal,646
+"( scanterm.subject=a* )",150015,ereolmedglobal,646
+"( scanterm.creator=a* )",150015,ereolmedglobal,646
+"( scanterm.mainTitle=de* )",150015,ereolmedglobal,559
+"( scanterm.subject=de* )",150015,ereolmedglobal,559
+"( scanterm.creator=de* )",150015,ereolmedglobal,559
+"( facet.type=de* )",150015,ereolmedglobal,559
+"( scanterm.creator=j* )",150015,ereolmedglobal,538
+"( scanterm.mainTitle=j* )",150015,ereolmedglobal,538
+"( facet.type=j* )",150015,ereolmedglobal,538
+"( scanterm.subject=j* )",150015,ereolmedglobal,537
+"( scanterm.creator=han* )",100200,test,642
+"( scanterm.creator=han* )",150015,ereolmedglobal,35
+"( scanterm.creator=p* )",150015,ereolmedglobal,510
+"( scanterm.subject=p* )",150015,ereolmedglobal,510
+"( facet.type=p* )",150015,ereolmedglobal,510
+"( scanterm.mainTitle=p* )",150015,ereolmedglobal,509
+"( facet.type=t* )",150015,ereolmedglobal,503
+"( scanterm.mainTitle=t* )",150015,ereolmedglobal,503
+"( scanterm.subject=t* )",150015,ereolmedglobal,502
+"( scanterm.creator=t* )",150015,ereolmedglobal,501
+pippi,100200,test,645
+"( scanterm.mainTitle=e* )",150015,ereolmedglobal,460
+"( scanterm.subject=e* )",150015,ereolmedglobal,460
+"( scanterm.creator=e* )",150015,ereolmedglobal,460
+"( facet.type=e* )",150015,ereolmedglobal,460
+"( scanterm.subject=b* )",150015,ereolmedglobal,486
+"( scanterm.creator=b* )",150015,ereolmedglobal,486
+"( scanterm.mainTitle=b* )",150015,ereolmedglobal,486
+"( facet.type=b* )",150015,ereolmedglobal,486
+"( scanterm.mainTitle=f* )",150015,ereolmedglobal,439
+"( scanterm.subject=f* )",150015,ereolmedglobal,439
+"( facet.type=f* )",150015,ereolmedglobal,439
+"( scanterm.creator=f* )",150015,ereolmedglobal,439
+"holdingsitem.agencyid=831020 and (term.type=""bog"" AND (term.date=""2019"" OR term.date=""2020""))",831020,opac,530
+"( facet.type=den* )",150015,ereolmedglobal,349
+"( scanterm.creator=den* )",150015,ereolmedglobal,349
+"( scanterm.mainTitle=den* )",150015,ereolmedglobal,349
+"( scanterm.subject=den* )",150015,ereolmedglobal,349
+"holdingsitem.agencyid=830380 and ((term.subject=""studieteknik"" OR term.subject=""opgaveskrivning"") AND term.language=""dansk"" AND term.type=""bog"")",830380,opac,490
+"( scanterm.subject=v* )",150015,ereolmedglobal,346
+"( scanterm.mainTitle=v* )",150015,ereolmedglobal,346
+"( facet.type=v* )",150015,ereolmedglobal,346
+"( scanterm.creator=v* )",150015,ereolmedglobal,346
+"holdingsitem.agencyid=830380 and (term.language=""dansk"" AND holdingsitem.accessionDate>=""NOW-3MONTHS"" AND term.type=""bog"")",830380,opac,412
+"( scanterm.creator=r* )",150015,ereolmedglobal,307
+"( scanterm.subject=r* )",150015,ereolmedglobal,307
+"( facet.type=r* )",150015,ereolmedglobal,307
+"( scanterm.mainTitle=r* )",150015,ereolmedglobal,307
+"( facet.type=n* )",150015,ereolmedglobal,284
+"( scanterm.mainTitle=n* )",150015,ereolmedglobal,284
+"( scanterm.creator=n* )",150015,ereolmedglobal,284
+"( scanterm.subject=n* )",150015,ereolmedglobal,284
+"holdingsitem.agencyid=830690 and (term.type=”bog” and   term.date=""2020"")",830690,opac,396
+"term.type=""bog"" and bos=""let at læse"" and baf=""voksen""",765700,opac,219
+"( scanterm.creator=S* )",150015,ereolmedglobal,298
+"( scanterm.mainTitle=S* )",150015,ereolmedglobal,298
+"( facet.type=S* )",150015,ereolmedglobal,298
+"( scanterm.subject=S* )",150015,ereolmedglobal,298
+"( scanterm.creator=g* )",150015,ereolmedglobal,292
+"( facet.type=g* )",150015,ereolmedglobal,292
+"( scanterm.mainTitle=g* )",150015,ereolmedglobal,292
+"( scanterm.subject=g* )",150015,ereolmedglobal,291
+"( scanterm.subject=i* )",150015,ereolmedglobal,268
+"( facet.type=i* )",150015,ereolmedglobal,268
+"( scanterm.mainTitle=i* )",150015,ereolmedglobal,268
+"( scanterm.creator=i* )",150015,ereolmedglobal,268
+"(marc.001b=190004) AND (v3b=""Danmark"")",010100,dbckat,180
+"( facet.type=ma* )",150015,ereolmedglobal,261
+"( scanterm.creator=ma* )",150015,ereolmedglobal,261
+"( scanterm.subject=ma* )",150015,ereolmedglobal,261
+"( scanterm.mainTitle=ma* )",150015,ereolmedglobal,261
+"((Gyldendal) or term.publisher=""Gyldendal"") AND (facet.language=""dansk"")",150015,ereolmedglobal,159
+"( scanterm.mainTitle=c* )",150015,ereolmedglobal,258
+"( scanterm.subject=c* )",150015,ereolmedglobal,258
+"( facet.type=c* )",150015,ereolmedglobal,258
+"( scanterm.creator=c* )",150015,ereolmedglobal,258
+"( facet.type=A* )",150015,ereolmedglobal,251
+"( scanterm.mainTitle=A* )",150015,ereolmedglobal,251
+"( scanterm.creator=A* )",150015,ereolmedglobal,251
+"( scanterm.subject=A* )",150015,ereolmedglobal,251
+"( scanterm.mainTitle=vi* )",150015,ereolmedglobal,239
+"( facet.type=vi* )",150015,ereolmedglobal,239
+"( scanterm.creator=vi* )",150015,ereolmedglobal,239
+"( scanterm.subject=vi* )",150015,ereolmedglobal,239
+"((dk=78.7* and facet.type=node ) AND (holdingsitem.branch = (""Bredstrup-Pjedsted Hallen"" OR ""Egeskov"" OR ""Erritsø-Hallen afhentningssted"" OR ""Fredericia Bibliotek"" OR ""Taulov Bibliotek""))) and holdingsitem.agencyid=""760700""",760700,opac,144
+"""Mín jólabók"" AND facet.type=""ebog""",911116,easyOPAC,184
+"( scanterm.creator=en* )",150015,ereolmedglobal,218
+"( facet.type=en* )",150015,ereolmedglobal,218
+"( scanterm.subject=en* )",150015,ereolmedglobal,218
+"( scanterm.mainTitle=en* )",150015,ereolmedglobal,217
+"(rec.id=misc) and holdingsitem.agencyid=""716700""",716700,opac,284
+"(marc.001b=870970 OR marc.001b=870971 OR marc.001b=870979) AND (id=07086229 and marc.001b=870970)",010100,dbckat,140
+"holdingsitem.agencyid=830190 and (term.type=""bog"" and term.date=""2019"" )",830190,opac,286
+"( scanterm.mainTitle=D* )",150015,ereolmedglobal,210
+"( facet.type=ha* )",150015,ereolmedglobal,226
+"( scanterm.subject=ha* )",150015,ereolmedglobal,226
+"( scanterm.mainTitle=ha* )",150015,ereolmedglobal,226
+"( scanterm.creator=ha* )",150015,ereolmedglobal,226
+"( facet.type=D* )",150015,ereolmedglobal,209
+"( scanterm.creator=D* )",150015,ereolmedglobal,209
+"( scanterm.subject=an* )",150015,ereolmedglobal,213
+"( facet.type=an* )",150015,ereolmedglobal,213
+"( scanterm.mainTitle=an* )",150015,ereolmedglobal,213
+"( scanterm.creator=an* )",150015,ereolmedglobal,213
+"( scanterm.subject=D* )",150015,ereolmedglobal,208
+"( scanterm.creator=o* )",150015,ereolmedglobal,215
+"( scanterm.mainTitle=o* )",150015,ereolmedglobal,215
+"( scanterm.subject=o* )",150015,ereolmedglobal,215
+"( facet.type=o* )",150015,ereolmedglobal,215
+"( scanterm.mainTitle=M* )",150015,ereolmedglobal,197
+"( scanterm.subject=M* )",150015,ereolmedglobal,197
+"( scanterm.creator=M* )",150015,ereolmedglobal,197
+"( facet.type=M* )",150015,ereolmedglobal,197
+"(rec.id=profiles) and holdingsitem.agencyid=""771000""",771000,opac,123
+"( scanterm.mainTitle=mi* )",150015,ereolmedglobal,183
+"( scanterm.subject=mi* )",150015,ereolmedglobal,183
+"( scanterm.subject=ka* )",150015,ereolmedglobal,197
+"( facet.type=ka* )",150015,ereolmedglobal,197
+"( scanterm.mainTitle=ka* )",150015,ereolmedglobal,197
+"( scanterm.creator=ka* )",150015,ereolmedglobal,197
+"( scanterm.creator=mi* )",150015,ereolmedglobal,182
+"( facet.type=mi* )",150015,ereolmedglobal,182
+"(marc.001b=190004) AND (nix=""Danmark"")",010100,dbckat,128
+"(marc.001b=190004) AND (v3a=""historie"")",010100,dbckat,120
+"(marc.001b=190004) AND (nix=""historie"")",010100,dbckat,118
+"(fo=""Vincent F. Hendricks"") and (bfi=""Mulernes Legatskole"" and bai=874510)",874510,cicero,223
+"( scanterm.subject=je* )",150015,ereolmedglobal,165
+"( facet.type=je* )",150015,ereolmedglobal,165
+"( scanterm.mainTitle=je* )",150015,ereolmedglobal,165
+"( scanterm.creator=je* )",150015,ereolmedglobal,165
+"( scanterm.creator=L* )",150015,ereolmedglobal,172
+"( facet.type=L* )",150015,ereolmedglobal,172
+"( scanterm.subject=L* )",150015,ereolmedglobal,172
+"( scanterm.mainTitle=L* )",150015,ereolmedglobal,172
+"( scanterm.creator=jo* )",150015,ereolmedglobal,159
+"( scanterm.subject=jo* )",150015,ereolmedglobal,159
+"( scanterm.mainTitle=jo* )",150015,ereolmedglobal,159
+"( facet.type=jo* )",150015,ereolmedglobal,159
+"(rec.id=sites) and holdingsitem.agencyid=""721000""",721000,opac,128
+"( scanterm.creator=anna* )",150015,ereolmedglobal,138
+"( scanterm.mainTitle=anna* )",150015,ereolmedglobal,138
+"( scanterm.subject=anna* )",150015,ereolmedglobal,138
+"( facet.type=anna* )",150015,ereolmedglobal,138
+"( scanterm.creator=li* )",150015,ereolmedglobal,147
+"( scanterm.mainTitle=ann* )",150015,ereolmedglobal,152
+"( facet.type=ann* )",150015,ereolmedglobal,152
+"( scanterm.subject=ann* )",150015,ereolmedglobal,152
+"( dk=""91.93"") and (bfi=""Mulernes Legatskole"" and bai=874510)",874510,cicero,205
+"( scanterm.subject=li* )",150015,ereolmedglobal,146
+"( facet.type=li* )",150015,ereolmedglobal,146
+"( scanterm.mainTitle=li* )",150015,ereolmedglobal,146
+"( scanterm.creator=ann* )",150015,ereolmedglobal,151
+"rec.id=870970-basis:28329490",190101,default,96
+"(dk=""96.71"") and (bfi=""Mulernes Legatskole"" and bai=874510)",874510,cicero,210
+"( facet.type=harry* )",150015,ereolmedglobal,156
+"( scanterm.creator=harry* )",150015,ereolmedglobal,156
+"( scanterm.mainTitle=harry* )",150015,ereolmedglobal,156
+"( scanterm.subject=harry* )",150015,ereolmedglobal,156
+"( scanterm.mainTitle=De* )",150015,ereolmedglobal,171
+"( facet.type=De* )",150015,ereolmedglobal,171
+"( scanterm.subject=De* )",150015,ereolmedglobal,171
+"( scanterm.creator=De* )",150015,ereolmedglobal,171
+"holdingsitem.agencyid=830190 and (term.type=""bog"" and em=""opgaveskrivning"")",830190,opac,198
+"holdingsitem.agencyid=830190 and (term.type=""bog"" and term.date=""2020"" )",830190,opac,198
+"holdingsitem.agencyid=830690 and (term.type=”bog” and   term.date=""2020"" and (dk=3* or dk=13.*))",830690,opac,198
+"holdingsitem.agencyid=830190 and rec.id any ""54708408 52385482 112906193"" AND facet.acSource=bibliotekskatalog",830190,opac,92
+"rec.id=870970-basis:25694090",190101,default,92
+"( scanterm.subject=st* )",150015,ereolmedglobal,147
+"( facet.type=st* )",150015,ereolmedglobal,147
+"( scanterm.mainTitle=st* )",150015,ereolmedglobal,147
+"( scanterm.creator=st* )",150015,ereolmedglobal,147
+"( scanterm.mainTitle=mar* )",150015,ereolmedglobal,146
+"( scanterm.creator=mar* )",150015,ereolmedglobal,146
+"( facet.type=mar* )",150015,ereolmedglobal,146
+"( scanterm.subject=mar* )",150015,ereolmedglobal,146
+"( scanterm.mainTitle=E* )",150015,ereolmedglobal,154
+"( scanterm.creator=E* )",150015,ereolmedglobal,154
+"( scanterm.subject=E* )",150015,ereolmedglobal,154
+"( facet.type=E* )",150015,ereolmedglobal,154
+"( facet.type=sa* )",150015,ereolmedglobal,152
+"( scanterm.creator=sa* )",150015,ereolmedglobal,152
+"( scanterm.subject=sa* )",150015,ereolmedglobal,152
+"( scanterm.mainTitle=sa* )",150015,ereolmedglobal,152
+"( scanterm.subject=J* )",150015,ereolmedglobal,135
+"( scanterm.mainTitle=J* )",150015,ereolmedglobal,135
+"( facet.type=J* )",150015,ereolmedglobal,135
+"( scanterm.creator=J* )",150015,ereolmedglobal,135
+"(rec.id=ting) and holdingsitem.agencyid=""771000""",771000,opac,89
+"holdingsitem.agencyid=830370 and (term.type=""bog"" AND år=""2020"" AND term.language=""dansk"")",830370,opac,192
+"( scanterm.subject=H* )",150015,ereolmedglobal,146
+"( scanterm.subject=H* )",150015,ereolgomedglobal,6
+"( scanterm.creator=H* )",150015,ereolmedglobal,146
+"( scanterm.creator=H* )",150015,ereolgomedglobal,6
+"( scanterm.mainTitle=H* )",150015,ereolmedglobal,146
+"( scanterm.mainTitle=H* )",150015,ereolgomedglobal,6
+"( facet.type=H* )",150015,ereolmedglobal,146
+"( facet.type=H* )",150015,ereolgomedglobal,6
+"( scanterm.subject=pi* )",150015,ereolmedglobal,121
+"( scanterm.mainTitle=pi* )",150015,ereolmedglobal,121
+"( facet.type=pi* )",150015,ereolmedglobal,121
+"( scanterm.mainTitle=fo* )",150015,ereolmedglobal,122
+"( facet.type=fo* )",150015,ereolmedglobal,122
+"( scanterm.subject=fo* )",150015,ereolmedglobal,122
+"( scanterm.creator=fo* )",150015,ereolmedglobal,122
+"( scanterm.creator=må* )",150015,ereolmedglobal,112
+"( scanterm.mainTitle=må* )",150015,ereolmedglobal,112
+"( facet.type=må* )",150015,ereolmedglobal,112
+"( scanterm.subject=må* )",150015,ereolmedglobal,112
+"( scanterm.creator=pi* )",150015,ereolmedglobal,120
+"( scanterm.creator=det* )",150015,ereolmedglobal,134
+"( scanterm.subject=det* )",150015,ereolmedglobal,134
+"( scanterm.mainTitle=det* )",150015,ereolmedglobal,134
+"( facet.type=det* )",150015,ereolmedglobal,134
+"((term.publisher=People'sPress) or term.publisher=""term.publisher=People'sPress"")",150015,ereolmedglobal,83
+"(marc.001b=190004) AND (nix=""coronavirus"")",010100,dbckat,95
+"( facet.type=K* )",150015,ereolmedglobal,146
+"( scanterm.subject=K* )",150015,ereolmedglobal,146
+"( scanterm.mainTitle=K* )",150015,ereolmedglobal,146
+"( scanterm.creator=K* )",150015,ereolmedglobal,146
+"facet.subject = Kirkeby not rec.id = 28381077",190101,default,104
+"((facet.category=voksenmaterialer AND facet.fictionSubject=krimi AND facet.type=""lydbog (net)"") or term.publisher=""facet.category=voksenmaterialer AND facet.fictionSubject=krimi AND facet.type=lydbog (net)"")",150015,ereolmedglobal,86
+"( facet.type=ja* )",150015,ereolmedglobal,121
+"( scanterm.subject=ja* )",150015,ereolmedglobal,121
+"( scanterm.mainTitle=ja* )",150015,ereolmedglobal,121
+"( scanterm.creator=ja* )",150015,ereolmedglobal,121
+"( scanterm.subject=la* )",150015,ereolmedglobal,117
+"( scanterm.mainTitle=la* )",150015,ereolmedglobal,117
+"( facet.type=la* )",150015,ereolmedglobal,117
+"( scanterm.creator=B* )",150015,ereolmedglobal,138
+"( facet.type=B* )",150015,ereolmedglobal,138
+"( scanterm.subject=B* )",150015,ereolmedglobal,138
+"( scanterm.mainTitle=B* )",150015,ereolmedglobal,138
+"( scanterm.mainTitle=he* )",150015,ereolmedglobal,130
+"( scanterm.creator=he* )",150015,ereolmedglobal,130
+"( scanterm.subject=he* )",150015,ereolmedglobal,130
+"( facet.type=he* )",150015,ereolmedglobal,130
+"(dkcclterm.mo=bea OR dkcclterm.mo=bef) and ma=xc AND term.category=voksenmaterialer AND holdingsitem.accessionDate>=""NOW-6MONTHS"" and holdingsitem.agencyId=737600",737600,opac,170
+"( scanterm.creator=la* )",150015,ereolmedglobal,116
+"(marc.001b=190004) AND (v3a=""coronavirus"")",010100,dbckat,90
+"(rec.id=870970-basis:28253443) and holdingsitem.agencyid=""773000""",773000,opac,77
+"(rec.id any ""28253443"" AND facet.acSource=bibliotekskatalog) and holdingsitem.agencyid=""773000""",773000,opac,77
+"( facet.type=mo* )",150015,ereolmedglobal,112
+"( scanterm.creator=mo* )",150015,ereolmedglobal,112
+"( scanterm.mainTitle=mo* )",150015,ereolmedglobal,112
+"( scanterm.subject=mo* )",150015,ereolmedglobal,112
+"rec.id=870970-basis:51897080",190101,default,96
+"""Hvem hvad hvor"" AND facet.type=""ebog""",911116,easyOPAC,118
+"rec.id=870970-basis:52208548",190101,default,106
+"( scanterm.subject=anne* )",150015,ereolmedglobal,123
+"( scanterm.creator=anne* )",150015,ereolmedglobal,123
+"( facet.type=anne* )",150015,ereolmedglobal,123
+"( scanterm.mainTitle=anne* )",150015,ereolmedglobal,123
+"( facet.type=sk* )",150015,ereolmedglobal,114
+"( scanterm.creator=sk* )",150015,ereolmedglobal,114
+"( scanterm.subject=sk* )",150015,ereolmedglobal,114
+"( scanterm.mainTitle=sk* )",150015,ereolmedglobal,113
+"""Følv"" AND facet.type=""ebog""",911116,easyOPAC,99
+150049,150049,opac,73
+"krimi and holdingsitem.agencyid=775100",775100,opac,144
+"(marc.001b=190004) AND (v3a=""COVID-19"")",010100,dbckat,82
+"(marc.001b=190004) AND (nix=""COVID-19"")",010100,dbckat,82
+"(marc.001b=190004) AND (six=""for 12 år"")",010100,dbckat,71
+"( facet.type=T* )",150015,ereolmedglobal,126
+"( scanterm.subject=T* )",150015,ereolmedglobal,126
+"( scanterm.creator=T* )",150015,ereolmedglobal,126
+"( scanterm.mainTitle=T* )",150015,ereolmedglobal,126
+"term.type=""grammofonplade"" and holdingsitem.agencyId=737600",737600,opac,137
+"( scanterm.subject=jeg* )",150015,ereolmedglobal,91
+"( scanterm.creator=jeg* )",150015,ereolmedglobal,91
+"( scanterm.mainTitle=jeg* )",150015,ereolmedglobal,91
+"( facet.type=jeg* )",150015,ereolmedglobal,91
+"(facet.extratitles=""ekstra titler"") AND (facet.type=""ebog"")",150015,ereolmedglobal,92
+"( facet.type=Den* )",150015,ereolmedglobal,102
+"( scanterm.mainTitle=Den* )",150015,ereolmedglobal,102
+"( scanterm.subject=Den* )",150015,ereolmedglobal,102
+"( scanterm.creator=Den* )",150015,ereolmedglobal,102
+"(marc.001b=190004) AND (v33=""Shellhuset"")",010100,dbckat,68
+"(marc.001b=190004) AND (v3b=""Shellhuset"")",010100,dbckat,68
+"(marc.001b=190004) AND (vsu=""for 12 år"")",010100,dbckat,68
+"(marc.001b=190004) AND (nix=""Shellhuset"")",010100,dbckat,68
+"( facet.type=se* )",150015,ereolmedglobal,110
+"( scanterm.subject=se* )",150015,ereolmedglobal,110
+"( scanterm.creator=se* )",150015,ereolmedglobal,110
+"( scanterm.mainTitle=se* )",150015,ereolmedglobal,110
+"( facet.type=ki* )",150015,ereolmedglobal,103
+"( scanterm.creator=ki* )",150015,ereolmedglobal,103
+"( scanterm.subject=ki* )",150015,ereolmedglobal,103
+"( scanterm.mainTitle=ki* )",150015,ereolmedglobal,103
+"(marc.001b=190004) AND (nix=""coronakrisen"")",010100,dbckat,77
+"(marc.001b=190004) AND (v30=""coronakrisen"")",010100,dbckat,77
+"( scanterm.mainTitle=for* )",150015,ereolmedglobal,95
+"( scanterm.subject=for* )",150015,ereolmedglobal,95
+"( facet.type=for* )",150015,ereolmedglobal,95
+"( scanterm.creator=for* )",150015,ereolmedglobal,95
+"( facet.type=al* )",150015,ereolmedglobal,99
+"( scanterm.subject=al* )",150015,ereolmedglobal,99
+"( scanterm.creator=al* )",150015,ereolmedglobal,99
+"( scanterm.mainTitle=al* )",150015,ereolmedglobal,99
+"(marc.001b=190004) AND (v3a=""coronakrisen"")",010100,dbckat,76
+"( facet.type=so* )",150015,ereolmedglobal,112
+"( scanterm.creator=so* )",150015,ereolmedglobal,112
+"( scanterm.mainTitle=so* )",150015,ereolmedglobal,112
+"( scanterm.subject=so* )",150015,ereolmedglobal,112
+"( scanterm.creator=har* )",150015,ereolmedglobal,109
+"( facet.type=har* )",150015,ereolmedglobal,109
+"( scanterm.subject=har* )",150015,ereolmedglobal,109
+"( scanterm.mainTitle=har* )",150015,ereolmedglobal,109
+"( scanterm.mainTitle=jan* )",150015,ereolmedglobal,96
+"( facet.type=jan* )",150015,ereolmedglobal,96
+"( scanterm.subject=jan* )",150015,ereolmedglobal,96
+"( scanterm.creator=jan* )",150015,ereolmedglobal,96
+"( facet.type=da* )",150015,ereolmedglobal,117
+"( scanterm.creator=da* )",150015,ereolmedglobal,117
+"( scanterm.subject=da* )",150015,ereolmedglobal,117
+"( scanterm.mainTitle=da* )",150015,ereolmedglobal,117
+"( scanterm.subject=sara* )",150015,ereolmedglobal,110
+"( facet.type=sara* )",150015,ereolmedglobal,110
+"( scanterm.creator=sara* )",150015,ereolmedglobal,110
+"( scanterm.mainTitle=sara* )",150015,ereolmedglobal,110
+"(marc.001b=190004) AND (nix=""1940-1949"")",010100,dbckat,67
+"(marc.001b=190004) AND (v34=""1940-1949"")",010100,dbckat,67
+"( scanterm.subject=bø* )",150015,ereolmedglobal,94
+"( facet.type=bø* )",150015,ereolmedglobal,94
+"( scanterm.creator=bø* )",150015,ereolmedglobal,94
+"( scanterm.mainTitle=bø* )",150015,ereolmedglobal,94
+"holdingsitem.agencyid=830690 and (term.type=”bog” and  term.date=""2020"" and (dk=65.* or dk=40.8* or dk=33-33.8* or 64.9* or dk=60.1*))",830690,opac,132
+"(marc.001b=190004) AND (v3b=""København"")",010100,dbckat,63
+"(marc.001b=190004) AND (v3a=""besættelsestiden"")",010100,dbckat,64
+"( facet.type=u* )",150015,ereolmedglobal,105
+"( scanterm.mainTitle=u* )",150015,ereolmedglobal,105
+"( scanterm.subject=u* )",150015,ereolmedglobal,105
+"( scanterm.creator=u* )",150015,ereolmedglobal,105
+"""Jólaboð"" AND facet.type=""ebog""",911116,easyOPAC,117
+"( scanterm.mainTitle=ro* )",150015,ereolmedglobal,96
+"( scanterm.subject=ro* )",150015,ereolmedglobal,96
+"( scanterm.creator=ro* )",150015,ereolmedglobal,96
+"term.subject=krop* and facet.category=voksenmaterialer and holdingsitem.agencyId=737600",737600,opac,99
+"( scanterm.creator=kr* )",150015,ereolmedglobal,94
+"( scanterm.mainTitle=kr* )",150015,ereolmedglobal,94
+"( facet.type=kr* )",150015,ereolmedglobal,94
+"( scanterm.subject=kr* )",150015,ereolmedglobal,94
+"( scanterm.mainTitle=børn* )",150015,ereolmedglobal,92
+"( facet.type=børn* )",150015,ereolmedglobal,92
+"( scanterm.creator=børn* )",150015,ereolmedglobal,92
+"( scanterm.subject=børn* )",150015,ereolmedglobal,92
+"( scanterm.creator=lo* )",150015,ereolmedglobal,84
+"( facet.type=lo* )",150015,ereolmedglobal,84
+"( scanterm.subject=lo* )",150015,ereolmedglobal,84
+"( scanterm.mainTitle=lo* )",150015,ereolmedglobal,84
+"( facet.type=ly* )",150015,ereolmedglobal,85
+"( scanterm.subject=ly* )",150015,ereolmedglobal,85
+"( scanterm.mainTitle=ly* )",150015,ereolmedglobal,85
+"( scanterm.creator=ly* )",150015,ereolmedglobal,85
+"( facet.type=ro* )",150015,ereolmedglobal,87
+"(marc.001b=190004) AND (vsu=""for 13 år"")",010100,dbckat,59
+"(marc.001b=190004) AND (six=""for 11 år"")",010100,dbckat,59
+"(marc.001b=190004) AND (vsu=""for 11 år"")",010100,dbckat,59
+"(rec.id=46695208 AND facet.acSource=bibliotekskatalog) and holdingsitem.agencyid=""773000""",773000,opac,118
+"term.subject=""*""",765700,biblioteksvagten,79
+"( scanterm.creator=th* )",150015,ereolmedglobal,97
+"( scanterm.mainTitle=th* )",150015,ereolmedglobal,97
+"( scanterm.subject=th* )",150015,ereolmedglobal,97
+"( facet.type=th* )",150015,ereolmedglobal,97
+"( scanterm.creator=the* )",150015,ereolmedglobal,111
+"( scanterm.mainTitle=the* )",150015,ereolmedglobal,111
+"( scanterm.subject=the* )",150015,ereolmedglobal,111
+"( scanterm.creator=min* )",150015,ereolmedglobal,93
+"( scanterm.subject=min* )",150015,ereolmedglobal,93
+"( facet.type=min* )",150015,ereolmedglobal,93
+"(marc.001b=190004) AND (v3a=""epidemier"")",010100,dbckat,69
+"(marc.001b=190004) AND (six=""venskab"")",010100,dbckat,58
+"(marc.001b=190004) AND (six=""for 13 år"")",010100,dbckat,58
+"( facet.type=the* )",150015,ereolmedglobal,110
+"( scanterm.mainTitle=min* )",150015,ereolmedglobal,84
+"((*) AND (facet.extraTitles=(""ekstra titler"")))",150015,ereolen,49
+"((*) AND (facet.extraTitles=(""ekstra titler"")))",150015,netlydbogny,21
+"( scanterm.subject=læ* )",150015,ereolmedglobal,75
+"( facet.type=læ* )",150015,ereolmedglobal,75
+"( scanterm.mainTitle=læ* )",150015,ereolmedglobal,75
+"( scanterm.creator=læ* )",150015,ereolmedglobal,75
+"""Barnablaðið"" AND facet.type=""ebog""",911116,easyOPAC,86
+"( facet.type=Harry ) AND ( facet.type=Potter* )",150015,ereolmedglobal,80
+"( scanterm.mainTitle=Harry ) AND ( scanterm.mainTitle=Potter* )",150015,ereolmedglobal,80
+"( scanterm.subject=Harry ) AND ( scanterm.subject=Potter* )",150015,ereolmedglobal,80
+"( scanterm.creator=Harry ) AND ( scanterm.creator=Potter* )",150015,ereolmedglobal,80
+"(marc.001b=190004) AND (v3a=""venskab"")",010100,dbckat,57
+"facet.extratitles=""ekstra titler""",150015,ereolmedglobal,71
+"facet.extratitles=""ekstra titler""",150015,ereolgomedglobal,4
+"term.workType=literature and (Gustave and Flaubert)",190101,default,56
+"( scanterm.creator=P* )",150015,ereolmedglobal,102
+"( scanterm.creator=le* )",150015,ereolmedglobal,94
+"( scanterm.mainTitle=le* )",150015,ereolmedglobal,94
+"( facet.type=le* )",150015,ereolmedglobal,94
+"( scanterm.subject=le* )",150015,ereolmedglobal,94
+"( scanterm.subject=F* )",150015,ereolmedglobal,91
+"( scanterm.mainTitle=F* )",150015,ereolmedglobal,91
+"( facet.type=F* )",150015,ereolmedglobal,91
+"( scanterm.subject=P* )",150015,ereolmedglobal,91
+"( scanterm.creator=F* )",150015,ereolmedglobal,91
+"( scanterm.subject=af* )",150015,ereolmedglobal,74
+"( scanterm.mainTitle=af* )",150015,ereolmedglobal,74
+"( facet.type=af* )",150015,ereolmedglobal,74
+"( scanterm.creator=af* )",150015,ereolmedglobal,74
+"( scanterm.mainTitle=P* )",150015,ereolmedglobal,92
+"( scanterm.subject=lu* )",150015,ereolmedglobal,83
+"( facet.type=lu* )",150015,ereolmedglobal,83
+"( scanterm.creator=lu* )",150015,ereolmedglobal,83
+"( scanterm.mainTitle=lu* )",150015,ereolmedglobal,83
+"( scanterm.subject=bør* )",150015,ereolmedglobal,80
+"( scanterm.mainTitle=bør* )",150015,ereolmedglobal,80
+"( scanterm.creator=bør* )",150015,ereolmedglobal,80
+"( facet.type=bør* )",150015,ereolmedglobal,80
+"( scanterm.mainTitle=kirsten* )",150015,ereolmedglobal,71
+"( scanterm.creator=kirsten* )",150015,ereolmedglobal,71
+"( facet.type=kirsten* )",150015,ereolmedglobal,71
+"( scanterm.subject=kirsten* )",150015,ereolmedglobal,71
+"(marc.001b=190004) AND (nix=""epidemier"")",010100,dbckat,62
+"(rec.id=js) and holdingsitem.agencyid=""714700""",714700,"drift - B3",54
+"((fantasy) or term.publisher=""fantasy"") AND (facet.language=""dansk"" AND facet.category=""børnematerialer"")",150015,ereolmedglobal,54
+"((ma=fi AND dk=77*) AND (facet.category=""børnematerialer"" AND facet.type=""film (net)"" AND facet.language=""dansk"")) and holdingsitem.agencyid=""765700""",765700,opac,54
+"( scanterm.subject=harr* )",150015,ereolmedglobal,90
+"( scanterm.creator=harr* )",150015,ereolmedglobal,90
+"( facet.type=harr* )",150015,ereolmedglobal,90
+"( scanterm.mainTitle=harr* )",150015,ereolmedglobal,90
+"(facet.category=voksenmaterialer AND term.type=dvd AND facet.dk5=77.7) NOT (term.language=urdu or term.language=hindi or term.language=panjabi) and holdingsitem.agencyId=715300",715300,"Digitale_hylder",118
+"(marc.001b=190004) AND (nix=""besættelsestiden"")",010100,dbckat,55
+"( facet.type=si* )",150015,ereolmedglobal,93
+"( scanterm.subject=si* )",150015,ereolmedglobal,93
+"( scanterm.mainTitle=si* )",150015,ereolmedglobal,93
+"( scanterm.creator=si* )",150015,ereolmedglobal,93
+"( facet.type=P* )",150015,ereolmedglobal,91
+"(holdingsitem.sublocation=krimi and facet.category=voksenmaterialer and (facet.date=2019 or facet.date=2020) and ma=sk and facet.type=bog) and (holdingsitem.department=""Voksen"") and holdingsitem.agencyId=715300",715300,"Digitale_hylder",115
+"( scanterm.subject=w* )",150015,ereolmedglobal,89
+"( facet.type=w* )",150015,ereolmedglobal,89
+"( scanterm.creator=w* )",150015,ereolmedglobal,89
+"(marc.001b=190004) AND (vsu=""for 7 år"")",010100,dbckat,52
+"(facet.extratitles=""ekstra titler"") AND (facet.type=""lydbog (net)"" AND facet.category=""voksenmaterialer"" AND facet.subject=""krimi"" AND facet.acSource=""netlydbog"")",150015,ereolmedglobal,52
+"( scanterm.mainTitle=te* )",150015,ereolmedglobal,74
+"( scanterm.creator=te* )",150015,ereolmedglobal,74
+"( scanterm.subject=te* )",150015,ereolmedglobal,74
+"( facet.type=te* )",150015,ereolmedglobal,74
+"( scanterm.creator=hv* )",150015,ereolmedglobal,78
+"( facet.type=hv* )",150015,ereolmedglobal,78
+"( scanterm.subject=hv* )",150015,ereolmedglobal,78
+"( scanterm.mainTitle=hv* )",150015,ereolmedglobal,78
+"(marc.001b=190004) AND (v3a=""krimi"")",010100,dbckat,51
+"(rec.id=46695208 AND facet.acSource=bibliotekskatalog AND (holdingsitem.branch = (""Bølgen"" OR ""Espergærde"" OR ""Hornbæk"" OR ""Kulturværftet""))) and holdingsitem.agencyid=""721700""",721700,opac,102
+"facet.type=bog AND term.literaryForm=romaner AND uu=nt AND facet.category=voksenmaterialer NOT facet.subject=krimi AND holdingsitem.accessionDate>=""NOW-60DAYS"" and holdingsitem.agencyId=737600",737600,opac,109
+"( scanterm.creator=lars* )",150015,ereolmedglobal,85
+"( scanterm.mainTitle=harry ) AND ( scanterm.mainTitle=potter* )",150015,ereolmedglobal,87
+"( scanterm.subject=harry ) AND ( scanterm.subject=potter* )",150015,ereolmedglobal,87
+"( scanterm.creator=harry ) AND ( scanterm.creator=potter* )",150015,ereolmedglobal,87
+"( facet.type=harry ) AND ( facet.type=potter* )",150015,ereolmedglobal,87
+9788793840072,710100,app,50
+"(marc.001b=190004) AND (six=""krimi"")",010100,dbckat,50
+"(ok=64.1* and term.date=(2018 or 2019 or 2020) NOT (facet.type=ebog OR facet.type=lydbog)) and (holdingsitem.department=""Voksen"") and holdingsitem.agencyId=715300",715300,"Digitale_hylder",110
+"år=2019 or år=2020 and lem=""krimi"" and ma=bå and sf=v and holdingsitem.agencyId=734000",734000,Cicero,110
+"( scanterm.creator=pe* )",150015,ereolmedglobal,97
+"( scanterm.mainTitle=pe* )",150015,ereolmedglobal,97
+"( facet.type=pe* )",150015,ereolmedglobal,97
+"( scanterm.subject=pe* )",150015,ereolmedglobal,97
+"( scanterm.mainTitle=mari* )",150015,ereolmedglobal,76
+"( scanterm.subject=mari* )",150015,ereolmedglobal,76
+"( scanterm.creator=mari* )",150015,ereolmedglobal,76
+"( facet.type=mari* )",150015,ereolmedglobal,76
+"( facet.type=lars* )",150015,ereolmedglobal,84
+"( scanterm.subject=lars* )",150015,ereolmedglobal,84
+"( scanterm.mainTitle=lars* )",150015,ereolmedglobal,84
+"(marc.001b=190004) AND (six=""for 7 år"")",010100,dbckat,49
+"((playstation) AND (facet.type=""playstation 3"")) and holdingsitem.agencyid=""726500""",726500,easyOPAC,49
+"(marc.001b=190004) AND (six=""for 9 år"")",010100,dbckat,49
+"(marc.001b=190004) AND (six=""Danmark"")",010100,dbckat,49
+"( scanterm.mainTitle=O* )",150015,ereolmedglobal,66
+"( scanterm.subject=G* )",150015,ereolmedglobal,72
+"( scanterm.creator=G* )",150015,ereolmedglobal,72
+"( scanterm.mainTitle=G* )",150015,ereolmedglobal,72
+"( facet.type=G* )",150015,ereolmedglobal,72
+"( scanterm.mainTitle=w* )",150015,ereolmedglobal,80
+"((facet.type=ebog and (lem=""for 14 år"" or lem=""for 15 år"" or lem=""for 16 år"")) or term.publisher=""facet.type=ebog and (lem=for 14 år or lem=for 15 år or lem=for 16 år)"")",150015,ereolmedglobal,48
+"((Frankrig) or term.publisher=""Frankrig"") AND (facet.category=""voksenmaterialer"")",150015,ereolmedglobal,48
+"((facet.subject=(krimi or spænd* or *thriller or suspense) and facet.genrecategory=fiktion and facet.category=voks*) AND (facet.type=""ebog"")) and holdingsitem.agencyid=""715100""",715100,app,48
+"( scanterm.creator=O* )",150015,ereolmedglobal,65
+"( scanterm.subject=O* )",150015,ereolmedglobal,65
+"( scanterm.mainTitle=Mi* )",150015,ereolmedglobal,64
+"( facet.type=Mi* )",150015,ereolmedglobal,64
+"( scanterm.subject=Mi* )",150015,ereolmedglobal,64
+"( facet.type=læs* )",150015,ereolmedglobal,64
+"( scanterm.mainTitle=læs* )",150015,ereolmedglobal,64
+"( scanterm.subject=læs* )",150015,ereolmedglobal,64
+"( scanterm.creator=Mi* )",150015,ereolmedglobal,64
+"( scanterm.creator=villads* )",150015,ereolmedglobal,75
+"( scanterm.mainTitle=villads* )",150015,ereolmedglobal,75
+"( scanterm.subject=villads* )",150015,ereolmedglobal,75
+"( facet.type=villads* )",150015,ereolmedglobal,75
+"(marc.001b=190004) AND (v3b=""Sverige"")",010100,dbckat,50
+"(marc.001b=190004) AND (vsu=""for 9 år"")",010100,dbckat,47
+"term.workType=literature and (knuth)",190101,default,47
+"(marc.001b=190004) AND (vsu=""for 8 år"")",010100,dbckat,47
+"(marc.001b=190004) AND (six=""for 8 år"")",010100,dbckat,47
+"( facet.type=O* )",150015,ereolmedglobal,62
+"( scanterm.subject=el* )",150015,ereolmedglobal,81
+"( facet.type=el* )",150015,ereolmedglobal,81
+"( scanterm.creator=el* )",150015,ereolmedglobal,81
+"( scanterm.mainTitle=el* )",150015,ereolmedglobal,81
+"( scanterm.subject=ra* )",150015,ereolmedglobal,66
+"( scanterm.creator=ra* )",150015,ereolmedglobal,66
+"( facet.type=ra* )",150015,ereolmedglobal,66
+"(marc.001b=190004) AND (vsu=""for 10 år"")",010100,dbckat,46
+"(rec.id=06373674 AND facet.acSource=bibliotekskatalog) and holdingsitem.agencyid=""773000""",773000,opac,46
+"(marc.001b=190004) AND (nix=""kristendom"")",010100,dbckat,46
+"( scanterm.mainTitle=hvor* )",150015,ereolmedglobal,76
+"( facet.type=hvor* )",150015,ereolmedglobal,76
+"( scanterm.creator=hvor* )",150015,ereolmedglobal,76
+"( scanterm.creator=må ) AND ( scanterm.creator=jeg* )",150015,ereolmedglobal,67
+"( facet.type=må ) AND ( facet.type=jeg* )",150015,ereolmedglobal,67
+"( scanterm.subject=må ) AND ( scanterm.subject=jeg* )",150015,ereolmedglobal,67
+"( scanterm.mainTitle=må ) AND ( scanterm.mainTitle=jeg* )",150015,ereolmedglobal,67
+"( scanterm.subject=mor* )",150015,ereolmedglobal,64
+"( facet.type=mor* )",150015,ereolmedglobal,64
+"( scanterm.mainTitle=mor* )",150015,ereolmedglobal,64
+"( scanterm.subject=dr* )",150015,ereolmedglobal,76
+"( scanterm.mainTitle=dr* )",150015,ereolmedglobal,76
+"( scanterm.creator=dr* )",150015,ereolmedglobal,76
+"( facet.type=dr* )",150015,ereolmedglobal,76
+"term.subject=haver OR term.subject= havebrug OR term.subject=garden AND ma=bå AND term.category=voksenmaterialer and holdingsitem.agencyId=734000",734000,Cicero,100
+"( scanterm.creator=ca* )",150015,ereolmedglobal,78
+"( facet.type=hu* )",150015,ereolmedglobal,67
+"( scanterm.mainTitle=hu* )",150015,ereolmedglobal,67
+"( scanterm.creator=hu* )",150015,ereolmedglobal,67
+"( scanterm.subject=na* )",150015,ereolmedglobal,69
+"( scanterm.mainTitle=na* )",150015,ereolmedglobal,69
+"( scanterm.creator=na* )",150015,ereolmedglobal,69
+"( facet.type=na* )",150015,ereolmedglobal,69
+"(marc.001b=190004) AND (v3b=""USA"")",010100,dbckat,49
+"( scanterm.creator=læs* )",150015,ereolmedglobal,59
+"""46997441"" OR ""22154494"" OR ""51687337"" OR ""107514244"" OR ""54219423"" OR ""52344484"" OR ""52892961"" OR ""25441567"" OR ""25704541"" OR ""51222571"" OR ""53884830"" OR ""50674673"" OR ""52617111"" OR ""53586813""",765700,opac,52
+"(marc.001b=190004) AND (v3a=""familien"")",010100,dbckat,45
+"( scanterm.mainTitle=ni* )",150015,ereolmedglobal,65
+"( scanterm.subject=ni* )",150015,ereolmedglobal,65
+"( facet.type=ni* )",150015,ereolmedglobal,65
+"( scanterm.creator=ni* )",150015,ereolmedglobal,65
+"( scanterm.mainTitle=di* )",150015,ereolmedglobal,74
+"( facet.type=di* )",150015,ereolmedglobal,74
+"( scanterm.creator=di* )",150015,ereolmedglobal,74
+"( scanterm.subject=di* )",150015,ereolmedglobal,74
+"holdingsitem.agencyid=830690 and (term.type=”bog” and  term.date=""2020""  and dk=61.*)",830690,opac,87
+"( facet.type=in* )",150015,ereolmedglobal,72
+"( scanterm.creator=in* )",150015,ereolmedglobal,72
+"( scanterm.mainTitle=in* )",150015,ereolmedglobal,72
+"( scanterm.subject=in* )",150015,ereolmedglobal,72
+"( scanterm.creator=mor* )",150015,ereolmedglobal,63
+"( scanterm.subject=be* )",150015,ereolmedglobal,77
+"( scanterm.subject=ca* )",150015,ereolmedglobal,77
+"( facet.type=be* )",150015,ereolmedglobal,77
+"( scanterm.mainTitle=be* )",150015,ereolmedglobal,77
+"( facet.type=ca* )",150015,ereolmedglobal,77
+"( scanterm.mainTitle=ca* )",150015,ereolmedglobal,77
+"(lem=""for 14 år"" or lem=""for 15 år"" or lem=""for 16 år"") AND (facet.type=""ebog"")",150015,ereolmedglobal,48
+"( scanterm.creator=En* )",150015,ereolmedglobal,58
+"( scanterm.mainTitle=En* )",150015,ereolmedglobal,58
+"( facet.type=En* )",150015,ereolmedglobal,58
+"( scanterm.subject=peter* )",150015,ereolmedglobal,74
+"( facet.type=peter* )",150015,ereolmedglobal,74
+"(marc.001b=190004) AND (v3a=""kærlighed"")",010100,dbckat,46
+"( scanterm.subject=Sara* )",150015,ereolmedglobal,69
+"( scanterm.mainTitle=Sara* )",150015,ereolmedglobal,69
+"( scanterm.creator=Sara* )",150015,ereolmedglobal,69
+"(marc.001b=190004) AND (v3a=""kristendom"")",010100,dbckat,44
+"(marc.001b=190004) AND (six=""for 10 år"")",010100,dbckat,44
+"((facet.subject=danmark and facet.category=voksenmaterialer and term.type=(cd* or musik*) not term.type=(sammensat* or lydbog*) and bad>=""NOW-36MONTH"")) and holdingsitem.agencyid=""715100""",715100,opac,44
+"rec.id=870970-basis:52021731",190101,default,44
+"( scanterm.mainTitle=vil* )",150015,ereolmedglobal,79
+"( facet.type=vil* )",150015,ereolmedglobal,79
+"( scanterm.creator=vil* )",150015,ereolmedglobal,79
+"( scanterm.subject=vil* )",150015,ereolmedglobal,79
+"( scanterm.creator=jeg ) AND ( scanterm.creator=er* )",150015,ereolmedglobal,50
+"( scanterm.mainTitle=jeg ) AND ( scanterm.mainTitle=er* )",150015,ereolmedglobal,50
+"( scanterm.subject=jeg ) AND ( scanterm.subject=er* )",150015,ereolmedglobal,50
+"( facet.type=jeg ) AND ( facet.type=er* )",150015,ereolmedglobal,50
+"( scanterm.creator=R* )",150015,ereolmedglobal,85
+"( scanterm.subject=R* )",150015,ereolmedglobal,85
+"( facet.type=R* )",150015,ereolmedglobal,85
+"( scanterm.mainTitle=R* )",150015,ereolmedglobal,85
+"( scanterm.subject=hvor* )",150015,ereolmedglobal,66
+"( scanterm.mainTitle=som* )",150015,ereolmedglobal,61
+"( scanterm.creator=som* )",150015,ereolmedglobal,61
+"(dkcclterm.dk=30* OR dkcclterm.dk=31* OR dkcclterm.dk=32* OR dkcclterm.dk=33*)",150015,ereolmedglobal,53
+"( scanterm.creator=ko* )",150015,ereolmedglobal,62
+"( facet.type=ko* )",150015,ereolmedglobal,62
+"( scanterm.mainTitle=ko* )",150015,ereolmedglobal,62
+"""54056087"" OR ""29725624"" OR ""27289800"" OR ""27492339"" OR ""27492398"" OR ""28217846"" OR ""47404983"" OR ""51417151"" OR ""29725624"" OR ""27289800"" OR ""25036158"" OR ""28773676"" OR ""46164814"" OR ""27662188"" OR ""45942007"" OR ""53299121"" OR ""51885856""",765700,opac,50
+"(marc.001b=190004) AND (v3a=""den ¤2. verdenskrig"")",010100,dbckat,45
+"(marc.001b=190004) AND (v3a=""unge"")",010100,dbckat,43
+"( scanterm.default=47763509 ) AND ( scanterm.default=or ) AND ( scanterm.default=47999391 ) AND ( scanterm.default=48024181 ) AND ( scanterm.default=48014348 ) AND ( scanterm.default=47996678* )",763000,cicero,3
+"(marc.001b=190004) AND (six=""familien"")",010100,dbckat,43
+"( scanterm.mainTitle=ra* )",150015,ereolmedglobal,59
+"( scanterm.mainTitle=ch* )",150015,ereolmedglobal,70
+"( scanterm.creator=ch* )",150015,ereolmedglobal,70
+"( scanterm.creator=be* )",150015,ereolmedglobal,70
+"( scanterm.subject=ch* )",150015,ereolmedglobal,70
+"( scanterm.mainTitle=kar* )",150015,ereolmedglobal,73
+"( scanterm.subject=kar* )",150015,ereolmedglobal,73
+"( facet.type=kar* )",150015,ereolmedglobal,73
+"( scanterm.creator=børne* )",150015,ereolmedglobal,60
+"( scanterm.subject=børne* )",150015,ereolmedglobal,60
+"( scanterm.subject=hu* )",150015,ereolmedglobal,60
+"( scanterm.mainTitle=børne* )",150015,ereolmedglobal,60
+"(rec.id=03644669 AND facet.acSource=bibliotekskatalog) and holdingsitem.agencyid=""773000""",773000,opac,57
+"( scanterm.creator=peter* )",150015,ereolmedglobal,67
+"( facet.type=po* )",150015,ereolmedglobal,65
+"( scanterm.subject=po* )",150015,ereolmedglobal,65
+"( scanterm.mainTitle=po* )",150015,ereolmedglobal,59
+"(marc.001b=190004) AND (v37=""hellige skrifter"")",010100,dbckat,42
+"holdingsitem.agencyid=830690 and rec.id any ""112142592"" AND facet.acSource=bibliotekskatalog",830690,opac,42
+"( facet.type=Sara* )",150015,ereolmedglobal,59
+"rec.id=31260671",100200,test,57
+"rec.id=36910070",100200,test,57
+"rec.id=36842873",100200,test,57
+"rec.id=37237035",100200,test,57
+"rec.id=36863404",100200,test,57
+"rec.id=36844868",100200,test,57
+"rec.id=36857099",100200,test,57
+"rec.id=36863447",100200,test,57
+"( scanterm.mainTitle=fr* )",150015,ereolmedglobal,75
+"( facet.type=fr* )",150015,ereolmedglobal,75
+"( scanterm.subject=fr* )",150015,ereolmedglobal,75
+"( scanterm.creator=fr* )",150015,ereolmedglobal,75
+"( scanterm.creator=ste* )",150015,ereolmedglobal,63
+"( facet.type=ste* )",150015,ereolmedglobal,63
+"( scanterm.subject=ste* )",150015,ereolmedglobal,63
+"( scanterm.mainTitle=ste* )",150015,ereolmedglobal,63
+"(marc.001b=190004) AND (six=""kærlighed"")",010100,dbckat,43
+"(marc.001b=190004) AND (nix=""den ¤2. verdenskrig"")",010100,dbckat,43
+"((fantasy) or term.publisher=""fantasy"") AND (facet.language=""dansk"")",150015,ereolmedglobal,41
+"( scanterm.subject=En* )",150015,ereolmedglobal,52
+"( scanterm.subject=pa* )",150015,ereolmedglobal,64
+"( scanterm.creator=pa* )",150015,ereolmedglobal,64
+"( scanterm.creator=kar* )",150015,ereolmedglobal,63
+"( scanterm.subject=som* )",150015,ereolmedglobal,55
+"ma=""fi"" AND term.type=""dvd"" AND term.category=""voksenmaterialer"" AND holdingsitem.accessionDate>=""NOW-60DAYS"" and holdingsitem.agencyId=737600",737600,opac,90
+"( scanterm.subject=fodbold* )",150015,ereolmedglobal,46
+"( scanterm.creator=fodbold* )",150015,ereolmedglobal,46
+"( scanterm.subject=sar* )",150015,ereolmedglobal,66
+"( facet.type=sar* )",150015,ereolmedglobal,66
+"( facet.type=er* )",150015,ereolmedglobal,60
+"( scanterm.subject=er* )",150015,ereolmedglobal,60
+"( scanterm.mainTitle=er* )",150015,ereolmedglobal,60
+"( scanterm.subject=ko* )",150015,ereolmedglobal,55
+"( scanterm.mainTitle=ta* )",150015,ereolmedglobal,69
+"( scanterm.subject=ta* )",150015,ereolmedglobal,69
+"( facet.type=ta* )",150015,ereolmedglobal,69
+"( scanterm.mainTitle=peter* )",150015,ereolmedglobal,66
+"( scanterm.creator=to* )",150015,ereolmedglobal,76
+"( scanterm.mainTitle=to* )",150015,ereolmedglobal,76
+"( scanterm.subject=to* )",150015,ereolmedglobal,76
+"( facet.type=pa* )",150015,ereolmedglobal,58
+"( facet.type=Harry* )",150015,ereolmedglobal,62
+"( scanterm.creator=Harry* )",150015,ereolmedglobal,62
+"( scanterm.mainTitle=Harry* )",150015,ereolmedglobal,62
+"(marc.001b=190004) AND (v3a=""virusinfektioner"")",010100,dbckat,40
+"phrase.titleSeries=""Mørketid""",190101,default,40
+"((facet.typeCategory=film and facet.genreCategory=fiktion) AND (facet.type=""film (net)"")) and holdingsitem.agencyid=""776000""",776000,AppBiblioteket,40
+"( facet.type=ch* )",150015,ereolmedglobal,61
+"( facet.type=som* )",150015,ereolmedglobal,55
+"( facet.type=Ma* )",150015,ereolmedglobal,66
+"( scanterm.mainTitle=Ma* )",150015,ereolmedglobal,66
+"( facet.type=børne* )",150015,ereolmedglobal,53
+"( scanterm.creator=po* )",150015,ereolmedglobal,59
+"( scanterm.creator=sar* )",150015,ereolmedglobal,59
+"(dkcclterm.dk=99* OR facet.subject=erindringer OR facet.subject=barndomserindringer) AND (facet.type=""lydbog (net)"")",150015,ereolmedglobal,65
+"( facet.type=to* )",150015,ereolmedglobal,70
+"( scanterm.mainTitle=sky* )",150015,ereolmedglobal,61
+"( scanterm.subject=sky* )",150015,ereolmedglobal,61
+"(marc.001b=190004) AND (vsi=""2010-2019"")",010100,dbckat,39
+"(marc.001b=190004) AND (six=""let at læse"")",010100,dbckat,39
+"((Tyskland) or term.publisher=""Tyskland"") AND (facet.category=""voksenmaterialer"")",150015,ereolmedglobal,39
+"(marc.001b=190004) AND (nix=""hellige skrifter"")",010100,dbckat,39
+"(marc.001b=190004) AND (six=""gys"")",010100,dbckat,39
+"(marc.001b=190004) AND (vsu=""let at læse"")",010100,dbckat,39
+"((lem=kærlighed or lem=parforhold) OR (dk=61.6422 or dk=30.1751 or dk=13.17 or dk=34.51 or dk=30.1752 or dk=15.4 or dk=30.177)) AND (facet.type=""lydbog (net)"")",150015,ereolmedglobal,66
+"dkcclterm.dk=99* OR facet.subject=erindringer OR facet.subject=barndomserindringer",150015,ereolmedglobal,55
+"( scanterm.subject=Harry* )",150015,ereolmedglobal,58
+"( scanterm.creator=ty* )",150015,ereolmedglobal,46
+"( scanterm.mainTitle=ty* )",150015,ereolmedglobal,46
+"rec.id=870970-basis:52579236",190101,default,49
+"""Kulturhistorisk leksikon for nordisk middelalder"" AND facet.type=""ebog""",911116,easyOPAC,38
+"(marc.001b=190004) AND (nix=""København"")",010100,dbckat,38
+"(marc.001b=190004) AND (six=""2010-2019"")",010100,dbckat,38
+"( scanterm.subject=Anne* )",150015,ereolmedglobal,58
+"( facet.type=Anne* )",150015,ereolmedglobal,58
+"( scanterm.creator=lyd* )",150015,ereolmedglobal,58
+"( scanterm.subject=lyd* )",150015,ereolmedglobal,58
+"( facet.type=lyd* )",150015,ereolmedglobal,58
+"( scanterm.mainTitle=pa* )",150015,ereolmedglobal,56
+"""29549893"" OR ""51573056"" OR ""50674673"" OR ""52617111"" OR ""46263499"" OR ""47079616"" OR ""51804678"" OR ""29334935"" OR ""53816266"" OR ""53250807"" OR ""54189257""",765700,opac,51
+"( facet.type=fodbold* )",150015,ereolmedglobal,42
+"( scanterm.subject=Ma* )",150015,ereolmedglobal,58
+"( scanterm.mainTitle=fodbold* )",150015,ereolmedglobal,41
+"( scanterm.creator=skygge* )",150015,ereolmedglobal,55
+"( scanterm.subject=skygge* )",150015,ereolmedglobal,55
+"( scanterm.creator=sky* )",150015,ereolmedglobal,50
+"( scanterm.creator=lær* )",150015,ereolmedglobal,46
+"( scanterm.subject=lær* )",150015,ereolmedglobal,46
+"( scanterm.mainTitle=lær* )",150015,ereolmedglobal,46
+"( scanterm.mainTitle=sar* )",150015,ereolmedglobal,59
+"(Ebog) and holdingsitem.agencyid=""775100""",775100,app,37
+"(ma=pe) and (bai=732600)",732600,cicero,37
+"(marc.001b=190004) AND (vsu=""for 14 år"")",010100,dbckat,37
+"(marc.001b=190004) AND (v3a=""tidsrejser"")",010100,dbckat,37
+"(marc.001b=190004) AND (nix=""virusinfektioner"")",010100,dbckat,37
+"(marc.001b=190004) AND (six=""tidsrejser"")",010100,dbckat,37
+"( scanterm.creator=er* )",150015,ereolmedglobal,54
+"( scanterm.creator=ta* )",150015,ereolmedglobal,61
+"( scanterm.subject=ty* )",150015,ereolmedglobal,42
+"( facet.type=W* )",150015,ereolmedglobal,51
+"( scanterm.creator=W* )",150015,ereolmedglobal,51
+"( scanterm.subject=W* )",150015,ereolmedglobal,51
+"( scanterm.creator=Ma* )",150015,ereolmedglobal,58
+"( facet.type=sky* )",150015,ereolmedglobal,53
+"( scanterm.mainTitle=lyd* )",150015,ereolmedglobal,53
+"( scanterm.creator=I* )",150015,ereolmedglobal,53
+"( scanterm.subject=I* )",150015,ereolmedglobal,53
+"( scanterm.mainTitle=dø* )",150015,ereolmedglobal,56
+"( facet.type=dø* )",150015,ereolmedglobal,56
+"( scanterm.subject=Michael* )",150015,ereolmedglobal,43
+"( scanterm.creator=Michael* )",150015,ereolmedglobal,43
+"( facet.type=Michael* )",150015,ereolmedglobal,43
+"( facet.type=br* )",150015,ereolmedglobal,65
+"( scanterm.subject=br* )",150015,ereolmedglobal,65
+"( scanterm.subject=død* )",150015,ereolmedglobal,52
+"(* not sp=dan) AND (facet.type=""lydbog (net)"" AND facet.category=""voksenmaterialer"" AND facet.language=""engelsk"")",150015,ereolmedglobal,36
+"(marc.001b=190004) AND (six=""for 14 år"")",010100,dbckat,36
+"(* not sp=dan) AND (facet.type=""ebog"" AND facet.category=""børnematerialer"" AND facet.language=""engelsk"" AND facet.subject=""fantasy"")",150015,ereolmedglobal,36
+"((Klim) or term.publisher=""Klim"")",150015,ereolmedglobal,36
+"(marc.001b=190004) AND (v3a=""gys"")",010100,dbckat,36
+"( facet.type=ty* )",150015,ereolmedglobal,42
+"holdingsitem.agencyid=830380 and ((term.subject=”verdensmål” OR term.subject=”bæredygtig”) AND term.language=”dansk” AND term.type=”bog”)",830380,opac,72
+"( facet.type=linda* )",150015,ereolmedglobal,44
+"( scanterm.mainTitle=skygge* )",150015,ereolmedglobal,49
+"( scanterm.creator=linda* )",150015,ereolmedglobal,40
+"((Krimi) or term.publisher=""Krimi"" or (Crime OR ""True Crime"" OR ""Mystery & Adventure"" OR Mystery OR ""Mystery & Thrillers"" OR ""Mystery and Suspense""))",150015,ereolmedglobal,43
+"( facet.type=ole* )",150015,ereolmedglobal,66
+"( scanterm.subject=ole* )",150015,ereolmedglobal,66
+"( scanterm.mainTitle=ole* )",150015,ereolmedglobal,66
+"( scanterm.creator=ole* )",150015,ereolmedglobal,66
+"(marc.001b=190004) AND (nix=""Regeringen 2019- : Frederiksen"")",010100,dbckat,39
+"( scanterm.mainTitle=død* )",150015,ereolmedglobal,46
+"( scanterm.creator=re* )",150015,ereolmedglobal,50
+"( facet.type=re* )",150015,ereolmedglobal,50
+"( scanterm.subject=re* )",150015,ereolmedglobal,50
+"( scanterm.creator=fa* )",150015,ereolmedglobal,55
+"( scanterm.mainTitle=Anne* )",150015,ereolmedglobal,52
+"( scanterm.creator=luc* )",150015,ereolmedglobal,53
+"( scanterm.subject=lin* )",150015,ereolmedglobal,47
+"( facet.type=me* )",150015,ereolmedglobal,58
+"( scanterm.mainTitle=me* )",150015,ereolmedglobal,58
+"((batman) AND (facet.subject=""comics plus"")) and holdingsitem.agencyid=""725300""",725300,opac,35
+"((lso=(""*MagnaPrintserien*""))) and (bai=726000)",726000,Cicero,35
+"(dkcclphrase.lem=""spænding"" OR facet.fictionSubject=""gys"" AND facet.type=""lydbog (net)"")",150015,ereolgomedglobal,35
+"((dk=sk and holdingsitem.accessionDate>=""NOW-90DAYS"" and ma=bå)) and holdingsitem.agencyid=""716900""",716900,opac,48
+"( scanterm.creator=villads ) AND ( scanterm.creator=fra* )",150015,ereolmedglobal,48
+"( scanterm.subject=villads ) AND ( scanterm.subject=fra* )",150015,ereolmedglobal,48
+"( scanterm.mainTitle=villads ) AND ( scanterm.mainTitle=fra* )",150015,ereolmedglobal,48
+"( scanterm.subject=alle* )",150015,ereolmedglobal,43
+"( scanterm.creator=pige* )",150015,ereolmedglobal,56
+"( scanterm.mainTitle=pige* )",150015,ereolmedglobal,56
+"( scanterm.subject=tr* )",150015,ereolmedglobal,59
+"( scanterm.creator=tr* )",150015,ereolmedglobal,59
+"( scanterm.mainTitle=tr* )",150015,ereolmedglobal,59
+"( scanterm.creator=mu* )",150015,ereolmedglobal,50
+"( scanterm.mainTitle=mu* )",150015,ereolmedglobal,50
+"( facet.type=fi* )",150015,ereolmedglobal,54
+"( scanterm.creator=fi* )",150015,ereolmedglobal,54
+"( scanterm.subject=fi* )",150015,ereolmedglobal,54
+"( facet.type=lin* )",150015,ereolmedglobal,44
+"((facet.type=bog)) and holdingsitem.agencyid=""730600""",730600,opac,38
+"((facet.category=voksenmaterialer AND facet.fictionSubject=kvinder AND facet.type=ebog) or term.publisher=""facet.category=voksenmaterialer AND facet.fictionSubject=kvinder AND facet.type=ebog"")",150015,ereolmedglobal,38
+"( facet.type=I* )",150015,ereolmedglobal,48
+"( scanterm.mainTitle=I* )",150015,ereolmedglobal,48
+"( scanterm.creator=den ) AND ( scanterm.creator=s* )",150015,ereolmedglobal,45
+"( facet.type=lær* )",150015,ereolmedglobal,41
+"( facet.type=tr* )",150015,ereolmedglobal,53
+"( scanterm.creator=Anne* )",150015,ereolmedglobal,50
+"( scanterm.subject=me* )",150015,ereolmedglobal,52
+"( scanterm.creator=død* )",150015,ereolmedglobal,46
+"( scanterm.mainTitle=Lars* )",150015,ereolmedglobal,59
+"(marc.001b=190004) AND (v3b=""Sæby"")",010100,dbckat,34
+"(marc.001b=190004) AND (six=""for 5 år"")",010100,dbckat,34
+"(marc.001b=190004) AND (nix=""CO₂-reduktion"")",010100,dbckat,34
+"(marc.001b=190004) AND (nix=""smittespredning"")",010100,dbckat,34
+"(marc.001b=870970 OR marc.001b=870971 OR marc.001b=870979) AND (id=03242544 and marc.001b=870970)",010100,dbckat,34
+"phrase.titleSeries=""Min kamp ; 1. [bog]""",190101,default,34
+"(marc.001b=190004) AND (v3a=""smittespredning"")",010100,dbckat,34
+"(marc.001b=190004) AND (nix=""klimamål"")",010100,dbckat,34
+"(facet.category=børnematerialer and (facet.fictionSubject=venskab)  AND facet.type=""lydbog (net)"")",150015,ereolgomedglobal,34
+"(marc.001b=190004) AND (v3a=""behandling"")",010100,dbckat,34
+"(lem=""let at læse"") AND (facet.type=""ebog"")",150015,ereolmedglobal,34
+"(marc.001b=190004) AND (vsu=""for 4 år"")",010100,dbckat,34
+"(marc.001b=190004) AND (nix=""Sæby"")",010100,dbckat,34
+"( facet.type=dan* )",150015,ereolmedglobal,62
+"( scanterm.mainTitle=dan* )",150015,ereolmedglobal,62
+"romaner and holdingsitem.agencyId=732000",732000,easySuite,67
+"rec.id=870970-basis:54154313",190101,default,42
+"( facet.type=Sa* )",150015,ereolmedglobal,54
+"( facet.type=skygge* )",150015,ereolmedglobal,48
+"( scanterm.subject=Ra* )",150015,ereolmedglobal,43
+"( scanterm.mainTitle=Ra* )",150015,ereolmedglobal,43
+"( scanterm.creator=Ra* )",150015,ereolmedglobal,43
+"( facet.type=Ra* )",150015,ereolmedglobal,43
+"em=""for 10 år"" and term.acSource=filmstriben",150027,inlead,36
+"( scanterm.subject=luc* )",150015,ereolmedglobal,49
+"( scanterm.subject=dø* )",150015,ereolmedglobal,51
+"""1Q84"" AND facet.creator=""Haruki Murakami"" AND facet.type=""ebog""",911116,easyOPAC,34
+"""1Q84"" AND facet.creator=""Haruki Murakami"" AND facet.type=""ebog""",741000,easyScreen,6
+"((facet.fictionSubject=familien OR facet.fictionSubject=slægtsromaner OR facet.fictionSubject=""far-søn forholdet"" OR facet.fictionSubject=""mor-datter forholdet"")) AND (facet.type=""ebog"")",150015,ereolmedglobal,40
+"(marc.001b=190004) AND (nix=""Sverige"")",010100,dbckat,36
+"( scanterm.mainTitle=linda* )",150015,ereolmedglobal,39
+"( facet.type=mu* )",150015,ereolmedglobal,46
+"(marc.001b=190004) AND (v3a=""venner"")",010100,dbckat,33
+"(marc.001b=190004) AND (v34=""2020-2029"")",010100,dbckat,33
+"((facet.category=børnematerialer) AND (facet.type=""film (net)"")) and holdingsitem.agencyid=""756100""",756100,ddbcms,33
+"(marc.001b=190004) AND (v3a=""CO₂-udledning"")",010100,dbckat,33
+"(marc.001b=190004) AND (nix=""klimapolitik"")",010100,dbckat,33
+"((* not dk=sk) or term.publisher=""* not dk=sk"")",150015,ereolgomedglobal,33
+"(marc.001b=190004) AND (six=""venner"")",010100,dbckat,33
+"((facet.category=børnematerialer and (facet.fictionSubject=kærlighed OR facet.fictionSubject=forelskelse)) or term.publisher=""facet.category=børnematerialer and (facet.fictionSubject=kærlighed OR facet.fictionSubject=forelskelse)"")",150015,ereolgomedglobal,33
+"((dkcclphrase.lem=""let at læse"" AND facet.type=ebog) or term.publisher=""dkcclphrase.lem=let at læse AND facet.type=ebog"")",150015,ereolmedglobal,33
+"(kognition and og and pædagogik*) and (facet.type=""tidsskriftsartikel"")",190101,default,33
+"phrase.titleSeries=""Tænkepauser"" and holdingsitem.agencyId=717500",717500,opac,33
+"( scanterm.mainTitle=luc* )",150015,ereolmedglobal,47
+"( scanterm.mainTitle=kim* )",150015,ereolmedglobal,51
+"( scanterm.subject=fa* )",150015,ereolmedglobal,51
+"( scanterm.mainTitle=fa* )",150015,ereolmedglobal,48
+"( facet.type=no* )",150015,ereolmedglobal,48
+"( scanterm.creator=kir* )",150015,ereolmedglobal,49
+"( scanterm.creator=br* )",150015,ereolmedglobal,55
+"( scanterm.mainTitle=Michael* )",150015,ereolmedglobal,38
+"( facet.type=Ha* )",150015,ereolmedglobal,54
+"( scanterm.subject=Ha* )",150015,ereolmedglobal,54
+"( scanterm.creator=ve* )",150015,ereolmedglobal,54
+"""Føroya siglingarsøga"" AND facet.creator=""Páll Nolsøe"" AND facet.type=""ebog""",911116,easyOPAC,65
+"( facet.type=marie* )",150015,ereolmedglobal,45
+"( scanterm.mainTitle=W* )",150015,ereolmedglobal,40
+"( scanterm.subject=den ) AND ( scanterm.subject=s* )",150015,ereolmedglobal,40
+"( scanterm.mainTitle=N* )",150015,ereolmedglobal,56
+"( facet.type=pigen* )",150015,ereolmedglobal,56
+"( scanterm.mainTitle=br* )",150015,ereolmedglobal,56
+"( facet.type=død* )",150015,ereolmedglobal,46
+"(dk=sk and sp=dan and lem=(krimi or spænd*)) AND (facet.type=""ebog"")",150015,ereolmedglobal,47
+"( scanterm.subject=N* )",150015,ereolmedglobal,50
+"( facet.type=pige* )",150015,ereolmedglobal,50
+"(facet.category=voksenmaterialer AND (facet.fictionSubject=erotik OR facet.fictionSubject=sex) OR (dkcclterm.dk=30.172 OR dkcclterm.dk=61.37 OR dkcclterm.dk=30.171 OR dkcclterm.dk=13.35)) AND (facet.type=""ebog"")",150015,ereolmedglobal,48
+"( scanterm.creator=Lars* )",150015,ereolmedglobal,54
+"( scanterm.subject=Lars* )",150015,ereolmedglobal,54
+"( facet.type=alle* )",150015,ereolmedglobal,39
+"( scanterm.mainTitle=lin* )",150015,ereolmedglobal,41
+"( scanterm.mainTitle=lucinda* )",150015,ereolmedglobal,53
+"( facet.type=villa* )",150015,ereolmedglobal,52
+"( scanterm.mainTitle=gu* )",150015,ereolmedglobal,51
+"( scanterm.creator=me* )",150015,ereolmedglobal,51
+"( scanterm.subject=et* )",150015,ereolmedglobal,51
+"( scanterm.creator=et* )",150015,ereolmedglobal,51
+"( scanterm.subject=linda* )",150015,ereolmedglobal,38
+"((facet.type=bog)) and holdingsitem.agencyid=""757500""",757500,opac,38
+"( scanterm.mainTitle=fi* )",150015,ereolmedglobal,46
+"((phrase.subject=""den 2. verdenskrig"") or term.publisher=""phrase.subject=den 2. verdenskrig"")",150015,ereolmedglobal,31
+"(marc.001b=190004) AND (nix=""2020-2029"")",010100,dbckat,32
+"(marc.001b=190004) AND (v30=""klimamål"")",010100,dbckat,32
+"(marc.001b=190004) AND (v3a=""CO₂-reduktion"")",010100,dbckat,32
+"""Føroyskur fótbóltur"" AND facet.type=""ebog""",911116,easyOPAC,32
+"(marc.001b=190004) AND (vsu=""for 5 år"")",010100,dbckat,32
+"((term.publisher=""Lindhardt og Ringhof"") or term.publisher=""term.publisher=Lindhardt og Ringhof"") AND (facet.type=""ebog"" AND facet.date=""2019"")",150015,ereolmedglobal,32
+"((facet.type=ebog and facet.language=dansk and (lem=""for 6 år"" or lem=""for 5 år"" or lem=""for 4 år"")) or term.publisher=""facet.type=ebog and facet.language=dansk and (lem=for 6 år or lem=for 5 år or lem=for 4 år)"")",150015,ereolmedglobal,32
+"(marc.001b=190004) AND (six=""for 4 år"")",010100,dbckat,32
+"(ole and løw)",190101,default,32
+"(marc.001b=190004) AND (v3a=""klimamål"")",010100,dbckat,32
+"( scanterm.creator=Sa* )",150015,ereolmedglobal,49
+"( scanterm.creator=kim* )",150015,ereolmedglobal,48
+"( facet.type=ju* )",150015,ereolmedglobal,63
+"( scanterm.creator=ju* )",150015,ereolmedglobal,63
+"( scanterm.creator=villa* )",150015,ereolmedglobal,55
+"( scanterm.mainTitle=pigen* )",150015,ereolmedglobal,51
+"( scanterm.creator=alle* )",150015,ereolmedglobal,39
+"( scanterm.subject=kim* )",150015,ereolmedglobal,45
+"( facet.type=engelsk* )",150015,ereolmedglobal,45
+"( facet.type=Lars* )",150015,ereolmedglobal,50
+"( scanterm.subject=pige* )",150015,ereolmedglobal,50
+"( scanterm.subject=Sa* )",150015,ereolmedglobal,49
+"( scanterm.mainTitle=ri* )",150015,ereolmedglobal,49
+"( facet.type=ve* )",150015,ereolmedglobal,49
+"( facet.type=lucinda* )",150015,ereolmedglobal,48
+"( facet.type=fa* )",150015,ereolmedglobal,48
+"( scanterm.subject=no* )",150015,ereolmedglobal,48
+"( scanterm.creator=chris* )",150015,ereolmedglobal,52
+"( facet.type=chris* )",150015,ereolmedglobal,52
+"( scanterm.mainTitle=alle* )",150015,ereolmedglobal,38
+"( scanterm.creator=lotte* )",150015,ereolmedglobal,43
+"( facet.type=lotte* )",150015,ereolmedglobal,43
+"((facet.category=voksenmaterialer AND (facet.fictionSubject=humor OR facet.fictionSubject=""sjove bøger"") AND facet.type=""lydbog (net)""))",150015,netlydbogny,34
+"(marc.001b=190004) AND (v10=""Regeringen 2019- : Frederiksen"")",010100,dbckat,34
+"( scanterm.mainTitle=re* )",150015,ereolmedglobal,44
+"( scanterm.subject=morten* )",150015,ereolmedglobal,44
+"( scanterm.subject=ve* )",150015,ereolmedglobal,49
+"( facet.type=sp* )",150015,ereolmedglobal,55
+"( scanterm.creator=ri* )",150015,ereolmedglobal,45
+"( facet.type=kir* )",150015,ereolmedglobal,45
+"( scanterm.creator=lin* )",150015,ereolmedglobal,41
+"( facet.type=luc* )",150015,ereolmedglobal,47
+"((Erotik) or term.publisher=""Erotik"" or (""Erotic Literature"" OR Erotic)) AND (facet.type=""ebog"")",150015,ereolmedglobal,31
+"(marc.001b=190004) AND (v37=""handlingsplaner"")",010100,dbckat,31
+"(marc.001b=190004) AND (nix=""handlingsplaner"")",010100,dbckat,31
+"(marc.001b=190004) AND (nix=""behandling"")",010100,dbckat,31
+"( scanterm.mainTitle=tyvens* )",150015,ereolmedglobal,31
+"((Italien) or term.publisher=""Italien"") AND (facet.category=""voksenmaterialer"" AND facet.language=""dansk"")",150015,ereolmedglobal,31
+"( scanterm.creator=tyvens* )",150015,ereolmedglobal,31
+"om and lundtofte and skole",717300,cicero,31
+"( scanterm.creator=N* )",150015,ereolmedglobal,51
+"( facet.type=villads ) AND ( facet.type=fra* )",150015,ereolmedglobal,42
+"( scanterm.creator=de ) AND ( scanterm.creator=5* )",150015,ereolmedglobal,36
+"( scanterm.mainTitle=vill* )",150015,ereolmedglobal,49
+"( scanterm.mainTitle=fl* )",150015,ereolmedglobal,40
+"( scanterm.creator=dan* )",150015,ereolmedglobal,56
+"( scanterm.mainTitle=Sa* )",150015,ereolmedglobal,48
+"( scanterm.creator=C* )",150015,ereolmedglobal,54
+"( scanterm.creator=no* )",150015,ereolmedglobal,45
+"( scanterm.subject=pigen* )",150015,ereolmedglobal,47
+"( scanterm.mainTitle=sp* )",150015,ereolmedglobal,51
+"( scanterm.subject=dan* )",150015,ereolmedglobal,53
+"( facet.type=den ) AND ( facet.type=s* )",150015,ereolmedglobal,39
+"( scanterm.mainTitle=den ) AND ( scanterm.mainTitle=s* )",150015,ereolmedglobal,39
+"( scanterm.creator=dø* )",150015,ereolmedglobal,43
+"( scanterm.mainTitle=marie* )",150015,ereolmedglobal,43
+"( scanterm.creator=lucinda* )",150015,ereolmedglobal,46
+"( scanterm.subject=after* )",150015,ereolmedglobal,45
+"( scanterm.creator=kirs* )",150015,ereolmedglobal,40
+"(marc.001b=190004) AND (v30=""grøn omstilling"")",010100,dbckat,36
+"((facet.category=voksenmaterialer AND (facet.fictionSubject=erotik OR facet.fictionSubject=sex) AND facet.type=ebog) or term.publisher=""facet.category=voksenmaterialer AND (facet.fictionSubject=erotik OR facet.fictionSubject=sex) AND facet.type=ebog"")",150015,ereolmedglobal,32
+"( facet.type=Lyd* )",150015,ereolmedglobal,38
+"( scanterm.creator=jens* )",150015,ereolmedglobal,52
+"(facet.category=børnematerialer) AND (facet.type=""billedbog (net)"")",150015,ereolmedglobal,30
+"(marc.001b=190004) AND (nix=""CO₂-udledning"")",010100,dbckat,30
+"(rec.id=js) and holdingsitem.agencyid=""721000""",721000,opac,30
+"(facet.extratitles=""ekstra titler"") AND (facet.type=""lyd (podcast)"")",150015,ereolmedglobal,30
+4984658831,710100,app,30
+"((dkcclterm.dk=99* AND facet.type=""lydbog (net)""))",150015,netlydbogny,35
+"( scanterm.subject=ke* )",150015,ereolmedglobal,47
+"( scanterm.subject=john* )",150015,ereolmedglobal,43
+"( scanterm.mainTitle=et* )",150015,ereolmedglobal,43
+"( scanterm.mainTitle=kir* )",150015,ereolmedglobal,43
+"( scanterm.subject=per* )",150015,ereolmedglobal,45
+"( facet.type=et* )",150015,ereolmedglobal,45
+"( scanterm.mainTitle=no* )",150015,ereolmedglobal,45
+"( scanterm.mainTitle=lotte* )",150015,ereolmedglobal,37
+"( scanterm.subject=de ) AND ( scanterm.subject=5* )",150015,ereolmedglobal,34
+"( scanterm.subject=ju* )",150015,ereolmedglobal,56
+"( scanterm.subject=harry ) AND ( scanterm.subject=p* )",150015,ereolmedglobal,51
+"( scanterm.mainTitle=harry ) AND ( scanterm.mainTitle=p* )",150015,ereolmedglobal,51
+"( facet.type=pig* )",150015,ereolmedglobal,48
+"( scanterm.mainTitle=morten* )",150015,ereolmedglobal,38
+"( scanterm.creator=kirst* )",150015,ereolmedglobal,36
+"( scanterm.subject=døde* )",150015,ereolmedglobal,47
+"( facet.type=C* )",150015,ereolmedglobal,47
+"""Keraldið"" AND facet.type=""ebog""",911116,easyOPAC,54
+"( scanterm.mainTitle=ve* )",150015,ereolmedglobal,46
+"( scanterm.subject=marie* )",150015,ereolmedglobal,43
+"( scanterm.subject=Jo* )",150015,ereolmedglobal,44
+"( facet.type=gu* )",150015,ereolmedglobal,44
+"( facet.type=kim* )",150015,ereolmedglobal,44
+"( scanterm.creator=pigen* )",150015,ereolmedglobal,49
+"( facet.type=ne* )",150015,ereolmedglobal,39
+"( scanterm.mainTitle=de ) AND ( scanterm.mainTitle=5* )",150015,ereolmedglobal,35
+"( facet.type=de ) AND ( facet.type=5* )",150015,ereolmedglobal,35
