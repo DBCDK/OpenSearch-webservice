@@ -32,6 +32,8 @@ pipeline {
     }
     triggers {
         pollSCM("H/3 * * * *")
+        // Trigger build on new php base image.
+	upstream('/Docker-apache-php7-bump-trigger')
     }
     options {
         buildDiscarder(logRotator(artifactDaysToKeepStr: "", artifactNumToKeepStr: "", daysToKeepStr: "30", numToKeepStr: "30"))
