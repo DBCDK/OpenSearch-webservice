@@ -1997,7 +1997,8 @@ class OpenSearch extends webServiceServer {
         return $chk_query['error'];
       }
       $q = $chk_query['edismax'];
-      $solr_url = self::create_solr_url($q, 0, 999999, $filter_q);
+      $rows = (substr_count($add_query, OR_OP) + 3) * 250;
+      $solr_url = self::create_solr_url($q, 0, $rows, $filter_q);
       list($solr_host, $solr_parm) = explode('?', $solr_url['url'], 2);
       $solr_parm .= '&fl=' . FIELD_COLLECTION_INDEX . ',unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
       VerboseJson::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
@@ -2014,6 +2015,10 @@ class OpenSearch extends webServiceServer {
       if (!($solr_arr[$add_idx] = unserialize($solr_result))) {
         VerboseJson::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
         return 'Internal problem: Cannot decode Solr re-search';
+      }
+      $numFound = $solr_arr[$add_idx]['response']['numFound'];
+      if ($rows < intval($numFound * 1.1)) {
+        VerboseJson::log(FATAL, __FUNCTION__ . '() Solr calculated rows, close to hitCount. Adjust code. (calculated: ' . $rows . ' got: ' . $numFound . ')');
       }
     }
     return $solr_arr;
