@@ -24,7 +24,13 @@ for the same configuration.
 Example of use:
 
 ```bash
-./compare_request_results.py -d http://localhost:32779/5.2/ http://localhost:32780/5.2/ requests
+./compare_request_results.py -d http://localhost:22222/5.2/ http://localhost:33333/5.2/ requests
+```
+
+Of, if started using one of the docker-compose files made to start servers locally:
+
+```bash
+./compare_request_results.py -d http://localhost:22222/ http://localhost:33333/ requests/issues/
 ```
 
 Run the script with the `--help` option to get more information.

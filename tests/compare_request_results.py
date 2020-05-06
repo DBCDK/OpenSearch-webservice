@@ -271,6 +271,7 @@ def retrieve_get_response(url: str, params: dict, desc, d: dict):
     start_time = datetime.datetime.now()
     request = requests.get(url, params=params)
     stop_time = datetime.datetime.now()
+    debug("URL: " + request.url)
     info("Time passed retrieving from '" + desc + "' : " + str(stop_time - start_time))
     d["res"] += (stop_time - start_time)
     debug("Result is '" + request.text + "'")
@@ -379,7 +380,7 @@ def compare_csv(request_file, url1, url2, query_status: dict) -> bool:
     res = True
 
     with open(request_file, newline='', encoding='utf-8-sig') as csv_file:
-        reader = csv.DictReader(csv_file, delimiter=",", fieldnames=["query", "agency", "profile", "count"])
+        reader = csv.DictReader(csv_file, delimiter=",", fieldnames=["query", "agency", "profile", "count", "extras"])
         # Skip first row
         next(reader)
         for row in reader:
@@ -389,7 +390,15 @@ def compare_csv(request_file, url1, url2, query_status: dict) -> bool:
             row["start"] = 0
             row["stepValue"] = 10
 
-            # print(json.dumps(row))
+            # If there is an extras value, parse and mix it with the parameters
+            if row["extras"]:
+                info("Found an extras column:'" + str(row["extras"]) + "'")
+                extras = json.loads(row["extras"])
+                for key in extras.keys():
+                    row[key] = extras[key]
+                del row["extras"]
+
+            debug("ROWS is: " + json.dumps(row))
             try:
                 compare_get(row, url1, url2)
                 query_status["passed"].append(row)
