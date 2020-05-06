@@ -3396,16 +3396,21 @@ class OpenSearch extends webServiceServer {
    *
    */
   private function log_stat_search() {
-    self::log_stat(array('query' => $this->user_param->query->_value ?? '',
-                         'start' => $this->user_param->start->_value ?? '',
-                         'stepValue' => $this->user_param->stepValue->_value ?? '',
-                         'userDefinedRanking' => $this->user_param->userDefinedRanking->_value ?? '',
-                         'userDefinedBoost' => $this->user_param->userDefinedBoost->_value ?? '',
-                         'sort' => isset($this->user_param->sort) && is_array($this->user_param->sort)
-                                     ? self::stringify_obj_array($this->user_param->sort)
-                                     : $this->user_param->sort->_value ?? '',
-                         'facets' => $this->user_param->facets->_value ?? '',
-                         'corepo' => $this->corepo_timers));
+    $my_out_array = array('query' => $this->user_param->query->_value ?? '',
+      'start' => $this->user_param->start->_value ?? '',
+      'stepValue' => $this->user_param->stepValue->_value ?? '',
+      'userDefinedRanking' => $this->user_param->userDefinedRanking->_value ?? '',
+      'userDefinedBoost' => $this->user_param->userDefinedBoost->_value ?? '',
+      'sort' => isset($this->user_param->sort) && is_array($this->user_param->sort)
+        ? self::stringify_obj_array($this->user_param->sort)
+        : $this->user_param->sort->_value ?? '',
+      'facets' => $this->user_param->facets->_value ?? '',
+      'corepo' => $this->corepo_timers);
+    // If facets is empty, do not log it, because it will break the logging system. See SE-3009
+    if ('' == $my_out_array["facets"]) {
+      unset($my_out_array["facets"]);
+    }
+    self::log_stat($my_out_array);
   }
 
   /** Log STAT line for getObject
