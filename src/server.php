@@ -3406,9 +3406,16 @@ class OpenSearch extends webServiceServer {
         : $this->user_param->sort->_value ?? '',
       'facets' => $this->user_param->facets->_value ?? '',
       'corepo' => $this->corepo_timers);
-    // If facets is empty, do not log it, because it will break the logging system. See SE-3009
+    // If facet, userDefinedBoost, or userDefinedRankings are empty, do not log them, because it will
+    // break the logging system. See SE-3009
     if ('' == $my_out_array["facets"]) {
       unset($my_out_array["facets"]);
+    }
+    if ('' == $my_out_array["userDefinedBoost"]) {
+      unset($my_out_array["userDefinedBoost"]);
+    }
+    if ('' == $my_out_array["userDefinedRanking"]) {
+      unset($my_out_array["userDefinedRanking"]);
     }
     self::log_stat($my_out_array);
   }
