@@ -96,5 +96,7 @@ services:
       - CACHE_TYPE=redis
     expose:
       - 80
+      - 9117
     ports:
       - 80
+      - 9117
