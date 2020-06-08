@@ -114,6 +114,10 @@ xmldir = ./xml
 
 
 ; --------------
+; agencies where collections are build from each records, to make hitCount match
+zgateway_agency[] = 190104
+
+; --------------
 ; agencies allowed to see records from RR (rawrepo db) containing s11 field
 s11_agency[] = 100200
 s11_agency[] = 870970
