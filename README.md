@@ -82,8 +82,13 @@ Alternatively, you can build the docker image yourself, using plain docker,
 like this, in the top directory:
 
 ```bash
-docker build -f docker/Dockerfile -t opensearch-ws-local/opensearch-webservice:latest .
+docker build -f docker/Dockerfile -t opensearch-ws-local/opensearch-webservice:master .
 ``` 
+
+Note, however, that if you build the docker images "manually", that the scripts for starting
+servers, etc, expects the docker containers to be tagged with the name of the branch. In
+the example above, this was "master". So, if you are not on "master", substitute the branch name -- or
+use the [build-dockers.py](https://gitlab.dbc.dk/i-scrum/build-tools) script.
 
 ## Running a Server During Development
 
