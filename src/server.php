@@ -68,6 +68,7 @@ class OpenSearch extends webServiceServer {
   protected $debug_query = FALSE;
   protected $corepo_timers = [];
   protected $split_holdings_include;
+  protected $zgateway_usage = FALSE;
 
 
     /**
@@ -236,7 +237,14 @@ class OpenSearch extends webServiceServer {
         $this->config->get_value('open_format_force_namespace', 'setup'),
         $this->config->get_value('solr_format', 'setup'));
 
-      $use_work_collection = (($param->collectionType->_value ?? '') <> 'manifestation');
+      $zgateway_agency = self::value_or_default($this->config->get_value('zgateway_agency', 'setup'), []);
+      if (in_array($this->agency, $zgateway_agency) && (($param->collectionType->_value ?? '') == 'zgateway_for_dbc_internal_use_only')) {
+        $this->zgateway_usage = TRUE;
+        $use_work_collection = FALSE;
+      }
+      else {
+        $use_work_collection = ($param->collectionType->_value ?? '') <> 'manifestation';
+      }
       if (isset($this->repository['rawrepo'])) {
         $fetch_raw_records = (!$this->format['found_solr_format'] || $this->format['marcxchange']['user_selected']);
         if ($fetch_raw_records) {
@@ -2068,6 +2076,13 @@ class OpenSearch extends webServiceServer {
           break 1;
         }
       }
+      if ($this->zgateway_usage) {
+        foreach ($fdoc[FIELD_REC_ID] as $rec_id) {
+          if (self::is_corepo_pid($rec_id)) {
+            $ids[FIELD_REC_ID] = self::scalar_or_first_elem($rec_id);
+          }
+        }
+      }
       $search_ids[] = $ids;
     }
   }
@@ -2362,7 +2377,12 @@ class OpenSearch extends webServiceServer {
   private function build_work_struct_from_solr(&$work_cache_struct, &$work_struct, &$more, &$work_ids, $edismax, $start, $step_value, $rows, $sort_q, $rank_q, $filter_q, $boost_q, $use_work_collection, $all_objects, $num_found) {
     $more = (count($work_cache_struct) >= ($start + $step_value));
     for ($w_idx = 0; isset($work_ids[$w_idx]); $w_idx++) {
-      $struct_id = $work_ids[$w_idx][FIELD_WORK_ID] . ($use_work_collection ? '' : '-' . $work_ids[$w_idx][FIELD_UNIT_ID]);
+      if ($this->zgateway_usage) {
+        $struct_id = $w_idx . '-' . $work_ids[$w_idx][FIELD_REC_ID];
+      }
+      else {
+        $struct_id = $work_ids[$w_idx][FIELD_WORK_ID] . ($use_work_collection ? '' : '-' . $work_ids[$w_idx][FIELD_UNIT_ID]);
+      }
       if (isset($work_cache_struct[$struct_id])) continue;
       $work_cache_struct[$struct_id] = [];
       if (count($work_cache_struct) >= ($start + $step_value)) {
@@ -2386,26 +2406,33 @@ class OpenSearch extends webServiceServer {
     }
     $work_slice = array_slice($work_cache_struct, ($start - 1), $step_value);
     if ($step_value) {
-      foreach ($work_slice as $w_id => $w_list) {
-        @ list($w_id, $u_id) = explode('-', $w_id);
+      foreach ($work_slice as $key_id => $w_list) {
         if (empty($w_list)) {
-          $search_w[] = '"' . ($use_work_collection ? $w_id : $u_id) . '"';
+          if ($this->zgateway_usage) {
+            list($id, $r_id) = explode('-', $key_id, 2);
+            // no need to search, since we have the record pid and unit match is ignored for zgateway
+            $work_cache_struct[$key_id][$r_id][$id] = $r_id;;
+          }
+          else {
+            @ list($w_id, $u_id) = explode('-', $key_id);
+            $search_w[] = '"' . ($use_work_collection ? $w_id : $u_id) . '"';
+          }
         }
       }
-      if (isset($search_w) && is_array($search_w)) {
+      if (!$this->zgateway_usage && isset($search_w) && is_array($search_w)) {
         if ($all_objects) {
           $edismax['q'] = [];
         }
-        $edismax['q'][] = ($use_work_collection ? FIELD_WORK_ID : FIELD_UNIT_ID ) . ':(' . implode(OR_OP, $search_w) . ')';
+        $edismax['q'][] = ($this->zgateway_usage ? FIELD_REC_ID : ($use_work_collection ? FIELD_WORK_ID : FIELD_UNIT_ID)) . ':(' . implode(OR_OP, $search_w) . ')';
         if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_q, '', $solr_arr)) {
           return $err;
         }
         foreach ($solr_arr['response']['docs'] as $fdoc) {
           $unit_id = $fdoc[FIELD_UNIT_ID];
           $work_id = $fdoc[FIELD_WORK_ID];
-          $struct_id = $work_id . ($use_work_collection ? '' : '-' . $unit_id);
           foreach ($fdoc[FIELD_REC_ID] as $rec_id) {
             if (self::is_corepo_pid($rec_id)) {
+              $struct_id = $work_id . ($use_work_collection ? '' : '-' . $unit_id);
               $work_cache_struct[$struct_id][$unit_id][$rec_id] = $rec_id;;
             }
           }
@@ -2413,7 +2440,7 @@ class OpenSearch extends webServiceServer {
       }
     }
     $work_struct = array_slice($work_cache_struct, ($start - 1), $step_value);
-    // var_dump($edismax); var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
+    //var_dump($edismax); var_dump($work_slice); var_dump($work_struct); var_dump($work_cache_struct); var_dump($work_ids); die();
     return null;
   }
 
@@ -3404,18 +3431,16 @@ class OpenSearch extends webServiceServer {
       'sort' => isset($this->user_param->sort) && is_array($this->user_param->sort)
         ? self::stringify_obj_array($this->user_param->sort)
         : $this->user_param->sort->_value ?? '',
+      'collectionType' => $this->user_param->collectionType->_value ?? '',
       'facets' => $this->user_param->facets->_value ?? '',
       'corepo' => $this->corepo_timers);
-    // If facet, userDefinedBoost, or userDefinedRankings are empty, do not log them, because it will
+    // If facet, collectionType, userDefinedBoost, or userDefinedRankings are empty, do not log them, because it will
     // break the logging system. See SE-3009
-    if ('' == $my_out_array["facets"]) {
-      unset($my_out_array["facets"]);
-    }
-    if ('' == $my_out_array["userDefinedBoost"]) {
-      unset($my_out_array["userDefinedBoost"]);
-    }
-    if ('' == $my_out_array["userDefinedRanking"]) {
-      unset($my_out_array["userDefinedRanking"]);
+    $remove_empty = array('facet', 'collectionType', 'userDefinedBoost', 'userDefinedRankings');
+    foreach ($my_out_array as $key => $val) {
+      if (in_array($key, $remove_empty) && ('' == $val)) {
+        unset($my_out_array[$key]);
+      }
     }
     self::log_stat($my_out_array);
   }
