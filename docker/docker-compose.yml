@@ -4,53 +4,6 @@ version: '3'
 services:
 
 
-  # The image under test - using internal memcache
-  opensearch-webservice-internal-cache:
-    image: opensearch-ws-local/opensearch-webservice${DOCKER_IMAGE_TAG}
-    environment:
-      - AAA_IP_LIST=0.0.0.0-255.255.255.255
-      - AGENCY_END_POINT=http://openagency.addi.dk/test_2.34/
-      - AGENCY_FALLBACK=100200
-      - AGENCY_PROFILE_FALLBACK=test
-      - FEDORA=http://corepo-content-service.fbstest.svc.cloud.dbc.dk/rest/
-      - HOLDINGS_DB=http://holdings-service.fbstest.svc.cloud.dbc.dk/getAllAvailability?pid=%s
-      - HOLDINGS_ITEMS_INDEX=fbstest-corepo-searcher
-      - RAW_RECORD_CONTENT_SERVICE=http://rawrepo-content-service.fbstest.svc.cloud.dbc.dk/RawRepoContentService
-      - RAW_RECORD_REPOSITORY_NAME=raw_repo_ext_test
-      - RAW_RECORD_SOLR=http://fbstest-solr.dbc.dk:8985/solr/fbstest-rawrepo-searcher/select
-      - REPOSITORY_NAME=external_test
-      - SERVICE_LOCATION=
-      - SOLR=http://fbstest-solr.dbc.dk:8986/solr/fbstest-corepo-searcher/select
-      - VERBOSE_LEVEL=WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
-      - MY_DOMAIN_IP_LIST=172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.255.0.0-10.255.255.255
-      - OPEN_FORMAT=http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
-      - OLD_OPEN_FORMAT=http://openformat.addi.dk/0.2/
-      - URL_PATH=5.2
-    expose:
-      - 80
-    ports:
-      - 80
-
-  # A memcache service - can be used for testing external memcache
-  memcached-1:
-    image: docker.dbc.dk/dbc-memcached:latest
-    environment:
-      - EXTRAOPTS=-t 8 -n 256 -v
-    expose:
-      - 11211
-    ports:
-      - 11211
-
-  # A memcache service - can be used for testing external memcache
-  memcached-2:
-    image: docker.dbc.dk/dbc-memcached:latest
-    environment:
-      - EXTRAOPTS=-t 8 -n 256 -v
-    expose:
-      - 11211
-    ports:
-      - 11211
-
   # A redis service - can be used for testing external memcache
   redis:
     image: docker.dbc.dk/dbc-redis:latest
@@ -77,7 +30,7 @@ services:
       - SERVICE_LOCATION=
       - SOLR=http://fbstest-solr.dbc.dk:8986/solr/fbstest-corepo-searcher/select
       - VERBOSE_LEVEL=WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
-      - MY_DOMAIN_IP_LIST=172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.255.0.0-10.255.255.255
+      - MY_DOMAIN_IP_LIST=172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.127.0.0-10.127.255.255
       - OPEN_FORMAT=http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
       - OLD_OPEN_FORMAT=http://openformat.addi.dk/0.2/
       - URL_PATH=5.2
@@ -100,3 +53,53 @@ services:
     ports:
       - 80
       - 9117
+
+  # If you wish to use the stuff below here, you probably need to edit script/server to also start the services (or start them manually).
+
+  # A memcache service - can be used for testing external memcache
+  memcached-1:
+    image: docker.dbc.dk/dbc-memcached:latest
+    environment:
+      - EXTRAOPTS=-t 8 -n 256 -v
+    expose:
+      - 11211
+    ports:
+      - 11211
+
+  # A memcache service - can be used for testing external memcache
+  memcached-2:
+    image: docker.dbc.dk/dbc-memcached:latest
+    environment:
+      - EXTRAOPTS=-t 8 -n 256 -v
+    expose:
+      - 11211
+    ports:
+      - 11211
+
+  # The image under test - using internal memcache
+  # NOT NORMALLY USED
+  opensearch-webservice-internal-cache:
+    image: opensearch-ws-local/opensearch-webservice${DOCKER_IMAGE_TAG}
+    environment:
+      - AAA_IP_LIST=0.0.0.0-255.255.255.255
+      - AGENCY_END_POINT=http://openagency.addi.dk/test_2.34/
+      - AGENCY_FALLBACK=100200
+      - AGENCY_PROFILE_FALLBACK=test
+      - FEDORA=http://corepo-content-service.fbstest.svc.cloud.dbc.dk/rest/
+      - HOLDINGS_DB=http://holdings-service.fbstest.svc.cloud.dbc.dk/getAllAvailability?pid=%s
+      - HOLDINGS_ITEMS_INDEX=fbstest-corepo-searcher
+      - RAW_RECORD_CONTENT_SERVICE=http://rawrepo-content-service.fbstest.svc.cloud.dbc.dk/RawRepoContentService
+      - RAW_RECORD_REPOSITORY_NAME=raw_repo_ext_test
+      - RAW_RECORD_SOLR=http://fbstest-solr.dbc.dk:8985/solr/fbstest-rawrepo-searcher/select
+      - REPOSITORY_NAME=external_test
+      - SERVICE_LOCATION=
+      - SOLR=http://fbstest-solr.dbc.dk:8986/solr/fbstest-corepo-searcher/select
+      - VERBOSE_LEVEL=WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
+      - MY_DOMAIN_IP_LIST=172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.127.0.0-10.127.255.255
+      - OPEN_FORMAT=http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
+      - OLD_OPEN_FORMAT=http://openformat.addi.dk/0.2/
+      - URL_PATH=5.2
+    expose:
+      - 80
+    ports:
+      - 80
