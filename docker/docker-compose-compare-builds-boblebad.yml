@@ -23,7 +23,7 @@ x-info:
     - RAW_RECORD_SOLR=http://boblebad-solr.dbc.dk:8985/solr/boblebad-rawrepo-searcher/select
     - REPOSITORY_NAME=staging
     - SERVICE_LOCATION=
-    - MY_DOMAIN_IP_LIST=172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255
+    - MY_DOMAIN_IP_LIST=172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.127.0.0-10.127.255.255
     - SOLR=http://boblebad.solr.dbc.dk:8983/solr/boblebad-corepo-searcher/select
     - VERBOSE_LEVEL=WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
     - OPEN_FORMAT=http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
