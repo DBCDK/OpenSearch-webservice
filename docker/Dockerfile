@@ -75,6 +75,3 @@ ENV AGENCY_FALLBACK="" \
     SERVICE_LOCATION="" \
     USE_HOLDING_BLOCK_JOIN="yes" \
     VERBOSE_LEVEL="WARNING+ERROR+FATAL+STAT+TIMER"
-
-RUN echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE"  >> /etc/php/7.3/apache2/php.ini
-
