@@ -20,7 +20,7 @@ x-info:
     - HOLDINGS_ITEMS_INDEX=boblebad-corepo-searcher
     - RAW_RECORD_CONTENT_SERVICE=http://rawrepo-content-service.boblebad.svc.cloud.dbc.dk/RawRepoContentService
     - RAW_RECORD_REPOSITORY_NAME=staging-rawrecords
-    - RAW_RECORD_SOLR=http://boblebad-solr.dbc.dk:8985/solr/boblebad-rawrepo-searcher/select
+    - RAW_RECORD_SOLR=http://boblebad.rawrepo.solr.dbc.dk:8983/solr/boblebad-rawrepo-searcher/select
     - REPOSITORY_NAME=staging
     - SERVICE_LOCATION=
     - MY_DOMAIN_IP_LIST=172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.127.0.0-10.127.255.255

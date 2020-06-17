@@ -20,11 +20,11 @@ x-info:
     - HOLDINGS_ITEMS_INDEX=cisterne-corepo-searcher
     - RAW_RECORD_CONTENT_SERVICE=http://rawrepo-content-service.cisterne.svc.cloud.dbc.dk/RawRepoContentService
     - RAW_RECORD_REPOSITORY_NAME=prod-rawrecords
-    - RAW_RECORD_SOLR=http://cisterne-solr.dbc.dk:8985/solr/cisterne-rawrepo-searcher/select
+    - RAW_RECORD_SOLR=http://cisterne.rawrepo.solr.dbc.dk:8983/solr/cisterne-rawrepo-searcher/select
     - REPOSITORY_NAME=prod
     - SERVICE_LOCATION=
     - MY_DOMAIN_IP_LIST=172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.127.0.0-10.127.255.255
-    - SOLR=http://cisterne-solr.dbc.dk:8986/solr/cisterne-corepo-searcher/select
+    - SOLR=http://cisterne.solr.dbc.dk:8983/solr/cisterne-corepo-searcher/select
     - VERBOSE_LEVEL=WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
     - OPEN_FORMAT=http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
     - OLD_OPEN_FORMAT=http://openformat.addi.dk/0.2/
