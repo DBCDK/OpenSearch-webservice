@@ -161,6 +161,22 @@ class OpenSearch extends webServiceServer {
     return $ret;
   }
 
+  /** Adds a DBC SLA header for the action.
+   * @param $action
+   *
+   */
+  private function add_dbc_sla_header_action($action)   {
+
+    header("dbcdk-action: " . ($action ?? 'unknown'));
+  }
+
+  /** Adds a DBC SLA header for the agency.
+   * @param $agency
+   */
+  private function add_dbc_sla_header_agency($agency)   {
+    header("dbcdk-agency: " . ($agency ?? 'unknown'));
+  }
+
   /** \brief Entry search: Handles the request and set up the response
    *
    * @param $param
@@ -169,6 +185,10 @@ class OpenSearch extends webServiceServer {
   public function search($param) {
     $ret_error = new stdClass();
     // set some defines
+
+    // Add custom headers *always* - to allow SLA
+    $this->add_dbc_sla_header_action("search");
+
     $this->watch->start('aaa');
     try {
       if (!$this->aaa->has_right('opensearch', 500)) {
@@ -213,6 +233,8 @@ class OpenSearch extends webServiceServer {
         }
         $this->user_param = $param;
         $this->agency = $param->agency->_value;
+        // We know now the agency, so set it in the header.
+        $this->add_dbc_sla_header_agency($this->agency);
         if ($repository_error = self::set_repositories($param->repository->_value ?? '')) {
           $unsupported = $repository_error;
         }
@@ -803,6 +825,10 @@ class OpenSearch extends webServiceServer {
    */
   public function getObject($param) {
     $ret_error = new stdClass();
+
+     // Add custom headers *always* - to allow SLA
+    $this->add_dbc_sla_header_action("getObject");
+
     $ret_error->searchResponse->_value->error->_value = &$error;
     $this->watch->start('aaa');
     try {
@@ -850,6 +876,8 @@ class OpenSearch extends webServiceServer {
           self::set_valid_relations_and_sources($this->search_profile);
           // self::set_search_filters_for_800000_collection();
         }
+        // We know now the agency, so set it in the header.
+        $this->add_dbc_sla_header_agency($this->agency);
       } finally {
         $this->watch->stop('preamble_profile_filter');
       }
@@ -1147,6 +1175,9 @@ class OpenSearch extends webServiceServer {
    * @return object - the answer to the request
    */
   public function info($param) {
+    // Add custom headers *always* - to allow SLA
+    $this->add_dbc_sla_header_action("info");
+
     $this->watch->start('info');
     try {
       $result = &$ret->infoResponse->_value;
@@ -1156,6 +1187,9 @@ class OpenSearch extends webServiceServer {
       $result->infoSearchProfile = self::get_search_profile_info($param->agency->_value, $param->profile);
       $result->infoSorts = self::get_sort_info();
       $result->infoNameSpaces = self::get_namespace_info();
+      // We know now the agency, so set it in the header.
+      // Actually, it turns out that this is probably newer set for info calls... it turns up empty, anyway.
+      $this->add_dbc_sla_header_agency($this->agency);
       VerboseJson::log(STAT, array('agency' => $this->agency,
         'profile' => self::stringify_obj_array($param->profile),
         'timings' => $this->watch->get_timers()));
