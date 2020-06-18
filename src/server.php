@@ -187,7 +187,7 @@ class OpenSearch extends webServiceServer {
     // set some defines
 
     // Add custom headers *always* - to allow SLA
-    $this->add_dbc_sla_header_action("search");
+    self::add_dbc_sla_header_action("search");
 
     $this->watch->start('aaa');
     try {
@@ -234,7 +234,7 @@ class OpenSearch extends webServiceServer {
         $this->user_param = $param;
         $this->agency = $param->agency->_value;
         // We know now the agency, so set it in the header.
-        $this->add_dbc_sla_header_agency($this->agency);
+        self::add_dbc_sla_header_agency($this->agency);
         if ($repository_error = self::set_repositories($param->repository->_value ?? '')) {
           $unsupported = $repository_error;
         }
@@ -827,7 +827,7 @@ class OpenSearch extends webServiceServer {
     $ret_error = new stdClass();
 
      // Add custom headers *always* - to allow SLA
-    $this->add_dbc_sla_header_action("getObject");
+    self::add_dbc_sla_header_action("getObject");
 
     $ret_error->searchResponse->_value->error->_value = &$error;
     $this->watch->start('aaa');
@@ -877,7 +877,7 @@ class OpenSearch extends webServiceServer {
           // self::set_search_filters_for_800000_collection();
         }
         // We know now the agency, so set it in the header.
-        $this->add_dbc_sla_header_agency($this->agency);
+        self::add_dbc_sla_header_agency($this->agency);
       } finally {
         $this->watch->stop('preamble_profile_filter');
       }
@@ -1176,7 +1176,7 @@ class OpenSearch extends webServiceServer {
    */
   public function info($param) {
     // Add custom headers *always* - to allow SLA
-    $this->add_dbc_sla_header_action("info");
+    self::add_dbc_sla_header_action("info");
 
     $this->watch->start('info');
     try {
@@ -1189,7 +1189,7 @@ class OpenSearch extends webServiceServer {
       $result->infoNameSpaces = self::get_namespace_info();
       // We know now the agency, so set it in the header.
       // Actually, it turns out that this is probably newer set for info calls... it turns up empty, anyway.
-      $this->add_dbc_sla_header_agency($this->agency);
+      self::add_dbc_sla_header_agency($this->agency);
       VerboseJson::log(STAT, array('agency' => $this->agency,
         'profile' => self::stringify_obj_array($param->profile),
         'timings' => $this->watch->get_timers()));
