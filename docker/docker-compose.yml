@@ -32,7 +32,6 @@ services:
       - VERBOSE_LEVEL=WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
       - MY_DOMAIN_IP_LIST=172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.127.0.0-10.127.255.255
       - OPEN_FORMAT=http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
-      - OLD_OPEN_FORMAT=http://openformat.addi.dk/0.2/
       - URL_PATH=5.2
       - USE_HOLDING_BLOCK_JOIN=yes # No clue what this does, but matches fbstest.
       # Never set to no as this will stop running the local memcache used for fors and solr_file
@@ -97,7 +96,6 @@ services:
       - VERBOSE_LEVEL=WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
       - MY_DOMAIN_IP_LIST=172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.127.0.0-10.127.255.255
       - OPEN_FORMAT=http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
-      - OLD_OPEN_FORMAT=http://openformat.addi.dk/0.2/
       - URL_PATH=5.2
     expose:
       - 80
