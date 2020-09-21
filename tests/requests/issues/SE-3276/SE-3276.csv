@@ -1,0 +1,7 @@
+danmark,100200,test,1348
+danmark,190101,default,24
+"(marc.001b=190004) AND (v3b=""Danmark"")",010100,dbckat,180
+"(marc.001b=190004) AND (nix=""Danmark"")",010100,dbckat,128
+"(marc.001b=190004) AND (six=""Danmark"")",010100,dbckat,49
+"((facet.subject=danmark and facet.category=voksenmaterialer and term.type=(cd* or musik*) not term.type=(sammensat* or lydbog*) and bad>=""NOW-36MONTH"")) and holdingsitem.agencyid=""715100""",715100,opac,44
+"((Danmark)) and holdingsitem.agencyid=""777900""",777900,opac,3
