@@ -12,7 +12,12 @@ x-info:
     - AAA_IP_LIST=0.0.0.0-255.255.255.255
     # - AAA_FORS_RIGHTS=http://forsrights.addi.dk/1.2-opensearch/?action=forsRights&outputType=php&userIdAut=%s&groupIdAut=%s&passwordAut=%s&ipAddress=%s
     - AAA_FORS_RIGHTS=
+    # These settings are used for newer versions of OpenSearch
     - VIPCORE_END_POINT=http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk
+    - VIPCORE_CACHE_HOST=localhost
+    - VIPCORE_CACHE_PORT=11211
+    # This setting is used for the version 333 and older, and will eventually be retired
+    - AGENCY_END_POINT=http://openagency.addi.dk/2.34/
     - AGENCY_FALLBACK=100200
     - AGENCY_PROFILE_FALLBACK=test
     - FEDORA=http://corepo-content-service-replica.cisterne.svc.cloud.dbc.dk/rest/
@@ -32,7 +37,7 @@ x-info:
   anchors:
     # - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:268
     - &TESTED opensearch-ws-local/opensearch-webservice:master
-    - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:330
+    - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:333
 
 version: '3.4'
 
