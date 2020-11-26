@@ -17,7 +17,7 @@ services:
     image: opensearch-ws-local/opensearch-webservice${DOCKER_IMAGE_TAG}
     environment:
       - AAA_IP_LIST=0.0.0.0-255.255.255.255
-      - VIPCORE_END_POINT=http://vipcore.iscrum-vip-extern-test.svc.cloud.dbc.dk
+      - AGENCY_END_POINT=http://openagency.addi.dk/test_2.34/
       - AGENCY_FALLBACK=100200
       - AGENCY_PROFILE_FALLBACK=test
       - FEDORA=http://corepo-content-service.fbstest.svc.cloud.dbc.dk/rest/

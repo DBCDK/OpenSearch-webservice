@@ -32,6 +32,3 @@ else
 fi
 info "Svn info:"
 svn info | grep -e Revision -e Last
-
-cd "${SRCDIR}" || die "Unable to change directory to ${SRCDIR}"
-composer update --with-dependencies -v
