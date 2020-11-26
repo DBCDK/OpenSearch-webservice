@@ -78,8 +78,6 @@ class OpenSearch extends webServiceServer {
     $this->watch->start("construct");
     $this->curl = new curl();
     $this->curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
-    $this->open_agency = new OpenAgency($this->config->get_value('agency', 'setup'),
-                                        $this->config->get_value('cache_type', 'setup'));
     $this->open_agency = self::initAgencyCore($this->config->get_value('vipcore', 'setup'));
 
     define('FIELD_UNIT_ID', 'unit.id');
