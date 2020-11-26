@@ -34,9 +34,6 @@ LABEL maintainer="Team Search <os-team@dbc.dk>" \
       USE_HOLDING_BLOCK_JOIN="Switch to control use of block_join for filtering holdings" \
       VERBOSE_LEVEL="List of log levels needed, maximum as: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG"
 
-
-RUN apt-install php-memcached
-
 # This is modelled after vip-php. I think it is a bit many layers, but ... no big deal.
 # NOTE: The BUILDNUMBER file is no longer generated or copied - we can add it back, if we need it
 COPY --chown=sideejer:sideejer src/OLS_class_lib/ ${DBC_PHP_INSTALL_DIR}/OLS_class_lib/

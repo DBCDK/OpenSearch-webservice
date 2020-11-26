@@ -55,12 +55,8 @@ Last Changed Rev: 122080
 Last Changed Date: 2018-10-02 15:59:39 +0200 (tir, 02 okt 2018)
 ```
 
-Note, you need the `composer` PHP dependency manager installed for this to work. 
-For debian based distros, something like: `sudo apt install composer` should get you going. If it complains
-about a missing memcached extension, try: `sudo apt install php-memcached` and you should be good to go.
-
-As the `bootstrap` name suggests, you can also run this script to update the contents. 
-Changes to the external svn project is handled as ordinary svn changes.
+As the name suggests, you can also run this script to update the contents. Changes to the external svn project is handled
+as ordinary svn changes.
 
 See the [script/README](script/README.md) for additional info about build scripts.
 
