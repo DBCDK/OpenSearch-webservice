@@ -3,12 +3,12 @@ FROM docker.dbc.dk/dbc-apache-php7:latest
 LABEL maintainer="Team Search <os-team@dbc.dk>" \
       AAA_IP_LIST="Sets AAA access for this IP pattern. Default is full access for localhost [127.0.0.1]" \
       AAA_FORS_RIGHTS="Sets the URL for aaa_fors_rights. Default is the empty string, which is 'not set'. []" \
-      AGENCY_END_POINT="The full url for the OpenAgency service" \
+      VIPCORE_END_POINT="The full url for the VipCore service" \
       AGENCY_FALLBACK="Default agency fallback code - for development and testing only" \
       AGENCY_PROFILE_FALLBACK="Default search profile fallback - for development and testing only" \
-      AGENCY_CACHE_HOST="OpenAgency calls memcache host [localhost]" \
-      AGENCY_CACHE_PORT="OpenAgency calls memcache port [11211]" \
-      AGENCY_CACHE_EXPIRE="OpenAgency calls mencache expiration [3600]" \
+      VIPCORE_CACHE_HOST="VipCore calls memcache host [localhost]" \
+      VIPCORE_CACHE_PORT="VipCore calls memcache port [11211]" \
+      VIPCORE_CACHE_EXPIRE="VipCore calls mencache expiration [3600]" \
       CACHE_HOST="Search results memcache host [localhost]" \
       CACHE_PORT="Search results memcache port [11211]" \
       CACHE_EXPIRE="Search results memcache expiration [600]" \
@@ -40,6 +40,7 @@ COPY --chown=sideejer:sideejer src/OLS_class_lib/ ${DBC_PHP_INSTALL_DIR}/OLS_cla
 RUN rm -Rf ${DBC_PHP_INSTALL_DIR}/OLS_class_lib/.svn ${DBC_PHP_INSTALL_DIR}/OLS_class_lib/test ${DBC_PHP_INSTALL_DIR}/OLS_class_lib/simpletest
 COPY --chown=sideejer:sideejer src/xml/ ${DBC_PHP_INSTALL_DIR}/xml/
 COPY --chown=sideejer:sideejer src/includes/ ${DBC_PHP_INSTALL_DIR}/includes/
+COPY --chown=sideejer:sideejer src/vendor/ ${DBC_PHP_INSTALL_DIR}/vendor/
 COPY --chown=sideejer:sideejer src/*.xsd ${DBC_PHP_INSTALL_DIR}/
 COPY --chown=sideejer:sideejer src/*.html ${DBC_PHP_INSTALL_DIR}/
 COPY --chown=sideejer:sideejer src/*_INSTALL ${DBC_PHP_INSTALL_DIR}/
@@ -54,9 +55,9 @@ ENV USE_MEMCACHE=yes
 # openSearch default settings
 ENV AGENCY_FALLBACK="" \
     AGENCY_PROFILE_FALLBACK="" \
-    AGENCY_CACHE_HOST="localhost" \
-    AGENCY_CACHE_PORT=11211 \
-    AGENCY_CACHE_EXPIRE=3600 \
+    VIPCORE_CACHE_HOST="localhost" \
+    VIPCORE_CACHE_PORT=11211 \
+    VIPCORE_CACHE_EXPIRE=3600 \
     CACHE_HOST="localhost" \
     CACHE_PORT=11211 \
     CACHE_EXPIRE=600 \
