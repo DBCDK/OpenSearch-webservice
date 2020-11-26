@@ -41,13 +41,11 @@ services:
       ##- AGENCY_CACHE_HOST="memcached-2"
       ##- CACHE_HOST=memcached-1
       # Uncomment these, to use REDIS as a cache.
-      #- VIPCORE_CACHE_HOST=redis
-      #- VIPCORE_CACHE_PORT=6379
-      - VIPCORE_CACHE_HOST=localhost
-      - VIPCORE_CACHE_PORT=11211
-      #- CACHE_HOST=redis
-      #- CACHE_PORT=6379
-      #- CACHE_TYPE=redis
+      - AGENCY_CACHE_HOST=redis
+      - AGENCY_CACHE_PORT=6379
+      - CACHE_HOST=redis
+      - CACHE_PORT=6379
+      - CACHE_TYPE=redis
     expose:
       - 80
       - 9117
