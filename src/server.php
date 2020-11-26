@@ -30,6 +30,7 @@ require_once 'OLS_class_lib/memcache_class.php';
 require_once 'OLS_class_lib/rediscache_class.php';
 require_once 'OLS_class_lib/solr_query_class.php';
 require_once 'OLS_class_lib/open_agency_v2_class.php';
+require_once 'vendor/autoload.php';
 
 //-----------------------------------------------------------------------------
 /**
@@ -58,11 +59,9 @@ class OpenSearch extends webServiceServer {
   protected $searchable_source = [];
   protected $searchable_forskningsbibliotek = FALSE;
   protected $search_filter_for_800000 = [];  // set when collection 800000-danbib or 800000-bibdk are searchable
-  protected $search_profile_contains_800000 = FALSE;
   protected $collection_contained_in = [];
   protected $rank_frequence_debug;
   protected $collection_alias = [];
-  protected $unit_fallback = [];     // if record_repo is updated and solr is not, this is used to find some record from the old unit
   protected $feature_sw = [];
   protected $user_param;
   protected $debug_query = FALSE;
@@ -70,7 +69,7 @@ class OpenSearch extends webServiceServer {
   protected $split_holdings_include;
 
 
-    /**
+   /**
    * openSearch constructor.
    */
   public function __construct() {
@@ -79,8 +78,7 @@ class OpenSearch extends webServiceServer {
     $this->watch->start("construct");
     $this->curl = new curl();
     $this->curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
-    $this->open_agency = new OpenAgency($this->config->get_value('agency', 'setup'),
-                                        $this->config->get_value('cache_type', 'setup'));
+    $this->open_agency = self::initAgencyCore($this->config->get_value('vipcore', 'setup'));
 
     define('FIELD_UNIT_ID', 'unit.id');
     define('FIELD_FEDORA_PID', 'fedoraPid');
@@ -998,8 +996,8 @@ class OpenSearch extends webServiceServer {
     }
 
     $this->watch->start('precql');
-      $localdata_object = [];
-      foreach ($fpids as $fpid) {
+    $localdata_object = [];
+    foreach ($fpids as $fpid) {
       $id_array[] = $fpid->_value;
       list($owner_collection, $id) = explode(':', $fpid->_value);
       list($owner) = explode('-', $owner_collection);
@@ -1020,13 +1018,13 @@ class OpenSearch extends webServiceServer {
     $this->watch->start('solrq');
     $edismax_q = $chk_query['edismax']['q'] ?? [];
     $solr_q = 'wt=phps' .
-      '&q=' . urlencode(implode(AND_OP, $edismax_q)) .
-      '&fq=' . $filter_q .
-      '&start=0' .
-      '&rows=500' .
-      '&defType=edismax' .
-      '&fl=rec.' . FIELD_COLLECTION_INDEX . ',' . FIELD_WORK_ID . ',' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
-      $add_fl . '&trackingId=' . VerboseJson::$tracking_id;
+        '&q=' . urlencode(implode(AND_OP, $edismax_q)) .
+        '&fq=' . $filter_q .
+        '&start=0' .
+        '&rows=500' .
+        '&defType=edismax' .
+        '&fl=rec.' . FIELD_COLLECTION_INDEX . ',' . FIELD_WORK_ID . ',' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
+        $add_fl . '&trackingId=' . VerboseJson::$tracking_id;
     VerboseJson::log(TRACE, 'Search for pids in Solr: ' . $this->repository['solr'] . str_replace('wt=phps', '?', $solr_q));
     $curl = new curl();
     $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
@@ -1329,6 +1327,7 @@ class OpenSearch extends webServiceServer {
    * @param string $add_relation_sources - include sources using relations
    * @return string - the SOLR filter query that represent the profile
    */
+
   private function set_solr_filter($profile, $add_relation_sources = FALSE) {
     $collection_query = $this->repository['collection_query'] ?? '';
     $ret = [];
@@ -1348,40 +1347,6 @@ class OpenSearch extends webServiceServer {
     }
     return implode(OR_OP, $ret);
   }
-
-  /** \brief set search_filter_for_800000
-   *
-   * @param boolean $test_force_filter
-   */
-    /* currently unused
-  private function set_search_filters_for_800000_collection($test_force_filter = false) {
-    static $part_of_bib_dk = [];
-    static $use_holding = [];
-    $containing_80000 = $this->config->get_value('collections_containing_800000', 'setup');
-    foreach ($this->searchable_source as $source => $searchable) {
-      $searchable = $test_force_filter || $searchable;     // for testing purposes
-      if (($source == '800000-bibdk') && $searchable) {
-        if (empty($part_of_bib_dk)) $part_of_bib_dk = $this->open_agency->get_libraries_by_rule('part_of_bibliotek_dk', 1, 'Forskningsbibliotek');
-        if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
-
-      }
-      if (($source == '800000-danbib') && $searchable) {
-        if (empty($use_holding)) $use_holding = $this->open_agency->get_libraries_by_rule('use_holdings_item', 1, 'Forskningsbibliotek');
-      }
-      if (in_array($source, $containing_80000) && $searchable) {         // clear search filter since "broader" collection is selected
-        $part_of_bib_dk = [];
-        $use_holding = [];
-        break;
-      }
-    }
-    if ($part_of_bib_dk || $use_holding) {
-      $this->search_profile_contains_800000 = TRUE;
-      VerboseJson::log(DEBUG, 'Filter 800000 part_of_bib_dk:: ' . count($part_of_bib_dk) . ' use_holding: ' . count($use_holding));
-      // TEST $this->search_filter_for_800000 = 'holdingsitem.agencyId=(' . implode(' OR ', array_slice($part_of_bib_dk + $use_holding, 0, 3)) . ')';
-      $this->search_filter_for_800000 = 'holdingsitem.agencyId:(' . implode(' OR ', $part_of_bib_dk + $use_holding) . ')';
-    }
-  }
-   */
 
   /** \brief Build bq (BoostQuery) as field:content^weight
    *
@@ -2079,7 +2044,6 @@ class OpenSearch extends webServiceServer {
   }
 
   /** \brief Encapsules extraction of ids (unit.id or workid) solr result
-   *       - stores id and the corresponding fedorePid in unit_fallback
    *
    * @param array $solr_arr
    * @param array $search_ids - contains the result
@@ -2668,16 +2632,11 @@ class OpenSearch extends webServiceServer {
    * @return mixed - profile (array) or FALSE
    */
   private function fetch_profile_from_agency($agency, $profiles) {
-    static $profile_map;
-    if (!isset($profile_map)) {
-      $profile_map = self::fetch_profile_map($this->config->get_value('profile_map', 'setup'));
-    }
     $this->watch->start('agency_profile');
     $ret = [];
     foreach ($profiles as $profile) {
-      $pr_agency = $profile_map[$profile->_value] ?? $agency;
-      $collections = $this->open_agency->get_search_profile($pr_agency, $profile->_value);
-      if (!$collections) {
+      $collections = $this->open_agency->get_search_profile($agency, $profile->_value);
+      if (!$collections || $collections->error) {
         $ret = FALSE;
         break;
       }
@@ -2692,17 +2651,6 @@ class OpenSearch extends webServiceServer {
     }
     $this->watch->stop('agency_profile');
     return $ret;
-  }
-
-  /**
-   * @param $profile_map
-   * @return array
-   */
-  private function fetch_profile_map($profile_map) {
-    if (is_array($profile_map) && $profile_map['agency']) {
-      return $this->open_agency->get_search_profile_names($profile_map['agency'], $profile_map['prefix']);
-    }
-    return [];
   }
 
   /** \brief Merge two search profiles, extending the first ($sum) with the additions found in the second ($add)
@@ -2752,6 +2700,37 @@ class OpenSearch extends webServiceServer {
       $this->watch->stop('agency_rule');
     }
     return isset($agency_rules[$agency]) ? self::xs_boolean($agency_rules[$agency][$name]) : false;
+  }
+
+  /** Initialize OpenAgencyCore (VipCore) with memcached
+   *
+   * @param $config
+   * @return \DBC\VC\OpenAgencyCore|null
+   */
+  private function initAgencyCore($config) {
+    try {
+      $cacheMiddleware = null;
+      if ($config['memcached']) {
+        $memcached = [['url' => $config['memcached']['url'], 'port' => $config['memcached']['port']]];
+        $cacheMiddleware = \DBC\VC\CacheMiddleware\MemcachedCacheMiddleware::createCacheMiddleware(
+            $memcached, $config['memcached']['expire'], 'OS'
+        );
+      }
+      elseif ($config['redis']) {
+        $redis = ['url' => $config['redis']['url'], 'port' => $config['redis']['port']];
+        $cacheMiddleware = \DBC\VC\CacheMiddleware\PredisCacheMiddleware::createCacheMiddleware(
+            $redis, $config['redis']['expire'], 'OS'
+        );
+      }
+      else {
+        VerboseJson::log(ERROR, 'No memcached or redis settings for vipCore');
+      }
+      return new \DBC\VC\OpenAgencyCore(
+          $config['url'], $config['timeout'], VerboseJson::$tracking_id, $cacheMiddleware);
+    } catch (Error $e) {
+      VerboseJson::log(FATAL, 'Error initializing vipCore: ' . $e->getMessage());
+    }
+    return null;
   }
 
 
@@ -3819,4 +3798,3 @@ if (!defined('PHPUNIT_RUNNING')) {
 
   $ws->handle_request();
 }
-

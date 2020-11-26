@@ -300,29 +300,19 @@ solr_file_cache_host = localhost
 solr_file_cache_port = 11211
 solr_file_cache_expire = 3600
 
-
 ; --------------
-; setting for openAgency
-;
-; end point for openAgency
-; ex:
-; open_agency =  http://some.openagency/
-agency['base_uri'] = ${AGENCY_END_POINT}
-;
-; openAgency operations. base_uri is added unless the operation itself contains http:// or https://
-agency['libraryRules'] = ?action=libraryRules&agencyId=%s&trackingId=%s
-agency['searchProfile'] = ?action=openSearchProfile&agencyId=%s&profileVersion=%s&trackingId=%s
-;
-; memcache settings for openAgency calls. Set cache_expire like 30 (seconds) on test and next-system
-;agency['cache_host'] = localhost
-;agency['cache_port'] = 11211
-;agency['cache_expire'] = 300
-agency['cache_host'] = ${AGENCY_CACHE_HOST}
-agency['cache_port'] = ${AGENCY_CACHE_PORT}
-agency['cache_expire'] = ${AGENCY_CACHE_EXPIRE}
-;
-; timeout for agency call - defaults to 10 seconds
-agency['timeout'] = 15
+; Setting for vip core
+vipcore['url'] = ${VIPCORE_END_POINT}
+vipcore['timeout'] = 15
+; using memcache for caching
+vipcore['memcached']['url'] = ${VIPCORE_CACHE_HOST}
+vipcore['memcached']['port'] = ${VIPCORE_CACHE_PORT}
+vipcore['memcached']['expire'] = ${VIPCORE_CACHE_EXPIRE}
+
+; using redis for caching
+;vipcore['redis']['url'] = ${VIPCORE_CACHE_HOST}
+;vipcore['redis']['port'] = ${VIPCORE_CACHE_PORT}
+;vipcore['redis']['expire'] = ${VIPCORE_CACHE_EXPIRE}
 
 
 ; --------------
@@ -390,14 +380,6 @@ solr_format['briefDisplay']['format'] = display.accessType,display.creator,fedor
 solr_format['score']['format'] = score
 solr_format['idnr']['format'] = marc.001a,marc.001b,marc.001a001b
 solr_format['idnr']['secret'] = 1
-
-; --------------
-; Mapping search profile to be fectched from agency (123456) if prefix (qwerty) is matched as prefix against a profile in agency
-; profile_map['agency'] = 123456
-; profile_map['prefix'] = qwerty
-
-;profile_map['agency'] = 190102
-;profile_map['prefix'] = danbib
 
 ; --------------
 ; default search_profile setting
