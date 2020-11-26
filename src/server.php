@@ -1,7 +1,7 @@
 <?php
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 error_reporting(E_ALL & ~E_NOTICE);
 //-----------------------------------------------------------------------------
 /**
@@ -2716,8 +2716,14 @@ class OpenSearch extends webServiceServer {
             $memcached, $config['memcached']['expire'], 'OS'
         );
       }
+      elseif ($config['redis']) {
+        $redis = ['url' => $config['redis']['url'], 'port' => $config['redis']['port']];
+        $cacheMiddleware = \DBC\VC\CacheMiddleware\PredisCacheMiddleware::createCacheMiddleware(
+            $redis, $config['redis']['expire'], 'OS'
+        );
+      }
       else {
-        VerboseJson::log(ERROR, 'No memcached settings for vipCore');
+        VerboseJson::log(ERROR, 'No memcached or redis settings for vipCore');
       }
       return new \DBC\VC\OpenAgencyCore(
           $config['url'], $config['timeout'], VerboseJson::$tracking_id, $cacheMiddleware);

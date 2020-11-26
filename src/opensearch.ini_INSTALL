@@ -304,10 +304,15 @@ solr_file_cache_expire = 3600
 ; Setting for vip core
 vipcore['url'] = ${VIPCORE_END_POINT}
 vipcore['timeout'] = 15
+; using memcache for caching
 vipcore['memcached']['url'] = ${VIPCORE_CACHE_HOST}
 vipcore['memcached']['port'] = ${VIPCORE_CACHE_PORT}
 vipcore['memcached']['expire'] = ${VIPCORE_CACHE_EXPIRE}
 
+; using redis for caching
+;vipcore['redis']['url'] = ${VIPCORE_CACHE_HOST}
+;vipcore['redis']['port'] = ${VIPCORE_CACHE_PORT}
+;vipcore['redis']['expire'] = ${VIPCORE_CACHE_EXPIRE}
 
 
 ; --------------
