@@ -12,7 +12,7 @@ x-info:
     - AAA_IP_LIST=0.0.0.0-255.255.255.255
     # - AAA_FORS_RIGHTS=http://forsrights.addi.dk/1.2-opensearch/?action=forsRights&outputType=php&userIdAut=%s&groupIdAut=%s&passwordAut=%s&ipAddress=%s
     - AAA_FORS_RIGHTS=
-    - AGENCY_END_POINT=http://openagency.addi.dk/2.34/
+    - VIPCORE_END_POINT=http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk
     - AGENCY_FALLBACK=100200
     - AGENCY_PROFILE_FALLBACK=test
     - FEDORA=http://corepo-content-service.boblebad.svc.cloud.dbc.dk/rest/

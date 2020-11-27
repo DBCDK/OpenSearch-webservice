@@ -5,14 +5,14 @@ echo "<h1>Memcache info</h1>";
 
 echo "<p><ul>";
 echo "<li>Host cache at ". trim(getenv("CACHE_HOST"), '"') . ":" . trim(getenv("CACHE_PORT"), '"') ."</li>";
-echo "<li>Agency cache at ".trim(getenv("AGENCY_CACHE_HOST"), '"') . ":" . trim(getenv("AGENCY_CACHE_PORT"), '"') ."</li>";
+echo "<li>Agency cache at ".trim(getenv("VIPCORE_CACHE_HOST"), '"') . ":" . trim(getenv("VIPCORE_CACHE_PORT"), '"') ."</li>";
 echo "</ul></p>";
 
 echo "<p><em>The settings for this page are picked from environment variables, NOT ini files.</em></p>";
 
 $cache_type = trim(getenv("CACHE_TYPE"), '"');
-$agency_cache_host = trim(getenv("AGENCY_CACHE_HOST"), '"');
-$agency_cache_port = trim(getenv("AGENCY_CACHE_PORT"), '"');
+$agency_cache_host = trim(getenv("VIPCORE_CACHE_HOST"), '"');
+$agency_cache_port = trim(getenv("VIPCORE_CACHE_PORT"), '"');
 $cache_host = trim(getenv("CACHE_HOST"), '"');
 $cache_port = trim(getenv("CACHE_PORT"), '"');
 
@@ -31,7 +31,7 @@ echo "<p>OpenSearch <em>always</em> uses a memcache OR redis cache for OpenAgenc
 // and here: https://redis.io/commands/info
 
 if ($cache_type == "redis") {
-  echo "<h2>OpenAgency/VIP cache info (AGENCY_CACHE_HOST)</h2>";
+  echo "<h2>OpenAgency/VIP cache info (VIPCORE_CACHE_HOST)</h2>";
   $rediscache_obj = new Redis();
   $rediscache_obj->connect($agency_cache_host, $agency_cache_port);
   rediscache_info($rediscache_obj->info("all"));
@@ -41,7 +41,7 @@ if ($cache_type == "redis") {
   $rediscache_obj->connect($cache_host, $cache_port);
   rediscache_info($rediscache_obj->info("all"));
 } else {
-  echo "<h2>OpenAgency/VIP cache info (AGENCY_CACHE_HOST)</h2>";
+  echo "<h2>OpenAgency/VIP cache info (VIPCORE_CACHE_HOST)</h2>";
   $memcache_obj = new Memcache();
   $memcache_obj->connect($agency_cache_host, $agency_cache_port);
   memcache_info($memcache_obj->getStats());

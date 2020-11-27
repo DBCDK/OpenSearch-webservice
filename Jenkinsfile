@@ -50,11 +50,14 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Checkout OLS_class_lib') {
-            /* Let's make sure we have the OLS_class_lib repository cloned to our workspace */
+        stage('Run bootstrap script: checkout OLS_class_lib and VipCore') {
             steps {
-                checkout scm
-                checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[cancelProcessOnExternalsFail: true, credentialsId: 'GITLAB_DEPLOY_METASCRUM', depthOption: 'infinity', ignoreExternalsOption: true, local: 'src/OLS_class_lib', remote: 'https://svn.dbc.dk/repos/php/OpenLibrary/class_lib/branches/search-SE-2776']], quietOperation: true, workspaceUpdater: [$class: 'CheckoutUpdater']])
+                ansiColor("xterm") {
+                    sh """#!/usr/bin/env bash
+                    set -e
+                    ./script/bootstrap
+                    """
+                }
             }
         }
 
