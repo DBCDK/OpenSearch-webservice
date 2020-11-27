@@ -58,7 +58,8 @@ do_response = False
 # Use these global variables to track elapsed time for the urls
 elapsed_time_url1 = datetime.timedelta(0)
 elapsed_time_url2 = datetime.timedelta(0)
-
+# GLobal count of tests, used in output, etc.
+count = 1
 
 ################################################################################
 # LOG AND OUTPUT STUFF
@@ -262,6 +263,7 @@ def retrieve_post_response(url, request_string, desc, d: dict):
     stop_time = datetime.datetime.now()
     info("Time passed retrieving from '" + desc + "' : " + str(stop_time - start_time))
     d["res"] += (stop_time - start_time)
+    d["last_timing"] = (stop_time - start_time)
     return response.read()
 
 
@@ -274,6 +276,7 @@ def retrieve_get_response(url: str, params: dict, desc, d: dict):
     debug("URL: " + request.url)
     info("Time passed retrieving from '" + desc + "' : " + str(stop_time - start_time))
     d["res"] += (stop_time - start_time)
+    d["last_timing"] = (stop_time - start_time)
     debug("Result is '" + request.text + "'")
     return request.content
 
@@ -300,23 +303,32 @@ def prune_and_prettyprint(xml_string):
 
 def compare_xml(request_file, url1, url2):
     trace()
+    global count
     global elapsed_time_url1
     global elapsed_time_url2
 
-    info("Getting results for request_file " + request_file)
+    info("Test num: " + str(count) + ". Getting results for request_file " + request_file)
 
     debug("Calling url1: " + url1)
     # Sometimes I think Python is really, really heavy
-    d = {'res': elapsed_time_url1}
-    response1 = prune_and_prettyprint(retrieve_post_response(url1, read_file(request_file), "golden", d))
-    elapsed_time_url1 = d["res"]
+    d1 = {'res': elapsed_time_url1, 'last_timing': 0}
+    response1 = prune_and_prettyprint(retrieve_post_response(url1, read_file(request_file), "golden", d1))
+    elapsed_time_url1 = d1["res"]
     response("Response1 is \n" + response1.decode())
 
     debug("Calling url2: " + url2)
-    d = {'res': elapsed_time_url2}
-    response2 = prune_and_prettyprint(retrieve_post_response(url2, read_file(request_file), "tested", d))
-    elapsed_time_url2 = d["res"]
+    d2 = {'res': elapsed_time_url2, 'last_timing': 0}
+    response2 = prune_and_prettyprint(retrieve_post_response(url2, read_file(request_file), "tested", d2))
+    elapsed_time_url2 = d2["res"]
     response("Response2 is \n" + response2.decode())
+
+#    info("Timing difference, url1 - url2: " + str((d1["last_timing"] - d2["last_timing"]).total_seconds()))
+    info("Timing difference, test num, abs url1, abs url2, url1 - url2: "
+         + "\"" + str(count) + "\";"
+         + "\"" + str(d1["last_timing"].total_seconds()) + "\";"
+         + "\"" + str(d2["last_timing"].total_seconds()) + "\";"
+         + "\"" + str((d1["last_timing"] - d2["last_timing"]).total_seconds()) + "\"")
+    count += 1
 
     debug("Generating diff")
     diff = generate_diff(response1, response2)
@@ -331,24 +343,33 @@ def compare_xml(request_file, url1, url2):
 
 def compare_get(params: dict, url1: str, url2: str):
     trace()
+    global count
     global elapsed_time_url1
     global elapsed_time_url2
 
-    info("Getting results for get request: " + json.dumps(params))
+    info("Test num: " + str(count) + ". Getting results for get request: " + json.dumps(params))
 
     debug("Calling url1: " + url1)
     # Sometimes I think Python is really, really heavy
-    d = {'res': elapsed_time_url1}
+    d1 = {'res': elapsed_time_url1, 'last_timing': 0}
 
-    response1 = prune_and_prettyprint(retrieve_get_response(url1, params, "golden", d))
-    elapsed_time_url1 = d["res"]
+    response1 = prune_and_prettyprint(retrieve_get_response(url1, params, "golden", d1))
+    elapsed_time_url1 = d1["res"]
     response("Response1 is \n" + response1.decode())
 
     debug("Calling url2: " + url2)
-    d = {'res': elapsed_time_url2}
-    response2 = prune_and_prettyprint(retrieve_get_response(url2, params, "tested", d))
-    elapsed_time_url2 = d["res"]
+    d2 = {'res': elapsed_time_url2, 'last_timing': 0}
+    response2 = prune_and_prettyprint(retrieve_get_response(url2, params, "tested", d2))
+    elapsed_time_url2 = d2["res"]
     response("Response2 is \n" + response2.decode())
+
+#    info("Timing difference, url1 - url2: " + str((d1["last_timing"] - d2["last_timing"]).total_seconds()))
+    info("Timing difference, test num, abs url1, abs url2, url1 - url2: "
+         + "\"" + str(count) + "\";"
+         + "\"" + str(d1["last_timing"].total_seconds()) + "\";"
+         + "\"" + str(d2["last_timing"].total_seconds()) + "\";"
+         + "\"" + str((d1["last_timing"] - d2["last_timing"]).total_seconds()) + "\"")
+    count += 1
 
     debug("Generating diff")
     diff = generate_diff(response1, response2)
@@ -508,6 +529,12 @@ def main():
 
         debug("cli options: debug:" + str(args.debug))
         info("Comparing '" + args.url1 + "' against '" + args.url2 + "' with request from '" + args.requests + "'")
+        info("Timing difference, count, abs url1, abs url2, url1 - url2: "
+             + "\"count\";"
+             + "\"url1\";"
+             + "\"url2\";"
+             + "\"url1 - url2\"")
+
         result = test_webservice(args.url1, args.url2, args.requests)
 
         info("Passed files: " + " ".join(result["passed_files"]))
@@ -528,6 +555,11 @@ def main():
         info("Time passed: " + str(stop_time - start_time))
         info("Request time, url1 (golden): " + str(elapsed_time_url1))
         info("Request time, url2 (tested): " + str(elapsed_time_url2))
+        info("Timing difference, total, abs url1, abs url2, url1 - url2: "
+             + "\"total\";"
+             + "\"" + str(elapsed_time_url1.total_seconds()) + "\";"
+             + "\"" + str(elapsed_time_url2.total_seconds()) + "\";"
+             + "\"" + str((elapsed_time_url1 - elapsed_time_url2).total_seconds()) + "\"")
 
         if result["failed"] > 0:
             error("One or more tests failed. Result is failure.")
