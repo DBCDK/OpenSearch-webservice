@@ -35,7 +35,7 @@ x-info:
     - URL_PATH=
     - USE_HOLDING_BLOCK_JOIN=yes
   anchors:
-    - &TESTED opensearch-ws-local/opensearch-webservice:OSE-1
+    - &TESTED opensearch-ws-local/opensearch-webservice:master
     - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:333
 
 version: '3.4'
