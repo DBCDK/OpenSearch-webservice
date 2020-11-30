@@ -34,4 +34,5 @@ info "Svn info:"
 svn info | grep -e Revision -e Last
 
 cd "${SRCDIR}" || die "Unable to change directory to ${SRCDIR}"
-composer update --with-dependencies -v --no-cache
+composer clear-cache || die "Unable to clear the composer cache"
+composer update --with-dependencies -v || die "Unable to run composer to get php dependencies"
