@@ -302,7 +302,7 @@ solr_file_cache_expire = 3600
 
 ; --------------
 ; Setting for vip core
-vipcore['url'] = ${VIPCORE_END_POINT}
+vipcore['url'] = ${VIPCORE_ENDPOINT}
 vipcore['timeout'] = 15
 ; using memcache for caching
 vipcore['memcached']['url'] = ${VIPCORE_CACHE_HOST}

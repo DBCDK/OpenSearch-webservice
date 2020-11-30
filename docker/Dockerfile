@@ -3,7 +3,7 @@ FROM docker.dbc.dk/dbc-apache-php7:latest
 LABEL maintainer="Team Search <os-team@dbc.dk>" \
       AAA_IP_LIST="Sets AAA access for this IP pattern. Default is full access for localhost [127.0.0.1]" \
       AAA_FORS_RIGHTS="Sets the URL for aaa_fors_rights. Default is the empty string, which is 'not set'. []" \
-      VIPCORE_END_POINT="The full url for the VipCore service" \
+      VIPCORE_ENDPOINT="The full url for the VipCore service" \
       AGENCY_FALLBACK="Default agency fallback code - for development and testing only" \
       AGENCY_PROFILE_FALLBACK="Default search profile fallback - for development and testing only" \
       VIPCORE_CACHE_HOST="VipCore calls memcache host [localhost]" \
