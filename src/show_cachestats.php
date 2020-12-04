@@ -98,7 +98,12 @@ function memcache_info($status){
   tr2_me("Number of bytes this server is allowed to use for storage.", $MBSize." Megabytes");
   $MBSize=(int)( $status["bytes"]/(1024*1024) );
   tr2_me("Number of bytes currently in storage.",$MBSize." Megabytes");
+  $Size=(int)( $status["bytes"] );
+  tr2_me("Number of bytes currently in storage.",$Size." bytes");
 
+  $Items=(int)( $status["curr_items"] );
+  tr2_me("Number of items currently in storage.",$Items);
+  
   tr2_me("Number of valid items removed from cache to free memory for new items.", $status ["evictions"]);
 
  echo "</table>";
