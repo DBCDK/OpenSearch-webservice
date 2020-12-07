@@ -12,8 +12,8 @@ Scripts marked with [extra] are some additional scripts, compared to [scripts to
 * `setup`: Currently calls bootstrap.
 * `update` : Currently calls setup.
 * `build`: Builds the docker images for the project. [extra]
-* `server` : Starts the ws container in the docker directory.
-* `client` : Starts a client (browser) for the server started using `server`. [extra]
+* `server` : Starts the ws container in the docker directory, using a given datawell
+* `client` : Starts a client (browser) for the server started using `server` for a given datawell. [extra]
 * `test`: Runs a comparetest for the project, using the server started using `server` and another instance. [extra]
 * `test-timings`: Runs a number of requests against a running server, and extract timing information. See below for more information.
 

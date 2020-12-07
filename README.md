@@ -99,31 +99,37 @@ use the [build-dockers.py](https://gitlab.dbc.dk/i-scrum/build-tools) script.
 You can start a server from the docker image, using the scripts
 
 ```bash
-script/server
+script/server fbstest
 ```
 
 This uses the compose file in [docker/docker-compose.yml](docker/docker-compose.yml), which is configured
 to use the Datawell called `fbstest`. The output from 
 the log files will be shown in your console. 
 
+The argument to the `server` script, is the datawell to connect to, one of `fbstest`, 
+`boblebad`, or `cisterne`.
+
 ## Connecting to the Server Using a Browser
 
 To connect to the server, you will have to ask docker for the port for the system, like this:
 
 ```bash
-docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-webservice_1
+docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' fbstest_1
 ```
 
 The script `client` does this, and tries to start your favorite browser:
 
 ```bash
-script/client
+script/client fbstest
 ```
- 
+
+Here, the argument to the `client` script, is the datawell connected to by the server command you 
+have issued earlier, again one of `fbstest`, `boblebad`, or `cisterne`.
+
 If you wish to do it manually, you can do something like this instead:
 
 ```bash
-firefox localhost:$(docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' docker_opensearch-webservice_1)/5.2
+firefox localhost:$(docker inspect --format='{{(index (index .NetworkSettings.Ports "80/tcp") 0).HostPort}}' fbstest_1)
 ``` 
  
 You can then use the example request to test that the server is functioning.
@@ -147,7 +153,7 @@ $ script/bootstrap
 $ script/build --pull
 ...
     opensearch-webservice => opensearch-ws-local/opensearch-webservice:latest
-$ script/server
+$ script/server <datawell>
 ```
 
 The above assumes that the master branch is golden (functions correctly).
@@ -155,7 +161,7 @@ The above assumes that the master branch is golden (functions correctly).
 In another window:
 ```bash
 $ cd /tmp/OpenSearch-webservice
-$ script/client
+$ script/client <datawell>
 ...
 [client] 15:23:24.290870903 INFO: Starting ws client on http://localhost:32835/5.2/
 ```
@@ -245,39 +251,3 @@ docker run -ti -p 8080:80 --env-file=docker/boble.env opensearch-ws-local/opense
 
 Currently these environment files may not work.
 
-## Installation Without Docker
-
-*Note:* The instructions below are kept for historical/reference reasons. 
-
-The webservice requires the following files from [class_lib](https://github.com/DBCDK/class_lib-webservice)
-to be installed in ./OLS_class_lib
- * aaa_class.php
- * cql2tree_class.php
- * curl_class.php
- * format_class.php (only if openFormat functionality is included in ini-file)
- * inifile_class.php
- * ip_class.php
- * jsonconvert_class.php
- * memcache_class.php
- * objconvert_class.php
- * object_class.php
- * oci_class.php
- * open_agency_v2_class.php
- * registry_class.php
- * restconvert_class.php
- * solr_query_class.php
- * timer_class.php
- * verbose_class.php
- * webServiceServer_class.php
- * xmlconvert_class.php
-
-In the php.ini file:
-- make sure that always_populate_raw_post_data = On
-
-Copy opensearch.ini_INSTALL to opensearch.ini and edit it to reflect your setup - inifile settings may be set by environment variables.
-
-Copy opensearch.wsdl_INSTALL to opensearch.wsdl 
-
-Create a symbolic link from index.php to server.php or modify your webserver to default to server.php
-
-Consider copying robots.txt_INSTALL to robots.txt.

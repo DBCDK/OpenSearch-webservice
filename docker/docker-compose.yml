@@ -1,8 +1,67 @@
-# This compose file is run by Jenkins, so no static ports.
-version: '3'
+# This compose file is used by the server script to start a build against a datawell
+
+# Use an extension (v3.4) to set up common configuration
+x-info:
+  common-environment: &common-env
+    AAA_IP_LIST: 0.0.0.0-255.255.255.255
+    # AAA_FORS_RIGHTS: http://forsrights.addi.dk/1.2-opensearch/?action=forsRights&outputType=php&userIdAut=%s&groupIdAut=%s&passwordAut=%s&ipAddress=%s
+    AAA_FORS_RIGHTS: ""
+    MY_DOMAIN_IP_LIST: 172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.127.0.0-10.127.255.255
+    # These settings are used for newer versions of OpenSearch
+    VIPCORE_ENDPOINT: http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api/
+    VIPCORE_CACHE_HOST: localhost
+    VIPCORE_CACHE_PORT: 11211
+    # This setting is used for the version 333 and older, and will eventually be retired
+    AGENCY_END_POINT: http://openagency.addi.dk/2.34/
+    AGENCY_FALLBACK: 100200
+    AGENCY_PROFILE_FALLBACK: test
+    VERBOSE_LEVEL: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
+    OPEN_FORMAT: http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
+    URL_PATH: ""
+    USE_HOLDING_BLOCK_JOIN: "yes"
+    SERVICE_LOCATION: ""
+  cisterne-environment: &cisterne-env
+    - FEDORA: http://corepo-content-service-replica.cisterne.svc.cloud.dbc.dk/rest/
+    - SOLR: http://cisterne.solr.dbc.dk:8983/solr/cisterne-corepo-searcher/select
+    - HOLDINGS_DB: http://holdings-service.cisterne.svc.cloud.dbc.dk/getAllAvailability?pid=%s
+    - HOLDINGS_ITEMS_INDEX: cisterne-corepo-searcher
+    - RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.cisterne.svc.cloud.dbc.dk/RawRepoContentService
+    - RAW_RECORD_SOLR: http://cisterne.rawrepo.solr.dbc.dk:8983/solr/cisterne-rawrepo-searcher/select
+    - RAW_RECORD_REPOSITORY_NAME: prod-rawrecords
+    - REPOSITORY_NAME: prod
+  boblebad-environment: &boblebad-env
+    - FEDORA: http://corepo-content-service-replica.boblebad.svc.cloud.dbc.dk/rest/
+    - SOLR: http://boblebad.solr.dbc.dk:8983/solr/boblebad-corepo-searcher/select
+    - HOLDINGS_DB: http://holdings-service.boblebad.svc.cloud.dbc.dk/getAllAvailability?pid=%s
+    - HOLDINGS_ITEMS_INDEX: boblebad-corepo-searcher
+    - RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.boblebad.svc.cloud.dbc.dk/RawRepoContentService
+    - RAW_RECORD_SOLR: http://boblebad.rawrepo.solr.dbc.dk:8983/solr/boblebad-rawrepo-searcher/select
+    - RAW_RECORD_REPOSITORY_NAME: staging-rawrecords
+    - REPOSITORY_NAME: staging
+  fbstest-environment: &fbstest-env
+    - FEDORA: http://corepo-content-service-replica.fbstest.svc.cloud.dbc.dk/rest/
+    - SOLR: http://fbstest.solr.dbc.dk:8983/solr/fbstest-corepo-searcher/select
+    - HOLDINGS_DB: http://holdings-service.fbstest.svc.cloud.dbc.dk/getAllAvailability?pid=%s
+    - HOLDINGS_ITEMS_INDEX: fbstest-corepo-searcher
+    - RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.fbstest.svc.cloud.dbc.dk/RawRepoContentService
+    - RAW_RECORD_SOLR: http://fbstest.rawrepo.solr.dbc.dk:8983/solr/fbstest-rawrepo-searcher/select
+    - RAW_RECORD_REPOSITORY_NAME: raw_repo_ext_test
+    - REPOSITORY_NAME: external_test
+
+  anchors:
+    - &IMAGE opensearch-ws-local/opensearch-webservice${DOCKER_IMAGE_TAG}
+
+  ports: &ports
+    ports:
+      - 80
+      - 9117
+    expose:
+      - 80
+      - 9117
+
+version: '3.4'
 
 services:
-
 
   # A redis service - can be used for testing external memcache
   redis:
@@ -12,94 +71,25 @@ services:
     ports:
       - 6379
 
-  # Opensearch with external rediscache - for local testing.
-  opensearch-webservice:
-    image: opensearch-ws-local/opensearch-webservice${DOCKER_IMAGE_TAG}
+  # The images under test
+  cisterne:
+    image: *IMAGE
     environment:
-      - AAA_IP_LIST=0.0.0.0-255.255.255.255
-      - VIPCORE_ENDPOINT=http://vipcore.iscrum-vip-extern-test.svc.cloud.dbc.dk/1.0/api/
-      - VIPCORE_CACHE_HOST=localhost
-      - VIPCORE_CACHE_PORT=11211
-      - AGENCY_FALLBACK=100200
-      - AGENCY_PROFILE_FALLBACK=test
-      - FEDORA=http://corepo-content-service.fbstest.svc.cloud.dbc.dk/rest/
-      - HOLDINGS_DB=http://holdings-service.fbstest.svc.cloud.dbc.dk/getAllAvailability?pid=%s
-      - HOLDINGS_ITEMS_INDEX=fbstest-corepo-searcher
-      - RAW_RECORD_CONTENT_SERVICE=http://rawrepo-content-service.fbstest.svc.cloud.dbc.dk/RawRepoContentService
-      - RAW_RECORD_REPOSITORY_NAME=raw_repo_ext_test
-      - RAW_RECORD_SOLR=http://fbstest.rawrepo.solr.dbc.dk:8983/solr/fbstest-rawrepo-searcher/select
-      - REPOSITORY_NAME=external_test
-      - SERVICE_LOCATION=
-      - SOLR=http://fbstest.solr.dbc.dk:8983/solr/fbstest-corepo-searcher/select
-      - VERBOSE_LEVEL=WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
-      - MY_DOMAIN_IP_LIST=172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.127.0.0-10.127.255.255
-      - OPEN_FORMAT=http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
-      - URL_PATH=5.2
-      - USE_HOLDING_BLOCK_JOIN=yes # No clue what this does, but matches fbstest.
-      # Never set to no as this will stop running the local memcache used for fors and solr_file
-      # - USE_MEMCACHE=no
-      # The script should strip " from strings.
-      # Leave these, to use MEMCACHE as a cache.
-      ##- AGENCY_CACHE_HOST="memcached-2"
-      ##- CACHE_HOST=memcached-1
-      # Uncomment these, to use REDIS as a cache.
-      #- VIPCORE_CACHE_HOST=redis
-      #- VIPCORE_CACHE_PORT=6379
-      #- CACHE_HOST=redis
-      #- CACHE_PORT=6379
-      #- CACHE_TYPE=redis
-    expose:
-      - 80
-      - 9117
-    ports:
-      - 80
-      - 9117
+      <<: *common-env
+      <<: *cisterne-env
+    <<: *ports
 
-  # If you wish to use the stuff below here, you probably need to edit script/server to also start the services (or start them manually).
-
-  # A memcache service - can be used for testing external memcache
-  memcached-1:
-    image: docker.dbc.dk/dbc-memcached:latest
+  boblebad:
+    image: *IMAGE
     environment:
-      - EXTRAOPTS=-t 8 -n 256 -v
-    expose:
-      - 11211
-    ports:
-      - 11211
+      <<: *common-env
+      <<: *boblebad-env
+    <<: *ports
 
-  # A memcache service - can be used for testing external memcache
-  memcached-2:
-    image: docker.dbc.dk/dbc-memcached:latest
+  fbstest:
+    image: *IMAGE
     environment:
-      - EXTRAOPTS=-t 8 -n 256 -v
-    expose:
-      - 11211
-    ports:
-      - 11211
+      <<: *common-env
+      <<: *fbstest-env
+    <<: *ports
 
-  # The image under test - using internal memcache
-  # NOT NORMALLY USED
-  opensearch-webservice-internal-cache:
-    image: opensearch-ws-local/opensearch-webservice${DOCKER_IMAGE_TAG}
-    environment:
-      - AAA_IP_LIST=0.0.0.0-255.255.255.255
-      - AGENCY_END_POINT=http://openagency.addi.dk/test_2.34/
-      - AGENCY_FALLBACK=100200
-      - AGENCY_PROFILE_FALLBACK=test
-      - FEDORA=http://corepo-content-service.fbstest.svc.cloud.dbc.dk/rest/
-      - HOLDINGS_DB=http://holdings-service.fbstest.svc.cloud.dbc.dk/getAllAvailability?pid=%s
-      - HOLDINGS_ITEMS_INDEX=fbstest-corepo-searcher
-      - RAW_RECORD_CONTENT_SERVICE=http://rawrepo-content-service.fbstest.svc.cloud.dbc.dk/RawRepoContentService
-      - RAW_RECORD_REPOSITORY_NAME=raw_repo_ext_test
-      - RAW_RECORD_SOLR=http://fbstest.rawrepo.solr.dbc.dk:8983/solr/fbstest-rawrepo-searcher/select
-      - REPOSITORY_NAME=external_test
-      - SERVICE_LOCATION=
-      - SOLR=http://fbstest.solr.dbc.dk:8983/solr/fbstest-corepo-searcher/select
-      - VERBOSE_LEVEL=WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
-      - MY_DOMAIN_IP_LIST=172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.127.0.0-10.127.255.255
-      - OPEN_FORMAT=http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
-      - URL_PATH=5.2
-    expose:
-      - 80
-    ports:
-      - 80
