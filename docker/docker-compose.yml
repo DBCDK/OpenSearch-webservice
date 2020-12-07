@@ -21,32 +21,36 @@ x-info:
     USE_HOLDING_BLOCK_JOIN: "yes"
     SERVICE_LOCATION: ""
   cisterne-environment: &cisterne-env
-    - FEDORA: http://corepo-content-service-replica.cisterne.svc.cloud.dbc.dk/rest/
-    - SOLR: http://cisterne.solr.dbc.dk:8983/solr/cisterne-corepo-searcher/select
-    - HOLDINGS_DB: http://holdings-service.cisterne.svc.cloud.dbc.dk/getAllAvailability?pid=%s
-    - HOLDINGS_ITEMS_INDEX: cisterne-corepo-searcher
-    - RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.cisterne.svc.cloud.dbc.dk/RawRepoContentService
-    - RAW_RECORD_SOLR: http://cisterne.rawrepo.solr.dbc.dk:8983/solr/cisterne-rawrepo-searcher/select
-    - RAW_RECORD_REPOSITORY_NAME: prod-rawrecords
-    - REPOSITORY_NAME: prod
+    FEDORA: http://corepo-content-service-replica.cisterne.svc.cloud.dbc.dk/rest/
+    SOLR: http://cisterne.solr.dbc.dk:8983/solr/cisterne-corepo-searcher/select
+    HOLDINGS_DB: http://holdings-service.cisterne.svc.cloud.dbc.dk/getAllAvailability?pid=%s
+    HOLDINGS_ITEMS_INDEX: cisterne-corepo-searcher
+    RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.cisterne.svc.cloud.dbc.dk/RawRepoContentService
+    RAW_RECORD_SOLR: http://cisterne.rawrepo.solr.dbc.dk:8983/solr/cisterne-rawrepo-searcher/select
+    RAW_RECORD_REPOSITORY_NAME: prod-rawrecords
+    REPOSITORY_NAME: prod
   boblebad-environment: &boblebad-env
-    - FEDORA: http://corepo-content-service-replica.boblebad.svc.cloud.dbc.dk/rest/
-    - SOLR: http://boblebad.solr.dbc.dk:8983/solr/boblebad-corepo-searcher/select
-    - HOLDINGS_DB: http://holdings-service.boblebad.svc.cloud.dbc.dk/getAllAvailability?pid=%s
-    - HOLDINGS_ITEMS_INDEX: boblebad-corepo-searcher
-    - RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.boblebad.svc.cloud.dbc.dk/RawRepoContentService
-    - RAW_RECORD_SOLR: http://boblebad.rawrepo.solr.dbc.dk:8983/solr/boblebad-rawrepo-searcher/select
-    - RAW_RECORD_REPOSITORY_NAME: staging-rawrecords
-    - REPOSITORY_NAME: staging
+    FEDORA: http://corepo-content-service-replica.boblebad.svc.cloud.dbc.dk/rest/
+    SOLR: http://boblebad.solr.dbc.dk:8983/solr/boblebad-corepo-searcher/select
+    HOLDINGS_DB: http://holdings-service.boblebad.svc.cloud.dbc.dk/getAllAvailability?pid=%s
+    HOLDINGS_ITEMS_INDEX: boblebad-corepo-searcher
+    RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.boblebad.svc.cloud.dbc.dk/RawRepoContentService
+    RAW_RECORD_SOLR: http://boblebad.rawrepo.solr.dbc.dk:8983/solr/boblebad-rawrepo-searcher/select
+    RAW_RECORD_REPOSITORY_NAME: staging-rawrecords
+    REPOSITORY_NAME: staging
   fbstest-environment: &fbstest-env
-    - FEDORA: http://corepo-content-service-replica.fbstest.svc.cloud.dbc.dk/rest/
-    - SOLR: http://fbstest.solr.dbc.dk:8983/solr/fbstest-corepo-searcher/select
-    - HOLDINGS_DB: http://holdings-service.fbstest.svc.cloud.dbc.dk/getAllAvailability?pid=%s
-    - HOLDINGS_ITEMS_INDEX: fbstest-corepo-searcher
-    - RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.fbstest.svc.cloud.dbc.dk/RawRepoContentService
-    - RAW_RECORD_SOLR: http://fbstest.rawrepo.solr.dbc.dk:8983/solr/fbstest-rawrepo-searcher/select
-    - RAW_RECORD_REPOSITORY_NAME: raw_repo_ext_test
-    - REPOSITORY_NAME: external_test
+    FEDORA: http://corepo-content-service-replica.fbstest.svc.cloud.dbc.dk/rest/
+    SOLR: http://fbstest.solr.dbc.dk:8983/solr/fbstest-corepo-searcher/select
+    HOLDINGS_DB: http://holdings-service.fbstest.svc.cloud.dbc.dk/getAllAvailability?pid=%s
+    HOLDINGS_ITEMS_INDEX: fbstest-corepo-searcher
+    RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.fbstest.svc.cloud.dbc.dk/RawRepoContentService
+    RAW_RECORD_SOLR: http://fbstest.rawrepo.solr.dbc.dk:8983/solr/fbstest-rawrepo-searcher/select
+    RAW_RECORD_REPOSITORY_NAME: raw_repo_ext_test
+    REPOSITORY_NAME: external_test
+  dbckat-cisterne-environment: &dbckat-cisterne-env
+    RAW_RECORD_REPOSITORY_NAME: rawrepo_basis
+    RAW_RECORD_SOLR: http://cisterne.rawrepo.solr.dbc.dk:8983/solr/cisterne-basis-searcher/select
+    REPOSITORY_NAME: prod
 
   anchors:
     - &IMAGE opensearch-ws-local/opensearch-webservice${DOCKER_IMAGE_TAG}
@@ -93,3 +97,10 @@ services:
       <<: *fbstest-env
     <<: *ports
 
+  dbckat-cisterne:
+    image: *IMAGE
+    environment:
+      <<: *common-env
+      <<: *cisterne-env
+      <<: *dbckat-cisterne-env
+    <<: *ports
