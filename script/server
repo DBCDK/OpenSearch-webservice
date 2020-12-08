@@ -7,6 +7,10 @@ export SCRIPT_DIR=$(dirname "$(readlink -f "$0")") || { echo "Unable to identify
 
 set -e
 
+DATAWELL="$1"
+test -z "${DATAWELL}" && die "Usage $0 <datawell> -- where datawell is one of fbstest, boblebad or cisterne. Use fbstest if in doubt"
+
+
 cd ${PROJECT_DIR}/docker
 check_on_path docker docker-compose
 info "Starting redis service, used for caching - depending on config"
@@ -17,7 +21,7 @@ docker-compose up --force-recreate -d redis
 #docker-compose up --force-recreate -d memcached-2
 
 info "Starting ws service, based on compose file in $(pwd)"
-docker-compose up --force-recreate opensearch-webservice
+docker-compose up --force-recreate "${DATAWELL}"
 
 # If the users shuts down using Ctrl+C, we can shut down the redis service too
 info "Shutting down docker compose containers and services"
