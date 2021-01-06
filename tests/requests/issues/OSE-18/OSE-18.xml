@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<getObjectRequest>
+<agency>830380</agency>
+<profile>opac</profile>
+<outputType>json</outputType>
+<objectFormat>marcxchange</objectFormat>
+<identifier>48431801</identifier>
+</getObjectRequest></SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
