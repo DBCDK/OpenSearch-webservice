@@ -925,6 +925,12 @@ class OpenSearch extends webServiceServer {
           }
         }
       }
+      foreach ($fpids as $key => $pid) {    // handling identifiers used as localIdentifiers
+        if (!self::is_corepo_pid($pid->_value)) {
+          $lpids[] = $pid;
+          unset($fpids[$key]);
+        }
+      }
       foreach ($lpids as $lid) {
         $fpid = new stdClass();
         $fpid->_value = $this->agency_catalog_source . ':' . str_replace(' ', '', $lid->_value);
