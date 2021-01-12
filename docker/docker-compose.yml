@@ -97,6 +97,18 @@ services:
       <<: *fbstest-env
     <<: *ports
 
+  # fbstest with redis
+  fbstest-redis:
+    image: *IMAGE
+    environment:
+      <<: *common-env
+      <<: *fbstest-env
+      CACHE_TYPE: redis
+      CACHE_HOST: redis
+      CACHE_PORT: 6379
+      CACHE_EXPIRE: 600
+    <<: *ports
+
   dbckat-cisterne:
     image: *IMAGE
     environment:
