@@ -403,6 +403,9 @@ class OpenSearch extends webServiceServer {
 //var_dump($solr_query); var_dump($this->split_holdings_include); var_dump($this->search_filter_for_800000); die();
     $this->watch->stop('cql');
     $this->watch->start('postcql');
+    if (DEBUG_ON) {
+      var_dump($solr_query);
+    }
     try {
       if (isset($solr_query['error'])) {
         $error = self::cql2solr_error_to_string($solr_query['error']);

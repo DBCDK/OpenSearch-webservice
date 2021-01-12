@@ -397,6 +397,7 @@ profile_fallback = ${AGENCY_PROFILE_FALLBACK}
 phrase_index[] = facet
 phrase_index[] = phrase
 phrase_index[] = dkcclphrase
+phrase_index[] = scan
 
 ; --------------
 ; maximum number of identical relationnames returned
