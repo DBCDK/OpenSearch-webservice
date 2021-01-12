@@ -383,7 +383,7 @@ def compare_get(params: dict, url1: str, url2: str):
         info("No differences found for request")
 
 
-def compare_csv(request_file, url1, url2, query_status: dict) -> bool:
+def compare_csv(request_file, url1, url2, query_status: dict, limit: int) -> bool:
     """
     Compare all requests in a BOM headed csv file against the two base urls.
     Only search as action is supported.
@@ -394,6 +394,7 @@ def compare_csv(request_file, url1, url2, query_status: dict) -> bool:
     :return: True if no tests failed, False otherwise
     """
     trace()
+    global count
     global elapsed_time_url1
     global elapsed_time_url2
 
@@ -428,11 +429,14 @@ def compare_csv(request_file, url1, url2, query_status: dict) -> bool:
                 query_status["failed"].append(row)
                 res = False
             # print(row["query"] + "\n")
+            if count > limit:
+                info("Limit " + str(limit) + " for number of tests reached")
+                break
 
     return res
 
 
-def compare(request_file, url1, url2, query_status: dict) -> bool:
+def compare(request_file, url1, url2, query_status: dict, limit: int) -> bool:
     """
     Compare request(s) from as file. If the file is .xml, a single request is posted.
     If it is .csv, then all requests in the file is 'getted' against the urls.
@@ -456,14 +460,15 @@ def compare(request_file, url1, url2, query_status: dict) -> bool:
         compare_xml(request_file, url1, url2)
         return True
     elif file_extension.lower() == ".csv":
-        return compare_csv(request_file, url1, url2, query_status)
+        return compare_csv(request_file, url1, url2, query_status, limit)
     else:
         raise AssertionError("Unknown file extension: " + file_extension)
 
 
-def test_webservice(url1, url2, requests_folder) -> dict:
+def test_webservice(url1, url2, requests_folder, limit: int) -> dict:
     """ Test Generator """
     trace()
+    global count
     passed = 0
     failed = 0
     failed_files = []
@@ -471,7 +476,7 @@ def test_webservice(url1, url2, requests_folder) -> dict:
     query_status = {'passed': [], 'failed': []}
     for request_file in retrieve_requests_files(requests_folder):
         try:
-            if not compare(request_file, url1, url2, query_status):
+            if not compare(request_file, url1, url2, query_status, limit):
                 raise AssertionError("One or more tests failed")
             debug("Test passed")
             passed_files.append(request_file)
@@ -481,6 +486,10 @@ def test_webservice(url1, url2, requests_folder) -> dict:
             output_log_msg(traceback.format_exc())
             failed_files.append(request_file)
             failed += 1
+        if count > limit:
+            info("Limit " + str(limit) + " for number of tests reached")
+            break
+
     return {'passed': passed, 'failed': failed, 'passed_files': passed_files, 'failed_files': failed_files,
             'failed_queries': query_status["failed"], 'passed_queries': query_status["passed"],}
 
@@ -501,6 +510,8 @@ def get_args() -> argparse.Namespace:
                         help="Output trace information - implies debug")
     parser.add_argument("-r", "--response", action="store_true",
                         help="Output response from each call")
+    parser.add_argument("-l", "--limit", default=1000000, type=int,
+                        help="Limit number of tests to this limit [1000000]")
     parser.description = "Runs all the requests in the requests folder against both urls, compare results."
     parser.epilog = """
 Examples:
@@ -535,7 +546,7 @@ def main():
              + "\"url2\";"
              + "\"url1 - url2\"")
 
-        result = test_webservice(args.url1, args.url2, args.requests)
+        result = test_webservice(args.url1, args.url2, args.requests, args.limit)
 
         info("Passed files: " + " ".join(result["passed_files"]))
         if len(result["failed_files"]) > 0:
