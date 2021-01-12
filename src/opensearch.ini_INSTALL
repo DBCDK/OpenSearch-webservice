@@ -845,6 +845,8 @@ aaa_fors_rights = ${AAA_FORS_RIGHTS}
 ;aaa_credentials = ora_user/ora_passwd@some.server.dk
 ;
 ; memcache server for the authentication object - use localhost in one-webserver environment
+; The docker container, and show_cachestats.php script assumes that this is always hardcoded to local memcache
+; This makes the most sense, as these objects really do not need to be shared across the network.
 aaa_cache_address = localhost:11211
 ; number of seconds to cache authentication and access rights info
 aaa_cache_seconds = 3600
