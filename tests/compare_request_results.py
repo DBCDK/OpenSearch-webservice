@@ -37,7 +37,8 @@ NAMESPACES = {'SOAP-ENV': 'http://schemas.xmlsoap.org/soap/envelope/',
 
 IGNORE = ['/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:statInfo',
           '/SOAP-ENV:Envelope/SOAP-ENV:Body/oss:searchResponse/oss:result/oss:'
-          + 'searchResult/oss:collection/oss:object/oss:queryResultExplanation']
+          + 'searchResult/oss:collection/oss:object/oss:queryResultExplanation',
+          '/oss:searchResponse/oss:result/oss:statInfo']
 
 
 ################################################################################
