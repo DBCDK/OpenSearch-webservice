@@ -1,0 +1,11 @@
+<searchRequest>
+    <agency>010100</agency>
+    <!-- This request only really works against a dbckat configured open search server. For a normal it will return 0 results -->
+    <profile>dbckat</profile>
+    <repository>rawrepo_basis</repository>
+    <sort>date_created_descending</sort>
+    <query>scan.mti="bogen om fordøjelsens mysterium f*m=e5 en ny måde at tænke sundhed #245 (autbogart)"</query>
+    <start>1</start>
+    <stepValue>1000</stepValue>
+    <objectFormat>idnr</objectFormat>
+</searchRequest>

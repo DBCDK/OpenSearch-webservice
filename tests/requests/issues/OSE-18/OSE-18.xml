@@ -4,7 +4,6 @@
 <getObjectRequest>
 <agency>830380</agency>
 <profile>opac</profile>
-<outputType>json</outputType>
 <objectFormat>marcxchange</objectFormat>
 <identifier>48431801</identifier>
 </getObjectRequest></SOAP-ENV:Body>
