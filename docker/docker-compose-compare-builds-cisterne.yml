@@ -38,7 +38,7 @@ x-info:
   anchors:
     # - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:268
     - &TESTED opensearch-ws-local/opensearch-webservice:OSE-17
-    - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:346
+    - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:347
 
 version: '3.4'
 
@@ -77,5 +77,17 @@ services:
       CACHE_HOST: redis
       CACHE_PORT: 6379
       CACHE_EXPIRE: 600
+    ports:
+      - "33333:80"
+
+  tested-redis-cluster:
+    image: *TESTED
+    environment:
+      <<: *common-env
+      CACHE_TYPE: redis
+      CACHE_HOST: os-opensearch-cisterne-redis-cluster.platform-redis.svc.cloud.dbc.dk
+      CACHE_PORT: 6379
+      CACHE_EXPIRE: 600
+      CACHE_IS_CLUSTER: 1
     ports:
       - "33333:80"

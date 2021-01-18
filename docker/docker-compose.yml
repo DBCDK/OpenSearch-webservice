@@ -109,6 +109,31 @@ services:
       CACHE_EXPIRE: 600
     <<: *ports
 
+  fbstest-redis-cluster:
+    image: *IMAGE
+    environment:
+      <<: *common-env
+      <<: *fbstest-env
+      CACHE_TYPE: redis
+      CACHE_HOST: os-opensearch-fbstest-redis-cluster.platform-redis.svc.cloud.dbc.dk
+      CACHE_PORT: 6379
+      CACHE_EXPIRE: 600
+      CACHE_IS_CLUSTER: 1
+    <<: *ports
+
+  cisterne-redis-cluster:
+    image: *IMAGE
+    environment:
+      <<: *common-env
+      <<: *cisterne-env
+      CACHE_TYPE: redis
+      CACHE_HOST: os-opensearch-cisterne-redis-cluster.platform-redis.svc.cloud.dbc.dk
+      CACHE_PORT: 6379
+      CACHE_EXPIRE: 600
+      CACHE_IS_CLUSTER: 1
+    <<: *ports
+
+
   dbckat-cisterne:
     image: *IMAGE
     environment:
