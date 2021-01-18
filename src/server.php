@@ -528,7 +528,8 @@ class OpenSearch extends webServiceServer {
         if ($this->config->get_value('cache_type', 'setup') == "redis") {
           $this->cache = new rediscache($this->config->get_value('cache_host', 'setup'),
             $this->config->get_value('cache_port', 'setup'),
-            $this->config->get_value('cache_expire', 'setup'));
+            $this->config->get_value('cache_expire', 'setup'),
+            $this->config->get_value('cache_is_cluster', 'setup'));
         } else {
           $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
             $this->config->get_value('cache_port', 'setup'),
@@ -893,7 +894,8 @@ class OpenSearch extends webServiceServer {
       if ($this->config->get_value('cache_type', 'setup') == "redis") {
         $this->cache = new rediscache($this->config->get_value('cache_host', 'setup'),
           $this->config->get_value('cache_port', 'setup'),
-          $this->config->get_value('cache_expire', 'setup'));
+          $this->config->get_value('cache_expire', 'setup'),
+          $this->config->get_value('cache_is_cluster', 'setup'));
       } else {
         $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
           $this->config->get_value('cache_port', 'setup'),
