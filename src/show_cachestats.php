@@ -16,7 +16,6 @@ echo "<table border='1'>";
 tr3_me("<em>Object type</em>", "<em>Cache type</em>", "<em>Cache host:port</em>");
 tr3_me("aaa/fors & solr_file", "memcache (internal to pod)", "localhost:11211");
 tr3_me("VipCore information", "memcache", $vipcore_cache_host . ":" . $vipcore_cache_port );
-// TODO: Add cluster information?
 tr3_me("SOLR and COREPO objects", $cache_type, $cache_host . ":" . $cache_port);
 echo "</table></p>";
 
@@ -29,7 +28,7 @@ echo "<p>OpenSearch uses a memcache <em>OR</em> redis cache for SOLR/COREPO obje
 
 if ($cache_type == "redis") {
   echo "<h2>SOLR/COREPO cache info (CACHE_HOST)</h2>";
-  // TODO: Use cluster, if it is cluster
+  // This seems to work, even for clusters.
   $rediscache_obj = new Redis();
   $rediscache_obj->connect($cache_host, $cache_port);
   rediscache_info($rediscache_obj->info("all"));
