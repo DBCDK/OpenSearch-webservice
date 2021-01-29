@@ -3431,9 +3431,9 @@ class OpenSearch extends webServiceServer {
       'collectionType' => $this->user_param->collectionType->_value ?? '',
       'facets' => $this->user_param->facets->_value ?? '',
       'corepo' => $this->corepo_timers);
-    // If facet, collectionType, userDefinedBoost, or userDefinedRankings are empty, do not log them, because it will
+    // If facets, collectionType, userDefinedBoost, or userDefinedRanking are empty, do not log them, because it will
     // break the logging system. See SE-3009
-    $remove_empty = array('facet', 'collectionType', 'userDefinedBoost', 'userDefinedRankings');
+    $remove_empty = array('facets', 'collectionType', 'userDefinedBoost', 'userDefinedRanking');
     foreach ($my_out_array as $key => $val) {
       if (in_array($key, $remove_empty) && ('' == $val)) {
         unset($my_out_array[$key]);
