@@ -14,7 +14,7 @@ EXTNAME="OLS_class_lib"
 
 set -e
 
-check_on_path svn
+check_on_path svn composer
 
 SRCDIR="${PROJECT_DIR}/src"
 
