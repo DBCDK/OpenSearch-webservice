@@ -596,14 +596,18 @@ class OpenSearch extends webServiceServer {
     $unit_sort_keys = [];
     try {
       $found_primary = [];
-      foreach ($display_solr_arr as $d_s_a) {
-        foreach ($d_s_a['response']['docs'] as $solr_rec) {
-          $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
-          if ($solr_rec['sort.complexKey'] && empty($found_primary[$unit_id])) {
-            $unit_sort_keys[$unit_id] = $solr_rec['sort.complexKey'] . '  ' . $unit_id;
-            $source = self::record_source_from_pid($solr_rec[FIELD_FEDORA_PID]);
-            $found_primary[$unit_id] = (self::scalar_or_first_elem($solr_rec['unit.isPrimaryObject']) == 'true') &&
-              in_array($source, $solr_rec[FIELD_COLLECTION_INDEX]);
+      if (is_iterable($display_solr_arr)) {
+        foreach ($display_solr_arr as $d_s_a) {
+          if (is_iterable($d_s_a['response']['docs'])) {
+            foreach ($d_s_a['response']['docs'] as $solr_rec) {
+              $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
+              if ($solr_rec['sort.complexKey'] && empty($found_primary[$unit_id])) {
+                $unit_sort_keys[$unit_id] = $solr_rec['sort.complexKey'] . '  ' . $unit_id;
+                $source = self::record_source_from_pid($solr_rec[FIELD_FEDORA_PID]);
+                $found_primary[$unit_id] = (self::scalar_or_first_elem($solr_rec['unit.isPrimaryObject']) == 'true') &&
+                    in_array($source, $solr_rec[FIELD_COLLECTION_INDEX]);
+              }
+            }
           }
         }
       }
@@ -1869,11 +1873,13 @@ class OpenSearch extends webServiceServer {
   private function find_best_solr_rec($s_docs, $field, $match) {
     $best_idx = 0;
     $max_coll = -1;
-    foreach ($s_docs as $s_idx => $s_rec) {
-      $no_coll = is_countable($s_rec[FIELD_COLLECTION_INDEX]) ? count($s_rec[FIELD_COLLECTION_INDEX]) : 0;
-      if (in_array($match, $s_rec[$field]) && ($max_coll < $no_coll)) {
-        $max_coll = $no_coll;
-        $best_idx = $s_idx;
+    if (is_iterable($s_docs)) {
+      foreach ($s_docs as $s_idx => $s_rec) {
+        $no_coll = is_countable($s_rec[FIELD_COLLECTION_INDEX]) ? count($s_rec[FIELD_COLLECTION_INDEX]) : 0;
+        if (is_array($s_rec[$field]) && in_array($match, $s_rec[$field]) && ($max_coll < $no_coll)) {
+          $max_coll = $no_coll;
+          $best_idx = $s_idx;
+        }
       }
     }
     return $best_idx;
@@ -2707,7 +2713,10 @@ class OpenSearch extends webServiceServer {
     static $agency_rules = [];
     if ($agency && empty($agency_rules[$agency])) {
       $this->watch->start('agency_rule');
-      $agency_rules[$agency] = $this->open_agency->get_library_rules($agency);
+      $rules = $this->open_agency->get_library_rules($agency);
+      if (is_array($rules)) {
+        $agency_rules[$agency] = $rules;
+      }
       $this->watch->stop('agency_rule');
     }
     return isset($agency_rules[$agency]) ? self::xs_boolean($agency_rules[$agency][$name]) : false;
@@ -3003,6 +3012,7 @@ class OpenSearch extends webServiceServer {
 
   /**
    * @param $pid
+   * @return bool
    */
   private function is_corepo_pid($pid) {
     $record_source = self::record_source_from_pid($pid);
