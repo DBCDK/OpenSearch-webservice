@@ -1148,8 +1148,9 @@ class OpenSearch extends webServiceServer {
       self::remove_unselected_formats($collections);
 
       $result = &$ret->searchResponse->_value->result->_value;
-      _Object::set_value($result, 'hitCount', count($collections));
-      _Object::set_value($result, 'collectionCount', count($collections));
+      $no_collections = is_countable($collections) ? count($collections) : 0;
+      _Object::set_value($result, 'hitCount', $no_collections);
+      _Object::set_value($result, 'collectionCount', $no_collections);
       _Object::set_value($result, 'more', 'false');
       $result->searchResult = $collections;
       _Object::set_value($result, 'facetResult', '');
