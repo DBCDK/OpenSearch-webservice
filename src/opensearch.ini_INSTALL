@@ -295,6 +295,8 @@ cache_port = ${CACHE_PORT}
 cache_expire = ${CACHE_EXPIRE}
 cache_type = ${CACHE_TYPE}
 cache_is_cluster = ${CACHE_IS_CLUSTER}
+cache_connect_timeout = ${CACHE_CONNECT_TIMEOUT}
+cache_read_timeout = ${CACHE_READ_TIMEOUT}
 ; --------------
 ; memcache for solr_file - if not set cache_* will be used if set
 solr_file_cache_host = localhost

@@ -39,7 +39,7 @@ x-info:
     RAW_RECORD_REPOSITORY_NAME: staging-rawrecords
     REPOSITORY_NAME: staging
   fbstest-environment: &fbstest-env
-    FEDORA: http://corepo-content-service-replica.fbstest.svc.cloud.dbc.dk/rest/
+    FEDORA: http://corepo-content-service.fbstest.svc.cloud.dbc.dk/rest/
     SOLR: http://fbstest.solr.dbc.dk:8983/solr/fbstest-corepo-searcher/select
     HOLDINGS_DB: http://holdings-service.fbstest.svc.cloud.dbc.dk/getAllAvailability?pid=%s
     HOLDINGS_ITEMS_INDEX: fbstest-corepo-searcher
@@ -118,7 +118,21 @@ services:
       CACHE_HOST: os-opensearch-fbstest-redis-cluster.platform-redis.svc.cloud.dbc.dk
       CACHE_PORT: 6379
       CACHE_EXPIRE: 600
+      CACHE_CONNECT_TIMEOUT: 0.04
+      CACHE_READ_TIMEOUT: 0.05
       CACHE_IS_CLUSTER: 1
+    <<: *ports
+
+  # boblebad with redis
+  boblebad-redis:
+    image: *IMAGE
+    environment:
+      <<: *common-env
+      <<: *boblebad-env
+      CACHE_TYPE: redis
+      CACHE_HOST: redis
+      CACHE_PORT: $redis_port
+      CACHE_EXPIRE: 600
     <<: *ports
 
   cisterne-redis-cluster:
