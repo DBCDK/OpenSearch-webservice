@@ -3127,10 +3127,7 @@ class OpenSearch extends webServiceServer {
     }
     $relations = [];
     if (@ $rels_dom->loadXML($record_repo_addi_xml)) {  // ignore errors
-      if (!$rels_dom->getElementsByTagName('Description')->item(0)) {
-        VerboseJson::log(ERROR, 'Cannot load ' . $unit_id . ' object from RELS-EXT into DomXml');
-      }
-      else {
+      if ($rels_dom->getElementsByTagName('Description')->item(0)) {
         foreach ($rels_dom->getElementsByTagName('Description')->item(0)->childNodes as $tag) {
           if ($tag->nodeType == XML_ELEMENT_NODE) {
             if ($rel_prefix = array_search($tag->getAttribute('xmlns'), $this->xmlns))
