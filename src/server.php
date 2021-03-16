@@ -1030,7 +1030,7 @@ class OpenSearch extends webServiceServer {
         '&start=0' .
         '&rows=500' .
         '&defType=edismax' .
-        '&fl=rec.' . FIELD_COLLECTION_INDEX . ',' . FIELD_WORK_ID . ',' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
+        '&fl=' . FIELD_COLLECTION_INDEX . ',' . FIELD_WORK_ID . ',' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
         $add_fl . '&trackingId=' . VerboseJson::$tracking_id;
     VerboseJson::log(TRACE, 'Search for pids in Solr: ' . $this->repository['solr'] . str_replace('wt=phps', '?', $solr_q));
     $curl = new curl();
@@ -1103,8 +1103,13 @@ class OpenSearch extends webServiceServer {
           _Object::set_value($o->collection->_value, 'resultPosition', $rec_no + 1);
           _Object::set_value($o->collection->_value, 'numberOfObjects', 1);
 
-          if (@ !$record_repo_dom->loadXML($raw_res[$key])) {
-            VerboseJson::log(FATAL, 'Cannot load recid ' . reset($pids) . ' into DomXml');
+          if (!$raw_res[$key] || @ !$record_repo_dom->loadXML($raw_res[$key])) {
+            if (!$raw_res[$key]) {
+                VerboseJson::log(DEBUG, 'Record ' . $key . ' does not exist in index');
+            } else {
+                // Object is in index, but not in repository or parsing error
+                VerboseJson::log(FATAL, 'Cannot load recid ' . reset($pids) . ' into DomXml');
+            }
             if ($missing_record) {
               $record_repo_dom->loadXML(sprintf($missing_record, reset($pids)));
             } else {
