@@ -107,6 +107,8 @@ services:
       CACHE_HOST: redis
       CACHE_PORT: 6379
       CACHE_EXPIRE: 600
+      CACHE_CONNECT_TIMEOUT: 0.04
+      CACHE_READ_TIMEOUT: 0.05
     <<: *ports
 
   fbstest-redis-cluster:
@@ -131,7 +133,7 @@ services:
       <<: *boblebad-env
       CACHE_TYPE: redis
       CACHE_HOST: redis
-      CACHE_PORT: $redis_port
+      CACHE_PORT: 6379
       CACHE_EXPIRE: 600
     <<: *ports
 
