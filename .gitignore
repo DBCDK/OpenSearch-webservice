@@ -3,4 +3,5 @@
 *.iml
 doc/api
 OLS_class_lib/
-
+src/composer.lock
+src/vendor
