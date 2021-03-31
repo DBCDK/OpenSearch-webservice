@@ -17,7 +17,7 @@ Scripts marked with [extra] are some additional scripts, compared to [scripts to
 * `test`: Runs a comparetest for the project, using the server started using `server` and another instance. [extra]
 * `test-timings`: Runs a number of requests against a running server, and extract timing information. See below for more information.
 
-The most used scripts are `build` and `test`.
+The most used scripts are `build` and `test` or rather `server`.
 
 ## Analyzing Timings
 
@@ -32,3 +32,6 @@ server, is covered by timing information.
 
 The intention is to use this information to be able to develop better timing information, 
 when investigating performance of the system.
+
+### More Timings information
+it seems that the log format for timings has changed. What you can do is to use the scripts in ../tests directory
