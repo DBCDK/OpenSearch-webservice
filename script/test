@@ -11,11 +11,12 @@ set -e
 
 # We need an argument
 URL_GOLDEN="$1"
-REQ_DIR=${2:-${SCRIPT_DIR}/../tests/requests}
+OS_TO_TEST="$2"
+REQ_DIR=${3:-${SCRIPT_DIR}/../tests/requests}
 
-test -z "${URL_GOLDEN}" && die "Usage: $0 <golden_url> [request_dir]"
+test -z "${URL_GOLDEN}" && die "Usage: $0 <golden_url> <argument from server-script> [request_dir]"
 
 # Get information about the exposed port of the service from the compose file.
-port=$(get_compose_service_port ${PROJECT_DIR}/docker/docker-compose.yml opensearch-webservice 80)
-URL="http://localhost:${port}/5.2/"
+port=$(get_compose_service_port ${PROJECT_DIR}/docker/docker-compose.yml $OS_TO_TEST 80)
+URL="http://localhost:${port}/"
 exec ${SCRIPT_DIR}/../tests/compare_request_results.py ${URL_GOLDEN} ${URL} ${REQ_DIR}
