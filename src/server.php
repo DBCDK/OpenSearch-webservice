@@ -526,13 +526,24 @@ class OpenSearch extends webServiceServer {
         }
       } else {
         if ($this->config->get_value('cache_type', 'setup') == "redis") {
-          $this->cache = new rediscache($this->config->get_value('cache_host', 'setup'),
-            $this->config->get_value('cache_port', 'setup'),
-            $this->config->get_value('cache_expire', 'setup'),
-            $this->config->get_value('cache_is_cluster', 'setup'),
-            $this->config->get_value('cache_connect_timeout', 'setup'),
-            $this->config->get_value('cache_read_timeout', 'setup'));
+          VerboseJson::log(DEBUG, 'Using redis for search');
+          try {
+            $this->cache = new rediscache($this->config->get_value('cache_host', 'setup'),
+              $this->config->get_value('cache_port', 'setup'),
+              $this->config->get_value('cache_expire', 'setup'),
+              $this->config->get_value('cache_is_cluster', 'setup'),
+              $this->config->get_value('cache_connect_timeout', 'setup'),
+              $this->config->get_value('cache_read_timeout', 'setup'));
+          } catch(Exception $e) {
+            if($e->getMessage() == "UnableToConnectRedis") {
+              VerboseJson::log(STAT, 'UnableToConnectRedis in search');
+              $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
+                $this->config->get_value('cache_port', 'setup'),
+                $this->config->get_value('cache_expire', 'setup'));
+            }
+          }
         } else {
+          VerboseJson::log(DEBUG, 'Using memcache for search');
           $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
             $this->config->get_value('cache_port', 'setup'),
             $this->config->get_value('cache_expire', 'setup'));
@@ -890,13 +901,24 @@ class OpenSearch extends webServiceServer {
         $this->config->get_value('open_format_force_namespace', 'setup'),
         $this->config->get_value('solr_format', 'setup'));
       if ($this->config->get_value('cache_type', 'setup') == "redis") {
-        $this->cache = new rediscache($this->config->get_value('cache_host', 'setup'),
-          $this->config->get_value('cache_port', 'setup'),
-          $this->config->get_value('cache_expire', 'setup'),
-          $this->config->get_value('cache_is_cluster', 'setup'),
-          $this->config->get_value('cache_connect_timeout', 'setup'),
-          $this->config->get_value('cache_read_timeout', 'setup'));
+        VerboseJson::log(DEBUG, 'Using redis for getobject');
+        try {
+          $this->cache = new rediscache($this->config->get_value('cache_host', 'setup'),
+            $this->config->get_value('cache_port', 'setup'),
+            $this->config->get_value('cache_expire', 'setup'),
+            $this->config->get_value('cache_is_cluster', 'setup'),
+            $this->config->get_value('cache_connect_timeout', 'setup'),
+            $this->config->get_value('cache_read_timeout', 'setup'));
+        } catch(Exception $e) {
+          if($e->getMessage() == "UnableToConnectRedis") {
+            VerboseJson::log(STAT, 'UnableToConnectRedis in getObject');
+            $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
+              $this->config->get_value('cache_port', 'setup'),
+              $this->config->get_value('cache_expire', 'setup'));
+          }
+        }
       } else {
+        VerboseJson::log(DEBUG, 'Using memcache for getObject');
         $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
           $this->config->get_value('cache_port', 'setup'),
           $this->config->get_value('cache_expire', 'setup'));
@@ -2726,12 +2748,14 @@ class OpenSearch extends webServiceServer {
     try {
       $cacheMiddleware = null;
       if ($config['memcached']) {
+        VerboseJson::log(DEBUG, 'Using memcache for initAgencyCore');
         $memcached = [['url' => $config['memcached']['url'], 'port' => $config['memcached']['port']]];
         $cacheMiddleware = \DBC\VC\CacheMiddleware\MemcachedCacheMiddleware::createCacheMiddleware(
             $memcached, $config['memcached']['expire'], 'OS'
         );
       }
       elseif ($config['redis']) {
+        VerboseJson::log(DEBUG, 'Using redis for initAgencyCore');
         $redis = ['url' => $config['redis']['url'], 'port' => $config['redis']['port']];
         $cacheMiddleware = \DBC\VC\CacheMiddleware\PredisCacheMiddleware::createCacheMiddleware(
             $redis, $config['redis']['expire'], 'OS'
