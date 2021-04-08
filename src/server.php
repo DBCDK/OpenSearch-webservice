@@ -536,7 +536,7 @@ class OpenSearch extends webServiceServer {
               $this->config->get_value('cache_read_timeout', 'setup'));
           } catch(Exception $e) {
             if($e->getMessage() == "UnableToConnectRedis") {
-              VerboseJson::log(STAT, 'UnableToConnectRedis in search');
+              VerboseJson::log(WARNING, 'UnableToConnectRedis in search');
               $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
                 $this->config->get_value('cache_port', 'setup'),
                 $this->config->get_value('cache_expire', 'setup'));
@@ -911,7 +911,7 @@ class OpenSearch extends webServiceServer {
             $this->config->get_value('cache_read_timeout', 'setup'));
         } catch(Exception $e) {
           if($e->getMessage() == "UnableToConnectRedis") {
-            VerboseJson::log(STAT, 'UnableToConnectRedis in getObject');
+            VerboseJson::log(WARNING, 'UnableToConnectRedis in getObject');
             $this->cache = new cache($this->config->get_value('cache_host', 'setup'),
               $this->config->get_value('cache_port', 'setup'),
               $this->config->get_value('cache_expire', 'setup'));
