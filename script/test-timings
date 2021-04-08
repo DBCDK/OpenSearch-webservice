@@ -15,11 +15,15 @@ check_on_path jq
 set -e
 set -o pipefail
 
+OS_TO_TEST="$1"
+test -z "${OS_TO_TEST}" && die "Usage: $0 <argument from server-script>" 
+
 debug "Finding server"
 
 # Get information about the exposed port of the service from the compose file.
-port=$(get_compose_service_port ${PROJECT_DIR}/docker/docker-compose.yml opensearch-webservice 80)
-URL="http://localhost:${port}/5.2/"
+containerId=$(get_compose_container_id ${PROJECT_DIR}/docker/docker-compose.yml ${OS_TO_TEST})
+port=$(get_compose_service_port ${PROJECT_DIR}/docker/docker-compose.yml ${OS_TO_TEST} 80)
+URL="http://localhost:${port}/"
 
 function run_requests() {
 
@@ -46,7 +50,7 @@ function check_timings() {
     debug "Creating JSON file in ${JSONFILE}"
 
     echo "[" > ${JSONFILE}
-    docker logs ${WS_CONTAINERID} 2> /dev/null | \
+    docker logs ${containerId} 2> /dev/null | \
       grep '"level":"TIMER"' | grep '"timing":{' | awk '{print $0","}' | sed '$ s/,$//' >> ${JSONFILE} \
       || die "No duration timings found in log - did you enable this in the abstract webserver class?"
     echo "]"  >> ${JSONFILE}

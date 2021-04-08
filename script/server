@@ -8,7 +8,7 @@ export SCRIPT_DIR=$(dirname "$(readlink -f "$0")") || { echo "Unable to identify
 set -e
 
 DATAWELL="$1"
-test -z "${DATAWELL}" && die "Usage $0 <datawell> -- where datawell is one of fbstest, boblebad or cisterne. Use fbstest if in doubt"
+test -z "${DATAWELL}" && die "Usage $0 <datawell> -- where datawell is one of `sed -n '/The images under test/,$p' ../docker/docker-compose.yml | grep '^  [a-z].*:' | tr -d ':' | tr -d '\n' | tr -s ' '`"
 
 
 cd ${PROJECT_DIR}/docker
