@@ -2192,6 +2192,7 @@ class OpenSearch extends webServiceServer {
    * @return string - error if any, NULL otherwise
    */
   private function do_solr($urls, &$solr_arr) {
+    VerboseJson::log(DEBUG, 'do_solr with ' . count($urls) . ' urls');
     $solr_appid = self::set_app_id();
     foreach ($urls as $no => $url) {
       $url['url'] .= '&trackingId=' . VerboseJson::$tracking_id . '&appId=' . $solr_appid;
@@ -2209,11 +2210,13 @@ class OpenSearch extends webServiceServer {
     if (count($urls) > 1) {
       foreach ($solr_results as &$solr_result) {
         if (!$solr_arr[] = unserialize($solr_result)) {
+          VerboseJson::log(WARNING, 'Unable to parse solr result' . $solr_results);
           return 'Internal problem: Cannot decode Solr result';
         }
       }
     }
     elseif (!$solr_arr = unserialize($solr_results)) {
+        VerboseJson::log(WARNING, 'Unable to parse solr result' . $solr_results);
       return 'Internal problem: Cannot decode Solr result';
     }
     elseif (!empty($solr_arr['error'])) {
@@ -2830,6 +2833,8 @@ class OpenSearch extends webServiceServer {
   private function fetch_valid_relation_records($relation_units) {
     $rel_res = [];
     $rel_unit_pids = [];
+    // 37 ids
+    VerboseJson::log(DEBUG, 'fetch_valid_relation_records for ' . count($relation_units));
     if ($relation_units) {
       $relations_in_to_unit = [];
       $rel_query_ids = [];
@@ -2839,11 +2844,16 @@ class OpenSearch extends webServiceServer {
           $relations_in_to_unit[$u_id][$rel] = $rel;
         }
       }
+      // 244 units
+      VerboseJson::log(DEBUG, 'fetch_valid_relation_records get ids ' . count($rel_query_ids));
+      
+      //https://www.php.net/manual/en/function.array-chunk.php
+          
       $edismax['q'] = ['unit.id:("' . implode('" OR "', $rel_query_ids) . '")'];
       $filter_all_q = rawurlencode(self::set_solr_filter($this->search_profile, TRUE));
       $this->watch->start('Solr_rel');
       if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_all_q, '', $solr_arr)) {
-        VerboseJson::log(FATAL, 'Solr error searching relations: ' . $err . ' - query: ' . $edismax['q']);
+        VerboseJson::log(FATAL, 'Solr error searching relations: ' . $err . ' - query: ' . json_encode($edismax['q']));
       }
       // - type skal ikke læse unit'en,
       //   uri skal finde den højst prioriterede (hvis der er mere end en),
