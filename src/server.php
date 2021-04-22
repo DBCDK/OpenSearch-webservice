@@ -2856,6 +2856,11 @@ class OpenSearch extends webServiceServer {
       if ($err = self::do_solr($solr_urls, $solr_arr)) {
         VerboseJson::log(FATAL, 'Solr error searching relations: ' . $err . ' - query: ' . json_encode($solr_urls));
       }
+      // If request only har one URL, result will return the first element
+      // Change it to array so foreach code will work
+      if ( count($solr_urls) == 1) {
+        $solr_arr = [$solr_arr];
+      }
       VerboseJson::log(DEBUG, 'fetch_valid_relation_records solr result: ' . count($solr_arr));
       // - type skal ikke læse unit'en,
       //   uri skal finde den højst prioriterede (hvis der er mere end en),
@@ -2864,12 +2869,12 @@ class OpenSearch extends webServiceServer {
       // build list of available ids for the unit's
       $rel_unit_pids = [];
       foreach ($solr_arr as $solr_result) {
-        if (is_array($solr_result['docs'])) {
+        if (is_array($solr_result['response']['docs'])) {
           if (DEBUG_ON) {
             echo 'relations_in_to_unit ';
             var_dump($relations_in_to_unit);
           }
-          foreach ($solr_result['docs'] as $fdoc) {
+          foreach ($solr_result['response']['docs'] as $fdoc) {
             $unit_id = $fdoc[FIELD_UNIT_ID];
             $collections = $fdoc[FIELD_COLLECTION_INDEX];
             $this_relation = key($relations_in_to_unit[$unit_id]);
