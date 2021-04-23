@@ -2192,6 +2192,7 @@ class OpenSearch extends webServiceServer {
    * @return string - error if any, NULL otherwise
    */
   private function do_solr($urls, &$solr_arr) {
+    VerboseJson::log(DEBUG, 'do_solr with ' . count($urls) . ' urls');
     $solr_appid = self::set_app_id();
     foreach ($urls as $no => $url) {
       $url['url'] .= '&trackingId=' . VerboseJson::$tracking_id . '&appId=' . $solr_appid;
@@ -2209,11 +2210,13 @@ class OpenSearch extends webServiceServer {
     if (count($urls) > 1) {
       foreach ($solr_results as &$solr_result) {
         if (!$solr_arr[] = unserialize($solr_result)) {
+          VerboseJson::log(WARNING, 'Unable to parse solr result' . $solr_results);
           return 'Internal problem: Cannot decode Solr result';
         }
       }
     }
     elseif (!$solr_arr = unserialize($solr_results)) {
+        VerboseJson::log(WARNING, 'Unable to parse solr result' . $solr_results);
       return 'Internal problem: Cannot decode Solr result';
     }
     elseif (!empty($solr_arr['error'])) {
@@ -2221,6 +2224,7 @@ class OpenSearch extends webServiceServer {
       VerboseJson::log(FATAL, 'Solr result in error: (' . $err['code'] . ') ' . preg_replace('/\s+/', ' ', $err['msg']));
       return 'Internal problem: Solr result contains error';
     }
+    VerboseJson::log(DEBUG, 'do_solr results count: ' . count($solr_arr));
     return null;
   }
 
@@ -2830,6 +2834,7 @@ class OpenSearch extends webServiceServer {
   private function fetch_valid_relation_records($relation_units) {
     $rel_res = [];
     $rel_unit_pids = [];
+    VerboseJson::log(DEBUG, 'fetch_valid_relation_records for ' . count($relation_units));
     if ($relation_units) {
       $relations_in_to_unit = [];
       $rel_query_ids = [];
@@ -2839,43 +2844,57 @@ class OpenSearch extends webServiceServer {
           $relations_in_to_unit[$u_id][$rel] = $rel;
         }
       }
-      $edismax['q'] = ['unit.id:("' . implode('" OR "', $rel_query_ids) . '")'];
-      $filter_all_q = rawurlencode(self::set_solr_filter($this->search_profile, TRUE));
       $this->watch->start('Solr_rel');
-      if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_all_q, '', $solr_arr)) {
-        VerboseJson::log(FATAL, 'Solr error searching relations: ' . $err . ' - query: ' . $edismax['q']);
+      VerboseJson::log(DEBUG, 'fetch_valid_relation_records get relation ids ' . count($rel_query_ids));
+      $chunks = array_chunk ( $rel_query_ids, 20 );
+      $solr_urls = [];
+      $filter_all_q = rawurlencode(self::set_solr_filter($this->search_profile, TRUE));
+      foreach ($chunks as $chunk) {
+        $query['q'] = ['unit.id:("' . implode('" OR "', $chunk) . '")'];
+        $solr_urls[] = self::create_solr_url($query, 0, 99999, $filter_all_q, '', '', '', '');
       }
+      if ($err = self::do_solr($solr_urls, $solr_arr)) {
+        VerboseJson::log(FATAL, 'Solr error searching relations: ' . $err . ' - query: ' . json_encode($solr_urls));
+      }
+      // If request only har one URL, result will return the first element
+      // Change it to array so foreach code will work
+      if ( count($solr_urls) == 1) {
+        $solr_arr = [$solr_arr];
+      }
+      VerboseJson::log(DEBUG, 'fetch_valid_relation_records solr result: ' . count($solr_arr));
       // - type skal ikke læse unit'en,
       //   uri skal finde den højst prioriterede (hvis der er mere end en),
       //   full skal læse den højst prioriterede post og hente linkobjectet også.
       $this->watch->stop('Solr_rel');
       // build list of available ids for the unit's
       $rel_unit_pids = [];
-      if (is_array($solr_arr['response']['docs'])) {
-        if (DEBUG_ON) {
-          echo 'relations_in_to_unit ';
-          var_dump($relations_in_to_unit);
-        }
-        foreach ($solr_arr['response']['docs'] as $fdoc) {
-          $unit_id = $fdoc[FIELD_UNIT_ID];
-          $collections = $fdoc[FIELD_COLLECTION_INDEX];
-          $this_relation = key($relations_in_to_unit[$unit_id]);
-          foreach ($fdoc[FIELD_REC_ID] as $rec_id) {
-            if (self::is_corepo_pid($rec_id) && empty($rel_unit_pids[$unit_id][$rec_id])) {
-              if (DEBUG_ON) {
-                printf('Relation for %s in %s. collections %s', $rec_id, $unit_id, implode(',', $collections));
-              }
-              $debug_no = 'no ';
-              foreach ($relations_in_to_unit[$unit_id] as $rel) {
-                foreach ($collections as $rc) {
-                  if (isset($this->valid_relation[$rc][$rel])) {
-                    $debug_no = '';
-                    $rel_unit_pids[$unit_id][$rec_id] = $rec_id;;
-                    break 2;
+      foreach ($solr_arr as $solr_result) {
+        if (is_array($solr_result['response']['docs'])) {
+          if (DEBUG_ON) {
+            echo 'relations_in_to_unit ';
+            var_dump($relations_in_to_unit);
+          }
+          foreach ($solr_result['response']['docs'] as $fdoc) {
+            $unit_id = $fdoc[FIELD_UNIT_ID];
+            $collections = $fdoc[FIELD_COLLECTION_INDEX];
+            $this_relation = key($relations_in_to_unit[$unit_id]);
+            foreach ($fdoc[FIELD_REC_ID] as $rec_id) {
+              if (self::is_corepo_pid($rec_id) && empty($rel_unit_pids[$unit_id][$rec_id])) {
+                if (DEBUG_ON) {
+                  printf('Relation for %s in %s. collections %s', $rec_id, $unit_id, implode(',', $collections));
+                }
+                $debug_no = 'no ';
+                foreach ($relations_in_to_unit[$unit_id] as $rel) {
+                  foreach ($collections as $rc) {
+                    if (isset($this->valid_relation[$rc][$rel])) {
+                      $debug_no = '';
+                      $rel_unit_pids[$unit_id][$rec_id] = $rec_id;;
+                      break 2;
+                    }
                   }
                 }
+                if (DEBUG_ON) { echo ' -> ' . $debug_no . 'go' . PHP_EOL; }
               }
-              if (DEBUG_ON) { echo ' -> ' . $debug_no . 'go' . PHP_EOL; }
             }
           }
         }
