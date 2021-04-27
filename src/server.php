@@ -2853,9 +2853,7 @@ class OpenSearch extends webServiceServer {
         $query['q'] = ['unit.id:("' . implode('" OR "', $chunk) . '")'];
         $solr_urls[] = self::create_solr_url($query, 0, 99999, $filter_all_q, '', '', '', '');
       }
-      if ( count($solr_urls) == 0) {
-        VerboseJson::log(WARNING, 'Calls SOLR with no urls: ' . json_encode($relation_units));
-      } else {
+      if ( count($solr_urls) > 0) {
         if ($err = self::do_solr($solr_urls, $solr_arr)) {
           VerboseJson::log(FATAL, 'Solr error searching relations: ' . $err . ' - query: ' . json_encode($solr_urls));
         }
