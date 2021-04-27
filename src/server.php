@@ -2853,13 +2853,12 @@ class OpenSearch extends webServiceServer {
         $query['q'] = ['unit.id:("' . implode('" OR "', $chunk) . '")'];
         $solr_urls[] = self::create_solr_url($query, 0, 99999, $filter_all_q, '', '', '', '');
       }
-      if ($err = self::do_solr($solr_urls, $solr_arr)) {
-        VerboseJson::log(FATAL, 'Solr error searching relations: ' . $err . ' - query: ' . json_encode($solr_urls));
-      }
-      // If request only har one URL, result will return the first element
-      // Change it to array so foreach code will work
-      if ( count($solr_urls) == 1) {
-        $solr_arr = [$solr_arr];
+      if ( count($solr_urls) == 0) {
+        VerboseJson::log(WARNING, 'Calls SOLR with no urls: ' . json_encode($relation_units));
+      } else {
+        if ($err = self::do_solr($solr_urls, $solr_arr)) {
+          VerboseJson::log(FATAL, 'Solr error searching relations: ' . $err . ' - query: ' . json_encode($solr_urls));
+        }
       }
       // - type skal ikke læse unit'en,
       //   uri skal finde den højst prioriterede (hvis der er mere end en),
@@ -2868,6 +2867,11 @@ class OpenSearch extends webServiceServer {
       // build list of available ids for the unit's
       $rel_unit_pids = [];
       if (is_array($solr_arr)) {
+        // If request only har one URL, result will return the first element
+        // Change it to array so foreach code will work
+        if ( count($solr_urls) == 1) {
+          $solr_arr = [$solr_arr];
+        }
         VerboseJson::log(DEBUG, 'fetch_valid_relation_records solr result: ' . count($solr_arr));
         foreach ($solr_arr as $solr_result) {
           if (is_array($solr_result['response']['docs'])) {
