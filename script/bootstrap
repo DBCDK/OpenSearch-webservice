@@ -9,7 +9,7 @@ export SCRIPT_DIR=$(dirname "$(readlink -f "$0")") || { echo "Unable to identify
 # Get (or update) the svn externals needed by this php application.
 # SVNREPO="https://svn.dbc.dk/repos/php/OpenLibrary/class_lib/trunk"
 # Use a branch for this purpose, as we need to add timing stuff to the baseclasses.
-SVNREPO="https://svn.dbc.dk/repos/php/OpenLibrary/class_lib/branches/OSE-31-redis-exception"
+SVNREPO="https://svn.dbc.dk/repos/php/OpenLibrary/class_lib/branches/OSE-40-redis-dead-node
 EXTNAME="OLS_class_lib"
 
 set -e
