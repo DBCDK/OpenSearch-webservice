@@ -215,13 +215,13 @@ pipeline {
             script {
                 if ("${env.BRANCH_NAME}" == 'master') {
                     emailext(
-                            to: "os-team@dbc.dk",
+                            to: "de-team@dbc.dk",
                             subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} back to normal",
                             mimeType: 'text/html; charset=UTF-8',
                             body: "<p>The master build is back to normal.</p><p><a href=\"${env.BUILD_URL}\">Build information</a>.</p>",
                             attachLog: false,
                     )
-                    slackSend(channel: 'search',
+                    slackSend(channel: 'data-engineering-team',
                             color: 'good',
                             message: "${env.JOB_NAME} #${env.BUILD_NUMBER} back to normal: ${env.BUILD_URL}",
                             tokenCredentialId: 'slack-global-integration-token')
@@ -244,13 +244,13 @@ pipeline {
                 if ("${env.BRANCH_NAME}" == 'master') {
                     emailext(
                             recipientProviders: [developers(), culprits()],
-                            to: "os-team@dbc.dk",
+                            to: "de-team@dbc.dk",
                             subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} failed",
                             mimeType: 'text/html; charset=UTF-8',
                             body: "<p>The master build failed. Log attached. </p><p><a href=\"${env.BUILD_URL}\">Build information</a>.</p>",
                             attachLog: true,
                     )
-                    slackSend(channel: 'search',
+                    slackSend(channel: 'data-engineering-team',
                             color: 'warning',
                             message: "${env.JOB_NAME} #${env.BUILD_NUMBER} failed and needs attention: ${env.BUILD_URL}",
                             tokenCredentialId: 'slack-global-integration-token')
@@ -272,7 +272,7 @@ pipeline {
             println("Job was a succes.")
 //            script {
 //                if ("${env.BRANCH_NAME}" == 'master') {
-//                    slackSend(channel: 'search',
+//                    slackSend(channel: 'data-engineering-team',
 //                            color: 'good',
 //                            message: "${env.JOB_NAME} #${env.BUILD_NUMBER} completed, and pushed *-${VERSION}:${DOCKER_PUSH_TAG} to artifactory.",
 //                            tokenCredentialId: 'slack-global-integration-token')
