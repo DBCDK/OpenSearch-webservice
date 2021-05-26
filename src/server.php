@@ -327,6 +327,9 @@ class OpenSearch extends webServiceServer {
         foreach ($solr_query['edismax']['fq'] as $fq) {
           $filter .= '&fq=' . rawurlencode($fq);
         }
+        foreach ($solr_query['edismax']['add_params'] as $par => $val) {
+          $filter .= '&' . $par . '=' . rawurlencode($val);
+        }
         $solr_urls[0]['url'] = $this->repository['solr'] .
           '?q=' . urlencode($q) .
           '&fq=' . $filter .
@@ -2168,6 +2171,9 @@ class OpenSearch extends webServiceServer {
       foreach ($eq['fq'] as $fq) {
         $filter .= '&fq=' . rawurlencode($fq);
       }
+    }
+    foreach ($eq['add_params'] as $par => $val) {
+      $filter .= '&' . $par . '=' . rawurlencode($val);
     }
     $url = $this->repository['solr'] .
       '?q=' . urlencode($q) .
