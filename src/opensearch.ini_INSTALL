@@ -209,7 +209,7 @@ repository['${REPOSITORY_NAME}']['handler_format']['holding']['fq'] = {!join fro
 repository['${REPOSITORY_NAME}']['handler_format']['holding']['q'] = _query_:%22{!join from=parentDocId to=rec.childDocId defType=edismax v=%s}%22
 repository['${REPOSITORY_NAME}']['handler_format']['use_holding_block_join'] = ${USE_HOLDING_BLOCK_JOIN}
 repository['${REPOSITORY_NAME}']['handler_format']['holding_block_join']['fq'] = {!parent which="t:m" v=%s}
-repository['${REPOSITORY_NAME}']['handler_format']['holding_block_join']['q'] = _query_:"{!parent which="t:m" v=%s}"
+repository['${REPOSITORY_NAME}']['handler_format']['holding_block_join']['q'] = _query_:%22{!parent which="t:m" v=%s}%22
 
 
 ; collection query filter

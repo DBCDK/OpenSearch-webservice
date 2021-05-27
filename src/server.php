@@ -1490,6 +1490,9 @@ class OpenSearch extends webServiceServer {
       $handler_format = &$this->repository['handler_format'];
       if ($handler_format['use_holding_block_join'] && is_array($handler_format['holding_block_join'])) {
         $handler_format['holding'] = $handler_format['holding_block_join'];
+        foreach ($handler_format['holding'] as &$format) {
+          $format = urldecode($format);
+        }
       }
       if ($cql_file_mandatory && empty($this->repository['cql_file'])) {
         VerboseJson::log(FATAL, 'cql_file not defined for repository: ' . $this->repository_name);
