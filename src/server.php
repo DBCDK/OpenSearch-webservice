@@ -312,7 +312,7 @@ class OpenSearch extends webServiceServer {
           $error = self::cql2solr_error_to_string($solr_query['error']);
           return $ret_error;
         }
-        VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
+        VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'pretty' => print_r($solr_query, TRUE), 'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
         $q = implode(AND_OP, $solr_query['edismax']['q']);
         if (!in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), []))) {
           $filter = rawurlencode(RR_MARC_001_B . ':(870970 OR ' . $this->agency . ')');
@@ -326,6 +326,9 @@ class OpenSearch extends webServiceServer {
         }
         foreach ($solr_query['edismax']['fq'] as $fq) {
           $filter .= '&fq=' . rawurlencode($fq);
+        }
+        foreach ($solr_query['edismax']['add_params'] as $par => $val) {
+          $filter .= '&' . $par . '=' . rawurlencode($val);
         }
         $solr_urls[0]['url'] = $this->repository['solr'] .
           '?q=' . urlencode($q) .
@@ -463,7 +466,7 @@ class OpenSearch extends webServiceServer {
       // TODO rows should max to like 5000 and use cursorMark to page forward. cursorMark need a sort paramater to work
       $rows = $step_value ? (($start + $step_value + 100) * 2) + 100 : 0;
 
-      VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
+      VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'pretty' => print_r($solr_query, TRUE),'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
 
     } finally {
       $this->watch->stop('postcql');
@@ -1487,6 +1490,9 @@ class OpenSearch extends webServiceServer {
       $handler_format = &$this->repository['handler_format'];
       if ($handler_format['use_holding_block_join'] && is_array($handler_format['holding_block_join'])) {
         $handler_format['holding'] = $handler_format['holding_block_join'];
+        foreach ($handler_format['holding'] as &$format) {
+          $format = urldecode($format);
+        }
       }
       if ($cql_file_mandatory && empty($this->repository['cql_file'])) {
         VerboseJson::log(FATAL, 'cql_file not defined for repository: ' . $this->repository_name);
@@ -2168,6 +2174,9 @@ class OpenSearch extends webServiceServer {
       foreach ($eq['fq'] as $fq) {
         $filter .= '&fq=' . rawurlencode($fq);
       }
+    }
+    foreach ($eq['add_params'] as $par => $val) {
+      $filter .= '&' . $par . '=' . rawurlencode($val);
     }
     $url = $this->repository['solr'] .
       '?q=' . urlencode($q) .
