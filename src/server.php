@@ -312,7 +312,7 @@ class OpenSearch extends webServiceServer {
           $error = self::cql2solr_error_to_string($solr_query['error']);
           return $ret_error;
         }
-        VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
+        VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'pretty' => print_r($solr_query, TRUE), 'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
         $q = implode(AND_OP, $solr_query['edismax']['q']);
         if (!in_array($this->agency, self::value_or_default($this->config->get_value('all_rawrepo_agency', 'setup'), []))) {
           $filter = rawurlencode(RR_MARC_001_B . ':(870970 OR ' . $this->agency . ')');
@@ -466,7 +466,7 @@ class OpenSearch extends webServiceServer {
       // TODO rows should max to like 5000 and use cursorMark to page forward. cursorMark need a sort paramater to work
       $rows = $step_value ? (($start + $step_value + 100) * 2) + 100 : 0;
 
-      VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
+      VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'pretty' => print_r($solr_query, TRUE),'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
 
     } finally {
       $this->watch->stop('postcql');
