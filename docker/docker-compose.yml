@@ -20,6 +20,8 @@ x-info:
     URL_PATH: ""
     USE_HOLDING_BLOCK_JOIN: "yes"
     SERVICE_LOCATION: ""
+    CACHE_CONNECT_TIMEOUT: 0.04
+    CACHE_READ_TIMEOUT: 0.05
   cisterne-environment: &cisterne-env
     FEDORA: http://corepo-content-service-replica.cisterne.svc.cloud.dbc.dk/rest/
     SOLR: http://cisterne.solr.dbc.dk:8983/solr/cisterne-corepo-searcher/select
@@ -75,7 +77,7 @@ services:
     ports:
       - 6379
 
-  # The images under test
+  # The cisterne, boblebad and fbstest setup, uses caches on the local container.
   cisterne:
     image: *IMAGE
     environment:
@@ -107,8 +109,6 @@ services:
       CACHE_HOST: redis
       CACHE_PORT: 6379
       CACHE_EXPIRE: 600
-      CACHE_CONNECT_TIMEOUT: 0.04
-      CACHE_READ_TIMEOUT: 0.05
     <<: *ports
 
   fbstest-redis-cluster:
@@ -120,8 +120,6 @@ services:
       CACHE_HOST: os-opensearch-fbstest-redis-cluster.platform-redis.svc.cloud.dbc.dk
       CACHE_PORT: 6379
       CACHE_EXPIRE: 600
-      CACHE_CONNECT_TIMEOUT: 0.04
-      CACHE_READ_TIMEOUT: 0.05
       CACHE_IS_CLUSTER: 1
     <<: *ports
 
