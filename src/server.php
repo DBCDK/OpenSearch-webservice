@@ -2175,8 +2175,11 @@ class OpenSearch extends webServiceServer {
         $filter .= '&fq=' . rawurlencode($fq);
       }
     }
-    foreach ($eq['add_params'] as $par => $val) {
-      $filter .= '&' . $par . '=' . rawurlencode($val);
+    if (!empty($eq['add_params'])) {
+      VerboseJson::set_verbose_element('combined_search', count($eq['add_params']) - 1);
+      foreach ($eq['add_params'] as $par => $val) {
+        $filter .= '&' . $par . '=' . rawurlencode($val);
+      }
     }
     $url = $this->repository['solr'] .
       '?q=' . urlencode($q) .
