@@ -2176,6 +2176,9 @@ class OpenSearch extends webServiceServer {
       }
     }
     if (!empty($eq['add_params'])) {
+      // If we need to use combined_search add a count of the number of added parameters as a complexity measurement.
+      // The presence of the 'combined_search' key in the log, can be used to filter and determine use of this feature.
+      // Se FBI-93 for more information about this feature.
       VerboseJson::set_verbose_element('combined_search', count($eq['add_params']) - 1);
       foreach ($eq['add_params'] as $par => $val) {
         $filter .= '&' . $par . '=' . rawurlencode($val);
