@@ -463,7 +463,7 @@ class OpenSearch extends webServiceServer {
 
       $facet_q = empty($param->facets) ? '' : self::set_solr_facet_parameters($param->facets->_value);
 
-      // TODO rows should max to like 5000 and use cursorMark to page forward. cursorMark need a sort paramater to work
+      // TODO rows should max to like 5000 and use cursorMark to page forward. cursorMark need a sort parameter to work
       $rows = $step_value ? (($start + $step_value + 100) * 2) + 100 : 0;
 
       VerboseJson::log(TRACE, array('message' => 'CQL to SOLR', 'query' => $param->query->_value, 'pretty' => print_r($solr_query, TRUE),'parsed' => preg_replace('/\s+/', ' ', print_r($solr_query, TRUE))));
@@ -592,7 +592,7 @@ class OpenSearch extends webServiceServer {
         var_dump($work_ids);
       };
 
-// fetch data to sort_keys and (if needed) sorl display format(s)
+// fetch data to sort_keys and (if needed) solr display format(s)
       $units_in_result = [];
       foreach ($work_ids as $work) {
         foreach ($work as $unit_id => $unit_pids) {
@@ -2444,7 +2444,7 @@ class OpenSearch extends webServiceServer {
           $edismax['q'] = [];
         }
         $edismax['q'][] = ($use_work_collection ? FIELD_WORK_ID : FIELD_UNIT_ID) . ':(' . implode(OR_OP, $search_w) . ')';
-        if ($err = self::get_solr_array($edismax, 0, 99999, '', '', '', $filter_q, '', $solr_arr)) {
+        if ($err = self::get_solr_array($edismax, 0, 99999, '', $rank_q, '', $filter_q, '', $solr_arr)) {
           return $err;
         }
         foreach ($solr_arr['response']['docs'] as $fdoc) {
