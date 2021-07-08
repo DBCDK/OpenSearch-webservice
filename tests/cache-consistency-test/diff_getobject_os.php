@@ -121,7 +121,7 @@ function fetch_titles($reply, $ids, &$titles) {
       $title = sprintf('%-20s %s', $identifier, $rec_title);
       $id = $ids[$idx];
       if (!empty($titles[$id]) && ($titles[$id] <> $title)) {
-        echo '****************** ERROR ******* diff title for ' . $id . PHP_EOL;
+        echo '****************** ERROR ******* diff title for ' . $id . ' Stored (expected) title: ' . $titles[$id] . ' retrieved (actual) title: ' . $title . PHP_EOL;
       }
       $titles[$ids[$idx]] = $title;
     }
