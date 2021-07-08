@@ -1,0 +1,140 @@
+<?php
+
+// prime 6000 record
+// sleep 90 minutter
+// get 10 recs each minute
+
+define('ID_FILE', 'uniq_idnr.lst');
+//define('ID_FILE', 'test.lst');
+// define('ID_FILE', 'idnr.lst');
+define('INIT_SLEEP', 70);  // minutes
+define('SLEEP', 1);  // minutes
+define('PRIME_STEP', 50);
+define('OS', 'https://opensearch.addi.dk/b3.5_5.2/');
+define('REPO', '');
+//define('OS', 'http://opensearch-dit-service.dit-kwc.svc.cloud.dbc.dk/opensearch/');
+//define('REPO', 'corepo');
+define('FETCH', 40);
+define('LOOPS', 5000);
+define('XMLID', PHP_EOL . '      <ns1:identifier>%s</ns1:identifier>');
+define('REQ','
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch">
+  <SOAP-ENV:Body>
+    <ns1:getObjectRequest>%s
+      <ns1:agency>190102</ns1:agency>
+      <ns1:profile>danbib</ns1:profile>
+      <ns1:repository>' . REPO . '</ns1:repository>
+      <ns1:trackingId>test_getobj_fvs</ns1:trackingId>
+      <ns1:outputType>json</ns1:outputType>  
+    </ns1:getObjectRequest>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>');
+
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_POST, 1);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 2);
+curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+curl_setopt($curl, CURLOPT_HTTPHEADER, ["Content-Type: text/xml;charset=UTF-8"]);
+curl_setopt($curl, CURLOPT_URL, OS);
+
+$idds = id_list(ID_FILE);
+$titles = [];
+
+$prime = [];
+foreach ($idds as $id) {
+  $prime[] = $id;
+  if (count($prime) >= PRIME_STEP) {
+    get_and_save_titles($curl, $prime, $titles);
+    $prime = [];
+    echo 'Preread ' . count($titles) . ' titles of ' . count($idds) . PHP_EOL;
+  }
+}
+if (!empty($prime)) {
+  get_and_save_titles($curl, $prime, $titles);
+}
+echo 'Preread ' . count($titles) . ' titles of ' . count($idds) . PHP_EOL;
+print_r($titles);
+echo 'Sleep ' . INIT_SLEEP . ' minutes to clear cached records' . PHP_EOL;
+sleep(INIT_SLEEP * 60);
+
+$loop = LOOPS;
+do {
+  $ids = select_some_random_ids($idds);
+  curl_setopt($curl, CURLOPT_POSTFIELDS, build_req($ids));
+  $reply = json_decode(curl_exec($curl));
+  fetch_titles($reply, $ids, $titles);
+  echo date(DATE_ATOM) . ' Loop: ' . (LOOPS - $loop + 1) . '. Found ' . count($titles) . ' af ' . count($idds) . PHP_EOL;
+  if ($loop) {
+    sleep(SLEEP * 60);
+    if (count($titles) == count($idds)) {
+      if (empty($disp_titles)) {
+        $disp_titles = 40; 
+      }
+      $disp_titles--;
+    }
+  }
+} while (--$loop);
+
+print_r($titles);
+
+// ------------------------------------------------------------
+
+function get_and_save_titles($curl, $prime, &$titles) {
+  curl_setopt($curl, CURLOPT_POSTFIELDS, build_req($prime));
+  $reply = json_decode(curl_exec($curl));
+  foreach ($reply->searchResponse->result->searchResult as $idx => $collection) {
+    foreach ($collection->collection->object as $no => $object) {
+      $identifier = isset($object->record->identifier) ? $object->record->identifier[0]->{'$'} : $prime[$idx];
+      $rec_title = isset($object->record->title) ? $object->record->title[0]->{'$'} : 'no title';
+      $titles[$prime[$idx]] = sprintf('%-20s %s', $identifier, $rec_title);
+    }
+  }
+}
+
+function select_some_random_ids($ids) {
+  $used = [];
+  do {
+    $id = $ids[rand(0, count($ids) - 1)];
+    if (empty($used[$id])) {
+      $used[] = $id;
+    }
+  } while (count($used) < min(FETCH, count($ids)));
+  return $used;
+}
+
+function build_req($ids) { 
+  $xmlid = '';
+  foreach ($ids as $id) {
+      $xmlid .= sprintf(XMLID, $id);
+  }
+  return sprintf(REQ, $xmlid);
+}
+
+function fetch_titles($reply, $ids, &$titles) {
+  $ret = '';
+  $idx = 0;
+  foreach ($reply->searchResponse->result->searchResult as $collection) {
+    foreach ($collection->collection->object as $no => $object) {
+      $identifier = isset($object->record->identifier) ? $object->record->identifier[0]->{'$'} : $ids[$idx];
+      $rec_title = isset($object->record->title) ? $object->record->title[0]->{'$'} : 'no title';
+      $title = sprintf('%-20s %s', $identifier, $rec_title);
+      $id = $ids[$idx];
+      if (!empty($titles[$id]) && ($titles[$id] <> $title)) {
+        echo '****************** ERROR ******* diff title for ' . $id . PHP_EOL;
+      }
+      $titles[$ids[$idx]] = $title;
+    }
+    $idx++;
+  }
+}
+
+function id_list($file) {
+  $ids = [];
+  if (is_readable($file)) {
+    $fp = fopen($file, 'r');
+    while (($line = fgets($fp)) !== FALSE) $ids[] = trim($line);
+    fclose($fp);
+  }
+  return $ids;
+}
