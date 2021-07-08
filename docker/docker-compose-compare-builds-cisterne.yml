@@ -37,8 +37,9 @@ x-info:
     USE_HOLDING_BLOCK_JOIN: "yes"
   anchors:
     # - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:268
-    - &TESTED opensearch-ws-local/opensearch-webservice:BUG-boost-rank-fvs
-    - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:369
+    # - &TESTED opensearch-ws-local/opensearch-webservice:BUG-boost-rank-fvs
+    - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:370
+    - &TESTED docker-os.dbc.dk/opensearch-webservice-5.2:371
 
 version: '3.4'
 
