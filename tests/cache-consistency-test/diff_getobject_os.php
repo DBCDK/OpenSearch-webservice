@@ -1,21 +1,35 @@
 <?php
 
-// prime 6000 record
-// sleep 90 minutter
-// get 10 recs each minute
-
+// File to get ids from
 define('ID_FILE', 'uniq_idnr.lst');
-//define('ID_FILE', 'test.lst');
+// define('ID_FILE', 'test.lst');
 // define('ID_FILE', 'idnr.lst');
-define('INIT_SLEEP', 70);  // minutes
-define('SLEEP', 1);  // minutes
-define('PRIME_STEP', 50);
-define('OS', 'https://opensearch.addi.dk/b3.5_5.2/');
-define('REPO', '');
+
+// What service to get objects from
+// define('OS', 'https://opensearch.addi.dk/b3.5_5.2/');
+define('OS', 'https://opensearch.addi.dk/staging_5.2/');
 //define('OS', 'http://opensearch-dit-service.dit-kwc.svc.cloud.dbc.dk/opensearch/');
+
+// And what repo
+define('REPO', '');
 //define('REPO', 'corepo');
+
+// When priming, get this amount of objects each time
+define('PRIME_STEP', 50);
+
+// Initial sleep length, to "clear" cache after getting the objects
+define('INIT_SLEEP', 70);  // minutes
+
+// Number of random records to fetch each time.
 define('FETCH', 40);
+
+// Sleeptime between each fetch 
+define('SLEEP', 1);  // minutes
+
+// Stop after this many loops
 define('LOOPS', 5000);
+
+
 define('XMLID', PHP_EOL . '      <ns1:identifier>%s</ns1:identifier>');
 define('REQ','
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch">
@@ -41,30 +55,34 @@ curl_setopt($curl, CURLOPT_URL, OS);
 $idds = id_list(ID_FILE);
 $titles = [];
 
+echo date(DATE_ATOM) . ' Prereading all pids and storing them for later comparision ' . PHP_EOL;
 $prime = [];
 foreach ($idds as $id) {
   $prime[] = $id;
   if (count($prime) >= PRIME_STEP) {
     get_and_save_titles($curl, $prime, $titles);
     $prime = [];
-    echo 'Preread ' . count($titles) . ' titles of ' . count($idds) . PHP_EOL;
+    echo date(DATE_ATOM) . ' Preread ' . count($titles) . ' titles of ' . count($idds) . PHP_EOL;
   }
 }
 if (!empty($prime)) {
   get_and_save_titles($curl, $prime, $titles);
 }
-echo 'Preread ' . count($titles) . ' titles of ' . count($idds) . PHP_EOL;
+echo date(DATE_ATOM) . ' Preread ' . count($titles) . ' titles of ' . count($idds) . PHP_EOL;
 print_r($titles);
-echo 'Sleep ' . INIT_SLEEP . ' minutes to clear cached records' . PHP_EOL;
+
+
+echo date(DATE_ATOM) . ' Sleep ' . INIT_SLEEP . ' minutes to clear cached records' . PHP_EOL;
 sleep(INIT_SLEEP * 60);
 
+echo date(DATE_ATOM) . ' Starting loops' . PHP_EOL;
 $loop = LOOPS;
 do {
   $ids = select_some_random_ids($idds);
   curl_setopt($curl, CURLOPT_POSTFIELDS, build_req($ids));
   $reply = json_decode(curl_exec($curl));
   fetch_titles($reply, $ids, $titles);
-  echo date(DATE_ATOM) . ' Loop: ' . (LOOPS - $loop + 1) . '. Found ' . count($titles) . ' af ' . count($idds) . PHP_EOL;
+  echo date(DATE_ATOM) . ' Loop: ' . (LOOPS - $loop + 1) . '/' . LOOPS . '. Found ' . count($titles) . ' of ' . count($idds) . PHP_EOL;
   if ($loop) {
     sleep(SLEEP * 60);
     if (count($titles) == count($idds)) {
@@ -121,7 +139,7 @@ function fetch_titles($reply, $ids, &$titles) {
       $title = sprintf('%-20s %s', $identifier, $rec_title);
       $id = $ids[$idx];
       if (!empty($titles[$id]) && ($titles[$id] <> $title)) {
-        echo '****************** ERROR ******* diff title for ' . $id . ' Stored (expected) title: ' . $titles[$id] . ' retrieved (actual) title: ' . $title . PHP_EOL;
+        echo date(DATE_ATOM) . ' ****************** ERROR ******* diff title for ' . $id . ' Stored (expected) title: ' . $titles[$id] . ' retrieved (actual) title: ' . $title . PHP_EOL;
       }
       $titles[$ids[$idx]] = $title;
     }
