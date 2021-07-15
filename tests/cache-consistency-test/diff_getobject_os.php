@@ -6,8 +6,9 @@ define('ID_FILE', 'uniq_idnr.lst');
 // define('ID_FILE', 'idnr.lst');
 
 // What service to get objects from
-// define('OS', 'https://opensearch.addi.dk/b3.5_5.2/');
-define('OS', 'https://opensearch.addi.dk/staging_5.2/');
+define('OS', 'https://opensearch.addi.dk/b3.5_5.2/?rediscache=SkipCache');
+// define('OS', 'http://devel10.dbc.dk:54855/?rediscache=SkipCache');
+// define('OS', 'https://opensearch.addi.dk/staging_5.2/');
 //define('OS', 'http://opensearch-dit-service.dit-kwc.svc.cloud.dbc.dk/opensearch/');
 
 // And what repo
