@@ -30,6 +30,9 @@ define('SLEEP', 1);  // minutes
 // Stop after this many loops
 define('LOOPS', 5000);
 
+// Set a tracking id. This is appended with loop number for each call
+define('BASE_TRACKING_ID', 'ose_46_diff_getobject-' . uniqid() . '-');
+
 
 define('XMLID', PHP_EOL . '      <ns1:identifier>%s</ns1:identifier>');
 define('REQ','
@@ -39,7 +42,7 @@ define('REQ','
       <ns1:agency>190102</ns1:agency>
       <ns1:profile>danbib</ns1:profile>
       <ns1:repository>' . REPO . '</ns1:repository>
-      <ns1:trackingId>test_getobj_fvs</ns1:trackingId>
+      <ns1:trackingId>%s</ns1:trackingId>
       <ns1:outputType>json</ns1:outputType>  
     </ns1:getObjectRequest>
   </SOAP-ENV:Body>
@@ -56,18 +59,22 @@ curl_setopt($curl, CURLOPT_URL, OS);
 $idds = id_list(ID_FILE);
 $titles = [];
 
+echo date(DATE_ATOM) . ' Base trackingId is ' . BASE_TRACKING_ID . PHP_EOL;
+
 echo date(DATE_ATOM) . ' Prereading all pids and storing them for later comparision ' . PHP_EOL;
 $prime = [];
+$count = 0;
 foreach ($idds as $id) {
   $prime[] = $id;
   if (count($prime) >= PRIME_STEP) {
-    get_and_save_titles($curl, $prime, $titles);
+    get_and_save_titles($curl, $prime, build_tracking_id('prime-' . $count), $titles);
     $prime = [];
     echo date(DATE_ATOM) . ' Preread ' . count($titles) . ' titles of ' . count($idds) . PHP_EOL;
   }
+  $count += 1;
 }
 if (!empty($prime)) {
-  get_and_save_titles($curl, $prime, $titles);
+  get_and_save_titles($curl, $prime, build_tracking_id('prime-' . $count), $titles);
 }
 echo date(DATE_ATOM) . ' Preread ' . count($titles) . ' titles of ' . count($idds) . PHP_EOL;
 print_r($titles);
@@ -80,9 +87,10 @@ echo date(DATE_ATOM) . ' Starting loops' . PHP_EOL;
 $loop = LOOPS;
 do {
   $ids = select_some_random_ids($idds);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, build_req($ids));
+  $trackingId = build_tracking_id((LOOPS - $loop + 1));
+  curl_setopt($curl, CURLOPT_POSTFIELDS, build_req($ids, $trackingId));
   $reply = json_decode(curl_exec($curl));
-  fetch_titles($reply, $ids, $titles);
+  fetch_titles($reply, $ids, $trackingId, $titles);
   echo date(DATE_ATOM) . ' Loop: ' . (LOOPS - $loop + 1) . '/' . LOOPS . '. Found ' . count($titles) . ' of ' . count($idds) . PHP_EOL;
   if ($loop) {
     sleep(SLEEP * 60);
@@ -99,8 +107,12 @@ print_r($titles);
 
 // ------------------------------------------------------------
 
-function get_and_save_titles($curl, $prime, &$titles) {
-  curl_setopt($curl, CURLOPT_POSTFIELDS, build_req($prime));
+function build_tracking_id($loopnum) {
+  return BASE_TRACKING_ID . $loopnum;
+}
+
+function get_and_save_titles($curl, $prime, $trackingId, &$titles) {
+  curl_setopt($curl, CURLOPT_POSTFIELDS, build_req($prime, $trackingId));
   $reply = json_decode(curl_exec($curl));
   foreach ($reply->searchResponse->result->searchResult as $idx => $collection) {
     foreach ($collection->collection->object as $no => $object) {
@@ -122,15 +134,16 @@ function select_some_random_ids($ids) {
   return $used;
 }
 
-function build_req($ids) { 
+function build_req($ids, $trackingId) {
   $xmlid = '';
   foreach ($ids as $id) {
       $xmlid .= sprintf(XMLID, $id);
   }
-  return sprintf(REQ, $xmlid);
+  echo date(DATE_ATOM) . ' Build request with trackingId: ' . $trackingId  . PHP_EOL;
+  return sprintf(REQ, $xmlid, $trackingId);
 }
 
-function fetch_titles($reply, $ids, &$titles) {
+function fetch_titles($reply, $ids, $trackingId, &$titles) {
   $ret = '';
   $idx = 0;
   foreach ($reply->searchResponse->result->searchResult as $collection) {
@@ -140,7 +153,8 @@ function fetch_titles($reply, $ids, &$titles) {
       $title = sprintf('%-20s %s', $identifier, $rec_title);
       $id = $ids[$idx];
       if (!empty($titles[$id]) && ($titles[$id] <> $title)) {
-        echo date(DATE_ATOM) . ' ****************** ERROR ******* diff title for ' . $id . ' Stored (expected) title: ' . $titles[$id] . ' retrieved (actual) title: ' . $title . PHP_EOL;
+        echo date(DATE_ATOM) . ' **** ERROR_HR: in results from request: ' . $trackingId . '. Difference in title for ' . $id . '. Stored (expected) title: \'' . $titles[$id] . '\'. Retrieved (actual) title: \'' . $title . '\'' . PHP_EOL;
+        echo date(DATE_ATOM) . ' **** ERROR_MR: %' . $trackingId . '%' . $id . '%' . $titles[$id] . '%' . $title . PHP_EOL;
       }
       $titles[$ids[$idx]] = $title;
     }
