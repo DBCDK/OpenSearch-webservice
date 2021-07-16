@@ -12,8 +12,8 @@ define('ID_FILE', 'uniq_idnr.lst');
 // define('OS', 'https://opensearch.addi.dk/b3.5_5.2/?rediscache=SkipCache');
 
 // Custom Open Searches
-define('OS', 'http://opensearch-5-2-service.user-mabd.svc.cloud.dbc.dk/b3.5_5.2/');
-
+// define('OS', 'http://opensearch-5-2-service.user-mabd.svc.cloud.dbc.dk/b3.5_5.2/');
+define('OS', 'http://localhost:33333/');
 // define('OS', 'http://devel10.dbc.dk:54855/?rediscache=SkipCache');
 // define('OS', 'https://opensearch.addi.dk/staging_5.2/');
 //define('OS', 'http://opensearch-dit-service.dit-kwc.svc.cloud.dbc.dk/opensearch/');
@@ -97,8 +97,12 @@ do {
   $trackingId = build_tracking_id((LOOPS - $loop + 1));
   curl_setopt($curl, CURLOPT_POSTFIELDS, build_req($ids, $trackingId));
   $reply = json_decode(curl_exec($curl));
-  fetch_titles($reply, $ids, $trackingId, $titles);
-  echo date(DATE_ATOM) . ' Loop: ' . (LOOPS - $loop + 1) . '/' . LOOPS . '. Found ' . count($titles) . ' of ' . count($idds) . PHP_EOL;
+  if (curl_errno($curl)) {
+    echo date(DATE_ATOM) . " CURL_ERROR: errno: " . curl_errno($curl) . ", err: " . curl_error($curl) . PHP_EOL;
+  } else {
+    fetch_titles($reply, $ids, $trackingId, $titles);
+    echo date(DATE_ATOM) . ' Loop: ' . (LOOPS - $loop + 1) . '/' . LOOPS . '. Found ' . count($titles) . ' of ' . count($idds) . PHP_EOL;
+  }
   if ($loop) {
     sleep(SLEEP * 60);
     if (count($titles) == count($idds)) {
@@ -121,6 +125,10 @@ function build_tracking_id($loopnum) {
 function get_and_save_titles($curl, $prime, $trackingId, &$titles) {
   curl_setopt($curl, CURLOPT_POSTFIELDS, build_req($prime, $trackingId));
   $reply = json_decode(curl_exec($curl));
+  if (curl_errno($curl)) {
+    echo date(DATE_ATOM) . " CURL_ERROR: errno: " . curl_errno($curl) . ", err: " . curl_error($curl) . PHP_EOL;
+    return;
+  }
   foreach ($reply->searchResponse->result->searchResult as $idx => $collection) {
     foreach ($collection->collection->object as $no => $object) {
       $identifier = isset($object->record->identifier) ? $object->record->identifier[0]->{'$'} : $prime[$idx];
