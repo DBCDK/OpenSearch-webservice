@@ -7,13 +7,13 @@ define('ID_FILE', 'uniq_idnr.lst');
 
 // What service to get objects from
 // "real" Open Searches
-// define('OS', 'https://opensearch.addi.dk/b3.5_5.2/');
+define('OS', 'https://opensearch.addi.dk/b3.5_5.2/');
 // This disables the rediscache "locally"
 // define('OS', 'https://opensearch.addi.dk/b3.5_5.2/?rediscache=SkipCache');
 
 // Custom Open Searches
 // define('OS', 'http://opensearch-5-2-service.user-mabd.svc.cloud.dbc.dk/b3.5_5.2/');
-define('OS', 'http://localhost:33333/');
+// define('OS', 'http://localhost:33333/');
 // define('OS', 'http://devel10.dbc.dk:54855/?rediscache=SkipCache');
 // define('OS', 'https://opensearch.addi.dk/staging_5.2/');
 //define('OS', 'http://opensearch-dit-service.dit-kwc.svc.cloud.dbc.dk/opensearch/');
@@ -35,7 +35,7 @@ define('FETCH', 40);
 define('SLEEP', 1);  // minutes
 
 // Stop after this many loops
-define('LOOPS', 5000);
+define('LOOPS', 86400);
 
 // Set a tracking id. This is appended with loop number for each call
 define('BASE_TRACKING_ID', 'ose_46_diff_getobject-' . uniqid() . '-');
