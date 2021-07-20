@@ -25,6 +25,10 @@ error_reporting(E_ALL & ~E_NOTICE);
  */
 
 //-----------------------------------------------------------------------------
+
+// Vi skal bruge noget nyt her
+require_once('OLS_class_lib/nyt-bibliotek.php');
+
 require_once('OLS_class_lib/webServiceServer_class.php');
 require_once 'OLS_class_lib/memcache_class.php';
 require_once 'OLS_class_lib/rediscache_class.php';
