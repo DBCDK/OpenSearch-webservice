@@ -1,0 +1,12 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://oss.dbc.dk/ns/opensearch">
+  <SOAP-ENV:Body>
+    <ns1:getObjectRequest>
+      <ns1:identifier>300185-katalog:51813049</ns1:identifier>
+      <ns1:identifier>716500-katalog:07226039_(number)_(volume)Vol.13_(year)2003</ns1:identifier>
+      <ns1:identifier>870970-basis:47508142</ns1:identifier>
+      <ns1:agency>190102</ns1:agency>
+      <ns1:profile>danbib</ns1:profile>
+      <ns1:trackingId>ose_46_error</ns1:trackingId>
+    </ns1:getObjectRequest>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
