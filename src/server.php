@@ -1045,7 +1045,12 @@ class OpenSearch extends webServiceServer {
     $this->watch->stop('precql_newsolrquery');
     $this->watch->stop('precql');
     $this->watch->start('cql');
-    $chk_query = $this->cql2solr->parse('rec.id=(' . implode(OR_OP, $id_array) . ')');
+// need to set all ids in ' to handle ids containing cql specific characters
+    $chk_query = $this->cql2solr->parse('rec.id=(\'' . implode('\'' . OR_OP . '\'', $id_array) . '\')');
+    if (DEBUG_ON) {
+      echo 'rec.id=(\'' . implode('\'' . OR_OP . '\'', $id_array) . '\')' . PHP_EOL;
+      var_dump($chk_query);
+    }
     $this->watch->stop('cql');
     $this->watch->start('solrq');
     $edismax_q = $chk_query['edismax']['q'] ?? [];
