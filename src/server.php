@@ -975,7 +975,7 @@ class OpenSearch extends webServiceServer {
           unset($fpid);
         }
       }
-      $fpids = self::handle_sequencing($fpids);
+      $fpids = self::sanitize_pids(self::handle_sequencing($fpids));
     } finally {
       $this->watch->stop('preamble');
     }
@@ -1545,6 +1545,22 @@ class OpenSearch extends webServiceServer {
       }
     }
     return $ret;
+  }
+
+  /** Need to escape some characters to remove cql conflicts
+   * @param $pids
+   * @return mixed
+   */
+  private function sanitize_pids($pids) {
+    $cql_chars = ['+', '!', '(', ')', '{', '}', '[', ']', '^', '~', ' '];
+    $cql_chars_escaped = [];
+    foreach ($cql_chars as $ch) {
+      $cql_chars_escaped[] = '\\' . $ch;
+    }
+    foreach ($pids as &$pid) {
+      $pid->_value = str_replace($cql_chars, $cql_chars_escaped, $pid->_value);
+    }
+    return $pids;
   }
 
   /**************************************************
