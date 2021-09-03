@@ -39,7 +39,7 @@ x-info:
     # - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:268
     - &TESTED opensearch-ws-local/opensearch-webservice:bug_ose_46
     # - &TESTED docker-os.dbc.dk/opensearch-webservice-5.2:377
-    - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:377
+    - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:379
 
 version: '3.4'
 
