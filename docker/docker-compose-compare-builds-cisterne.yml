@@ -1,4 +1,4 @@
-# This compose file is used to test two existing docker builds against cisterne.
+# compose file is used to test two existing docker builds against cisterne.
 # It is not parameterised, you must change it to accomodate the test situation you are in.
 # The main purpose is to test a "golden" version against a "tested" version, e.g. if you
 # suspect a non-intended change in behaviour.
@@ -36,10 +36,8 @@ x-info:
     URL_PATH: ''
     USE_HOLDING_BLOCK_JOIN: "yes"
   anchors:
-    # - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:268
-    - &TESTED opensearch-ws-local/opensearch-webservice:bug_ose_46
-    # - &TESTED docker-os.dbc.dk/opensearch-webservice-5.2:377
-    - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:379
+    - &TESTED docker-os.dbc.dk/opensearch-webservice-5.2:389
+    - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:389
 
 version: '3.4'
 
