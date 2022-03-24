@@ -36,8 +36,8 @@ x-info:
     URL_PATH: ''
     USE_HOLDING_BLOCK_JOIN: "yes"
   anchors:
-    - &TESTED docker-os.dbc.dk/opensearch-webservice-5.2:389
-    - &GOLDEN docker-os.dbc.dk/opensearch-webservice-5.2:389
+    - &TESTED docker-de.artifacts.dbccloud.dk/opensearch-webservice-5.2:389
+    - &GOLDEN docker-de.artifacts.dbccloud.dk/opensearch-webservice-5.2:389
 
 version: '3.4'
 
@@ -47,7 +47,7 @@ services:
 
   # A redis service - can be used for testing external memcache
   redis:
-    image: docker.dbc.dk/dbc-redis:latest
+    image: docker-dbc.artifacts.dbccloud.dk/dbc-redis:latest
     expose:
       - 6379
     ports:

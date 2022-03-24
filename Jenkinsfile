@@ -13,7 +13,7 @@ pipeline {
         DOCKER_BUILD_PREFIX = "opensearch-ws-local"
 
         // This is the prefix used for PUSH
-        DOCKER_PUSH_PREFIX = "docker-os.dbc.dk"
+        DOCKER_PUSH_PREFIX = "docker-de.artifacts.dbccloud.dk"
 
         // We use this tag during building, to avoid clashing with other builds
         DOCKER_BUILD_TAG = "${env.BUILD_TAG}"
@@ -25,7 +25,7 @@ pipeline {
         BUILD_NUMBER = "${env.BUILD_NUMBER}"
 
         // The registry to push images to
-        registry = "https://docker-os.dbc.dk"
+        registry = "https://docker-de.artifacts.dbccloud.dk"
         registryCredential = "docker"
 
         GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
@@ -118,7 +118,7 @@ pipeline {
                     // Retag, using the shell. Then push, using the docker abstraction.
                     // Why the retag here - because we use a different docker prefix, and
                     // want to change the name. The idea of using a "limited" docker prefix is
-                    // to make the seperation between "local" and "docker-*.dbc.dk" very clear.
+                    // to make the seperation between "local" and "docker-*.artifacts.dbccloud.dk" very clear.
                     // If the Jenkins docker abstraction supported renaming, that would be great.
                     // First the rename - if any rename fails, nothing has been pushed.
                     echo "Retagging all images before pushing to repository"
@@ -185,7 +185,7 @@ pipeline {
             agent {
                 docker {
                     label workerNode
-                    image "docker.dbc.dk/build-env:latest"
+                    image "docker-dbc.artifacts.dbccloud.dk/build-env:latest"
                     alwaysPull true
                 }
             }
