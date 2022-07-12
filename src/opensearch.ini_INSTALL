@@ -635,7 +635,7 @@ sort['solr_genre_category_descending'] = sort.genreCategory desc
 sort['solr_dk5_ascending'] = sort.dk5 asc
 sort['solr_dk5_descending'] = sort.dk5 desc
 
-sort['solr_numberInSeries_ascending'] = map(sort.numberInSeries,0,0,9999) asc
+sort['solr_numberInSeries_ascending'] = sort.numberInSeries asc
 sort['solr_numberInSeries_descending'] = sort.numberInSeries desc
 sort['solr_dateFirstEdition_ascending'] = map(sort.dateFirstEdition,0,0,9999) asc
 sort['solr_dateFirstEdition_descending'] = sort.dateFirstEdition desc
