@@ -2,7 +2,7 @@ def workerNode = 'devel10'
 
 pipeline {
     agent {
-        label "devel10"
+        label "devel11"
     }
     environment {
         // Set the version - this is appended to image names, before push.
