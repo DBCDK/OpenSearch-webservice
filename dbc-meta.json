@@ -1,0 +1,9 @@
+{
+   "description" : "OpenSearch webservice",
+   "knowledgeLevel" : "Good",
+   "prettyname" : "OpenSearch",
+   "team" : "de-team",
+   "type" : "codebase",
+   "language": "php",
+   "sub_languages": "none"
+}
