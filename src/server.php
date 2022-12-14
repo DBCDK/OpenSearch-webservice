@@ -2970,6 +2970,8 @@ class OpenSearch extends webServiceServer {
    * @return array
    */
   private function collect_holdings($work_ids, $include_holdings, $collect_type, $use_sort_complex_key = FALSE, $unit_sort_keys = []) {
+    $this->watch->start('collect_holdings');
+
     $hold_ws_url = $this->config->get_value('holdings_db', 'setup');
     $holdings_urls = [];
     foreach ($work_ids as &$work) {
@@ -2998,6 +3000,8 @@ class OpenSearch extends webServiceServer {
         }
       }
     }
+    $this->watch->stop('collect_holdings');
+
     return $ret_holdings;
   }
 

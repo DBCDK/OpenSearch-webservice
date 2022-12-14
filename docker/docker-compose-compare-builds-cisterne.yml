@@ -22,7 +22,7 @@ x-info:
     AGENCY_FALLBACK: 100200
     AGENCY_PROFILE_FALLBACK: test
     FEDORA: http://corepo-content-service-replica.cisterne.svc.cloud.dbc.dk/rest/
-    HOLDINGS_DB: http://holdings-service.cisterne.svc.cloud.dbc.dk/getAllAvailability?pid=%s
+    HOLDINGS_DB: http://holdings-service.cisterne.svc.cloud.dbc.dk/api/getAllAvailability?pid=%s
     HOLDINGS_ITEMS_INDEX: cisterne-corepo-searcher
     RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.cisterne.svc.cloud.dbc.dk/RawRepoContentService
     RAW_RECORD_REPOSITORY_NAME: prod-rawrecords

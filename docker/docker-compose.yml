@@ -25,7 +25,7 @@ x-info:
   cisterne-environment: &cisterne-env
     FEDORA: http://corepo-content-service-replica.cisterne.svc.cloud.dbc.dk/rest/
     SOLR: http://cisterne.solr.dbc.dk:8983/solr/cisterne-corepo-searcher/select
-    HOLDINGS_DB: http://holdings-service.cisterne.svc.cloud.dbc.dk/getAllAvailability?pid=%s
+    HOLDINGS_DB: http://holdings-service.cisterne.svc.cloud.dbc.dk/api/getAllAvailability?pid=%s
     HOLDINGS_ITEMS_INDEX: cisterne-corepo-searcher
     RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.cisterne.svc.cloud.dbc.dk/RawRepoContentService
     RAW_RECORD_SOLR: http://cisterne.rawrepo.solr.dbc.dk:8983/solr/cisterne-rawrepo-searcher/select
@@ -43,7 +43,7 @@ x-info:
   fbstest-environment: &fbstest-env
     FEDORA: http://corepo-content-service.fbstest.svc.cloud.dbc.dk/rest/
     SOLR: http://fbstest.solr.dbc.dk:8983/solr/fbstest-corepo-searcher/select
-    HOLDINGS_DB: http://holdings-service.fbstest.svc.cloud.dbc.dk/getAllAvailability?pid=%s
+    HOLDINGS_DB: holdings-service.fbstest.svc.cloud.dbc.dk/api/getAllAvailability?pid=%s
     HOLDINGS_ITEMS_INDEX: fbstest-corepo-searcher
     RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.fbstest.svc.cloud.dbc.dk/RawRepoContentService
     RAW_RECORD_SOLR: http://fbstest.rawrepo.solr.dbc.dk:8983/solr/fbstest-rawrepo-searcher/select
