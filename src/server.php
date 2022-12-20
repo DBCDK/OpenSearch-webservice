@@ -88,7 +88,6 @@ class OpenSearch extends webServiceServer {
     define('RR_MARC_001_B', 'marc.001b');
     define('RR_MARC_001_AB', 'marc.001a001b');
 
-    define('HOLDINGS_AGENCY_ID_FIELD', self::value_or_default($this->config->get_value('field_holdings_agency_id', 'setup'), 'rec.holdingsAgencyId'));
     define('HOLDINGS', ' holdings ');
     define('DEBUG_ON', $this->debug);
     define('MAX_IDENTICAL_RELATIONS', self::value_or_default($this->config->get_value('max_identical_relation_names', 'setup'), 20));
@@ -412,7 +411,6 @@ class OpenSearch extends webServiceServer {
       $solr_query = $this->cql2solr->parse($param->query->_value);
     else
       $solr_query = $this->cql2solr->parse($param->query->_value, $this->search_filter_for_800000);
-    self::modify_query_and_filter_agency($solr_query);
 //var_dump($solr_query); var_dump($this->split_holdings_include); var_dump($this->search_filter_for_800000); die();
     $this->watch->stop('cql');
     $this->watch->start('postcql');
@@ -1994,34 +1992,6 @@ class OpenSearch extends webServiceServer {
     return $best_idx;
   }
 
-  /** \brief Alter the query and agency filter if HOLDINGS_AGENCY_ID_FIELD is used in query
-   *         - replace 870970-basis with holdings_agency part and (bug: 21233) add holdings_agency part to the agency_catalog source
-   *
-   * @param object $solr_query
-   */
-  private function modify_query_and_filter_agency(&$solr_query) {
-    foreach (['q', 'fq'] as $solr_par) {
-      if (!empty($solr_query['edismax'])) {
-        foreach ($solr_query['edismax'][$solr_par] as $q_idx => $q) {
-          if (strpos($q, HOLDINGS_AGENCY_ID_FIELD . ':') === 0) {
-            if (count($solr_query['edismax'][$solr_par]) == 1) {
-              $solr_query['edismax'][$solr_par][$q_idx] = '*';
-            }
-            else {
-              unset($solr_query['edismax'][$solr_par][$q_idx]);
-            }
-            $this->filter_agency = str_replace(FIELD_COLLECTION_INDEX . ':870970-basis', $q, $this->filter_agency);
-            $collect_agency = FIELD_COLLECTION_INDEX . ':' . $this->agency . '-katalog';
-            $filtered_collect_agency = '(' . $collect_agency . AND_OP . $q . ')';
-            if (strpos($this->filter_agency, $filtered_collect_agency) === FALSE) {
-              $this->filter_agency = str_replace($collect_agency, $filtered_collect_agency, $this->filter_agency);
-            }
-          }
-        }
-      }
-    }
-  }
-
   /** \brief Set the parameters to solr facets
    *
    * @param object $facets - the facet paramaters from the request
@@ -2109,7 +2079,6 @@ class OpenSearch extends webServiceServer {
         $add_q = $this->which_rec_id . ':(' . $add_query . ')';
       }
       $chk_query = $this->cql2solr->parse($query);
-      self::modify_query_and_filter_agency($chk_query);
       if ($all_objects) {
         $chk_query['edismax']['q'] = [$add_q];
       }
