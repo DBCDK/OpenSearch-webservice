@@ -1402,8 +1402,7 @@ class OpenSearch extends webServiceServer {
     $ret = [];
     if (is_array($profile)) {
       $this->collection_alias = self::set_collection_alias($profile);
-      $modified_profile = self::fbs_204_remove_basis_from_profile($profile);
-      foreach ($modified_profile as $p) {
+      foreach ($profile as $p) {
         if (self::xs_boolean($p['sourceSearchable']) || ($add_relation_sources && isset($p['relation']) && count($p['relation']))) {
           $source_id = $p['sourceIdentifier'] ?? '';
           if (isset($collection_query[$source_id])) {
@@ -1416,24 +1415,6 @@ class OpenSearch extends webServiceServer {
       }
     }
     return implode(OR_OP, $ret);
-  }
-
-  /** Remove 870970-basis as searchable if the local catalogue is searchable
-   *
-   * @param $profile
-   * @return array
-   */
-  private function fbs_204_remove_basis_from_profile($profile) {
-    $searchable_idx = [];
-    foreach ($profile as $p_idx => $p) {
-      if (self::xs_boolean($p['sourceSearchable'])) {
-        $searchable_idx[$p['sourceIdentifier']] = $p_idx;
-      }
-    }
-    if (isset($searchable_idx['870970-basis']) && isset($searchable_idx[$this->agency_catalog_source])) {
-      $profile[$searchable_idx['870970-basis']]['sourceSearchable'] = false;
-    }
-    return $profile;
   }
 
   /** \brief Build bq (BoostQuery) as field:content^weight
