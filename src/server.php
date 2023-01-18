@@ -50,7 +50,6 @@ class OpenSearch extends webServiceServer {
   protected $query_language = 'cqleng';
   protected $number_of_record_repo_calls = 0;
   protected $number_of_record_repo_cached = 0;
-  protected $agency_catalog_source = '';
   protected $filter_agency = '';
   protected $format = [];
   protected $which_rec_id = '';
@@ -240,7 +239,6 @@ class OpenSearch extends webServiceServer {
 
         $this->show_agency = self::value_or_default($param->showAgency->_value ?? '', $this->agency);
         $this->profile = $param->profile;
-        $this->agency_catalog_source = $this->agency . '-katalog';
         $this->filter_agency = self::set_solr_filter($this->search_profile);
         $this->split_holdings_include = self::split_collections_for_holdingsitem($this->search_profile);
         self::set_valid_relations_and_sources($this->search_profile);
@@ -896,7 +894,6 @@ class OpenSearch extends webServiceServer {
 
       $this->feature_sw = $this->config->get_value('feature_switch', 'setup');
 
-      $this->agency_catalog_source = $this->agency . '-katalog';
       $this->format = self::set_format($param->objectFormat,
         $this->config->get_value('open_format', 'setup'),
         $this->config->get_value('open_format_force_namespace', 'setup'),
@@ -959,7 +956,7 @@ class OpenSearch extends webServiceServer {
       }
       foreach ($lpids as $lid) {
         $fpid = new stdClass();
-        $fpid->_value = $this->agency_catalog_source . ':' . str_replace(' ', '', $lid->_value);
+        $fpid->_value = $this->agency . '-katalog:' . str_replace(' ', '', $lid->_value);
         $fpids[] = $fpid;
         unset($fpid);
       }
@@ -1414,6 +1411,17 @@ class OpenSearch extends webServiceServer {
     return $ret;
   }
 
+  /** \brief Check if this is a collection idenifier that is related to holdings
+   *
+   * @param array $source - a collection identifier from the profile
+   * @return boolean - if this source can have holdings-items
+   */
+  private function is_agency_catalog_source($source) {
+    return $source == $this->agency . '-katalog' ||
+           $source == $this->agency . '-komplet' ||
+           $source == '870970-basis';
+  }
+
   /** \brief Build search to include collections without holdings
    *
    * @param array $profile - the users search profile
@@ -1428,7 +1436,7 @@ class OpenSearch extends webServiceServer {
       foreach ($profile as $p) {
         $source_id = $p['sourceIdentifier'] ?? '';
         if (self::xs_boolean($p['sourceSearchable']) || ($add_relation_sources && count($p['relation']))) {
-          if ($source_id == $this->agency_catalog_source || $source_id == '870970-basis') {
+          if (self::is_agency_catalog_source($source_id)) {
             $filtered_collections[] = $source_id;
           }
           else {
