@@ -1950,7 +1950,7 @@ class OpenSearch extends webServiceServer {
               unset($solr_query['edismax'][$solr_par][$q_idx]);
             }
             $this->filter_agency = str_replace(FIELD_COLLECTION_INDEX . ':870970-basis', $q, $this->filter_agency);
-            $collect_agency = FIELD_COLLECTION_INDEX . ':' . $this->agency_catalog_source;
+            $collect_agency = FIELD_COLLECTION_INDEX . ':' . $this->agency . '-katalog';
             $filtered_collect_agency = '(' . $collect_agency . AND_OP . $q . ')';
             if (strpos($this->filter_agency, $filtered_collect_agency) === FALSE) {
               $this->filter_agency = str_replace($collect_agency, $filtered_collect_agency, $this->filter_agency);
