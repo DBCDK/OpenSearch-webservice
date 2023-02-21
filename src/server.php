@@ -180,6 +180,10 @@ class OpenSearch extends webServiceServer {
    */
   public function search($param) {
     $ret_error = new stdClass();
+    $ret_error->searchResponse = new stdClass();
+    $ret_error->searchResponse->_value = new stdClass();
+    $ret_error->searchResponse->_value->error = new stdClass();
+    $ret_error->searchResponse->_value->error->_value = new stdClass();
     // set some defines
 
     // Add custom headers *always* - to allow SLA
@@ -720,6 +724,8 @@ class OpenSearch extends webServiceServer {
           }
         }
         $o = new stdClass();
+        $o->collection = new stdClass();
+        $o->collection->_value = new stdClass();
         _Object::set_value($o->collection->_value, 'resultPosition', $rec_no++);
         _Object::set_value($o->collection->_value, 'numberOfObjects', count($objects));
         if (count($objects) > 1) {
@@ -783,6 +789,12 @@ class OpenSearch extends webServiceServer {
         die();
       }
 
+      $ret = new stdClass();
+      $ret->searchResponse = new stdClass();
+      $ret->searchResponse->_value = new stdClass();
+      $ret->searchResponse->_value->result = new stdClass();
+      $ret->searchResponse->_value->result->_value = new stdClass();
+
       $result = &$ret->searchResponse->_value->result->_value;
       _Object::set_value($result, 'hitCount', $numFound);
       _Object::set_value($result, 'collectionCount', count($collections));
@@ -796,6 +808,8 @@ class OpenSearch extends webServiceServer {
       if (isset($solr_timing)) {
         VerboseJson::log(STAT, array('solrTiming ' => json_encode($solr_timing)));
       }
+      $result->statInfo = new stdClass();
+      $result->statInfo->_value = new stdClass();
       _Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
       _Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
       _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
@@ -3193,6 +3207,8 @@ class OpenSearch extends webServiceServer {
           }
           if ($rels_type == 'uri' || $rels_type == 'full') {
             _Object::set_value($relation, 'relationUri', $url);
+            $relation->linkObject = new stdClass();
+            $relation->linkObject->_value = new stdClass();
             if ($access_type) {
               _Object::set_value($relation->linkObject->_value, 'accessType', $access_type);
             }
@@ -3266,6 +3282,12 @@ class OpenSearch extends webServiceServer {
           VerboseJson::log(ERROR, 'Cannot decode json for best record from ' . $rel_unit);
         }
         else {
+          $relation = new stdClass();
+          $relation->relationObject = new stdClass();
+          $relation->relationObject->_value = new stdClass();
+          $relation->relationObject->_value->object = new stdClass();
+          $relation->relationObject->_value->object->_value = new stdClass();
+
           _Object::set_value($relation, 'relationType', $rel_name);
           $relation_pid = reset($rec->pids);
           if ($rels_type == 'uri' || $rels_type == 'full') {
@@ -3360,7 +3382,9 @@ class OpenSearch extends webServiceServer {
     if (isset($this->collection_alias[$record_source])) {
       $record_source = $this->collection_alias[$record_source];
     }
-    $ret = NULL;
+    $ret = new stdClass();
+    $ret->record = new stdClass();
+    $ret->record->_value = new stdClass();
     foreach ($this->format as $format_name => $format_arr) {
       switch ($format_name) {
         case 'dkabm':
