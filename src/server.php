@@ -3382,9 +3382,10 @@ class OpenSearch extends webServiceServer {
     if (isset($this->collection_alias[$record_source])) {
       $record_source = $this->collection_alias[$record_source];
     }
-    $ret = new stdClass();
-    $ret->record = new stdClass();
-    $ret->record->_value = new stdClass();
+    $ret = NULL;
+    //$ret = new stdClass();
+    //$ret->record = new stdClass();
+    //$ret->record->_value = new stdClass();
     foreach ($this->format as $format_name => $format_arr) {
       switch ($format_name) {
         case 'dkabm':
