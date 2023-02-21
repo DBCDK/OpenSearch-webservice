@@ -841,6 +841,9 @@ class OpenSearch extends webServiceServer {
    */
   public function getObject($param) {
     $ret_error = new stdClass();
+    $ret_error->searchResponse = new stdClass();
+    $ret_error->searchResponse->_value = new stdClass();
+    $ret_error->searchResponse->_value->error = new stdClass();
 
      // Add custom headers *always* - to allow SLA
     self::add_dbc_sla_header_action("getObject");
@@ -1141,6 +1144,7 @@ class OpenSearch extends webServiceServer {
         foreach ($work as $unit_id => $pids) {
           $key = reset($pids);
           $o = new stdClass();
+          $o->collection = new stdClass();
           _Object::set_value($o->collection->_value, 'resultPosition', $rec_no + 1);
           _Object::set_value($o->collection->_value, 'numberOfObjects', 1);
 
@@ -1154,6 +1158,7 @@ class OpenSearch extends webServiceServer {
             if ($missing_record) {
               $record_repo_dom->loadXML(sprintf($missing_record, reset($pids)));
             } else {
+              $o->collection->_value->object = new stdClass();
               _Object::set_value($o->collection->_value->object->_value, 'error', 'unknown/missing/inaccessible record: ' . reset($pids));
               _Object::set_value($o->collection->_value->object->_value, 'identifier', reset($pids));
             }
@@ -1185,6 +1190,11 @@ class OpenSearch extends webServiceServer {
       }
       self::remove_unselected_formats($collections);
 
+      $ret = new stdClass();
+      $ret->searchResponse = new stdClass();
+      $ret->searchResponse->_value = new stdClass();
+      $ret->searchResponse->_value->result = new stdClass();
+      $ret->searchResponse->_value->result->_value = new stdClass();
       $result = &$ret->searchResponse->_value->result->_value;
       $no_collections = is_countable($collections) ? count($collections) : 0;
       _Object::set_value($result, 'hitCount', $no_collections);
@@ -1192,6 +1202,8 @@ class OpenSearch extends webServiceServer {
       _Object::set_value($result, 'more', 'false');
       $result->searchResult = $collections;
       _Object::set_value($result, 'facetResult', '');
+      $ret->searchResponse->_value->result->_value->statInfo = new stdClass();
+      $ret->searchResponse->_value->result->_value->statInfo->_value = new stdClass();
       _Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
       _Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
       _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
@@ -3383,12 +3395,13 @@ class OpenSearch extends webServiceServer {
       $record_source = $this->collection_alias[$record_source];
     }
     $ret = NULL;
-    //$ret = new stdClass();
-    //$ret->record = new stdClass();
-    //$ret->record->_value = new stdClass();
     foreach ($this->format as $format_name => $format_arr) {
       switch ($format_name) {
         case 'dkabm':
+          $ret = new stdClass();
+          $ret->record = new stdClass();
+          $ret->record->_value;
+          $ret->record->_value = new stdClass();
           $rec = &$ret->record->_value;
           $record = $dom->getElementsByTagName('record');
           if ($record->item(0)) {
