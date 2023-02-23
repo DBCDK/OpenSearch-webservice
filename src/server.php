@@ -329,8 +329,10 @@ class OpenSearch extends webServiceServer {
         foreach ($solr_query['edismax']['fq'] as $fq) {
           $filter .= '&fq=' . rawurlencode($fq);
         }
-        foreach ($solr_query['edismax']['add_params'] as $par => $val) {
-          $filter .= '&' . $par . '=' . rawurlencode($val);
+        if ($solr_query['edismax']['add_params']) {
+          foreach ($solr_query['edismax']['add_params'] as $par => $val) {
+            $filter .= '&' . $par . '=' . rawurlencode($val);
+          }
         }
         $solr_urls[0]['url'] = $this->repository['solr'] .
           '?q=' . urlencode($q) .
@@ -351,6 +353,11 @@ class OpenSearch extends webServiceServer {
           $error = $collections;
           return $ret_error;
         }
+        $ret = new stdClass();
+        $ret->searchResponse = new stdClass();
+        $ret->searchResponse->_value = new stdClass();
+        $ret->searchResponse->_value->result = new stdClass();
+        $ret->searchResponse->_value->result->_value = new stdClass();
         $result = &$ret->searchResponse->_value->result->_value;
         if (!empty($this->format['found_solr_format'])) {
           self::collections_from_solr($collections, $solr_arr['response']);
@@ -359,6 +366,7 @@ class OpenSearch extends webServiceServer {
         _Object::set_value($result, 'collectionCount', is_countable($collections) ? count($collections) : 0);
         _Object::set_value($result, 'more', (($start + $step_value) <= $result->hitCount->_value ? 'true' : 'false'));
         $result->searchResult = &$collections;
+        $result->statInfo = new stdClass();
         _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
         _Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
         if ($this->debug_query) {
@@ -2710,8 +2718,15 @@ class OpenSearch extends webServiceServer {
         }
         self::filter_marcxchange($solr_agency, $marc_obj, $this->repository['filter']);
         $rec_pos++;
+        $ret[$rec_pos] = new stdClass();
+        $ret[$rec_pos]->_value = new stdClass();
+        $ret[$rec_pos]->_value->collection = new stdClass();
+        $ret[$rec_pos]->_value->collection->_value = new stdClass();
         _Object::set_value($ret[$rec_pos]->_value->collection->_value, 'resultPosition', $rec_pos);
         _Object::set_value($ret[$rec_pos]->_value->collection->_value, 'numberOfObjects', 1);
+        $ret[$rec_pos]->_value->collection->_value->object = [];
+        $ret[$rec_pos]->_value->collection->_value->object[0] = new stdClass();
+        $ret[$rec_pos]->_value->collection->_value->object[0]->_value = new stdClass();
         _Object::set_value($ret[$rec_pos]->_value->collection->_value->object[0]->_value, 'collection', $marc_obj);
         _Object::set_namespace($ret[$rec_pos]->_value->collection->_value->object[0]->_value, 'collection', $this->xmlns['marcx']);
       }
@@ -3295,10 +3310,6 @@ class OpenSearch extends webServiceServer {
         }
         else {
           $relation = new stdClass();
-          $relation->relationObject = new stdClass();
-          $relation->relationObject->_value = new stdClass();
-          $relation->relationObject->_value->object = new stdClass();
-          $relation->relationObject->_value->object->_value = new stdClass();
 
           _Object::set_value($relation, 'relationType', $rel_name);
           $relation_pid = reset($rec->pids);
