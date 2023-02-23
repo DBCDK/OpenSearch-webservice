@@ -3321,6 +3321,10 @@ class OpenSearch extends webServiceServer {
               VerboseJson::log(ERROR, 'Cannot load ' . $relation_pid . ' into DomXml');
             }
             else {
+              $relation->relationObject = new stdClass();
+              $relation->relationObject->_value = new stdClass();
+              $relation->relationObject->_value->object = new stdClass();
+              $relation->relationObject->_value->object->_value = new stdClass();
               $rel_obj = &$relation->relationObject->_value->object->_value;
               $rel_obj = self::extract_record($dom, $rel_unit);
               _Object::set_value($rel_obj, 'identifier', $relation_pid);
