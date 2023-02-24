@@ -1698,6 +1698,7 @@ class OpenSearch extends webServiceServer {
         $format_tags = explode(',', $format_arr['format_name']);
         foreach ($collections as $idx => &$c) {
           $format_pids = [];
+          $manifestation = new stdClass();
           foreach ($c->_value->collection->_value->object as $o_key => $obj) {
             $pid = $obj->_value->identifier->_value ?? '';
             if (!empty($pid)) {
@@ -1716,6 +1717,7 @@ class OpenSearch extends webServiceServer {
           if (is_array($manifestation->manifestation) && count($manifestation->manifestation) > 1) {
             ksort($manifestation->manifestation);
           }
+          $c->_value->formattedCollection = new stdClass();
           _Object::set_namespace($c->_value->formattedCollection->_value, $format_name, $solr_display_ns);
           _Object::set_value($c->_value->formattedCollection->_value, $format_name, $manifestation);
           unset($manifestation);
@@ -1734,6 +1736,7 @@ class OpenSearch extends webServiceServer {
    */
   private function collect_solr_tags($format_tags, $solr_doc, $pid = '') {
     $solr_display_ns = $this->xmlns['ds'] ?? '';
+    $mani = new stdClass();
     foreach ($format_tags as $format_tag) {
       if (!empty($solr_doc[$format_tag]) || $format_tag == 'fedora.identifier') {
         if (strpos($format_tag, '.')) {
@@ -1823,6 +1826,7 @@ class OpenSearch extends webServiceServer {
             $struct = key($fr_obj->formatResponse->_value);
             // if ($struct == 'error') ... 
             foreach ($collections as $idx => &$c) {
+              $c->_value->formattedCollection = new stdClass();
               _Object::set($c->_value->formattedCollection->_value, $struct, $fr_obj->formatResponse->_value->{$struct}[$idx]);
             }
           }
