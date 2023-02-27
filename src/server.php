@@ -1237,6 +1237,10 @@ class OpenSearch extends webServiceServer {
 
     $this->watch->start('info');
     try {
+      $ret = new stdClass();
+      $ret->infoResponse = new stdClass();
+      $ret->infoResponse->_value = new stdClass();
+      $ret->infoResponse->_value->infoGeneral = new stdClass();
       $result = &$ret->infoResponse->_value;
       _Object::set_value($result->infoGeneral->_value, 'defaultRepository', $this->config->get_value('default_repository', 'setup'));
       $result->infoRepositories = self::get_repository_info();
@@ -3650,6 +3654,7 @@ class OpenSearch extends webServiceServer {
    * @return object - the user profile
    */
   private function get_search_profile_info($agency, $profile) {
+    $ret = new stdClass();
     if ($s_profile = self::fetch_profile_from_agency($agency, array($profile))) {
       foreach ($s_profile as $p) {
         _Object::set_value($coll, 'searchCollectionName', $p['sourceName']);
@@ -3692,6 +3697,7 @@ class OpenSearch extends webServiceServer {
    * @return object
    */
   private function get_object_format_info() {
+    $ret = new stdClass();
     foreach ($this->config->get_value('scan_format_table', 'setup') as $name => $value) {
       _Object::set_array_value($ret->_value, 'objectFormat', $value);
     }
@@ -3710,6 +3716,7 @@ class OpenSearch extends webServiceServer {
    * @return object
    */
   private function get_repository_info() {
+    $ret = new stdClass();
     $dom = new DomDocument();
     $repositories = $this->config->get_value('repository', 'setup');
     foreach ($repositories as $name => $value) {
@@ -3776,6 +3783,7 @@ class OpenSearch extends webServiceServer {
    * @return object
    */
   private function get_sort_info() {
+    $ret = new stdClass();
     foreach ($this->config->get_value('rank', 'setup') as $name => $val) {
       if (isset($val['word_boost']) && ($help = self::collect_rank_boost($val['word_boost']))) {
         _Object::set($boost, 'word', $help);
@@ -3784,6 +3792,8 @@ class OpenSearch extends webServiceServer {
         _Object::set($boost, 'phrase', $help);
       }
       if ($boost) {
+        $rank = new stdClass();
+        $rank->rankDetails = new stdClass();
         _Object::set_value($rank, 'sort', $name);
         _Object::set_value($rank, 'internalType', 'rank');
         _Object::set_value($rank->rankDetails->_value, 'tie', $val['tie']);
