@@ -3421,9 +3421,10 @@ class OpenSearch extends webServiceServer {
     foreach ($this->format as $format_name => $format_arr) {
       switch ($format_name) {
         case 'dkabm':
-          $ret = new stdClass();
+          if (!$ret) {
+            $ret = new stdClass();
+          }
           $ret->record = new stdClass();
-          $ret->record->_value;
           $ret->record->_value = new stdClass();
           $rec = &$ret->record->_value;
           $record = $dom->getElementsByTagName('record');
