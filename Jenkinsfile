@@ -50,7 +50,7 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Run bootstrap script: checkout OLS_class_lib and VipCore') {
+        stage('Run bootstrap script: checkout VipCore') {
             steps {
                 ansiColor("xterm") {
                     sh """#!/usr/bin/env bash

@@ -700,6 +700,7 @@ You should have received a copy of the GNU Affero General Public License along w
       <xs:sequence>
         <xs:element ref="os:word" minOccurs="0"/>
         <xs:element ref="os:phrase" minOccurs="0"/>
+        <xs:element ref="os:tieValue"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

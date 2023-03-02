@@ -41,19 +41,7 @@ firefox api/html/classOpenSearch.html
 
 ## Getting Started with Development
 
-This project depends on a project still in subversion. After checkout from gitlab, 
-run the script [`script/bootstrap`](script/bootstrap)
-to retrieve this svn dependency:
-```bash
-$ ./script/bootstrap 
-INFO: Checking out svn repo 'https://svn.dbc.dk/repos/php/OpenLibrary/class_lib/trunk' into directory './src/OLS_class_lib'
-INFO: Svn repo 'https://svn.dbc.dk/repos/php/OpenLibrary/class_lib/trunk' checked out into directory './src/OLS_class_lib'
-INFO: Svn info:
-Revision: 122504
-Last Changed Author: fvs
-Last Changed Rev: 122080
-Last Changed Date: 2018-10-02 15:59:39 +0200 (tir, 02 okt 2018)
-```
+As of php8+, class_lib is now included as part of this repository, so dependency of subversion is history.
 
 Note, you need the `composer` PHP dependency manager installed for this to work. 
 For debian based distros, something like: `sudo apt install composer` should get you going. If it complains

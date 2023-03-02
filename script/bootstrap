@@ -6,32 +6,11 @@ export SCRIPT_DIR=$(dirname "$(readlink -f "$0")") || { echo "Unable to identify
 . "${SCRIPT_DIR}/shared.sh" || { echo "Unable to load shared file shared.sh" ; exit 1; }
 
 
-# Get (or update) the svn externals needed by this php application.
-# SVNREPO="https://svn.dbc.dk/repos/php/OpenLibrary/class_lib/trunk"
-# Use a branch for this purpose, as we have stuff in our branch that is not part of trunk
-SVNREPO="https://svn.dbc.dk/repos/php/OpenLibrary/class_lib/branches/opensearch-production"
-EXTNAME="OLS_class_lib"
-
 set -e
 
 check_on_path svn composer
 
 SRCDIR="${PROJECT_DIR}/src"
-
-cd "${SRCDIR}" || die "Unable to change directory to ${SRCDIR}"
-if [[ -d ${EXTNAME} ]] ; then
-    cd ${EXTNAME} || die "Unable to change directory to ${SRCDIR}/${EXTNAME}"
-    info "Updating svn repo in '${SRCDIR}/${EXTNAME}'"
-    svn -q up || die "Error when updating svn repo in '${SRCDIR}/${EXTNAME}'"
-    info "Svn repo in '${SRCDIR}/${EXTNAME}' updated"
-else
-    info "Checking out svn repo '${SVNREPO}' into directory '${SRCDIR}/${EXTNAME}'"
-    svn -q checkout ${SVNREPO} ${EXTNAME} || die "Unable to checkout svn repo '${SVNREPO}' into directory '${SRCDIR}/${EXTNAME}'"
-    info "Svn repo '${SVNREPO}' checked out into directory '${SRCDIR}/${EXTNAME}'"
-    cd ${EXTNAME} || die "Unable to change into directory '${SRCDIR}/${EXTNAME}'"
-fi
-info "Svn info:"
-svn info | grep -e Revision -e Last
 
 cd "${SRCDIR}" || die "Unable to change directory to ${SRCDIR}"
 composer clear-cache || die "Unable to clear the composer cache"
