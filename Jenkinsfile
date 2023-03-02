@@ -33,7 +33,7 @@ pipeline {
     triggers {
         pollSCM("H/3 * * * *")
         // Trigger build on new php base image.
-	upstream('/Docker-apache-php7-bump-trigger')
+	upstream('/Docker-apache-php8-bump-trigger')
     }
     options {
         buildDiscarder(logRotator(artifactDaysToKeepStr: "", artifactNumToKeepStr: "", daysToKeepStr: "30", numToKeepStr: "30"))
@@ -55,6 +55,7 @@ pipeline {
                 ansiColor("xterm") {
                     sh """#!/usr/bin/env bash
                     set -e
+                    php -v
                     ./script/bootstrap
                     """
                 }
