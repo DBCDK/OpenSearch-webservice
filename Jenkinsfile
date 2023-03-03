@@ -52,8 +52,10 @@ pipeline {
         }
         stage('Run bootstrap script: checkout VipCore') {
             agent {
-                image "docker-dbc.artifacts.dbccloud.dk/dbc-apache-php8:latest"
-                args '-u isworker --network host  -v /var/run/docker.sock:/var/run/docker.sock:rw,z'
+                docker {
+                    image "docker-dbc.artifacts.dbccloud.dk/dbc-apache-php8:latest"
+                    args '-u isworker --network host  -v /var/run/docker.sock:/var/run/docker.sock:rw,z'
+                }
             }
             steps {
                 ansiColor("xterm") {
