@@ -61,8 +61,7 @@ pipeline {
                 ansiColor("xterm") {
                     sh """#!/usr/bin/env bash
                     set -e
-                    php -v
-                    ./script/bootstrap
+                    nix-shell --run ./script/bootstrap
                     """
                 }
             }

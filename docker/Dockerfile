@@ -50,7 +50,9 @@ COPY --chown=sideejer:sideejer src/*_INSTALL ${DBC_PHP_INSTALL_DIR}/
 # This is slight hack - if BUILDNUMBER exists, it is copied. If not, it is not.
 COPY --chown=sideejer:sideejer BUILDNUMBE? src/*.php ${DBC_PHP_INSTALL_DIR}/
 # Would be nice to not have to have this file?
+USER root
 RUN ln -s ${DBC_PHP_INSTALL_DIR}/server.php ${DBC_PHP_INSTALL_DIR}/index.php && chown sideejer:sideejer ${DBC_PHP_INSTALL_DIR}/index.php
+USER www-data
 
 # Do not forget to add a memcache
 ENV USE_MEMCACHE=yes
