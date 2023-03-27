@@ -42,7 +42,6 @@ LABEL maintainer="Team Search <os-team@dbc.dk>" \
 # NOTE: The BUILDNUMBER file is no longer generated or copied - we can add it back, if we need it
 COPY --chown=sideejer:sideejer src/class_lib/ ${DBC_PHP_INSTALL_DIR}/class_lib/
 COPY --chown=sideejer:sideejer src/xml/ ${DBC_PHP_INSTALL_DIR}/xml/
-#COPY --chown=sideejer:sideejer src/includes/ ${DBC_PHP_INSTALL_DIR}/includes/
 COPY --chown=sideejer:sideejer src/vendor/ ${DBC_PHP_INSTALL_DIR}/vendor/
 COPY --chown=sideejer:sideejer src/*.xsd ${DBC_PHP_INSTALL_DIR}/
 COPY --chown=sideejer:sideejer src/*.html ${DBC_PHP_INSTALL_DIR}/
