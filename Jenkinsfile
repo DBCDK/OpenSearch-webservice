@@ -55,7 +55,7 @@ pipeline {
                 ansiColor("xterm") {
                     sh """#!/usr/bin/env bash
                     set -e
-                    nix-shell --run ./script/bootstrap
+                    nix develop -c ./script/bootstrap
                     """
                 }
             }
