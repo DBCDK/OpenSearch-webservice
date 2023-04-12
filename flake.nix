@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
+    #nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
   outputs = inputs@{ flake-parts, ... }:
@@ -16,13 +17,13 @@
         "aarch64-darwin"
         # ...
       ];
-      perSystem = { config, pkgs, ... }: 
+      perSystem = { config, pkgs, system, ... }: 
       let
         osPHP = pkgs.php.withExtensions ({ enabled, all }: enabled ++ [ all.imagick all.memcached ]);
- 
+        darwin-packages = pkgs.lib.lists.optional ( system=="aarch64-darwin" ) pkgs.darwin.iproute2mac; 
       in {
         devShells.default = pkgs.mkShell {
-                buildInputs = [ osPHP osPHP.packages.composer pkgs.subversion ] ; 
+                buildInputs = [ osPHP osPHP.packages.composer pkgs.subversion ] ++ darwin-packages; 
         };
       };
     };
