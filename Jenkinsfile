@@ -181,62 +181,6 @@ pipeline {
                 }
             }
         }
-        // Quick fix to push the branch
-        stage("Docker Push branch") {
-            when {
-                branch "fbi-110-no-rec-holdingsagencyid"
-            }
-            steps {
-                script {
-                    currentBuild.displayName = "Pushing images for ${env.BRANCH_NAME}"
-
-                    // Get a list of all the images that needs pushing - saved in the previous step
-                    def tags = readJSON file: 'tags-to-push.json'
-
-                    // Retag, using the shell. Then push, using the docker abstraction.
-                    // Why the retag here - because we use a different docker prefix, and
-                    // want to change the name. The idea of using a "limited" docker prefix is
-                    // to make the seperation between "local" and "docker-*.artifacts.dbccloud.dk" very clear.
-                    // If the Jenkins docker abstraction supported renaming, that would be great.
-                    // First the rename - if any rename fails, nothing has been pushed.
-                    echo "Retagging all images before pushing to repository"
-                    for (int i = 0; i < tags.size(); i++) {
-                        def buildTag = tags[i]
-                        def pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, env.BRANCH_NAME)
-                        echo "Retagging $buildTag to $pushTag"
-                        ansiColor("xterm") {
-                            sh """#!/usr/bin/env bash
-                            set -e
-                            docker tag "${buildTag}" "${pushTag}"
-                        """
-                        }
-                    }
-
-                    echo "Pushing images to repository"
-                    for (int i = 0; i < tags.size(); i++) {
-                        def buildTag = tags[i]
-                        def pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, env.BRANCH_NAME)
-                        // Wrap the images in docker abstractions.
-                        image = docker.image(pushTag)
-                        docker.withRegistry(registry, registryCredential) {
-                            image.push()
-                        }
-                        echo "Image pushed with tag $pushTag"
-
-                    }
-
-                    // And, finally, an overview.
-                    // Yes, this is not very elegant code, but debugging it is a pain, so stay simple.
-                    echo "These images were pushed to the repository:"
-                    for (int i = 0; i < tags.size(); i++) {
-                        def buildTag = tags[i]
-                        def pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, env.BRANCH_NAME)
-                        echo "=>  $pushTag"
-                    }
-                    currentBuild.displayName = "Pushed *-${VERSION}:${env.BRANCH_NAME}"
-                }
-            }
-        }
         stage("Update DIT") {
             agent {
                 docker {
