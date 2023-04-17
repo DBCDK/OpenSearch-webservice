@@ -88,7 +88,6 @@ class OpenSearch extends webServiceServer {
     define('RR_MARC_001_B', 'marc.001b');
     define('RR_MARC_001_AB', 'marc.001a001b');
 
-    define('HOLDINGS_AGENCY_ID_FIELD', self::value_or_default($this->config->get_value('field_holdings_agency_id', 'setup'), 'rec.holdingsAgencyId'));
     define('HOLDINGS', ' holdings ');
     define('DEBUG_ON', $this->debug);
     define('MAX_IDENTICAL_RELATIONS', self::value_or_default($this->config->get_value('max_identical_relation_names', 'setup'), 20));
@@ -202,7 +201,7 @@ class OpenSearch extends webServiceServer {
     $this->watch->start('preamble');
     try {
       // check for unsupported stuff
-      $ret_error->searchResponse->_value->error->_value = &$unsupported;
+      @ $ret_error->searchResponse->_value->error->_value = &$unsupported;  // ignore PHP warning
       if (empty($param->query->_value)) {
         $unsupported = 'Error: No query found in request';
       }
@@ -412,7 +411,6 @@ class OpenSearch extends webServiceServer {
       $solr_query = $this->cql2solr->parse($param->query->_value);
     else
       $solr_query = $this->cql2solr->parse($param->query->_value, $this->search_filter_for_800000);
-    self::modify_query_and_filter_agency($solr_query);
 //var_dump($solr_query); var_dump($this->split_holdings_include); var_dump($this->search_filter_for_800000); die();
     $this->watch->stop('cql');
     $this->watch->start('postcql');
@@ -734,7 +732,7 @@ class OpenSearch extends webServiceServer {
         $o = new stdClass();
         $o->collection = new stdClass();
         $o->collection->_value = new stdClass();
-        _Object::set_value($o->collection->_value, 'resultPosition', $rec_no++);
+        @ _Object::set_value($o->collection->_value, 'resultPosition', $rec_no++);  // ignore PHP warning
         _Object::set_value($o->collection->_value, 'numberOfObjects', count($objects));
         if (count($objects) > 1) {
           ksort($objects);
@@ -803,7 +801,7 @@ class OpenSearch extends webServiceServer {
       $ret->searchResponse->_value->result = new stdClass();
       $ret->searchResponse->_value->result->_value = new stdClass();
 
-      $result = &$ret->searchResponse->_value->result->_value;
+      @ $result = &$ret->searchResponse->_value->result->_value;  // ignore PHP warning
       _Object::set_value($result, 'hitCount', $numFound);
       _Object::set_value($result, 'collectionCount', count($collections));
       _Object::set_value($result, 'more', ($more ? 'true' : 'false'));
@@ -818,7 +816,7 @@ class OpenSearch extends webServiceServer {
       }
       $result->statInfo = new stdClass();
       $result->statInfo->_value = new stdClass();
-      _Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
+      @ _Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);  // ignore PHP warning
       _Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
       _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
       _Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
@@ -856,7 +854,7 @@ class OpenSearch extends webServiceServer {
      // Add custom headers *always* - to allow SLA
     self::add_dbc_sla_header_action("getObject");
 
-    $ret_error->searchResponse->_value->error->_value = &$error;
+    @ $ret_error->searchResponse->_value->error->_value = &$error;  // ignore PHP warning
     $this->watch->start('aaa');
     try {
       if (!$this->aaa->has_right('opensearch', 500)) {
@@ -1153,7 +1151,7 @@ class OpenSearch extends webServiceServer {
           $key = reset($pids);
           $o = new stdClass();
           $o->collection = new stdClass();
-          _Object::set_value($o->collection->_value, 'resultPosition', $rec_no + 1);
+          @ _Object::set_value($o->collection->_value, 'resultPosition', $rec_no + 1);  // ignore PHP warning
           _Object::set_value($o->collection->_value, 'numberOfObjects', 1);
 
           if (!$raw_res[$key] || @ !$record_repo_dom->loadXML($raw_res[$key])) {
@@ -1167,7 +1165,7 @@ class OpenSearch extends webServiceServer {
               $record_repo_dom->loadXML(sprintf($missing_record, reset($pids)));
             } else {
               $o->collection->_value->object = new stdClass();
-              _Object::set_value($o->collection->_value->object->_value, 'error', 'unknown/missing/inaccessible record: ' . reset($pids));
+              @ _Object::set_value($o->collection->_value->object->_value, 'error', 'unknown/missing/inaccessible record: ' . reset($pids));  // ignore PHP warning
               _Object::set_value($o->collection->_value->object->_value, 'identifier', reset($pids));
             }
           }
@@ -1203,7 +1201,7 @@ class OpenSearch extends webServiceServer {
       $ret->searchResponse->_value = new stdClass();
       $ret->searchResponse->_value->result = new stdClass();
       $ret->searchResponse->_value->result->_value = new stdClass();
-      $result = &$ret->searchResponse->_value->result->_value;
+      @ $result = &$ret->searchResponse->_value->result->_value;  // ignore PHP warning
       $no_collections = is_countable($collections) ? count($collections) : 0;
       _Object::set_value($result, 'hitCount', $no_collections);
       _Object::set_value($result, 'collectionCount', $no_collections);
@@ -1212,7 +1210,7 @@ class OpenSearch extends webServiceServer {
       _Object::set_value($result, 'facetResult', '');
       $ret->searchResponse->_value->result->_value->statInfo = new stdClass();
       $ret->searchResponse->_value->result->_value->statInfo->_value = new stdClass();
-      _Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);
+      @ _Object::set_value($result->statInfo->_value, 'fedoraRecordsCached', $this->number_of_record_repo_cached);  // ignore PHP warning
       _Object::set_value($result->statInfo->_value, 'fedoraRecordsRead', $this->number_of_record_repo_calls);
       _Object::set_value($result->statInfo->_value, 'time', $this->watch->splittime('Total'));
       _Object::set_value($result->statInfo->_value, 'trackingId', VerboseJson::$tracking_id);
@@ -1241,8 +1239,8 @@ class OpenSearch extends webServiceServer {
       $ret->infoResponse = new stdClass();
       $ret->infoResponse->_value = new stdClass();
       $ret->infoResponse->_value->infoGeneral = new stdClass();
-      $result = &$ret->infoResponse->_value;
-      _Object::set_value($result->infoGeneral->_value, 'defaultRepository', $this->config->get_value('default_repository', 'setup'));
+      @ $result = &$ret->infoResponse->_value;  // ignore PHP warning
+      @ _Object::set_value($result->infoGeneral->_value, 'defaultRepository', $this->config->get_value('default_repository', 'setup'));  // ignore PHP warning
       $result->infoRepositories = self::get_repository_info();
       $result->infoObjectFormats = self::get_object_format_info();
       $result->infoSearchProfile = self::get_search_profile_info($param->agency->_value, $param->profile);
@@ -1975,34 +1973,6 @@ class OpenSearch extends webServiceServer {
     return $best_idx;
   }
 
-  /** \brief Alter the query and agency filter if HOLDINGS_AGENCY_ID_FIELD is used in query
-   *         - replace 870970-basis with holdings_agency part and (bug: 21233) add holdings_agency part to the agency_catalog source
-   *
-   * @param object $solr_query
-   */
-  private function modify_query_and_filter_agency(&$solr_query) {
-    foreach (['q', 'fq'] as $solr_par) {
-      if (!empty($solr_query['edismax'])) {
-        foreach ($solr_query['edismax'][$solr_par] as $q_idx => $q) {
-          if (strpos($q, HOLDINGS_AGENCY_ID_FIELD . ':') === 0) {
-            if (count($solr_query['edismax'][$solr_par]) == 1) {
-              $solr_query['edismax'][$solr_par][$q_idx] = '*';
-            }
-            else {
-              unset($solr_query['edismax'][$solr_par][$q_idx]);
-            }
-            $this->filter_agency = str_replace(FIELD_COLLECTION_INDEX . ':870970-basis', $q, $this->filter_agency);
-            $collect_agency = FIELD_COLLECTION_INDEX . ':' . $this->agency . '-katalog';
-            $filtered_collect_agency = '(' . $collect_agency . AND_OP . $q . ')';
-            if (strpos($this->filter_agency, $filtered_collect_agency) === FALSE) {
-              $this->filter_agency = str_replace($collect_agency, $filtered_collect_agency, $this->filter_agency);
-            }
-          }
-        }
-      }
-    }
-  }
-
   /** \brief Set the parameters to solr facets
    *
    * @param object $facets - the facet paramaters from the request
@@ -2090,7 +2060,6 @@ class OpenSearch extends webServiceServer {
         $add_q = $this->which_rec_id . ':(' . $add_query . ')';
       }
       $chk_query = $this->cql2solr->parse($query);
-      self::modify_query_and_filter_agency($chk_query);
       if ($all_objects) {
         $chk_query['edismax']['q'] = [$add_q];
       }
@@ -3245,10 +3214,10 @@ class OpenSearch extends webServiceServer {
             $relation->linkObject = new stdClass();
             $relation->linkObject->_value = new stdClass();
             if ($access_type) {
-              _Object::set_value($relation->linkObject->_value, 'accessType', $access_type);
+              @ _Object::set_value($relation->linkObject->_value, 'accessType', $access_type);  // ignore PHP warning
             }
             if ($nv = self::get_dom_element($link, 'access')) {
-              _Object::set_value($relation->linkObject->_value, 'access', $nv);
+              @ _Object::set_value($relation->linkObject->_value, 'access', $nv);  // ignore PHP warning
             }
             _Object::set_value($relation->linkObject->_value, 'linkTo', self::get_dom_element($link, 'linkTo'));
             if ($lci) {
@@ -3333,7 +3302,7 @@ class OpenSearch extends webServiceServer {
               $relation->relationObject->_value = new stdClass();
               $relation->relationObject->_value->object = new stdClass();
               $relation->relationObject->_value->object->_value = new stdClass();
-              $rel_obj = &$relation->relationObject->_value->object->_value;
+              @ $rel_obj = &$relation->relationObject->_value->object->_value;  // ignore PHP warning
               $rel_obj = self::extract_record($dom, $rel_unit);
               _Object::set_value($rel_obj, 'identifier', $relation_pid);
               if ($cd = self::get_creation_date($dom)) {
@@ -3426,7 +3395,7 @@ class OpenSearch extends webServiceServer {
           }
           $ret->record = new stdClass();
           $ret->record->_value = new stdClass();
-          $rec = &$ret->record->_value;
+          @ $rec = &$ret->record->_value;  // ignore PHP warning
           $record = $dom->getElementsByTagName('record');
           if ($record->item(0)) {
             $ret->record->_namespace = $record->item(0)->lookupNamespaceURI('dkabm');
@@ -3444,7 +3413,7 @@ class OpenSearch extends webServiceServer {
                 $o->_namespace = $record->item(0)->lookupNamespaceURI($tag->prefix);
                 $o->_value = trim($tag->nodeValue);
                 if ($tag->localName && !($tag->localName == 'subject' && $tag->nodeValue == 'undefined')) {
-                  $rec->{$tag->localName}[] = $o;
+                  @ $rec->{$tag->localName}[] = $o;  // ignore PHP warning
                 }
                 unset($o);
               }
@@ -3676,7 +3645,7 @@ class OpenSearch extends webServiceServer {
           $coll->relationType = $rels;
         }
         if ($rels || self::xs_boolean($p['sourceSearchable'])) {
-          _Object::set_array_value($ret->_value, 'searchCollection', $coll);
+          @ _Object::set_array_value($ret->_value, 'searchCollection', $coll);  // ignore PHP warning
         }
         unset($rels);
         unset($coll);
@@ -3700,7 +3669,7 @@ class OpenSearch extends webServiceServer {
   private function get_object_format_info() {
     $ret = new stdClass();
     foreach ($this->config->get_value('scan_format_table', 'setup') as $name => $value) {
-      _Object::set_array_value($ret->_value, 'objectFormat', $value);
+      @ _Object::set_array_value($ret->_value, 'objectFormat', $value);  // ignore PHP warning
     }
     foreach ($this->config->get_value('solr_format', 'setup') as $name => $value) {
       if (empty($value['secret']))
@@ -3743,7 +3712,7 @@ class OpenSearch extends webServiceServer {
             }
           }
         }
-        _Object::set_array_value($ret->_value, 'infoRepository', $r);
+        @ _Object::set_array_value($ret->_value, 'infoRepository', $r);  // ignore PHP warning
         unset($r);
       }
     }
@@ -3797,9 +3766,9 @@ class OpenSearch extends webServiceServer {
         $rank->rankDetails = new stdClass();
         _Object::set_value($rank, 'sort', $name);
         _Object::set_value($rank, 'internalType', 'rank');
-        _Object::set_value($rank->rankDetails->_value, 'tie', $val['tie']);
+        @ _Object::set_value($rank->rankDetails->_value, 'tie', $val['tie']);  // ignore PHP warning
         $rank->rankDetails->_value = $boost;
-        _Object::set_array_value($ret->_value, 'infoSort', $rank);
+        @ _Object::set_array_value($ret->_value, 'infoSort', $rank);  // ignore PHP warning
         unset($boost);
         unset($rank);
       }
