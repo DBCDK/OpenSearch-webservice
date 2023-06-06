@@ -1,27 +1,31 @@
 #!/usr/bin/php
 <?php
+/**
+ * Retrieve user queries from openSearch logs stored in elk for a given date
+ */
 
+// currently 10000 is the max loop size, elastic search (elk) fails for larger chunks
 define('LOOP_SIZE', 10000);
 
 $opt = options();
 
-$extract_time = empty($opt['d']) ? strtotime("-1 days") : strtotime($opt['d']);
+$extract_date = empty($opt['d']) ? strtotime("-1 days") : strtotime($opt['d']);
 $elk = $opt['e'] . '/k8s-cisterne-%s/_search?sort=@timestamp:asc';
 $pwd = $opt['p'];
 $out = fopen($opt['o'], 'w');
 if (!$out) die('ERROR. Cannot open output file: ' . $opt['o'] . "\n");
 
-$curl = set_curl($elk, $pwd, gmdate('Y.m.d', $extract_time));
+$curl = set_curl($elk, $pwd, gmdate('Y.m.d', $extract_date));
 
 $sort = [];
 $lines = 0;
 do {
-  $extract = set_elk_parms($extract_time, $sort);
+  $extract = set_elk_parms($extract_date, $sort);
   curl_setopt($curl, CURLOPT_POSTFIELDS, $extract);
   $data = curl_exec($curl);
   $c_info = curl_getinfo($curl);
   if ($c_info['http_code'] != 200) die('http error ' . $c_info['http_code'] . ' fetching ' . $elk . "\n");
-  if (empty($data)) die('no data returned from ' . $elk . " even though http status is 200\n");
+  if (empty($data)) die('no data returned from ' . $elk . " even though http status was 200\n");
   $json = json_decode($data);
   $sort = [];
   foreach ($json->hits->hits as $hit) {
@@ -31,10 +35,17 @@ do {
   }
 } while($sort);
 
-die('Wrote ' . $lines . ' loglines with queries for ' . gmdate('Y-m-d', $extract_time) . "\n");
+die('Wrote ' . $lines . ' loglines with queries for ' . gmdate('Y-m-d', $extract_date) . "\n");
 
 /* ------------------------------------------------------------------------------------- */
 
+/** set constant curl settings
+ *
+ * @param $url
+ * @param $pwd
+ * @param $date
+ * @return false|CurlHandle
+ */
 function set_curl($url, $pwd, $date) {
   $cid = curl_init();
   curl_setopt($cid, CURLOPT_RETURNTRANSFER, TRUE);
@@ -46,6 +57,9 @@ function set_curl($url, $pwd, $date) {
   return $cid;
 }
 
+/**
+ * @return array|false|false[]|string[]
+ */
 function options() {
   $opt = getopt('o:e:p:d:h::');
   if (isset($opt['h'])) usage();
@@ -53,7 +67,11 @@ function options() {
   return $opt;
 }
 
+/**
+ * @param string $err
+ */
 function usage($err = '') {
+  if ($err) echo "ERROR: $err \n\n";
   $self = basename($_SERVER["PHP_SELF"]);
   echo "Usage: $self [options...] \n";
   echo " -e     url to elk, like https://elk...\n";
@@ -63,11 +81,16 @@ function usage($err = '') {
   echo "\nExample:\n";
   echo '       ' . $self . ' -e <elk url> -p <pass for elk> -o <output>' . "\n";
   echo '       ' . $self . ' -e <elk url> -p <pass for elk> -o <output> -d <yyyy-mm-dd>' . "\n";
-  if ($err) echo "ERROR: $err \n";
   die();
 }
 
-function set_elk_parms($time, $search_after = '') {
+/** set elastic search parameters to retrieve the next LOOP_SIZE lines
+ *
+ * @param $time
+ * @param string $search_after
+ * @return string
+ */
+function set_elk_parms($date, $search_after = '') {
   $start = empty($search_after) ? 0 : $search_after[0] / 1000;
   echo 'Paging from ' . gmdate("Y-m-d H:i:s", $start) . "\n";
   return '{
@@ -85,8 +108,8 @@ function set_elk_parms($time, $search_after = '') {
           {"match_phrase": {"level": "STAT"}},
           {"range": {
             "timestamp": {
-              "gte": "' . gmdate('Y-m-d', $time) . 'T00:00:00.000Z",
-              "lte": "' . gmdate('Y-m-d', $time) . 'T23:59:59.999Z",
+              "gte": "' . gmdate('Y-m-d', $date) . 'T00:00:00.000Z",
+              "lte": "' . gmdate('Y-m-d', $date) . 'T23:59:59.999Z",
               "format": "strict_date_optional_time"
               }
           } }

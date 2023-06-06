@@ -17,22 +17,30 @@ pipeline {
 
   }
   stages {
-    stage("clear workspace") {
+    stage("Clear workspace") {
       steps {
         deleteDir()
         checkout scm
       }
     }
-    stage("extract loglines") {
-      steps { script {
-        sh "echo Fetch searches from log for ${YESTERDATE}"
-        sh "rm -f ${LOG_QUERIES}"
-        sh "./cron/fetch_queries_from_elk -o ${LOG_QUERIES} -e ${ELK_URI} -p ${ELK_CREDENTIALS} -d ${YESTERDATE}"
-        sh "echo Search profiles"
-        sh "cut -d',' -f3-3 ${LOG_QUERIES} | sort | uniq -c"
-        sh "echo Search agencies"
-        sh "cut -d',' -f1-1 ${LOG_QUERIES} | tr -d '{' | sort | uniq -c"
-      } }
+    stage("Extract loglines") {
+      steps {
+        script {
+          sh "echo Fetch searches from log for ${YESTERDATE}"
+          sh "rm -f ${LOG_QUERIES}"
+          sh "./cron/fetch_queries_from_elk -o ${LOG_QUERIES} -e ${ELK_URI} -p ${ELK_CREDENTIALS} -d ${YESTERDATE}"
+        }
+      }
+    }
+    stage("Show some stats") {
+      steps {
+        script {
+          sh "echo Search profiles"
+          sh "cut -d',' -f3-3 ${LOG_QUERIES} | sort | uniq -c"
+          sh "echo Search agencies"
+          sh "cut -d',' -f1-1 ${LOG_QUERIES} | tr -d '{' | sort | uniq -c"
+        }
+      }
     }
   }
   post {
