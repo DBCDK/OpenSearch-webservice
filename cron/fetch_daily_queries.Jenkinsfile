@@ -4,16 +4,16 @@ pipeline {
   agent {
     label "devel10"
   }
-//  triggers {
-//    cron("02 02 * * *")
-//  }
+  triggers {
+    cron("H 03 * * *")
+  }
   environment {
-    DATE = new Date().previous().format("yyyy-MM-dd")
-    LOG_FILE = "os_daily_queries.${DATE}"
+    YESTERDATE = new Date().previous().format("yyyy-MM-dd")
+    LOG_QUERIES = "os_daily_queries.${YESTERDATE}"
     ELK_URI = "https://elk.dbc.dk:9100"
     ELK_CREDENTIALS = credentials('elk_user');
     ARTIFACTORY_GENERIC = "https://artifactory.dbccloud.dk/artifactory/generic-fbiscrum-production/opensearch/"
-    ARTIFACTORY_LOGIN = credentials("artifactory_login")
+    ARTIFACTORY_CREDENTIALS = credentials("artifactory_login")
 
   }
   stages {
@@ -25,13 +25,13 @@ pipeline {
     }
     stage("extract loglines") {
       steps { script {
-        sh "echo Fetch searches from log for ${DATE}"
-        sh "rm -f ${LOG_FILE}"
-        sh "./cron/fetch_queries_from_elk -o ${LOG_FILE} -e ${ELK_URI} -p ${ELK_CREDENTIALS} -d ${DATE}"
+        sh "echo Fetch searches from log for ${YESTERDATE}"
+        sh "rm -f ${LOG_QUERIES}"
+        sh "./cron/fetch_queries_from_elk -o ${LOG_QUERIES} -e ${ELK_URI} -p ${ELK_CREDENTIALS} -d ${YESTERDATE}"
         sh "echo Search profiles"
-        sh "cut -d',' -f3-3 ${LOG_FILE} | sort | uniq -c"
+        sh "cut -d',' -f3-3 ${LOG_QUERIES} | sort | uniq -c"
         sh "echo Search agencies"
-        sh "cut -d',' -f1-1 ${LOG_FILE} | tr -d '{' | sort | uniq -c"
+        sh "cut -d',' -f1-1 ${LOG_QUERIES} | tr -d '{' | sort | uniq -c"
       } }
     }
   }
@@ -46,13 +46,13 @@ pipeline {
     }
     success {
       script {
-        sh "echo archive ${LOG_FILE}"
-        archiveArtifacts "${LOG_FILE}"
-        sh "echo push to ${ARTIFACTORY_GENERIC}${LOG_FILE}"
-        sh "curl -u ${ARTIFACTORY_LOGIN} -T ${LOG_FILE} ${ARTIFACTORY_GENERIC}${LOG_FILE}"
+        sh "echo archive ${LOG_QUERIES}"
+        archiveArtifacts "${LOG_QUERIES}"
+        sh "echo push to ${ARTIFACTORY_GENERIC}${LOG_QUERIES}"
+        sh "curl -u ${ARTIFACTORY_CREDENTIALS} -T ${LOG_QUERIES} ${ARTIFACTORY_GENERIC}${LOG_QUERIES}"
         slackSend(channel: 'fbi-frontend-is',
           color: 'good',
-          message: "${env.JOB_NAME} #${env.BUILD_NUMBER} completed, and pushed ${LOG_FILE} to ${ARTIFACTORY_GENERIC}",
+          message: "${env.JOB_NAME} #${env.BUILD_NUMBER} completed, and pushed ${LOG_QUERIES} to ${ARTIFACTORY_GENERIC}",
           tokenCredentialId: 'slack-global-integration-token')
       }
     }
