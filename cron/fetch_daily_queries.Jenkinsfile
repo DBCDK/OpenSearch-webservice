@@ -45,7 +45,7 @@ pipeline {
         sh "echo archive ${LOG_FILE}"
         archiveArtifacts "${LOG_FILE}"
         sh "echo push to ${ARTIFACTORY_GENERIC}${LOG_FILE}"
-        sh "curl -u ${ARTIFACTORY_LOGIN} -T /tmp/${LOG_FILE} ${ARTIFACTORY_GENERIC}${LOG_FILE}"
+        sh "curl -u ${ARTIFACTORY_LOGIN} -T ${LOG_FILE} ${ARTIFACTORY_GENERIC}${LOG_FILE}"
         slackSend(channel: 'fbi-frontend-is',
           color: 'good',
           message: "${env.JOB_NAME} #${env.BUILD_NUMBER} completed, and pushed ${LOG_FILE} to ${ARTIFACTORY_GENERIC}",
