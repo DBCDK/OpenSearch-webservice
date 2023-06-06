@@ -46,14 +46,16 @@ pipeline {
     }
     success {
       script {
-        sh "echo archive ${LOG_QUERIES}"
-        archiveArtifacts "${LOG_QUERIES}"
-        sh "echo push to ${ARTIFACTORY_GENERIC}${LOG_QUERIES}"
-        sh "curl -u ${ARTIFACTORY_CREDENTIALS} -T ${LOG_QUERIES} ${ARTIFACTORY_GENERIC}${LOG_QUERIES}"
-        slackSend(channel: 'fbi-frontend-is',
-          color: 'good',
-          message: "${env.JOB_NAME} #${env.BUILD_NUMBER} completed, and pushed ${LOG_QUERIES} to ${ARTIFACTORY_GENERIC}",
-          tokenCredentialId: 'slack-global-integration-token')
+        if ("${env.BRANCH_NAME}" == 'master') {
+          sh "echo archive ${LOG_QUERIES}"
+          archiveArtifacts "${LOG_QUERIES}"
+          sh "echo push to ${ARTIFACTORY_GENERIC}${LOG_QUERIES}"
+          sh "curl -u ${ARTIFACTORY_CREDENTIALS} -T ${LOG_QUERIES} ${ARTIFACTORY_GENERIC}${LOG_QUERIES}"
+          slackSend(channel: 'fbi-frontend-is',
+            color: 'good',
+            message: "${env.JOB_NAME} #${env.BUILD_NUMBER} completed, and pushed ${LOG_QUERIES} to ${ARTIFACTORY_GENERIC}",
+            tokenCredentialId: 'slack-global-integration-token')
+        }
       }
     }
   }
