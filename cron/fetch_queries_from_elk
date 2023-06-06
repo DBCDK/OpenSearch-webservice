@@ -1,0 +1,99 @@
+#!/usr/bin/php
+<?php
+
+define('LOOP_SIZE', 10000);
+
+$opt = options();
+
+$extract_time = empty($opt['d']) ? strtotime("-1 days") : strtotime($opt['d']);
+$elk = $opt['e'] . '/k8s-cisterne-%s/_search?sort=@timestamp:asc';
+$pwd = $opt['p'];
+$out = fopen($opt['o'], 'w');
+if (!$out) die('ERROR. Cannot open output file: ' . $opt['o'] . "\n");
+
+$pwd = 'fvs:1Afdemdertitredmedfane';
+
+$curl = set_curl($elk, $pwd, gmdate('Y.m.d', $extract_time));
+
+$sort = [];
+$lines = 0;
+do {
+  $extract = set_elk_parms($extract_time, $sort);
+  curl_setopt($curl, CURLOPT_POSTFIELDS, $extract);
+  $data = curl_exec($curl);
+  $c_info = curl_getinfo($curl);
+  if ($c_info['http_code'] != 200) die('http error ' . $c_info['http_code'] . ' fetching ' . $elk . "\n");
+  if (empty($data)) die('no data returned from ' . $elk . " even though http status is 200\n");
+  $json = json_decode($data);
+  $sort = [];
+  foreach ($json->hits->hits as $hit) {
+    $sort = $hit->sort;
+    fwrite($out, json_encode($hit->_source) . "\n");
+    $lines++;
+  }
+} while($sort);
+
+die('Wrote ' . $lines . ' loglines with queries for ' . gmdate('Y-m-d', $extract_time) . "\n");
+
+/* ------------------------------------------------------------------------------------- */
+
+function set_curl($url, $pwd, $date) {
+  $cid = curl_init();
+  curl_setopt($cid, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($cid, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8'));
+  curl_setopt($cid, CURLOPT_CONNECTTIMEOUT, 15);
+  curl_setopt($cid, CURLOPT_URL, sprintf($url, $date));
+  curl_setopt($cid, CURLOPT_USERPWD, $pwd);
+  curl_setopt($cid, CURLOPT_POST, 1);
+  return $cid;
+}
+
+function options() {
+  $opt = getopt('o:e:p:d:h::');
+  if (isset($opt['h'])) usage();
+  if (empty($opt['o']) || empty($opt['e']) || empty($opt['p'])) usage('Missing option');
+  return $opt;
+}
+
+function usage($err = '') {
+  $self = basename($_SERVER["PHP_SELF"]);
+  echo "Usage: $self [options...] \n";
+  echo " -e     url to elk, like https://elk...\n";
+  echo " -p     credentials to elk, like \"someName:somePassword\"\n";
+  echo " -o     output file for logline\n";
+  echo " -d     date to extract log lines, like 2023-05-30\n";
+  echo "\nExample:\n";
+  echo '       ' . $self . ' -e <elk url> -p <pass for elk> -o <output>' . "\n";
+  echo '       ' . $self . ' -e <elk url> -p <pass for elk> -o <output> -d <yyyy-mm-dd>' . "\n";
+  if ($err) echo "ERROR: $err \n";
+  die();
+}
+
+function set_elk_parms($time, $search_after = '') {
+  $start = empty($search_after) ? 0 : $search_after[0] / 1000;
+  echo 'Paging from ' . gmdate("Y-m-d H:i:s", $start) . "\n";
+  return '{
+    "from": 0,
+    "size": ' . LOOP_SIZE .',
+    ' . (empty($search_after) ? '' : '"search_after": ' . json_encode($search_after) . ',') . '
+    "sort": [{"timestamp": "asc"}],
+    "_source": {
+      "includes": ["agency", "profile", "query", "ip"]
+    },
+    "query": {
+      "bool": {
+        "filter": [
+          {"match_phrase": {"action": "search"}},
+          {"match_phrase": {"level": "STAT"}},
+          {"range": {
+            "timestamp": {
+              "gte": "' . gmdate('Y-m-d', $time) . 'T00:00:00.000Z",
+              "lte": "' . gmdate('Y-m-d', $time) . 'T00:59:59.999Z",
+              "format": "strict_date_optional_time"
+              }
+          } }
+        ]
+      }
+    }
+  }';
+}
