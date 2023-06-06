@@ -28,6 +28,10 @@ pipeline {
         sh "echo Fetch searches from log for ${DATE}"
         sh "rm -f ${LOG_FILE}"
         sh "./cron/fetch_queries_from_elk -o ${LOG_FILE} -e ${ELK_URI} -p ${ELK_CREDENTIALS} -d ${DATE}"
+        sh "echo Search profiles"
+        sh "cut -d',' -f3-3 ${LOG_FILE} | sort | uniq -c"
+        sh "echo Search agencies"
+        sh "cut -d',' -f1-1 ${LOG_FILE} | tr -d '{' | sort | uniq -c"
       } }
     }
   }
