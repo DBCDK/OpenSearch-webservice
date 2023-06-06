@@ -11,8 +11,6 @@ $pwd = $opt['p'];
 $out = fopen($opt['o'], 'w');
 if (!$out) die('ERROR. Cannot open output file: ' . $opt['o'] . "\n");
 
-$pwd = 'fvs:1Afdemdertitredmedfane';
-
 $curl = set_curl($elk, $pwd, gmdate('Y.m.d', $extract_time));
 
 $sort = [];
@@ -88,7 +86,7 @@ function set_elk_parms($time, $search_after = '') {
           {"range": {
             "timestamp": {
               "gte": "' . gmdate('Y-m-d', $time) . 'T00:00:00.000Z",
-              "lte": "' . gmdate('Y-m-d', $time) . 'T00:59:59.999Z",
+              "lte": "' . gmdate('Y-m-d', $time) . 'T23:59:59.999Z",
               "format": "strict_date_optional_time"
               }
           } }
