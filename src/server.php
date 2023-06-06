@@ -79,8 +79,8 @@ class OpenSearch extends webServiceServer {
     $this->curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
     $this->open_agency = self::initAgencyCore($this->config->get_value('vipcore', 'setup'));
 
-    define('FIELD_UNIT_ID', 'unit.id');
-    define('FIELD_FEDORA_PID', 'fedoraPid');
+    define('FIELD_UNIT_ID', 'rec.unitId');
+    define('FIELD_REPOSITORY_ID', 'rec.repositoryId');
     define('FIELD_WORK_ID', 'rec.workId');
     define('FIELD_REC_ID', 'rec.id');
     define('FIELD_COLLECTION_INDEX', 'rec.collectionIdentifier');
@@ -625,7 +625,7 @@ class OpenSearch extends webServiceServer {
               $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
               if ($solr_rec['sort.complexKey'] && empty($found_primary[$unit_id])) {
                 $unit_sort_keys[$unit_id] = $solr_rec['sort.complexKey'] . '  ' . $unit_id;
-                $source = self::record_source_from_pid($solr_rec[FIELD_FEDORA_PID]);
+                $source = self::record_source_from_pid($solr_rec[FIELD_REPOSITORY_ID]);
                 $found_primary[$unit_id] = (self::scalar_or_first_elem($solr_rec['unit.isPrimaryObject']) == 'true') &&
                     in_array($source, $solr_rec[FIELD_COLLECTION_INDEX]);
               }
@@ -1080,7 +1080,7 @@ class OpenSearch extends webServiceServer {
         '&start=0' .
         '&rows=500' .
         '&defType=edismax' .
-        '&fl=' . FIELD_COLLECTION_INDEX . ',' . FIELD_WORK_ID . ',' . FIELD_FEDORA_PID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
+        '&fl=' . FIELD_COLLECTION_INDEX . ',' . FIELD_WORK_ID . ',' . FIELD_REPOSITORY_ID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
         $add_fl . '&trackingId=' . VerboseJson::$tracking_id;
     VerboseJson::log(TRACE, 'Search for pids in Solr: ' . $this->repository['solr'] . str_replace('wt=phps', '?', $solr_q));
     $curl = new curl();
@@ -2119,7 +2119,7 @@ class OpenSearch extends webServiceServer {
     return $solr_arr['response']['numFound'];
   }
 
-  /** \brief Encapsules extraction of ids (unit.id or workid) solr result
+  /** \brief Encapsules extraction of ids (unitId or workId) solr result
    *
    * @param array $solr_arr
    * @param array $search_ids - contains the result
@@ -2229,7 +2229,7 @@ class OpenSearch extends webServiceServer {
       '&fq=' . $filter .
       '&start=' . $start . $sort . $rank . $boost . $facets . $handler_var .
       '&defType=edismax' .
-      '&fl=' . FIELD_FEDORA_PID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . ',' . FIELD_COLLECTION_INDEX;
+      '&fl=' . FIELD_REPOSITORY_ID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . ',' . FIELD_COLLECTION_INDEX;
     $debug_url = $url . '&rows=1&debugQuery=on';
     $url .= '&wt=phps&rows=' . $rows . ($this->debug_query ? '&debugQuery=on' : '');
 
@@ -2908,7 +2908,7 @@ class OpenSearch extends webServiceServer {
       $solr_urls = [];
       $filter_all_q = rawurlencode(self::set_solr_filter($this->search_profile, TRUE));
       foreach ($chunks as $chunk) {
-        $query['q'] = ['unit.id:("' . implode('" OR "', $chunk) . '")'];
+        $query['q'] = [FIELD_UNIT_ID + ':("' . implode('" OR "', $chunk) . '")'];
         $solr_urls[] = self::create_solr_url($query, 0, 99999, $filter_all_q, '', '', '', '');
       }
       if ( count($solr_urls) > 0) {
