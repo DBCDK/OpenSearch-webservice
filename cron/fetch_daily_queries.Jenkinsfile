@@ -27,7 +27,7 @@ pipeline {
       steps { script {
         sh "echo Fetch searches from log for ${DATE}"
         sh "rm -f /tmp/${LOG_FILE}"
-        sh "./cron/fetch_queries_from_elk -o /tmp/${LOG_FILE} -e ${ELK_URI} -p ${ELK_CREDENTIALS} -d ${DATE}
+        sh "./cron/fetch_queries_from_elk -o /tmp/${LOG_FILE} -e ${ELK_URI} -p ${ELK_CREDENTIALS} -d ${DATE}"
       } }
     }
   }
