@@ -2908,7 +2908,7 @@ class OpenSearch extends webServiceServer {
       $solr_urls = [];
       $filter_all_q = rawurlencode(self::set_solr_filter($this->search_profile, TRUE));
       foreach ($chunks as $chunk) {
-        $query['q'] = [FIELD_UNIT_ID + ':("' . implode('" OR "', $chunk) . '")'];
+        $query['q'] = [FIELD_UNIT_ID . ':("' . implode('" OR "', $chunk) . '")'];
         $solr_urls[] = self::create_solr_url($query, 0, 99999, $filter_all_q, '', '', '', '');
       }
       if ( count($solr_urls) > 0) {
