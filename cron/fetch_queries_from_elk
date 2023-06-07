@@ -27,11 +27,14 @@ do {
   if ($c_info['http_code'] != 200) die('http error ' . $c_info['http_code'] . ' fetching ' . $elk . "\n");
   if (empty($data)) die('no data returned from ' . $elk . " even though http status was 200\n");
   $json = json_decode($data);
+  if (empty($json)) die('data returned from ' . $elk . " is not valid json: ' . $data . '\n");
   $sort = [];
-  foreach ($json->hits->hits as $hit) {
-    $sort = $hit->sort;
-    fwrite($out, json_encode($hit->_source) . "\n");
-    $lines++;
+  if (isset($json->hits) || is_iterable($json->hits->hits)) {
+    foreach ($json->hits->hits as $hit) {
+      $sort = $hit->sort;
+      fwrite($out, json_encode($hit->_source) . "\n");
+      $lines++;
+    }
   }
 } while($sort);
 
@@ -87,10 +90,10 @@ function usage($err = '') {
 /** set elastic search parameters to retrieve the next LOOP_SIZE lines
  *
  * @param $time
- * @param string $search_after
+ * @param array $search_after
  * @return string
  */
-function set_elk_parms($date, $search_after = '') {
+function set_elk_parms($date, $search_after = []) {
   $start = empty($search_after) ? 0 : $search_after[0] / 1000;
   echo 'Paging from ' . gmdate("Y-m-d H:i:s", $start) . "\n";
   return '{
