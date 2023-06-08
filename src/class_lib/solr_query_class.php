@@ -24,8 +24,6 @@
 require_once('class_lib/cql2tree_class.php');
 
 define('DEVELOP', FALSE);
-define('HOLDINGS_AGENCYID_INDEX', 'holdingsitem.agencyId');
-define('RENAME_HOLDINGS_AGENCYID_INDEX', 'rec.holdingsAgencyId');
 
 
 /**
@@ -134,7 +132,7 @@ class SolrQuery {
       $ret['error'] = $diags;;
     }
     else {
-      $trees = self::handle_holdingsitem_agency_id(self::split_tree($tree));
+      $trees = self::split_tree($tree);
       $ret['edismax'] = self::trees_2_edismax($trees);
       $ret['best_match'] = self::trees_2_bestmatch($trees);
       $ret['operands'] = self::trees_2_operands($trees);
@@ -166,45 +164,6 @@ class SolrQuery {
   }
 
   // ------------------------- Private functions below -------------------------------------
-
-  /** \brief locates usage of more than one holdingsItem fields
-   * @param @tree
-   * @return boolean
-   */
-  private function mixed_fields($tree) {
-    if ($tree['type'] == 'boolean') {
-      return self::mixed_fields($tree['left']) || self::mixed_fields($tree['right']);
-    }
-    else {
-      list($prefix, $field) = explode('.', HOLDINGS_AGENCYID_INDEX);
-      return ($tree['prefix'] == $prefix) && ($tree['field'] != $field);
-    }
-  }
-
-  /** \brief Rename HOLDINGS_AGENCYID_INDEX if no other fields with identical prefix are used,
-   *         if other fields are used, copy the tree and renamed the copied one
-   * @param @trees array - of tree
-   * @return array
-   */
-  private function handle_holdingsitem_agency_id($trees) {
-    $mixed_holdings_fields = NULL;
-    foreach ($trees as $idx => $tree) {
-      $mixed_holdings_fields = $mixed_holdings_fields || self::mixed_fields($tree);
-    }
-    list($prefix, $field) = explode('.', HOLDINGS_AGENCYID_INDEX);
-    $new_trees = $trees;
-    foreach ($trees as $idx => $tree) {
-      if (!empty($tree['prefix']) && ($tree['prefix'] == $prefix) && ($tree['field'] == $field)) {
-        $m_idx = $idx;
-        if ($mixed_holdings_fields) {
-          $m_idx = count($trees);
-          $new_trees[] = $tree;
-        }
-        list($new_trees[$m_idx]['prefix'], $new_trees[$m_idx]['field']) = explode('.', RENAME_HOLDINGS_AGENCYID_INDEX);
-      }
-    }
-    return $new_trees;
-  }
 
   /** \brief convert all cql-trees to edismax-strings
    * @param @trees array - of trees
