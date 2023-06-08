@@ -17,7 +17,7 @@ version = 5.2
 
 ; --------------
 ; wsdl and service location for service. Used to replace __LOCATION__ in wsdl
-wsdl = opensearch.wsdl
+wsdl = ../ini_files/opensearch.wsdl
 
 ;service location used as endpoint in the wsdl-file. If not set, the actual address/location is used
 ;service_location = opensearch.addi.dk/4.1/

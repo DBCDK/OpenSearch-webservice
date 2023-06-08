@@ -305,7 +305,7 @@ abstract class webServiceServer {
         $location = $_SERVER['SERVER_NAME'] . dirname($_SERVER['SCRIPT_NAME']) . '/';
       }
       if (strpos($location, '://') < 1) {
-        if (!empty($_SERVER['HTTPS']) || ($_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) {
+        if (!empty($_SERVER['HTTPS']) || (array_key_exists('HTTP_X_FORWARDED_PROTO', $_SERVER) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) {
           $protocol = 'https://';
         }
         else {
