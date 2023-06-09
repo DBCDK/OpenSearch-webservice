@@ -962,4 +962,4 @@ showinfo[] = </pre>
 server_name = localhost:8080
 test[] = search&query=peale&agency=100200&profile=test&stepValue=1&surveil=1
 preg_match[] = hitCount
-error[] = ERROR searching for danmark
+error[] = ERROR searching for peale

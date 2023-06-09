@@ -3710,10 +3710,8 @@ class OpenSearch extends webServiceServer {
       if (isset($boost)) {
         _Object::set_value($rank, 'sort', $name);
         _Object::set_value($rank, 'internalType', 'rank');
-        _Object::set_value($rank, 'rankDetails', new StdClass());
-        @ _Object::set_value($rank->rankDetails->_value, 'tie', $val['tie']);  // ignore PHP warning
-        $rank->rankDetails->_value = $boost;
-        @ _Object::set_array_value($ret->_value, 'infoSort', $rank);  // ignore PHP warning
+        _Object::set_value($rank, 'rankDetails', $boost);
+        _Object::set_array_value($ret->_value, 'infoSort', $rank);
         unset($boost);
         unset($rank);
       }
