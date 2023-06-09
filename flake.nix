@@ -1,5 +1,5 @@
 {
-  description = "opens earch php dev shell";
+  description = "opensearch php dev shell";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
