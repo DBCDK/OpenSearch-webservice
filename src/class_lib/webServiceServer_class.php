@@ -449,7 +449,7 @@ abstract class webServiceServer {
       $curl = new curl();
 
       $proxy = $this->config->get_section('proxy');
-      if ($proxy['domain_and_port']) {
+      if ($proxy && isset($proxy['domain_and_port'])) {
         $curl->set_proxy($proxy['domain_and_port']);
       }
 
@@ -460,9 +460,12 @@ abstract class webServiceServer {
           $server_name = $_SERVER['HTTP_HOST'];
         }
       }
-      $server_name = 'localhost';   // hack
       $url = $server_name . $_SERVER['PHP_SELF'];
-      if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') $url = 'https://' . $url;
+      if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
+        $url = 'https://' . $url;
+      } else {
+        $url = 'http://' . $url;
+      }
       foreach ($tests as $i_test => $test) {
         if (is_array($test)) {
           $reg_match = $reg_matchs[$i_test];
