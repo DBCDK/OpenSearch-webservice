@@ -99,8 +99,8 @@ function show_diff($a, $b) {
 function find_php_file_or_die($file) {
   if (file_exists($file . '.php'))
     return $file . '.php';
-  if (file_exists('OLS_class_lib/' . $file . '.php'))
-    return 'OLS_class_lib/' . $file . '.php';
+  if (file_exists('src/class_lib/' . $file . '.php'))
+    return 'src/class_lib/' . $file . '.php';
 
   fatal('Cannot include ' . $file . '.php');
 }

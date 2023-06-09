@@ -20,7 +20,7 @@
   }
   ],
   "require": {
-    "dbc/php-vipcore": "dev-master"
+    "dbc/php-vipcore": "8.1.16.x-dev"
   },
   "require-dev": {
   },

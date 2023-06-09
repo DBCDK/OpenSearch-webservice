@@ -1,4 +1,4 @@
-FROM docker-dbc.artifacts.dbccloud.dk/dbc-apache-php7:latest
+FROM docker-dbc.artifacts.dbccloud.dk/dbc-apache-php8:latest
 
 LABEL maintainer="Team Search <os-team@dbc.dk>" \
       AAA_IP_LIST="Sets AAA access for this IP pattern. Default is full access for localhost [127.0.0.1]" \
@@ -40,10 +40,8 @@ LABEL maintainer="Team Search <os-team@dbc.dk>" \
 
 # This is modelled after vip-php. I think it is a bit many layers, but ... no big deal.
 # NOTE: The BUILDNUMBER file is no longer generated or copied - we can add it back, if we need it
-COPY --chown=sideejer:sideejer src/OLS_class_lib/ ${DBC_PHP_INSTALL_DIR}/OLS_class_lib/
-RUN rm -Rf ${DBC_PHP_INSTALL_DIR}/OLS_class_lib/.svn ${DBC_PHP_INSTALL_DIR}/OLS_class_lib/test ${DBC_PHP_INSTALL_DIR}/OLS_class_lib/simpletest
+COPY --chown=sideejer:sideejer src/class_lib/ ${DBC_PHP_INSTALL_DIR}/class_lib/
 COPY --chown=sideejer:sideejer src/xml/ ${DBC_PHP_INSTALL_DIR}/xml/
-COPY --chown=sideejer:sideejer src/includes/ ${DBC_PHP_INSTALL_DIR}/includes/
 COPY --chown=sideejer:sideejer src/vendor/ ${DBC_PHP_INSTALL_DIR}/vendor/
 COPY --chown=sideejer:sideejer src/*.xsd ${DBC_PHP_INSTALL_DIR}/
 COPY --chown=sideejer:sideejer src/*.html ${DBC_PHP_INSTALL_DIR}/
@@ -51,7 +49,9 @@ COPY --chown=sideejer:sideejer src/*_INSTALL ${DBC_PHP_INSTALL_DIR}/
 # This is slight hack - if BUILDNUMBER exists, it is copied. If not, it is not.
 COPY --chown=sideejer:sideejer BUILDNUMBE? src/*.php ${DBC_PHP_INSTALL_DIR}/
 # Would be nice to not have to have this file?
+USER root
 RUN ln -s ${DBC_PHP_INSTALL_DIR}/server.php ${DBC_PHP_INSTALL_DIR}/index.php && chown sideejer:sideejer ${DBC_PHP_INSTALL_DIR}/index.php
+USER www-data
 
 # Do not forget to add a memcache
 ENV USE_MEMCACHE=yes

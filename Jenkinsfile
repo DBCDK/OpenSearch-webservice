@@ -33,7 +33,7 @@ pipeline {
     triggers {
         pollSCM("H/3 * * * *")
         // Trigger build on new php base image.
-	upstream('/Docker-apache-php7-bump-trigger')
+	upstream('/Docker-apache-php8-bump-trigger')
     }
     options {
         buildDiscarder(logRotator(artifactDaysToKeepStr: "", artifactNumToKeepStr: "", daysToKeepStr: "30", numToKeepStr: "30"))
@@ -50,12 +50,12 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Run bootstrap script: checkout OLS_class_lib and VipCore') {
+        stage('Run bootstrap script: checkout VipCore') {
             steps {
                 ansiColor("xterm") {
                     sh """#!/usr/bin/env bash
                     set -e
-                    ./script/bootstrap
+                    nix develop -c ./script/bootstrap
                     """
                 }
             }
