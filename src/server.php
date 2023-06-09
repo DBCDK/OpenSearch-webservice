@@ -540,7 +540,7 @@ class OpenSearch extends webServiceServer {
           if (is_iterable($d_s_a['response']['docs'])) {
             foreach ($d_s_a['response']['docs'] as $solr_rec) {
               $unit_id = self::scalar_or_first_elem($solr_rec[FIELD_UNIT_ID]);
-              if ($solr_rec['sort.complexKey'] && empty($found_primary[$unit_id])) {
+              if (isset($solr_rec['sort.complexKey']) && empty($found_primary[$unit_id])) {
                 $unit_sort_keys[$unit_id] = $solr_rec['sort.complexKey'] . '  ' . $unit_id;
                 $source = self::record_source_from_pid($solr_rec[FIELD_REPOSITORY_ID]);
                 $found_primary[$unit_id] = (self::scalar_or_first_elem($solr_rec['unit.isPrimaryObject']) == 'true') &&
@@ -607,7 +607,9 @@ class OpenSearch extends webServiceServer {
           if (isset($holdings_res[$unit_id]) && $use_sort_complex_key && (strpos($unit_sort_keys[$unit_id], HOLDINGS) !== FALSE)) {
             $sort_holdings = sprintf(' %04d ', 9999 - intval($holdings_res[$unit_id]['lend']));
           }
-          $sort_key = str_replace(HOLDINGS, $sort_holdings, $unit_sort_keys[$unit_id]);
+          if(isset($unit_sort_keys[$unit_id])) {
+            $sort_key = str_replace(HOLDINGS, $sort_holdings, $unit_sort_keys[$unit_id]);
+          }
           $objects[$sort_key] = new stdClass();
           unset($rec_error);
           if (!empty($raw_res[$unit_id]) && @ !$record_repo_dom->loadXML($raw_res[$unit_id])) {
@@ -1281,8 +1283,10 @@ class OpenSearch extends webServiceServer {
         $ret[$of->_value] = ['user_selected' => TRUE,
                              'is_open_format' => TRUE,
                              'format_name' => $open_format[$of->_value]['format'],
-                             'uri' => $open_format[$of->_value]['uri'] ?? null,
-                             'force_namespace' => $force_namespace[$of->_value]];
+                             'uri' => $open_format[$of->_value]['uri'] ?? null];
+        if (isset($force_namespace[$of->_value])) {
+          $ret[$of->_value]['force_namespace'] = $force_namespace[$of->_value];
+        }
         $ret['found_open_format'] = TRUE;
       }
       elseif (isset($solr_format[$of->_value])) {
@@ -2926,7 +2930,7 @@ class OpenSearch extends webServiceServer {
     foreach ($work_ids as &$work) {
       foreach ($work as $unit_id => $pids) {
         if ((isset($include_holdings) && self::xs_boolean(!empty($include_holdings) ? $include_holdings->_value : '')) ||
-          ($use_sort_complex_key && (strpos($unit_sort_keys[$unit_id], HOLDINGS) !== FALSE))) {
+          ($use_sort_complex_key && isset($unit_sort_keys[$unit_id]) && (strpos($unit_sort_keys[$unit_id], HOLDINGS) !== FALSE))) {
           $key = $collect_type == 'PID' ? reset($pids) : $unit_id;
           $holdings_urls[$key] = sprintf($hold_ws_url, reset($pids));
         }
@@ -3570,6 +3574,7 @@ class OpenSearch extends webServiceServer {
         _Object::set_value($coll, 'searchCollectionName', $p['sourceName']);
         _Object::set_value($coll, 'searchCollectionIdentifier', $p['sourceIdentifier']);
         _Object::set_value($coll, 'searchCollectionIsSearched', self::xs_boolean($p['sourceSearchable']) ? 'true' : 'false');
+        $rels = array();
         if (isset($p['relation']))
           foreach ($p['relation'] as $relation) {
             if ($r = $relation['rdfLabel']) {
@@ -3591,6 +3596,7 @@ class OpenSearch extends webServiceServer {
         unset($coll);
       }
       if (is_array($all_relations)) {
+        $rels = new StdClass();
         ksort($all_relations);
         foreach ($all_relations as $rel) {
           _Object::set_array_value($rels, 'relationType', $rel);
@@ -3704,6 +3710,7 @@ class OpenSearch extends webServiceServer {
       if (isset($boost)) {
         _Object::set_value($rank, 'sort', $name);
         _Object::set_value($rank, 'internalType', 'rank');
+        _Object::set_value($rank, 'rankDetails', new StdClass());
         @ _Object::set_value($rank->rankDetails->_value, 'tie', $val['tie']);  // ignore PHP warning
         $rank->rankDetails->_value = $boost;
         @ _Object::set_array_value($ret->_value, 'infoSort', $rank);  // ignore PHP warning
