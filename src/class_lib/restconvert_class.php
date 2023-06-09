@@ -55,7 +55,7 @@ class Restconvert {
     $soap_actions = $config->get_value('soapAction', 'setup');
     $action_pars = $config->get_value('action', 'rest');
     $action = $this->get_post('action');
-    if (!$all_actions = ($action_pars['ALL'] ?: NULL)) $all_actions = array();
+    $all_actions = isset($action_pars['ALL']) ? $action_pars['ALL'] : array();
     if ($action
       && is_array($soap_actions) && is_array($action_pars)
       && $soap_actions[$action] && $action_pars[$action]
