@@ -255,7 +255,7 @@ class OpenSearch extends webServiceServer {
         }
         $solr_urls[0]['url'] = $this->repository['solr'] .
           '?q=' . urlencode($q) .
-          ($filter ? '&fq=' . $filter : '') .
+          (@$filter ? '&fq=' . $filter : '') .
           '&start=' . ($start - 1) .
           '&rows=' . $step_value . $sort_q .
           '&defType=edismax&wt=phps&fl=' . ($this->debug_query ? '&debugQuery=on' : '');
