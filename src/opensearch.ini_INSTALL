@@ -830,23 +830,19 @@ ${FORMAT_CACHE_SETTINGS_BLOCK}
 ;
 ; Rights can be set here for selected ip-addresses
 ; aaa_ip_rights['group-identifier']['ip_list'] = list of ip's
-; aaa_ip_rights['group-identifier']['ressource']['<named ressource>'] = right to <named ressource>
-; aaa_ip_rights['group-identifier']['ressource']['<named ressource 2>'] = right to <named ressource 2>
+; aaa_ip_rights['group-identifier']['resource']['<named resource>'] = right to <named resource>
+; aaa_ip_rights['group-identifier']['resource']['<named resource 2>'] = right to <named resource 2>
 ;
 ; Do not use "all" as group-identifier. This group is for testing and special circumstances
 ;
 aaa_ip_rights['dbc']['ip_list'] = ${AAA_IP_LIST}
-aaa_ip_rights['dbc']['ressource']['opensearch'] = 500
+aaa_ip_rights['dbc']['resource']['opensearch'] = read
 ;
-; if not found in aaa_ip_rights the authentication object is created from the FORS
-; either by using the WS specified by aaa_fors_rights or by OCI specified by aaa_credentials
+; if not found in aaa_ip_rights the authentication object is created from the DBC-IDP
+; either by using the WS specified by aaa_dbcidp_rights
 ;
 ; uri for a fors rights webservice - aaa_fors_rights have precedence over aaa_credentials
-;aaa_fors_rights = http://forsrights.some.server/?action=forsRights&outputType=php&userIdAut=%s&groupIdAut=%s&passwordAut=%s&ipAddress=%s
-aaa_fors_rights = ${AAA_FORS_RIGHTS}
-;
-; oci credentials for FORS server
-;aaa_credentials = ora_user/ora_passwd@some.server.dk
+aaa_dbcidp_rights = ${AAA_IDP_URL}
 ;
 ; memcache server for the authentication object - use localhost in one-webserver environment
 ; The docker container, and show_cachestats.php script assumes that this is always hardcoded to local memcache

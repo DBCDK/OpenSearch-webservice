@@ -617,7 +617,7 @@ class Curl {
   /**
    * Callback function to catch header-lines and store cookies for later use
    *
-   * @param $ch (ressource)       - cURL handle
+   * @param $ch (resource)       - cURL handle
    * @param $header_line (string) - a header line
    *
    * @return string  - the callback function has to return the length of the line

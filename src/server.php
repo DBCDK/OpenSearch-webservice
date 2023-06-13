@@ -111,7 +111,7 @@ class OpenSearch extends webServiceServer {
 
     $this->watch->start('aaa');
     try {
-      if (!$this->aaa->has_right('opensearch', 500)) {
+      if (!$this->aaa->has_right('opensearch', 'read')) {
         _Object::set_value($ret_error->searchResponse->_value, 'error', 'authentication_error');
         return $ret_error;
       }
@@ -773,7 +773,7 @@ class OpenSearch extends webServiceServer {
     @ $ret_error->searchResponse->_value->error->_value = &$error;  // ignore PHP warning
     $this->watch->start('aaa');
     try {
-      if (!$this->aaa->has_right('opensearch', 500)) {
+      if (!$this->aaa->has_right('opensearch', 'read')) {
         $error = 'authentication_error';
         return $ret_error;
       }
