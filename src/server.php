@@ -2003,8 +2003,7 @@ class OpenSearch extends webServiceServer {
       $q = $chk_query['edismax'];
       $rows = (substr_count($add_query, OR_OP) + 3) * 250;
       $solr_url = self::create_solr_url($q, 0, $rows, $filter_q);
-      list($solr_host, $solr_parm) = explode('?', $solr_url['url'], 2);
-      $solr_parm .= '&fl=' . FIELD_COLLECTION_INDEX . ',unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
+      $solr_url['q'] .= '&fl=' . FIELD_COLLECTION_INDEX . ',unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
       VerboseJson::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
       if (DEBUG_ON) {
         echo 'post_array: ' . $solr_url['url'] . PHP_EOL;
@@ -2012,9 +2011,9 @@ class OpenSearch extends webServiceServer {
 
       $curl = new curl();
       $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
-      $curl->set_post($solr_parm); // use post here because query can be very long
+      $curl->set_post($solr_url['q']); // use post here because query can be very long
       $curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded; charset=utf-8'], 0);
-      $solr_result = $curl->get($solr_host);
+      $solr_result = $curl->get($solr_url['url']);
       $curl->close();
       if (!($solr_arr[$add_idx] = unserialize($solr_result))) {
         VerboseJson::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
@@ -2153,16 +2152,14 @@ class OpenSearch extends webServiceServer {
         $filter .= '&' . $par . '=' . rawurlencode($val);
       }
     }
-    $url = $this->repository['solr'] .
-      '?q=' . urlencode($q) .
-      '&fq=' . $filter .
-      '&start=' . $start . $sort . $rank . $boost . $facets . $handler_var .
-      '&defType=edismax' .
-      '&fl=' . FIELD_REPOSITORY_ID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . ',' . FIELD_COLLECTION_INDEX;
-    $debug_url = $url . '&rows=1&debugQuery=on';
-    $url .= '&wt=phps&rows=' . $rows . ($this->debug_query ? '&debugQuery=on' : '');
-
-    return ['url' => $url, 'debug' => $debug_url];
+    $q = 'q=' . urlencode($q) .
+    '&fq=' . $filter .
+    '&start=' . $start . $sort . $rank . $boost . $facets . $handler_var .
+    '&defType=edismax' .
+    '&fl=' . FIELD_REPOSITORY_ID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . ',' . FIELD_COLLECTION_INDEX;
+    $debug_q = $q . '&rows=1&debugQuery=on';
+    $q .= '&wt=phps&rows=' . $rows . ($this->debug_query ? '&debugQuery=on' : ''); 
+    return ['url' => $this->repository['solr'], 'q' => $q, 'debug' => $debug_q];
   }
 
   /** \brief send one or more requests to Solr
@@ -2175,10 +2172,11 @@ class OpenSearch extends webServiceServer {
     VerboseJson::log(DEBUG, 'do_solr with ' . count($urls) . ' urls');
     $solr_appid = self::set_app_id();
     foreach ($urls as $no => $url) {
-      $url['url'] .= '&trackingId=' . VerboseJson::$tracking_id . '&appId=' . $solr_appid;
-      VerboseJson::log(TRACE, 'Query: ' . $url['url']);
+      $url['q'] .= '&trackingId=' . VerboseJson::$tracking_id . '&appId=' . $solr_appid;
+      VerboseJson::log(TRACE, 'Query: ' . $url['q']);
       if (isset($url['debug'])) VerboseJson::log(DEBUG, 'Query: ' . $url['debug']);
       $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded; charset=utf-8'], $no);
+      $this->curl->set_post($url['q']);
       $this->curl->set_url($url['url'], $no);
     }
     $this->watch->start('solr');
