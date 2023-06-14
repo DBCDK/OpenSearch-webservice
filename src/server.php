@@ -267,10 +267,10 @@ class OpenSearch extends webServiceServer {
         $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), []);
         if ($fetch_raw_records) {
           $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $solr_arr['response'], in_array($this->agency, $s11_agency));
-        }
-        if (is_scalar($collections)) {
-          $error = $collections;
-          return $ret_error;
+          if (is_scalar($collections)) {
+            $error = $collections;
+            return $ret_error;
+          }
         }
         _Object::set_value($ret, 'searchResponse', new stdClass());
         _Object::set_value($ret->searchResponse->_value, 'result', new stdClass());
@@ -1596,6 +1596,7 @@ class OpenSearch extends webServiceServer {
     foreach ($solr['docs'] as $idx => $solr_doc) {
       $pos = $solr['start'] + $idx + 1;
       if (empty($collections[$pos])) {
+        $collections[$pos] = new StdClass();
         _Object::set_value($collection, 'resultPosition', $pos);
         _Object::set_value($collection, 'numberOfObjects', '1');
         _Object::set_value($collections[$pos]->_value, 'collection', $collection);

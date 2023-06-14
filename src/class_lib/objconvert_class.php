@@ -135,8 +135,10 @@ class objconvert {
         else
           self::set_object_value($ret, $key, $this->build_json_obj($o));
       }
+      return $ret;
+    } else {
+      return null;
     }
-    return $ret;
   }
 
   /** \brief convert one object
