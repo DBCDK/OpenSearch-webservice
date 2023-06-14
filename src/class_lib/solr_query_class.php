@@ -110,6 +110,7 @@ class SolrQuery {
     }
     $this->holdings_include = $holdings_include;
     ini_set('xdebug.max_nesting_level', 1000);  // each operator can cause a recursive call 
+    VerboseJson::log(DEBUG, "holdings_include = " . json_encode($holdings_include));
   }
 
 

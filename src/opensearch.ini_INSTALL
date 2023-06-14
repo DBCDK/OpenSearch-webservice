@@ -143,7 +143,6 @@ default_repository = ${REPOSITORY_NAME}
 ; define repository['defaults'] parameters for:
 ; - fedora_get_rels_addi: parameters to get addi relation datastream - RELS-EXT stream
 ; - corepo_get: get highest prioritized record in unit
-; - collection_query - Filtering on the collectionIdentifiers specified by the search profile
 ; - collection_alias - Alias' for collections for filtering to work differently for records with imore thanh one collectionIdentifier
 ; - filter - Filtering on the collectionIdentifiers specified by the search profile
 ; - add_filter - Add a filter if the given library_rule is true or false
@@ -207,15 +206,6 @@ repository['${REPOSITORY_NAME}']['sort']['exclude'][] = solr_docid_ascending
 repository['${REPOSITORY_NAME}']['handler_format']['holding']['fq'] = {!parent which="t:m" v=%s}
 repository['${REPOSITORY_NAME}']['handler_format']['holding']['q'] = _query_:%22{!parent which="t:m" v=%s}%22
 
-
-; collection query filter
-; Filtering on the collectionIdentifiers specified by the search profile
-; Records in 870976-anmeld has to be more than 6 months old
-; The search profile is kept in solr's filter cache, so the /DAY is needed to make it cachable
-;
-; OBSOLETE - bug 22229
-;
-; repository['${REPOSITORY_NAME}']['collection_query']['870976-anmeld'] = rec.createdDate:['* TO NOW-6MONTHS/DAY']
 
 ; collection_alias
 ; Alias' for collections for filtering to work differently for records with more than one collectionIdentifier

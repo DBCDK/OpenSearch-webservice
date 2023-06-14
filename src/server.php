@@ -1321,23 +1321,19 @@ class OpenSearch extends webServiceServer {
    */
 
   private function set_solr_filter($profile, $add_relation_sources = FALSE) {
-    $collection_query = $this->repository['collection_query'] ?? '';
     $ret = [];
     if (is_array($profile)) {
       $this->collection_alias = self::set_collection_alias($profile);
       foreach ($profile as $p) {
         if (self::xs_boolean($p['sourceSearchable']) || ($add_relation_sources && isset($p['relation']) && count($p['relation']))) {
           $source_id = $p['sourceIdentifier'] ?? '';
-          if (isset($collection_query[$source_id])) {
-            $ret[] = '(' . FIELD_COLLECTION_INDEX . ':' . $collection_query[$source_id] . AND_OP . $filter_query . ')';
-          }
-          else {
-            $ret[] = FIELD_COLLECTION_INDEX . ':' . $source_id;
+          if(@$p['sourceIdentifier']) {
+            $ret[] = $p['sourceIdentifier'];
           }
         }
       }
     }
-    return implode(OR_OP, $ret);
+    return '({!terms f=' . FIELD_COLLECTION_INDEX . '}' . implode(OR_OP, $ret) . ')';
   }
 
   /** \brief Build bq (BoostQuery) as field:content^weight
@@ -1388,7 +1384,6 @@ class OpenSearch extends webServiceServer {
    * @return string - the SOLR filter query that represent the profile
    */
   private function split_collections_for_holdingsitem($profile, $add_relation_sources = FALSE) {
-    $collection_query = $this->repository['collection_query'] ?? '';
     $filtered_collections = $normal_collections = [];
     if (is_array($profile)) {
       $this->collection_alias = self::set_collection_alias($profile);
@@ -1397,14 +1392,8 @@ class OpenSearch extends webServiceServer {
         if (self::xs_boolean($p['sourceSearchable']) || ($add_relation_sources && count($p['relation']))) {
           if (self::is_agency_catalog_source($source_id)) {
             $filtered_collections[] = $source_id;
-          }
-          else {
-            if (isset($collection_query[$source_id])) {
-              $normal_collections[] = '(' . FIELD_COLLECTION_INDEX . ':' . $source_id . AND_OP . $collection_query[$source_id] . ')';
-            }
-            else {
+          } else {
               $normal_collections[] = $source_id;
-            }
           }
         }
       }
