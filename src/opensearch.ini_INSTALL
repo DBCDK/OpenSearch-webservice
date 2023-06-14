@@ -143,7 +143,6 @@ default_repository = ${REPOSITORY_NAME}
 ; define repository['defaults'] parameters for:
 ; - fedora_get_rels_addi: parameters to get addi relation datastream - RELS-EXT stream
 ; - corepo_get: get highest prioritized record in unit
-; - collection_alias - Alias' for collections for filtering to work differently for records with imore thanh one collectionIdentifier
 ; - filter - Filtering on the collectionIdentifiers specified by the search profile
 ; - add_filter - Add a filter if the given library_rule is true or false
 ; Defaults starting with fedora_ will be prefixed by the fedora url set below, the rest is normal defaults
@@ -206,15 +205,6 @@ repository['${REPOSITORY_NAME}']['sort']['exclude'][] = solr_docid_ascending
 repository['${REPOSITORY_NAME}']['handler_format']['holding']['fq'] = {!parent which="t:m" v=%s}
 repository['${REPOSITORY_NAME}']['handler_format']['holding']['q'] = _query_:%22{!parent which="t:m" v=%s}%22
 
-
-; collection_alias
-; Alias' for collections for filtering to work differently for records with more than one collectionIdentifier
-; repository['my_repository']['collection_alias']['the.collectionIdentifier.used.in.the.record.id'] = the.alias
-; Sofar only one of these is needed
-;
-; OBSOLETE - bug 22229
-;
-; repository['${REPOSITORY_NAME}']['collection_alias']['870976-anmeld'] = 870976-allanmeld
 
 ; Filtering in marcxchange records kan be done by defining a filter mask
 ; with regular expression matching owner, fields and subfields
