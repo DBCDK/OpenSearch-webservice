@@ -253,8 +253,8 @@ class OpenSearch extends webServiceServer {
             $filter .= '&' . $par . '=' . rawurlencode($val);
           }
         }
-        $solr_urls[0]['url'] = $this->repository['solr'] .
-          '?q=' . urlencode($q) .
+        $solr_urls[0]['url'] = $this->repository['solr'];
+        $solr_urls[0]['q'] = 'q=' . urlencode($q) .
           (@$filter ? '&fq=' . $filter : '') .
           '&start=' . ($start - 1) .
           '&rows=' . $step_value . $sort_q .
@@ -2172,6 +2172,7 @@ class OpenSearch extends webServiceServer {
     VerboseJson::log(DEBUG, 'do_solr with ' . count($urls) . ' urls');
     $solr_appid = self::set_app_id();
     foreach ($urls as $no => $url) {
+      VerboseJson::log(DEBUG, "url = " . json_encode($url));
       $url['q'] .= '&trackingId=' . VerboseJson::$tracking_id . '&appId=' . $solr_appid;
       VerboseJson::log(TRACE, 'Query: ' . $url['q']);
       if (isset($url['debug'])) VerboseJson::log(DEBUG, 'Query: ' . $url['debug']);
