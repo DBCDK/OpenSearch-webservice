@@ -2004,7 +2004,7 @@ class OpenSearch extends webServiceServer {
       $rows = (substr_count($add_query, OR_OP) + 3) * 250;
       $solr_url = self::create_solr_url($q, 0, $rows, $filter_q);
       $solr_url['q'] .= '&fl=' . FIELD_COLLECTION_INDEX . ',unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
-      VerboseJson::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
+      VerboseJson::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_url['q']) . '&debugQuery=on');
       if (DEBUG_ON) {
         echo 'post_array: ' . $solr_url['url'] . PHP_EOL;
       }
