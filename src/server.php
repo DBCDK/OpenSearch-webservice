@@ -209,7 +209,7 @@ class OpenSearch extends webServiceServer {
 
       $ret_error->searchResponse->_value->error->_value = &$error;
       $start = $param->start->_value ?? 1;
-      $step_value = min($param->stepValue->_value, MAX_STEP_VALUE);
+      $step_value = min($param->stepValue->_value ?? 10, MAX_STEP_VALUE);
       if (empty($start) && $step_value) {
         $start = 1;
       }
