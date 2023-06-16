@@ -66,6 +66,13 @@ class aaa {
       $this->error_cache_seconds = 60;
     }
     $this->dbcidp_rights_url = self::set_or_not($aaa_setup, 'aaa_dbcidp_rights');
+    if($this->dbcidp_rights_url) {
+      if(!str_ends_with($this->dbcidp_rights_url, '/')) {
+        $this->dbcidp_rights_url .= '/';
+      }
+      $this->dbcidp_rights_url .= 'authorize/';
+    }
+    VerboseJson::log(DEBUG, $this->dbcidp_rights_url);
     $this->ip_rights = self::set_or_not($aaa_setup, 'aaa_ip_rights');
     $this->cache_key_prefix = md5($hash . json_encode($aaa_setup));
   }
