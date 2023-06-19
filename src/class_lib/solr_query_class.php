@@ -250,6 +250,7 @@ class SolrQuery {
    */
   private function tree_2_edismax($node, &$add_params, $level = 0) {
     static $q_type, $ranking;
+    $term_handler = null;
     if ($level == 0) {
       $q_type = 'fq';
       $ranking = '';
@@ -262,11 +263,11 @@ class SolrQuery {
       }
       else {
         $fh = 'fh' . count($add_params);
-        if ($this->search_term_format[$left_handler]) {
+        if (@$this->search_term_format[$left_handler]) {
           $add_params[$fh] = $left_term;
           $left_term = sprintf($this->search_term_format[$left_handler]['q'], '$' . $fh);
         }
-        elseif ($this->search_term_format[$right_handler]) {
+        elseif (@$this->search_term_format[$right_handler]) {
           $add_params[$fh] = $right_term;
           $right_term = sprintf($this->search_term_format[$right_handler]['q'], '$' . $fh);
         }

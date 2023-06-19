@@ -146,17 +146,20 @@ class objconvert {
    * @return object
    */
   private function build_json_obj($obj) {
-    if (is_scalar($obj->_value))
-      self::set_object_value($ret, '$', html_entity_decode($obj->_value));
-    else
-      $ret = $this->obj2badgerfish_obj($obj->_value);
-    if (!empty($obj->_attributes)) {
-      foreach ($obj->_attributes as $aname => $aval) {
-        self::set_object_value($ret, '@' . $aname, $this->build_json_obj($aval));
+    $ret = null;
+    if (isset($obj->_value)) {
+      if (is_scalar($obj->_value))
+        self::set_object_value($ret, '$', html_entity_decode($obj->_value));
+      else
+        $ret = $this->obj2badgerfish_obj($obj->_value);
+      if (!empty($obj->_attributes)) {
+        foreach ($obj->_attributes as $aname => $aval) {
+          self::set_object_value($ret, '@' . $aname, $this->build_json_obj($aval));
+        }
       }
+      if (!empty($obj->_namespace))
+        self::set_object_value($ret, '@', $this->get_namespace_prefix($obj->_namespace));
     }
-    if (!empty($obj->_namespace))
-      self::set_object_value($ret, '@', $this->get_namespace_prefix($obj->_namespace));
     return $ret;
   }
 

@@ -883,7 +883,7 @@ class OpenSearch extends webServiceServer {
       $add_fl = '';
       if (!empty($this->format['found_solr_format'])) {
         foreach ($this->format as $f) {
-          if (isset($f['is_solr_format'])) {
+          if (isset($f['is_solr_format']) && isset($f['format_name'])) {
             $add_fl .= ',' . $f['format_name'];
           }
         }
@@ -1022,7 +1022,7 @@ class OpenSearch extends webServiceServer {
         $work_ids[$fpid_number] = array('NotFound' => array($fpid->_value => $fpid->_value));
         $localdata_pid = $localdata_object[$fpid->_value] ?? '';
         foreach ($solr_2_arr as $s_2_a) {
-          if ($s_2_a['response']['docs']) {
+          if (@$s_2_a['response']['docs']) {
             foreach ($s_2_a['response']['docs'] as $fdoc) {
               $rec_id = $fdoc[FIELD_REC_ID];
               $unit_id = self::scalar_or_first_elem($fdoc[FIELD_UNIT_ID]);
@@ -1646,7 +1646,7 @@ class OpenSearch extends webServiceServer {
             $format_pids[$o_key] = $obj->_value->identifier->_value ?? '';
           }
 // need to sort objects to put data correct
-          if (is_array($manifestation->manifestation) && count($manifestation->manifestation) > 1) {
+          if (is_array(@$manifestation->manifestation) && count(@$manifestation->manifestation) > 1) {
             ksort($manifestation->manifestation);
           }
           $c->_value->formattedCollection = new stdClass();
@@ -1867,7 +1867,7 @@ class OpenSearch extends webServiceServer {
         foreach ($docbook_filters as $section_path => $match) {
           list($part, $item) = explode('/', $section_path);
           foreach ($article->$part as $idx => $section) {
-            if ($section->_value->$item->_value == $match) {
+            if (@$section->_value->$item->_value == $match) {
               unset($article->{$part}[$idx]);
             }
           }
@@ -2107,8 +2107,9 @@ class OpenSearch extends webServiceServer {
     }
     foreach ($guess as $idx => $g) {
       $filter = implode('&fq=', $g['filter']);
-      $solr_urls[]['url'] = $this->repository['solr'] .
-        '?q=' . $g['register'] . '%3A(' . urlencode($q) . ')&fq=' . $filter . '&start=1&rows=0&wt=phps';
+      $solr_urls[]['url'] = array(
+        'url' => $this->repository['solr'],
+        'q' => 'q=' . $g['register'] . '%3A(' . urlencode($q) . ')&fq=' . $filter . '&start=1&rows=0&wt=phps');
       $ret[$idx] = 0;
     }
     $err = self::do_solr($solr_urls, $solr_arr);
@@ -3401,6 +3402,7 @@ class OpenSearch extends webServiceServer {
    *   - term
    */
   private function parse_for_facets(&$solr_arr) {
+    $ret = array();
     if (is_array($solr_arr['facet_counts']['facet_fields'])) {
       foreach ($solr_arr['facet_counts']['facet_fields'] as $facet_name => $facet_field) {
         _Object::set_value($facet, 'facetName', $facet_name);

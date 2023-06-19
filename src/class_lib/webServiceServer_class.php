@@ -204,7 +204,7 @@ abstract class webServiceServer {
         if (empty($error)) {
           // Branch to outputType
           $req = current((Array)$request_xmlobj);
-          if (empty($this->output_type) || $req->_value->outputType->_value)
+          if (empty($this->output_type) || @$req->_value->outputType->_value)
             $this->output_type = isset($req->_value->outputType) ? $req->_value->outputType->_value : '';
           VerboseJson::set_verbose_element('output', $this->output_type);
           switch ($this->output_type) {
