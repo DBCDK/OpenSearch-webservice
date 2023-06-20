@@ -259,7 +259,7 @@ class OpenSearch extends webServiceServer {
           '&start=' . ($start - 1) .
           '&rows=' . $step_value . $sort_q .
           '&defType=edismax&wt=phps&fl=' . ($this->debug_query ? '&debugQuery=on' : '');
-        $solr_urls[0]['debug'] = str_replace('wt=phps', 'wt=xml', $solr_urls[0]['url']);
+        $solr_urls[0]['debug'] = str_replace('wt=phps', 'wt=xml', $solr_urls[0]['q']);
         if ($err = self::do_solr($solr_urls, $solr_arr)) {
           $error = $err;
           return $ret_error;
@@ -2044,7 +2044,7 @@ class OpenSearch extends webServiceServer {
    * @return integer
    */
   private function get_num_found($solr_arr) {
-    return $solr_arr['response']['numFound'];
+    return $solr_arr['response']['numFound'] ?? 0;
   }
 
   /** \brief Encapsules extraction of ids (unitId or workId) solr result
@@ -2115,7 +2115,10 @@ class OpenSearch extends webServiceServer {
     $err = self::do_solr($solr_urls, $solr_arr);
     $n = 0;
     foreach ($guess as $idx => $g) {
-      $ret[$idx] = self::get_num_found($solr_arr[$n++]);
+      $tmp = @$solr_arr[$n++];
+      if ($tmp) {
+        $ret[$idx] = self::get_num_found($solr_arr[$n++]);
+      }
     }
     return $ret;
   }
@@ -2173,7 +2176,7 @@ class OpenSearch extends webServiceServer {
     VerboseJson::log(DEBUG, 'do_solr with ' . count($urls) . ' urls');
     $solr_appid = self::set_app_id();
     foreach ($urls as $no => $url) {
-      VerboseJson::log(DEBUG, "url = " . json_encode($url));
+      VerboseJson::log(@$url['q'] ? DEBUG : ERROR, "url = " . json_encode($url));
       $url['q'] .= '&trackingId=' . VerboseJson::$tracking_id . '&appId=' . $solr_appid;
       VerboseJson::log(TRACE, 'Query: ' . $url['q']);
       if (isset($url['debug'])) VerboseJson::log(DEBUG, 'Query: ' . $url['debug']);
@@ -2190,13 +2193,13 @@ class OpenSearch extends webServiceServer {
     if (count($urls) > 1) {
       foreach ($solr_results as &$solr_result) {
         if (!$solr_arr[] = unserialize($solr_result)) {
-          VerboseJson::log(WARNING, 'Unable to parse solr result' . $solr_results);
+          VerboseJson::log(WARNING, 'Unable to parse solr result' . json_encode($solr_results));
           return 'Internal problem: Cannot decode Solr result';
         }
       }
     }
-    elseif (!$solr_arr = unserialize($solr_results)) {
-        VerboseJson::log(WARNING, 'Unable to parse solr result' . $solr_results);
+    elseif (!$solr_arr = @unserialize($solr_results)) {
+      VerboseJson::log(WARNING, 'Unable to parse solr result' . json_encode($solr_results));
       return 'Internal problem: Cannot decode Solr result';
     }
     elseif (!empty($solr_arr['error'])) {
