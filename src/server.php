@@ -476,7 +476,7 @@ class OpenSearch extends webServiceServer {
         }
         $work_cache_struct = [];
         if (empty($_GET['skipCache'])) {
-          if ($work_cache_struct = $this->cache->get($key_work_struct)) {
+          if ($work_cache_struct = @$this->cache->get($key_work_struct)) {
             VerboseJson::log(TRACE, 'Cache hit lines' . count($work_cache_struct));
           } else {
             $work_cache_struct = [];
@@ -3405,7 +3405,7 @@ class OpenSearch extends webServiceServer {
    *   - term
    */
   private function parse_for_facets(&$solr_arr) {
-    $ret = array();
+    $ret = new stdClass(;)
     if (is_array($solr_arr['facet_counts']['facet_fields'])) {
       foreach ($solr_arr['facet_counts']['facet_fields'] as $facet_name => $facet_field) {
         _Object::set_value($facet, 'facetName', $facet_name);
