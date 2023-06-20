@@ -3405,7 +3405,7 @@ class OpenSearch extends webServiceServer {
    *   - term
    */
   private function parse_for_facets(&$solr_arr) {
-    $ret = new stdClass(;)
+    $ret = new stdClass();
     if (is_array($solr_arr['facet_counts']['facet_fields'])) {
       foreach ($solr_arr['facet_counts']['facet_fields'] as $facet_name => $facet_field) {
         _Object::set_value($facet, 'facetName', $facet_name);
