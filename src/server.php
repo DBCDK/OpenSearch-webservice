@@ -2116,7 +2116,7 @@ class OpenSearch extends webServiceServer {
     foreach ($guess as $idx => $g) {
       $tmp = @$solr_arr[$n++];
       if ($tmp) {
-        $ret[$idx] = self::get_num_found($solr_arr[$n++]);
+        $ret[$idx] = self::get_num_found($tmp);
       }
     }
     return $ret;
