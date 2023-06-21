@@ -475,7 +475,7 @@ class OpenSearch extends webServiceServer {
             $this->config->get_value('cache_expire', 'setup'));
         }
         $work_cache_struct = [];
-        if (empty($_GET['skipCache'])) {
+        if (empty($_GET['skipCache']) && @$this->cache) {
           if ($work_cache_struct = @$this->cache->get($key_work_struct)) {
             VerboseJson::log(TRACE, 'Cache hit lines' . count($work_cache_struct));
           } else {
@@ -2107,9 +2107,8 @@ class OpenSearch extends webServiceServer {
     }
     foreach ($guess as $idx => $g) {
       $filter = implode('&fq=', $g['filter']);
-      $solr_urls[]['url'] = array(
-        'url' => $this->repository['solr'],
-        'q' => 'q=' . $g['register'] . '%3A(' . urlencode($q) . ')&fq=' . $filter . '&start=1&rows=0&wt=phps');
+      $solr_urls[] = [ 'url' => $this->repository['solr'],
+                       'q' => 'q=' . $g['register'] . '%3A(' . urlencode($q) . ')&fq=' . $filter . '&start=1&rows=0&wt=phps'];
       $ret[$idx] = 0;
     }
     $err = self::do_solr($solr_urls, $solr_arr);
