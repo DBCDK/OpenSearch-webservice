@@ -72,7 +72,7 @@ class aaa {
       }
       $this->dbcidp_rights_url .= 'authorize/';
     }
-    VerboseJson::log(DEBUG, $this->dbcidp_rights_url);
+    VerboseJson::log(DEBUG, 'idp-url:' . $this->dbcidp_rights_url);
     $this->ip_rights = self::set_or_not($aaa_setup, 'aaa_ip_rights');
     $this->cache_key_prefix = md5($hash . json_encode($aaa_setup));
   }
@@ -134,7 +134,7 @@ class aaa {
     //return (@$this->rights->$resource->$right == TRUE);
     if (@$this->rights->$resource->$right == TRUE)
       return TRUE;
-    self::local_verbose(WARNING, 'AUTHORIZATION: ' . $this->user . '|' . $this->group . '|' . md5($this->password) . '|' . $this->ip . " Doesn't have the right: " . $resource . '|' . $right . " In: ") . json_encode($this->rights);
+    self::local_verbose(WARNING, 'AUTHORIZATION: ' . $this->user . '|' . $this->group . '|' . md5($this->password) . '|' . $this->ip . " Doesn't have the right: " . $resource . '|' . $right . " In: " . json_encode($this->rights));
     return TRUE;
   }
 
@@ -161,14 +161,14 @@ class aaa {
    */
   private function fetch_rights_from_dbcidp_rights_ws($user, $group, $password, $ip) {
     require_once('class_lib/curl_class.php');
-    $rights = new stdClass();
-    $req = new stdClass();
+    $rights = [];
+    $req = [];
     if ($user || $group || $password) {
-      _Object::set($req, "userIdAut", $user);
-      _Object::set($req, "agencyId", $group);
-      _Object::set($req, "passwordAut", $password);
+      $req["userIdAut"] = $user;
+      $req["agencyId"] = $group;
+      $req["passwordAut"] = $password;
     } else {
-      _Object::set($req, "ip", $ip);
+      $req["ip"] = $ip;
     }
 
     $reply = $this->fetch_json_from_dbcidp_rights_ws(json_encode($req));
@@ -179,7 +179,11 @@ class aaa {
       return $rights;
     } else if (is_array($reply->rights)) {
       foreach ($reply->rights as $right) {
-        _Object::set_element($rights, strtolower($right->productName), strtolower($right->name), TRUE);
+        $prod = strtolower($right->productName);
+        if(!isset($rights[$prod])) {
+          $rights[$prod] = [];
+        }
+        $rights[$prod][strtolower($right->name)] = TRUE;
       }
     }
     return $rights;
@@ -209,7 +213,7 @@ class aaa {
    * @return mixed
    */
   private function fetch_rights_from_ip_rights($ip, $ip_rights) {
-    $rights = new StdClass();
+    $rights = [];
     if ($ip && is_array($ip_rights)) {
       foreach ($ip_rights as $aaa_group => $aaa_par) {
         if (ip_func::ip_in_interval($ip, $aaa_par['ip_list'])) {
@@ -219,7 +223,10 @@ class aaa {
               $right_val = explode(',', $right_list);
               foreach ($right_val as $r) {
                 $r = trim($r);
-                _Object::set_element($rights, $resource, $r, TRUE);
+                if(!isset($rights[$resource])) {
+                  $rights[$resource] = [];
+                }
+                $rights[$resource][$r] = TRUE;
               }
             }
           }
