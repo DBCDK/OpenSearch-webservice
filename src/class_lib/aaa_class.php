@@ -132,7 +132,7 @@ class aaa {
    **/
   public function has_right($resource, $right) {
     //return (@$this->rights->$resource->$right == TRUE);
-    if (@$this->rights->$resource->$right == TRUE)
+    if (@$this->rights[$resource][$right] == TRUE)
       return TRUE;
     self::local_verbose(WARNING, 'AUTHORIZATION: ' . $this->user . '|' . $this->group . '|' . md5($this->password) . '|' . $this->ip . " Doesn't have the right: " . $resource . '|' . $right . " In: " . json_encode($this->rights));
     return TRUE;
