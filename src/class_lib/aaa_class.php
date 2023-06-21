@@ -58,7 +58,7 @@ class aaa {
    * @param array $aaa_setup
    * @param string $hash
    */
-  public function __construct($aaa_setup, $hash = '') {
+  public function __construct($aaa_setup, $hash = '8098e7ab72fb47e38bd77341ca02c1d2') {
     if (self::set_or_not($aaa_setup, 'aaa_cache_address')) {
       $this->aaa_cache = new cache($aaa_setup['aaa_cache_address']);
       if (!$this->cache_seconds = self::set_or_not($aaa_setup, 'aaa_cache_seconds', 0))

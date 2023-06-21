@@ -917,10 +917,10 @@ class OpenSearch extends webServiceServer {
       $this->watch->stop('preamble');
     }
 
+    $id_array = [];
     if (isset($this->repository['rawrepo'])) {
       $this->watch->start('rawrepo');
       try {
-        $id_array = [];
         foreach ($fpids as $fpid) {
           $id_array[] = $fpid->_value;
           list($owner_collection, $id) = explode(':', $fpid->_value);
