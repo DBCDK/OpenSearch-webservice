@@ -215,7 +215,7 @@ class aaa {
    * @return mixed
    */
   private function fetch_rights_from_ip_rights($ip, $ip_rights) {
-    $rights = [];
+    $rights = new StdClass();
     if ($ip && is_array($ip_rights)) {
       foreach ($ip_rights as $aaa_group => $aaa_par) {
         if (ip_func::ip_in_interval($ip, $aaa_par['ip_list'])) {
