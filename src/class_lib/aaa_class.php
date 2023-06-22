@@ -93,7 +93,6 @@ class aaa {
     $this->password = $passw;
     $this->ip = $ip;
 
-    $this->ip = '87.49.230.140';
     if ($this->aaa_cache) {
       $cache_key = $this->cache_key_prefix . '_' . md5($this->user . '_' . $this->group . '_' . $this->password . '_' . $this->ip);
       if ($rights = $this->aaa_cache->get($cache_key)) {
