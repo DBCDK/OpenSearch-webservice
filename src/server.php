@@ -3772,7 +3772,7 @@ class OpenSearch extends webServiceServer {
    */
   protected function showCqlFile() {
     //$repositories = $this->config->get_value('repository', 'setup');
-    $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
+    $repos = self::value_or_default(@$_GET['repository'], $this->config->get_value('default_repository', 'setup'));
     self::set_repositories($repos, FALSE);
     if ($file = $this->repository['cql_settings']) {
       header('Content-Type: application/xml; charset=utf-8');
@@ -3789,7 +3789,7 @@ class OpenSearch extends webServiceServer {
    */
   protected function showExplainXslFile() {
     //$repositories = $this->config->get_value('repository', 'setup');
-    $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
+    $repos = self::value_or_default(@$_GET['repository'], $this->config->get_value('default_repository', 'setup'));
     self::set_repositories($repos, FALSE);
     if ($file = self::get_solr_file('solr_file', 'explain.xsl')) {
       header('Content-Type: application/xslt+xml; charset=utf-8');
