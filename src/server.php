@@ -569,7 +569,7 @@ class OpenSearch extends webServiceServer {
       // fetch all addi and hierarchi records for all units in work_ids
       foreach ($work_ids as $idx => $work) {
         if (count($work) >= MAX_OBJECTS_IN_WORK) {
-          VerboseJson::log(WARNING, 'record_repo work-record containing' . reset($work) . ' contains ' . count($work) . ' units. Cut work to first ' . MAX_OBJECTS_IN_WORK . ' units');
+          VerboseJson::log(WARNING, 'record_repo work-record containing ' . json_encode($work) . ' contains ' . count($work) . ' units. Cut work to first ' . MAX_OBJECTS_IN_WORK . ' units');
           array_splice($work_ids[$idx], MAX_OBJECTS_IN_WORK);
         }
       }
