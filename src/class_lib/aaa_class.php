@@ -58,7 +58,7 @@ class aaa {
    * @param array $aaa_setup
    * @param string $hash
    */
-  public function __construct($aaa_setup, $hash = '8098e7ab72fb47e38bd77341ca02c1d2') {
+  public function __construct($aaa_setup, $hash = '') {
     if (self::set_or_not($aaa_setup, 'aaa_cache_address')) {
       $this->aaa_cache = new cache($aaa_setup['aaa_cache_address']);
       if (!$this->cache_seconds = self::set_or_not($aaa_setup, 'aaa_cache_seconds', 0))
@@ -92,10 +92,12 @@ class aaa {
     $this->group = $group;
     $this->password = $passw;
     $this->ip = $ip;
+
+    $this->ip = '87.49.230.140';
     if ($this->aaa_cache) {
       $cache_key = $this->cache_key_prefix . '_' . md5($this->user . '_' . $this->group . '_' . $this->password . '_' . $this->ip);
       if ($rights = $this->aaa_cache->get($cache_key)) {
-        $this->rights = json_decode($rights);
+        $this->rights = $rights;
         return !empty($this->rights);
       }
     }
@@ -109,13 +111,13 @@ class aaa {
       
       if ($this->aaa_cache) {
         if($this->rights == null) {
-          $this->aaa_cache->set($cache_key, '{}', $this->error_cache_seconds);
+          $this->aaa_cache->set($cache_key, new stdClass(), $this->error_cache_seconds);
         } else {
-          $this->aaa_cache->set($cache_key, json_encode($this->rights), $this->cache_seconds);
+          $this->aaa_cache->set($cache_key, $this->rights, $this->cache_seconds);
         }
       }
       if($this->rights == null) {
-        $this->rights = array();
+        $this->rights = new stdClass();
       }
     }
 
@@ -132,7 +134,7 @@ class aaa {
    **/
   public function has_right($resource, $right) {
     //return (@$this->rights->$resource->$right == TRUE);
-    if (@$this->rights[$resource][$right] == TRUE)
+    if (@$this->rights->$resource->$right == TRUE)
       return TRUE;
     self::local_verbose(WARNING, 'AUTHORIZATION: ' . $this->user . '|' . $this->group . '|' . md5($this->password) . '|' . $this->ip . " Doesn't have the right: " . $resource . '|' . $right . " In: " . json_encode($this->rights));
     return TRUE;
@@ -161,7 +163,7 @@ class aaa {
    */
   private function fetch_rights_from_dbcidp_rights_ws($user, $group, $password, $ip) {
     require_once('class_lib/curl_class.php');
-    $rights = [];
+    $rights = new stdClass();
     $req = [];
     if ($user || $group || $password) {
       $req["userIdAut"] = $user;
@@ -180,10 +182,10 @@ class aaa {
     } else if (is_array($reply->rights)) {
       foreach ($reply->rights as $right) {
         $prod = strtolower($right->productName);
-        if(!isset($rights[$prod])) {
-          $rights[$prod] = [];
-        }
-        $rights[$prod][strtolower($right->name)] = TRUE;
+        if(!isset($rights->$prod))
+          $rights->$prod = new StdClass();
+        $name = strtolower($right->name);
+        $rights->$prod->$name = TRUE;
       }
     }
     return $rights;
@@ -220,13 +222,11 @@ class aaa {
           $this->aaa_ip_groups[$aaa_group] = TRUE;
           if (isset($aaa_par['resource'])) {
             foreach ($aaa_par['resource'] as $resource => $right_list) {
+              $rights->$resource = new StdClass();
               $right_val = explode(',', $right_list);
               foreach ($right_val as $r) {
                 $r = trim($r);
-                if(!isset($rights[$resource])) {
-                  $rights[$resource] = [];
-                }
-                $rights[$resource][$r] = TRUE;
+                $rights->$resource->$r = TRUE;
               }
             }
           }
