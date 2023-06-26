@@ -2180,7 +2180,7 @@ class OpenSearch extends webServiceServer {
       VerboseJson::log(TRACE, 'Query: ' . $url['q']);
       if (isset($url['debug'])) VerboseJson::log(DEBUG, 'Query: ' . $url['debug']);
       $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded; charset=utf-8'], $no);
-      $this->curl->set_post($url['q']);
+      $this->curl->set_post($url['q'], $no);
       $this->curl->set_url($url['url'], $no);
     }
     $this->watch->start('solr');
@@ -2190,8 +2190,8 @@ class OpenSearch extends webServiceServer {
     if (empty($solr_results))
       return 'Internal problem: No answer from Solr';
     if (count($urls) > 1) {
-      foreach ($solr_results as &$solr_result) {
-        if (!$solr_arr[] = unserialize($solr_result)) {
+      foreach ($solr_results as $solr_result) {
+        if (!$solr_arr[] = @unserialize($solr_result)) {
           VerboseJson::log(WARNING, 'Unable to parse solr result' . json_encode($solr_results));
           return 'Internal problem: Cannot decode Solr result';
         }
