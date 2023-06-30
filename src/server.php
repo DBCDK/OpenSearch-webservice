@@ -60,7 +60,6 @@ class OpenSearch extends webServiceServer {
   protected $search_filter_for_800000 = [];  // set when collection 800000-danbib or 800000-bibdk are searchable
   protected $collection_contained_in = [];
   protected $rank_frequence_debug;
-  protected $collection_alias = [];
   protected $feature_sw = [];
   protected $user_param;
   protected $debug_query = FALSE;
@@ -1321,23 +1320,18 @@ class OpenSearch extends webServiceServer {
    */
 
   private function set_solr_filter($profile, $add_relation_sources = FALSE) {
-    $collection_query = $this->repository['collection_query'] ?? '';
     $ret = [];
     if (is_array($profile)) {
-      $this->collection_alias = self::set_collection_alias($profile);
       foreach ($profile as $p) {
         if (self::xs_boolean($p['sourceSearchable']) || ($add_relation_sources && isset($p['relation']) && count($p['relation']))) {
           $source_id = $p['sourceIdentifier'] ?? '';
-          if (isset($collection_query[$source_id])) {
-            $ret[] = '(' . FIELD_COLLECTION_INDEX . ':' . $collection_query[$source_id] . AND_OP . $filter_query . ')';
-          }
-          else {
-            $ret[] = FIELD_COLLECTION_INDEX . ':' . $source_id;
+          if(@$p['sourceIdentifier']) {
+            $ret[] = $p['sourceIdentifier'];
           }
         }
       }
     }
-    return implode(OR_OP, $ret);
+    return '({!terms f=' . FIELD_COLLECTION_INDEX . '}' . implode(OR_OP, $ret) . ')';
   }
 
   /** \brief Build bq (BoostQuery) as field:content^weight
@@ -1388,23 +1382,15 @@ class OpenSearch extends webServiceServer {
    * @return string - the SOLR filter query that represent the profile
    */
   private function split_collections_for_holdingsitem($profile, $add_relation_sources = FALSE) {
-    $collection_query = $this->repository['collection_query'] ?? '';
     $filtered_collections = $normal_collections = [];
     if (is_array($profile)) {
-      $this->collection_alias = self::set_collection_alias($profile);
       foreach ($profile as $p) {
         $source_id = $p['sourceIdentifier'] ?? '';
         if (self::xs_boolean($p['sourceSearchable']) || ($add_relation_sources && count($p['relation']))) {
           if (self::is_agency_catalog_source($source_id)) {
             $filtered_collections[] = $source_id;
-          }
-          else {
-            if (isset($collection_query[$source_id])) {
-              $normal_collections[] = '(' . FIELD_COLLECTION_INDEX . ':' . $source_id . AND_OP . $collection_query[$source_id] . ')';
-            }
-            else {
+          } else {
               $normal_collections[] = $source_id;
-            }
           }
         }
       }
@@ -1412,30 +1398,6 @@ class OpenSearch extends webServiceServer {
     return
       ($normal_collections ? FIELD_COLLECTION_INDEX . ':(' . implode(' OR ', $normal_collections) . ') OR ' : '') .
       ($filtered_collections ? '(' . FIELD_COLLECTION_INDEX . ':(' . implode(' OR ', $filtered_collections) . ') AND %s)' : '%s');
-  }
-
-  /** \brief Set list of collection alias' depending on the user search profile
-   * - in repository: ['collection_alias']['870876-anmeld'] = '870976-allanmeld';
-   *
-   * @param array $profile - the users search profile
-   * @return array - collection alias'
-   */
-  private function set_collection_alias($profile) {
-    $collection_alias = [];
-    $r_cl = $this->repository['collection_alias'] ?? '';
-    $alias = is_array($r_cl) ? array_flip($r_cl) : [];
-    foreach ($profile as $p) {
-      if (self::xs_boolean($p['sourceSearchable'])) {
-        $si = $p['sourceIdentifier'];
-        if (empty($alias[$si])) {
-          $collection_alias[$si] = $si;
-        }
-        elseif (empty($collection_alias[$alias[$si]])) {
-          $collection_alias[$alias[$si]] = $si;
-        }
-      }
-    }
-    return $collection_alias;
   }
 
 
@@ -1460,11 +1422,8 @@ class OpenSearch extends webServiceServer {
         }
       }
       $handler_format = &$this->repository['handler_format'];
-      if (!empty($handler_format['use_holding_block_join']) && is_array($handler_format['holding_block_join'])) {
-        $handler_format['holding'] = $handler_format['holding_block_join'];
-        foreach ($handler_format['holding'] as &$format) {
-          $format = urldecode($format);
-        }
+      foreach ($handler_format['holding'] as &$format) {
+        $format = urldecode($format);
       }
       if ($cql_file_mandatory && empty($this->repository['cql_file'])) {
         VerboseJson::log(FATAL, 'cql_file not defined for repository: ' . $this->repository_name);
@@ -3316,9 +3275,6 @@ class OpenSearch extends webServiceServer {
    */
   private function extract_record(&$dom, $rec_id) {
     $record_source = self::record_source_from_pid($rec_id);
-    if (isset($this->collection_alias[$record_source])) {
-      $record_source = $this->collection_alias[$record_source];
-    }
     $ret = new stdClass();
     foreach ($this->format as $format_name => $format_arr) {
       switch ($format_name) {
