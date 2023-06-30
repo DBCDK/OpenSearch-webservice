@@ -1331,7 +1331,7 @@ class OpenSearch extends webServiceServer {
         }
       }
     }
-    return '({!terms f=' . FIELD_COLLECTION_INDEX . '}' . implode(OR_OP, $ret) . ')';
+    return '({!terms f=' . FIELD_COLLECTION_INDEX . '}' . implode(",", $ret) . ')';
   }
 
   /** \brief Build bq (BoostQuery) as field:content^weight
