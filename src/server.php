@@ -1421,9 +1421,12 @@ class OpenSearch extends webServiceServer {
           $this->repository[$key] = self::expand_default_repository_setting($key) ? ($this->repository['fedora'] ?? '') . $url_par : $url_par;
         }
       }
+      VerboseJson::log(FATAL, 'repository: ' . json_encode($this->repository));
       $handler_format = &$this->repository['handler_format'];
-      foreach ($handler_format['holding'] as &$format) {
-        $format = urldecode($format);
+      if(is_array($handler_format)) {
+        foreach ($handler_format['holding'] as &$format) {
+          $format = urldecode($format);
+        }
       }
       if ($cql_file_mandatory && empty($this->repository['cql_file'])) {
         VerboseJson::log(FATAL, 'cql_file not defined for repository: ' . $this->repository_name);
