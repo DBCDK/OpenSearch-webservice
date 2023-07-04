@@ -39,7 +39,7 @@ class SolrQuery {
   var $solr_ignores = array();         ///< this should be kept empty
   var $phrase_index = array();  ///< -
   var $search_term_format = array();  ///< -
-  var $holdings_include = '';   ///< -
+  var $profile_filters = [];   ///< -
   var $holdings_filter = '';   ///< -
   var $best_match = FALSE;  ///< -
   var $operator_translate = array();  ///< -
@@ -83,9 +83,9 @@ class SolrQuery {
    * @param $repository string
    * @param $config string
    * @param $language string
-   * @param $holdings_include string
+   * @param $profile_filters array
    */
-  public function __construct($repository, $config = '', $language = '', $holdings_include = '') {
+  public function __construct($repository, $config = '', $language = '', $profile_filters = '') {
     $this->cql_dom = new DomDocument();
     @ $this->cql_dom->loadXML($repository['cql_settings']);
 
@@ -108,7 +108,7 @@ class SolrQuery {
       $this->phrase_index = $config->get_value('phrase_index', 'setup');
       $this->search_term_format = $repository['handler_format'];
     }
-    $this->holdings_include = $holdings_include;
+    $this->profile_filters = $profile_filters;
     ini_set('xdebug.max_nesting_level', 1000);  // each operator can cause a recursive call 
   }
 
@@ -226,9 +226,21 @@ class SolrQuery {
           $last_idx = $idx;
         }
       }
-      $handler_q = '(' . implode(' AND ', $q) . ')';
-      $solr_nodes['handler_var'][$handler] = 'fq_' . $handler . '=' . urlencode($handler_q);
-      $solr_nodes[$type][$last_idx] = sprintf($this->holdings_include, '(' . sprintf($format, '$fq_' . $handler) . ')');
+      if($this->profile_filters['holdings']) {
+        $profile_filter = $this->profile_filters['holdings'] . ' AND (' . sprintf($format, '$fq_' . $handler) . ')';
+        if($this->profile_filters['bibliographic']) {
+          // Has both holdings-filtered and "ordinary" sources
+          $profile_filter .= ' OR ' . $this->profile_filters['bibliographic'];
+        }
+        $solr_nodes[$type][$last_idx] = $profile_filter;
+
+        // Add profile filter to holdings query
+        $q[] = $this->profile_filters['holdings'];
+        $handler_q = implode(' AND ', $q);
+        $solr_nodes['handler_var'][$handler] = 'fq_' . $handler . '=' . urlencode($handler_q);
+      } else { // No holdings-filtered sources in profile
+        $solr_nodes[$type][$last_idx] = $this->profile_filters['bibliographic'];
+      }
     }
   }
 
