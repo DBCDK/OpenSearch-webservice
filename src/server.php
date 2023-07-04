@@ -57,7 +57,6 @@ class OpenSearch extends webServiceServer {
   protected $valid_relation = [];
   protected $searchable_source = [];
   protected $searchable_forskningsbibliotek = FALSE;
-  protected $search_filter_for_800000 = [];  // set when collection 800000-danbib or 800000-bibdk are searchable
   protected $collection_contained_in = [];
   protected $rank_frequence_debug;
   protected $feature_sw = [];
@@ -323,11 +322,7 @@ class OpenSearch extends webServiceServer {
     $this->watch->stop('precql_newsolrquery');
     $this->watch->stop('precql');
     $this->watch->start('cql');
-    if (isset($param->skipFilter) && ($param->skipFilter->_value == '1'))    // for test
-      $solr_query = $this->cql2solr->parse($param->query->_value);
-    else
-      $solr_query = $this->cql2solr->parse($param->query->_value, $this->search_filter_for_800000);
-//var_dump($solr_query); var_dump($this->split_holdings_include); var_dump($this->search_filter_for_800000); die();
+    $solr_query = $this->cql2solr->parse($param->query->_value);
     $this->watch->stop('cql');
     $this->watch->start('postcql');
     if (DEBUG_ON) {

@@ -120,7 +120,6 @@ class SolrQuery {
    * @return struct
    */
   public function parse($query, $holdings_filter = '') {
-    $this->holdings_filter = $holdings_filter;
     $parser = new CQL_parser();
     $parser->set_prefix_namespaces($this->cqlns);
     $parser->set_indexes($this->indexes);
@@ -199,7 +198,7 @@ class SolrQuery {
     foreach (array('q', 'fq') as $type) {
       foreach ($solr_nodes['handler'][$type] as $handler) {
         if ($handler) {
-          self::apply_handler($solr_nodes, $type, $handler, $this->holdings_filter);
+          self::apply_handler($solr_nodes, $type, $handler);
           $found[$handler][$type] = TRUE;
           break;
         }
@@ -210,20 +209,14 @@ class SolrQuery {
         $this->error[] = self::set_error(18, 'Mixed filter use for the applied indexes');
       }
     }
-    if ($this->holdings_filter && empty($found['holding'])) {   // inject holdings filter when holding handler is not used
-      $solr_nodes['fq'][] = $this->holdings_filter;
-      $solr_nodes['handler']['fq'][] = 'holding';
-      self::apply_handler($solr_nodes, 'fq', 'holding');
-    }
   }
 
   /** \brief locate handlers
    * @param $solr_nodes array - one or more solr AND nodes
    * @param $type string - - q og fq
    * @param $handler string - - name of handler
-   * @param $holdings_filter string -
    */
-  private function apply_handler(&$solr_nodes, $type, $handler, $holdings_filter = '') {
+  private function apply_handler(&$solr_nodes, $type, $handler) {
     if ($handler && ($format = $this->search_term_format[$handler][$type])) {
       $q = array();
       foreach ($solr_nodes['handler'][$type] as $idx => $h) {
@@ -234,9 +227,6 @@ class SolrQuery {
         }
       }
       $handler_q = '(' . implode(' AND ', $q) . ')';
-      if ($holdings_filter) {
-        $handler_q .= ' OR ' . $holdings_filter;
-      }
       $solr_nodes['handler_var'][$handler] = 'fq_' . $handler . '=' . urlencode($handler_q);
       $solr_nodes[$type][$last_idx] = sprintf($this->holdings_include, '(' . sprintf($format, '$fq_' . $handler) . ')');
     }
