@@ -57,7 +57,6 @@ class OpenSearch extends webServiceServer {
   protected $valid_relation = [];
   protected $searchable_source = [];
   protected $searchable_forskningsbibliotek = FALSE;
-  protected $search_filter_for_800000 = [];  // set when collection 800000-danbib or 800000-bibdk are searchable
   protected $collection_contained_in = [];
   protected $rank_frequence_debug;
   protected $feature_sw = [];
@@ -323,11 +322,7 @@ class OpenSearch extends webServiceServer {
     $this->watch->stop('precql_newsolrquery');
     $this->watch->stop('precql');
     $this->watch->start('cql');
-    if (isset($param->skipFilter) && ($param->skipFilter->_value == '1'))    // for test
-      $solr_query = $this->cql2solr->parse($param->query->_value);
-    else
-      $solr_query = $this->cql2solr->parse($param->query->_value, $this->search_filter_for_800000);
-//var_dump($solr_query); var_dump($this->split_holdings_include); var_dump($this->search_filter_for_800000); die();
+    $solr_query = $this->cql2solr->parse($param->query->_value);
     $this->watch->stop('cql');
     $this->watch->start('postcql');
     if (DEBUG_ON) {
@@ -1312,13 +1307,22 @@ class OpenSearch extends webServiceServer {
     $namespace = getenv('POD_NAMESPACE') ?: 'NO_NAMESPACE';
     return $namespace . '-' .$pod_name;
   }
+
+  /** \brief Build Solr filter_query parm
+   *
+   * @param array $collection_identifiers - The sources that the profile contatins
+   * @return string - the SOLR filter query that represent the profile
+   */
+  private function solr_profile_filter($collection_identifiers) {
+    return $collection_identifiers ? '({!terms f=' . FIELD_COLLECTION_INDEX . '}' . implode(",", $collection_identifiers) . ')' : '';
+  }
+
   /** \brief Build Solr filter_query parm
    *
    * @param array $profile - the users search profile
    * @param string $add_relation_sources - include sources using relations
    * @return string - the SOLR filter query that represent the profile
    */
-
   private function set_solr_filter($profile, $add_relation_sources = FALSE) {
     $ret = [];
     if (is_array($profile)) {
@@ -1331,7 +1335,7 @@ class OpenSearch extends webServiceServer {
         }
       }
     }
-    return '({!terms f=' . FIELD_COLLECTION_INDEX . '}' . implode(",", $ret) . ')';
+    return $this->solr_profile_filter($ret);
   }
 
   /** \brief Build bq (BoostQuery) as field:content^weight
@@ -1372,6 +1376,9 @@ class OpenSearch extends webServiceServer {
   private function is_agency_catalog_source($source) {
     return $source == $this->agency . '-katalog' ||
            $source == $this->agency . '-komplet' ||
+           $source == $this->agency . '-aktive' ||
+           $source == $this->agency . '-egne' ||
+           $source == $this->agency . '-inaktive' ||
            $source == '870970-basis';
   }
 
@@ -1382,22 +1389,23 @@ class OpenSearch extends webServiceServer {
    * @return string - the SOLR filter query that represent the profile
    */
   private function split_collections_for_holdingsitem($profile, $add_relation_sources = FALSE) {
-    $filtered_collections = $normal_collections = [];
+    $bibliographic_collections = $holdings_collections = [];
     if (is_array($profile)) {
       foreach ($profile as $p) {
         $source_id = $p['sourceIdentifier'] ?? '';
         if (self::xs_boolean($p['sourceSearchable']) || ($add_relation_sources && count($p['relation']))) {
           if (self::is_agency_catalog_source($source_id)) {
-            $filtered_collections[] = $source_id;
+            $holdings_collections[] = $source_id;
           } else {
-              $normal_collections[] = $source_id;
+            $bibliographic_collections[] = $source_id;
           }
         }
       }
     }
-    return
-      ($normal_collections ? FIELD_COLLECTION_INDEX . ':(' . implode(' OR ', $normal_collections) . ') OR ' : '') .
-      ($filtered_collections ? '(' . FIELD_COLLECTION_INDEX . ':(' . implode(' OR ', $filtered_collections) . ') AND %s)' : '%s');
+    return array(
+      'bibliographic' => $this->solr_profile_filter($bibliographic_collections),
+      'holdings' => $this->solr_profile_filter($holdings_collections),
+    );
   }
 
 
