@@ -227,7 +227,7 @@ class SolrQuery {
         }
       }
       if($this->profile_filters['holdings']) {
-        $profile_filter = $this->profile_filters['holdings'] . ' AND (' . sprintf($format, '$fq_' . $handler) . ')';
+        $profile_filter = '(' . $this->profile_filters['holdings'] . ' AND (' . sprintf($format, '$fq_' . $handler) . '))';
         if($this->profile_filters['bibliographic']) {
           // Has both holdings-filtered and "ordinary" sources
           $profile_filter .= ' OR ' . $this->profile_filters['bibliographic'];
