@@ -491,7 +491,7 @@ class SolrQuery {
   private function normalize_quotes($term, $quote) {
     if ($quote == "'" && $quote == substr($term, 0, 1) && $quote == substr($term, -1, 1)) {
       $term = substr($term, 1, strlen($term) - 2);
-      $term = str_replace('"', '\\@', $term);
+      $term = str_replace('"', '\\"', $term);
       $term = '"' . $term . '"';
     }
     return $term;
