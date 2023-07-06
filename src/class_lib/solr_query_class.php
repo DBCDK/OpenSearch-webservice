@@ -470,7 +470,8 @@ class SolrQuery {
             $term = '(' . self::delete_quotes($term, $quote) . ')';
           }
           else {
-            $term = self::normalize_quotes($term, $quote);
+            // revert change 20181002/fvs 
+            // $term = self::normalize_quotes($term, $quote);
             $m_slop = '~' . $slop;
           }
         }
@@ -490,9 +491,7 @@ class SolrQuery {
    */
   private function normalize_quotes($term, $quote) {
     if ($quote == "'" && $quote == substr($term, 0, 1) && $quote == substr($term, -1, 1)) {
-      $term = substr($term, 1, strlen($term) - 2);
-      $term = str_replace('"', '\\"', $term);
-      $term = '"' . $term . '"';
+      $term = '"' . substr($term, 1, strlen($term) - 2) . '"';
     }
     return $term;
   }
