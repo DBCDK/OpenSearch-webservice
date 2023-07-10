@@ -111,8 +111,12 @@ class Restconvert {
    * @return array - of paramter and value
    */
   private function par_split($parval) {
-    list($par, $val) = explode('=', $parval, 2);
-    return array(preg_replace("/\[[^]]*\]/", "", urldecode($par)), urldecode($val));
+    if($parval && str_contains($parval, '=')) {
+      list($par, $val) = explode('=', $parval, 2);
+      return array(preg_replace("/\[[^]]*\]/", "", urldecode($par)), urldecode($val));
+    } else {
+      return array(preg_replace("/\[[^]]*\]/", "", urldecode($parval)), '');
+    }
   }
 
   /** \brief Helper function to produce balanced xml
