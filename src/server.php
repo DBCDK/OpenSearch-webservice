@@ -381,7 +381,7 @@ class OpenSearch extends webServiceServer {
       }
 
       $facet_q = empty($param->facets) ? '' : self::set_solr_facet_parameters($param->facets->_value);
-      if($facet_q) VerboseJson::log("Query with facets: " . print_r($solr_query, TRUE));
+      if($facet_q) VerboseJson::log(INFO, "Query with facets: " . print_r($solr_query, TRUE));
 
       // TODO rows should max to like 5000 and use cursorMark to page forward. cursorMark need a sort parameter to work
       $rows = $step_value ? (($start + $step_value + 100) * 2) + 100 : 0;
