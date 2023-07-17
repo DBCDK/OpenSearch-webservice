@@ -381,6 +381,7 @@ class OpenSearch extends webServiceServer {
       }
 
       $facet_q = empty($param->facets) ? '' : self::set_solr_facet_parameters($param->facets->_value);
+      if($facet_q) VerboseJson::log("Query with facets: " . print_r($solr_query, TRUE));
 
       // TODO rows should max to like 5000 and use cursorMark to page forward. cursorMark need a sort parameter to work
       $rows = $step_value ? (($start + $step_value + 100) * 2) + 100 : 0;
@@ -2172,7 +2173,7 @@ class OpenSearch extends webServiceServer {
     }
     elseif (!empty($solr_arr['error'])) {
       $err = $solr_arr['error'];
-      VerboseJson::log(FATAL, 'Solr result in error: (' . $err['code'] . ') ' . preg_replace('/\s+/', ' ', $err['msg']));
+      VerboseJson::log(FATAL, 'Solr result in error: (' . $err['code'] . ') ' . preg_replace('/\s+/', ' ', $err['msg']) . ' for queries ' . json_encode($urls));
       return 'Internal problem: Solr result contains error';
     }
     VerboseJson::log(DEBUG, 'do_solr results count: ' . count($solr_arr));
