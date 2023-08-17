@@ -12,6 +12,7 @@ check_on_path composer
 
 SRCDIR="${PROJECT_DIR}/src"
 
+php -v
 cd "${SRCDIR}" || die "Unable to change directory to ${SRCDIR}"
 composer clear-cache || die "Unable to clear the composer cache"
 composer update --with-dependencies -v || die "Unable to run composer to get php dependencies"
