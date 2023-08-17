@@ -44,6 +44,14 @@ pipeline {
 
 
     stages {
+        stage('show php version') {
+            steps {
+                script {
+                    sh "uname -a"
+                    sh "php -v"
+                }
+            }
+        }
         stage("clear workspace") {
             steps {
                 deleteDir()
