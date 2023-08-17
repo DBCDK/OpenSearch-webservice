@@ -39,7 +39,7 @@ class SolrQuery {
   var $solr_ignores = array();         ///< this should be kept empty
   var $phrase_index = array();  ///< -
   var $search_term_format = array();  ///< -
-  var $holdings_include = '';   ///< -
+  var $profile_filters = [];   ///< -
   var $holdings_filter = '';   ///< -
   var $best_match = FALSE;  ///< -
   var $operator_translate = array();  ///< -
@@ -83,9 +83,9 @@ class SolrQuery {
    * @param $repository string
    * @param $config string
    * @param $language string
-   * @param $holdings_include string
+   * @param $profile_filters array
    */
-  public function __construct($repository, $config = '', $language = '', $holdings_include = '') {
+  public function __construct($repository, $config = '', $language = '', $profile_filters = '') {
     $this->cql_dom = new DomDocument();
     @ $this->cql_dom->loadXML($repository['cql_settings']);
 
@@ -108,7 +108,7 @@ class SolrQuery {
       $this->phrase_index = $config->get_value('phrase_index', 'setup');
       $this->search_term_format = $repository['handler_format'];
     }
-    $this->holdings_include = $holdings_include;
+    $this->profile_filters = $profile_filters;
     ini_set('xdebug.max_nesting_level', 1000);  // each operator can cause a recursive call 
   }
 
@@ -120,7 +120,6 @@ class SolrQuery {
    * @return struct
    */
   public function parse($query, $holdings_filter = '') {
-    $this->holdings_filter = $holdings_filter;
     $parser = new CQL_parser();
     $parser->set_prefix_namespaces($this->cqlns);
     $parser->set_indexes($this->indexes);
@@ -199,7 +198,7 @@ class SolrQuery {
     foreach (array('q', 'fq') as $type) {
       foreach ($solr_nodes['handler'][$type] as $handler) {
         if ($handler) {
-          self::apply_handler($solr_nodes, $type, $handler, $this->holdings_filter);
+          self::apply_handler($solr_nodes, $type, $handler);
           $found[$handler][$type] = TRUE;
           break;
         }
@@ -210,20 +209,14 @@ class SolrQuery {
         $this->error[] = self::set_error(18, 'Mixed filter use for the applied indexes');
       }
     }
-    if ($this->holdings_filter && empty($found['holding'])) {   // inject holdings filter when holding handler is not used
-      $solr_nodes['fq'][] = $this->holdings_filter;
-      $solr_nodes['handler']['fq'][] = 'holding';
-      self::apply_handler($solr_nodes, 'fq', 'holding');
-    }
   }
 
   /** \brief locate handlers
    * @param $solr_nodes array - one or more solr AND nodes
    * @param $type string - - q og fq
    * @param $handler string - - name of handler
-   * @param $holdings_filter string -
    */
-  private function apply_handler(&$solr_nodes, $type, $handler, $holdings_filter = '') {
+  private function apply_handler(&$solr_nodes, $type, $handler) {
     if ($handler && ($format = $this->search_term_format[$handler][$type])) {
       $q = array();
       foreach ($solr_nodes['handler'][$type] as $idx => $h) {
@@ -233,12 +226,21 @@ class SolrQuery {
           $last_idx = $idx;
         }
       }
-      $handler_q = '(' . implode(' AND ', $q) . ')';
-      if ($holdings_filter) {
-        $handler_q .= ' OR ' . $holdings_filter;
+      if($this->profile_filters['holdings']) {
+        $profile_filter = '(' . $this->profile_filters['holdings'] . ' AND (' . sprintf($format, '$fq_' . $handler) . '))';
+        if($this->profile_filters['bibliographic']) {
+          // Has both holdings-filtered and "ordinary" sources
+          $profile_filter .= ' OR ' . $this->profile_filters['bibliographic'];
+        }
+        $solr_nodes[$type][$last_idx] = $profile_filter;
+
+        // Add profile filter to holdings query
+        $q[] = $this->profile_filters['holdings'];
+        $handler_q = implode(' AND ', $q);
+        $solr_nodes['handler_var'][$handler] = 'fq_' . $handler . '=' . urlencode($handler_q);
+      } else { // No holdings-filtered sources in profile
+        $solr_nodes[$type][$last_idx] = $this->profile_filters['bibliographic'];
       }
-      $solr_nodes['handler_var'][$handler] = 'fq_' . $handler . '=' . urlencode($handler_q);
-      $solr_nodes[$type][$last_idx] = sprintf($this->holdings_include, '(' . sprintf($format, '$fq_' . $handler) . ')');
     }
   }
 
@@ -250,6 +252,7 @@ class SolrQuery {
    */
   private function tree_2_edismax($node, &$add_params, $level = 0) {
     static $q_type, $ranking;
+    $term_handler = null;
     if ($level == 0) {
       $q_type = 'fq';
       $ranking = '';
@@ -262,11 +265,11 @@ class SolrQuery {
       }
       else {
         $fh = 'fh' . count($add_params);
-        if ($this->search_term_format[$left_handler]) {
+        if (@$this->search_term_format[$left_handler]) {
           $add_params[$fh] = $left_term;
           $left_term = sprintf($this->search_term_format[$left_handler]['q'], '$' . $fh);
         }
-        elseif ($this->search_term_format[$right_handler]) {
+        elseif (@$this->search_term_format[$right_handler]) {
           $add_params[$fh] = $right_term;
           $right_term = sprintf($this->search_term_format[$right_handler]['q'], '$' . $fh);
         }
@@ -336,7 +339,7 @@ class SolrQuery {
     foreach ($trees as $tree) {
       $ret[] = self::tree_2_bestmatch($tree);
     }
-    $q = implode(' or ', $ret);
+    $q = implode(' OR ', $ret);
     $sort = self::make_bestmatch_sort($q);
     return array('q' => array($q), 'fq' => array(), 'sort' => $sort);
   }
@@ -348,7 +351,7 @@ class SolrQuery {
    */
   private function tree_2_bestmatch($node, $level = 0) {
     if ($node['type'] == 'boolean') {
-      $ret = self::tree_2_bestmatch($node['left'], $level + 1) . ' or ' . self::tree_2_bestmatch($node['right'], $level + 1);
+      $ret = self::tree_2_bestmatch($node['left'], $level + 1) . ' OR ' . self::tree_2_bestmatch($node['right'], $level + 1);
     }
     else {
       $ret = self::make_bestmatch_term($node['term'], $node['relation'], $node['prefix'], $node['field'], $node['slop']);
@@ -388,7 +391,7 @@ class SolrQuery {
    * @return array -
    */
   private function make_bestmatch_sort($query) {
-    $qs = explode(' or ', $query);
+    $qs = explode(' OR ', $query);
     $fraction = floor(100 / count($qs));
     $comma = $sort = '';
     foreach ($qs as $qi => $q) {
@@ -420,7 +423,7 @@ class SolrQuery {
         $ret[] = self::make_solr_term($t, $relation, $prefix, $field, $slop);
       }
     }
-    return implode(' or ', $ret);
+    return implode(' OR ', $ret);
   }
 
   /** \brief create edismax term query

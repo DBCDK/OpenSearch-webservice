@@ -17,8 +17,8 @@ x-info:
     AGENCY_PROFILE_FALLBACK: test
     VERBOSE_LEVEL: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
     OPEN_FORMAT: http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
+    AAA_IDP_URL: http://idpservice.fbiscrum-prod.svc.cloud.dbc.dk/api/v1/
     URL_PATH: ""
-    USE_HOLDING_BLOCK_JOIN: "yes"
     SERVICE_LOCATION: ""
     CACHE_CONNECT_TIMEOUT: 0.04
     CACHE_READ_TIMEOUT: 0.05

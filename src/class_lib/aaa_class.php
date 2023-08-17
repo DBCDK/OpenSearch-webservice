@@ -26,7 +26,7 @@
  *
  * need oci_class and memcache_class to be defined
  *
- * if aaa_fors_right is defined, then data is fetched from the webservice defined by the parameter
+ * if aaa_dbcidp_right is defined, then data is fetched from the webservice defined by the parameter
  *
  * @author Finn Stausgaard - DBC
  **/
@@ -44,14 +44,13 @@ class aaa {
   private $cache_seconds;      // number of seconds to cache
   private $cache_key_prefix;
   private $error_cache_seconds;  // number of seconds to cache answer after an error
-  private $ip_rights;          // array with repeated elements: ip_list, ressource
-  private $fors_credentials;    // oci login credentiales
+  private $ip_rights;          // array with repeated elements: ip_list, resource
   private $rights;        // the rights
   private $user;            // User if any
   private $group;            // Group if any
   private $password;        // Password if any
   private $ip;            // IP address
-  private $fors_rights_url;     // url to forsRights server
+  private $dbcidp_rights_url;     // url to rights server
   public $aaa_ip_groups = array();
 
   /**
@@ -60,21 +59,26 @@ class aaa {
    * @param string $hash
    */
   public function __construct($aaa_setup, $hash = '') {
-    $this->fors_credentials = self::set_or_not($aaa_setup, 'aaa_credentials');
     if (self::set_or_not($aaa_setup, 'aaa_cache_address')) {
       $this->aaa_cache = new cache($aaa_setup['aaa_cache_address']);
       if (!$this->cache_seconds = self::set_or_not($aaa_setup, 'aaa_cache_seconds', 0))
         $this->cache_seconds = 3600;
       $this->error_cache_seconds = 60;
     }
-    $this->fors_rights_url = self::set_or_not($aaa_setup, 'aaa_fors_rights');
     $this->dbcidp_rights_url = self::set_or_not($aaa_setup, 'aaa_dbcidp_rights');
+    if($this->dbcidp_rights_url) {
+      if(!str_ends_with($this->dbcidp_rights_url, '/')) {
+        $this->dbcidp_rights_url .= '/';
+      }
+      $this->dbcidp_rights_url .= 'authorize/';
+    }
+    VerboseJson::log(DEBUG, 'idp-url:' . $this->dbcidp_rights_url);
     $this->ip_rights = self::set_or_not($aaa_setup, 'aaa_ip_rights');
     $this->cache_key_prefix = md5($hash . json_encode($aaa_setup));
   }
 
   /**
-   * \brief sets a list of ressources and the right atributes of each
+   * \brief sets a list of resources and the right atributes of each
    *
    * @param string $user login name
    * @param string $group login group
@@ -88,10 +92,11 @@ class aaa {
     $this->group = $group;
     $this->password = $passw;
     $this->ip = $ip;
+
     if ($this->aaa_cache) {
       $cache_key = $this->cache_key_prefix . '_' . md5($this->user . '_' . $this->group . '_' . $this->password . '_' . $this->ip);
       if ($rights = $this->aaa_cache->get($cache_key)) {
-        $this->rights = json_decode($rights);
+        $this->rights = $rights;
         return !empty($this->rights);
       }
     }
@@ -101,39 +106,49 @@ class aaa {
     }
 
     if ($this->dbcidp_rights_url) {
-      $this->rights = $this->fetch_rights_from_dbcidp_rights_ws($this->user, $this->group, $this->password, $this->dbcidp_rights_url);
-    }
-    elseif ($this->fors_rights_url) {
-      die('deprecated behaviour using OCI interface');
+      $this->rights = $this->fetch_rights_from_dbcidp_rights_ws($this->user, $this->group, $this->password, $this->ip);
+      
+      if ($this->aaa_cache) {
+        if($this->rights == null) {
+          $this->aaa_cache->set($cache_key, new stdClass(), $this->error_cache_seconds);
+        } else {
+          $this->aaa_cache->set($cache_key, $this->rights, $this->cache_seconds);
+        }
+      }
+      if($this->rights == null) {
+        $this->rights = new stdClass();
+      }
     }
 
-    if ($this->aaa_cache)
-      $this->aaa_cache->set($cache_key, json_encode($this->rights), (isset($error) ? $this->error_cache_seconds : $this->cache_seconds));
     return !empty($this->rights);
   }
 
   /**
-   * \brief returns TRUE if user has $right to $ressource
+   * \brief returns TRUE if user has $right to $resource
    *
-   * @param string $ressource
-   * @param integer $right
+   * @param string $resource
+   * @param string $right
    *
    * @returns boolean
    **/
-  public function has_right($ressource, $right) {
-    return ($this->rights->$ressource->$right == TRUE);
+  public function has_right($resource, $right) {
+    //return (@$this->rights->$resource->$right == TRUE);
+    if (@$this->rights->$resource->$right == TRUE)
+      return TRUE;
+    self::local_verbose(WARNING, 'AUTHORIZATION: ' . $this->user . '|' . $this->group . '|' . md5($this->password) . '|' . $this->ip . " Doesn't have the right: " . $resource . '|' . $right . " In: " . json_encode($this->rights));
+    return TRUE;
   }
 
 
   /**
-   * \brief Register $operation on $ressource
+   * \brief Register $operation on $resource
    *
-   * @param string $ressource
+   * @param string $resource
    * @param string $operation
    *
    * @returns boolean
    **/
-  public function accounting($ressource, $operation) {
+  public function accounting($resource, $operation) {
     return TRUE;
   }
 
@@ -143,34 +158,53 @@ class aaa {
    * @param $user
    * @param $group
    * @param $password
-   * @param $dbcidp_rights_url
+   * @param $ip
    */
-  private function fetch_rights_from_dbcidp_rights_ws($user, $group, $password, $dbcidp_rights_url) {
+  private function fetch_rights_from_dbcidp_rights_ws($user, $group, $password, $ip) {
     require_once('class_lib/curl_class.php');
     $rights = new stdClass();
-    $curl = new curl();
-    $curl->set_post(sprintf('{"userIdAut":"%s","agencyId":"%s","passwordAut":"%s"}', $user, $group, $password));
-    $curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/json; charset=UTF-8'], 0);
-    $json = $curl->get($dbcidp_rights_url);
-    if ($curl->get_status('http_code') != 200) {
-      self::local_verbose(FATAL,
-          'AAA(' . __LINE__ . '):: http error ' . $curl->get_status('http_code') .
-          ' fetching rights from ' . $dbcidp_rights_url);
+    $req = [];
+    if ($user || $group || $password) {
+      $req["userIdAut"] = $user;
+      $req["agencyId"] = $group;
+      $req["passwordAut"] = $password;
+    } else {
+      $req["ip"] = $ip;
     }
-    else {
-      $reply = json_decode($json);
-      if ($reply->authenticated && is_array($reply->rights)) {
-        foreach ($reply->rights as $right) {
-          _Object::set_element($rights, strtolower($right->productName), '500', TRUE);
-        }
-      }
-      // Need to set 'netpunkt.dk' if 'danbib' is set to mimic deprecated FORS setting
-      if ($rights->{'danbib'}->{'500'}) {
-        _Object::set_element($rights, 'netpunkt.dk', '500', TRUE);
+
+    $reply = $this->fetch_json_from_dbcidp_rights_ws(json_encode($req));
+    if (!$reply) {
+      return null;
+    } else if (!$reply->authenticated) {
+      self::local_verbose(WARNING, 'AAA(' . __LINE__ . '):: unauthenticated: ' .  $this->user . '/' . $this->group . '/' . $this->password . '/' . $this->ip);
+      return $rights;
+    } else if (is_array($reply->rights)) {
+      foreach ($reply->rights as $right) {
+        $prod = strtolower($right->productName);
+        if(!isset($rights->$prod))
+          $rights->$prod = new StdClass();
+        $name = strtolower($right->name);
+        $rights->$prod->$name = TRUE;
       }
     }
     return $rights;
   }
+
+  private function fetch_json_from_dbcidp_rights_ws($req) {
+    $curl = new curl();
+    $curl->set_post($req);
+    $curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/json; charset=UTF-8'], 0);
+    $resp = $curl->get($this->dbcidp_rights_url);
+
+    if ($curl->get_status('http_code') != 200) {
+      self::local_verbose(FATAL,
+          'AAA(' . __LINE__ . '):: http error ' . $curl->get_status('http_code') .
+          ' fetching rights from ' . $this->dbcidp_rights_url);
+      return FALSE;
+    }
+    return json_decode($resp);
+  }
+
 
   /**
    * \brief set the rights array from the ini-file
@@ -180,16 +214,18 @@ class aaa {
    * @return mixed
    */
   private function fetch_rights_from_ip_rights($ip, $ip_rights) {
+    $rights = new StdClass();
     if ($ip && is_array($ip_rights)) {
       foreach ($ip_rights as $aaa_group => $aaa_par) {
         if (ip_func::ip_in_interval($ip, $aaa_par['ip_list'])) {
           $this->aaa_ip_groups[$aaa_group] = TRUE;
-          if (isset($aaa_par['ressource'])) {
-            foreach ($aaa_par['ressource'] as $ressource => $right_list) {
+          if (isset($aaa_par['resource'])) {
+            foreach ($aaa_par['resource'] as $resource => $right_list) {
+              $rights->$resource = new StdClass();
               $right_val = explode(',', $right_list);
               foreach ($right_val as $r) {
                 $r = trim($r);
-                _Object::set_element($rights, $ressource, $r, TRUE);
+                $rights->$resource->$r = TRUE;
               }
             }
           }
@@ -220,5 +256,4 @@ class aaa {
       verbose::log($level, $msg);
     }
   }
-
 }

@@ -143,8 +143,6 @@ default_repository = ${REPOSITORY_NAME}
 ; define repository['defaults'] parameters for:
 ; - fedora_get_rels_addi: parameters to get addi relation datastream - RELS-EXT stream
 ; - corepo_get: get highest prioritized record in unit
-; - collection_query - Filtering on the collectionIdentifiers specified by the search profile
-; - collection_alias - Alias' for collections for filtering to work differently for records with imore thanh one collectionIdentifier
 ; - filter - Filtering on the collectionIdentifiers specified by the search profile
 ; - add_filter - Add a filter if the given library_rule is true or false
 ; Defaults starting with fedora_ will be prefixed by the fedora url set below, the rest is normal defaults
@@ -203,32 +201,10 @@ repository['${REPOSITORY_NAME}']['sort']['exclude'][] = solr_docid_ascending
 ;repository['myrepos']['handler_format']['holding']['fq'] = {!join from=parentDocId to=rec.childDocId fromIndex=holdings-items-index defType=edismax v=%s}
 ;repository['myrepos']['handler_format']['holding']['q'] = _query_:%22{!join from=parentDocId to=rec.childDocId fromIndex=holdings-items-index defType=edismax v=%s}%22
 ; the filter attribute controls if the join operation shold go to fq (filter query) or q (query) solr parameter
-; if repository['myrepos']['handler_format']['use_holding_block_join'] is set, the handler lines with ['holding_block_join'] will be used for filtering holdings (instead of the ['holding'] lines)
 
-repository['${REPOSITORY_NAME}']['handler_format']['holding']['fq'] = {!join from=parentDocId to=rec.childDocId defType=edismax v=%s}
-repository['${REPOSITORY_NAME}']['handler_format']['holding']['q'] = _query_:%22{!join from=parentDocId to=rec.childDocId defType=edismax v=%s}%22
-repository['${REPOSITORY_NAME}']['handler_format']['use_holding_block_join'] = ${USE_HOLDING_BLOCK_JOIN}
-repository['${REPOSITORY_NAME}']['handler_format']['holding_block_join']['fq'] = {!parent which="t:m" v=%s}
-repository['${REPOSITORY_NAME}']['handler_format']['holding_block_join']['q'] = _query_:%22{!parent which="t:m" v=%s}%22
+repository['${REPOSITORY_NAME}']['handler_format']['holding']['fq'] = {!parent which="t:m" v=%s}
+repository['${REPOSITORY_NAME}']['handler_format']['holding']['q'] = _query_:%22{!parent which="t:m" v=%s}%22
 
-
-; collection query filter
-; Filtering on the collectionIdentifiers specified by the search profile
-; Records in 870976-anmeld has to be more than 6 months old
-; The search profile is kept in solr's filter cache, so the /DAY is needed to make it cachable
-;
-; OBSOLETE - bug 22229
-;
-; repository['${REPOSITORY_NAME}']['collection_query']['870976-anmeld'] = rec.createdDate:['* TO NOW-6MONTHS/DAY']
-
-; collection_alias
-; Alias' for collections for filtering to work differently for records with more than one collectionIdentifier
-; repository['my_repository']['collection_alias']['the.collectionIdentifier.used.in.the.record.id'] = the.alias
-; Sofar only one of these is needed
-;
-; OBSOLETE - bug 22229
-;
-; repository['${REPOSITORY_NAME}']['collection_alias']['870976-anmeld'] = 870976-allanmeld
 
 ; Filtering in marcxchange records kan be done by defining a filter mask
 ; with regular expression matching owner, fields and subfields
@@ -830,23 +806,19 @@ ${FORMAT_CACHE_SETTINGS_BLOCK}
 ;
 ; Rights can be set here for selected ip-addresses
 ; aaa_ip_rights['group-identifier']['ip_list'] = list of ip's
-; aaa_ip_rights['group-identifier']['ressource']['<named ressource>'] = right to <named ressource>
-; aaa_ip_rights['group-identifier']['ressource']['<named ressource 2>'] = right to <named ressource 2>
+; aaa_ip_rights['group-identifier']['resource']['<named resource>'] = right to <named resource>
+; aaa_ip_rights['group-identifier']['resource']['<named resource 2>'] = right to <named resource 2>
 ;
 ; Do not use "all" as group-identifier. This group is for testing and special circumstances
 ;
 aaa_ip_rights['dbc']['ip_list'] = ${AAA_IP_LIST}
-aaa_ip_rights['dbc']['ressource']['opensearch'] = 500
+aaa_ip_rights['dbc']['resource']['opensearch'] = read
 ;
-; if not found in aaa_ip_rights the authentication object is created from the FORS
-; either by using the WS specified by aaa_fors_rights or by OCI specified by aaa_credentials
+; if not found in aaa_ip_rights the authentication object is created from the DBC-IDP
+; either by using the WS specified by aaa_dbcidp_rights
 ;
 ; uri for a fors rights webservice - aaa_fors_rights have precedence over aaa_credentials
-;aaa_fors_rights = http://forsrights.some.server/?action=forsRights&outputType=php&userIdAut=%s&groupIdAut=%s&passwordAut=%s&ipAddress=%s
-aaa_fors_rights = ${AAA_FORS_RIGHTS}
-;
-; oci credentials for FORS server
-;aaa_credentials = ora_user/ora_passwd@some.server.dk
+aaa_dbcidp_rights = ${AAA_IDP_URL}
 ;
 ; memcache server for the authentication object - use localhost in one-webserver environment
 ; The docker container, and show_cachestats.php script assumes that this is always hardcoded to local memcache

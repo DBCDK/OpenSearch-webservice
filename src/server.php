@@ -57,10 +57,8 @@ class OpenSearch extends webServiceServer {
   protected $valid_relation = [];
   protected $searchable_source = [];
   protected $searchable_forskningsbibliotek = FALSE;
-  protected $search_filter_for_800000 = [];  // set when collection 800000-danbib or 800000-bibdk are searchable
   protected $collection_contained_in = [];
   protected $rank_frequence_debug;
-  protected $collection_alias = [];
   protected $feature_sw = [];
   protected $user_param;
   protected $debug_query = FALSE;
@@ -111,7 +109,7 @@ class OpenSearch extends webServiceServer {
 
     $this->watch->start('aaa');
     try {
-      if (!$this->aaa->has_right('opensearch', 500)) {
+      if (!$this->aaa->has_right('opensearch', 'read')) {
         _Object::set_value($ret_error->searchResponse->_value, 'error', 'authentication_error');
         return $ret_error;
       }
@@ -209,7 +207,7 @@ class OpenSearch extends webServiceServer {
 
       $ret_error->searchResponse->_value->error->_value = &$error;
       $start = $param->start->_value ?? 1;
-      $step_value = min($param->stepValue->_value, MAX_STEP_VALUE);
+      $step_value = min($param->stepValue->_value ?? 10, MAX_STEP_VALUE);
       if (empty($start) && $step_value) {
         $start = 1;
       }
@@ -253,13 +251,13 @@ class OpenSearch extends webServiceServer {
             $filter .= '&' . $par . '=' . rawurlencode($val);
           }
         }
-        $solr_urls[0]['url'] = $this->repository['solr'] .
-          '?q=' . urlencode($q) .
+        $solr_urls[0]['url'] = $this->repository['solr'];
+        $solr_urls[0]['q'] = 'q=' . urlencode($q) .
           (@$filter ? '&fq=' . $filter : '') .
           '&start=' . ($start - 1) .
           '&rows=' . $step_value . $sort_q .
           '&defType=edismax&wt=phps&fl=' . ($this->debug_query ? '&debugQuery=on' : '');
-        $solr_urls[0]['debug'] = str_replace('wt=phps', 'wt=xml', $solr_urls[0]['url']);
+        $solr_urls[0]['debug'] = str_replace('wt=phps', 'wt=xml', $solr_urls[0]['q']);
         if ($err = self::do_solr($solr_urls, $solr_arr)) {
           $error = $err;
           return $ret_error;
@@ -267,10 +265,10 @@ class OpenSearch extends webServiceServer {
         $s11_agency = self::value_or_default($this->config->get_value('s11_agency', 'setup'), []);
         if ($fetch_raw_records) {
           $collections = self::get_records_from_rawrepo($this->repository['rawrepo'], $solr_arr['response'], in_array($this->agency, $s11_agency));
-        }
-        if (is_scalar($collections)) {
-          $error = $collections;
-          return $ret_error;
+          if (is_scalar($collections)) {
+            $error = $collections;
+            return $ret_error;
+          }
         }
         _Object::set_value($ret, 'searchResponse', new stdClass());
         _Object::set_value($ret->searchResponse->_value, 'result', new stdClass());
@@ -324,11 +322,7 @@ class OpenSearch extends webServiceServer {
     $this->watch->stop('precql_newsolrquery');
     $this->watch->stop('precql');
     $this->watch->start('cql');
-    if (isset($param->skipFilter) && ($param->skipFilter->_value == '1'))    // for test
-      $solr_query = $this->cql2solr->parse($param->query->_value);
-    else
-      $solr_query = $this->cql2solr->parse($param->query->_value, $this->search_filter_for_800000);
-//var_dump($solr_query); var_dump($this->split_holdings_include); var_dump($this->search_filter_for_800000); die();
+    $solr_query = $this->cql2solr->parse($param->query->_value);
     $this->watch->stop('cql');
     $this->watch->start('postcql');
     if (DEBUG_ON) {
@@ -475,8 +469,8 @@ class OpenSearch extends webServiceServer {
             $this->config->get_value('cache_expire', 'setup'));
         }
         $work_cache_struct = [];
-        if (empty($_GET['skipCache'])) {
-          if ($work_cache_struct = $this->cache->get($key_work_struct)) {
+        if (empty($_GET['skipCache']) && @$this->cache) {
+          if ($work_cache_struct = @$this->cache->get($key_work_struct)) {
             VerboseJson::log(TRACE, 'Cache hit lines' . count($work_cache_struct));
           } else {
             $work_cache_struct = [];
@@ -569,7 +563,7 @@ class OpenSearch extends webServiceServer {
       // fetch all addi and hierarchi records for all units in work_ids
       foreach ($work_ids as $idx => $work) {
         if (count($work) >= MAX_OBJECTS_IN_WORK) {
-          VerboseJson::log(WARNING, 'record_repo work-record containing' . reset($work) . ' contains ' . count($work) . ' units. Cut work to first ' . MAX_OBJECTS_IN_WORK . ' units');
+          VerboseJson::log(WARNING, 'record_repo work-record containing ' . json_encode($work) . ' contains ' . count($work) . ' units. Cut work to first ' . MAX_OBJECTS_IN_WORK . ' units');
           array_splice($work_ids[$idx], MAX_OBJECTS_IN_WORK);
         }
       }
@@ -773,7 +767,7 @@ class OpenSearch extends webServiceServer {
     @ $ret_error->searchResponse->_value->error->_value = &$error;  // ignore PHP warning
     $this->watch->start('aaa');
     try {
-      if (!$this->aaa->has_right('opensearch', 500)) {
+      if (!$this->aaa->has_right('opensearch', 'read')) {
         $error = 'authentication_error';
         return $ret_error;
       }
@@ -883,7 +877,7 @@ class OpenSearch extends webServiceServer {
       $add_fl = '';
       if (!empty($this->format['found_solr_format'])) {
         foreach ($this->format as $f) {
-          if (isset($f['is_solr_format'])) {
+          if (isset($f['is_solr_format']) && isset($f['format_name'])) {
             $add_fl .= ',' . $f['format_name'];
           }
         }
@@ -917,10 +911,10 @@ class OpenSearch extends webServiceServer {
       $this->watch->stop('preamble');
     }
 
+    $id_array = [];
     if (isset($this->repository['rawrepo'])) {
       $this->watch->start('rawrepo');
       try {
-        $id_array = [];
         foreach ($fpids as $fpid) {
           $id_array[] = $fpid->_value;
           list($owner_collection, $id) = explode(':', $fpid->_value);
@@ -1022,7 +1016,7 @@ class OpenSearch extends webServiceServer {
         $work_ids[$fpid_number] = array('NotFound' => array($fpid->_value => $fpid->_value));
         $localdata_pid = $localdata_object[$fpid->_value] ?? '';
         foreach ($solr_2_arr as $s_2_a) {
-          if ($s_2_a['response']['docs']) {
+          if (@$s_2_a['response']['docs']) {
             foreach ($s_2_a['response']['docs'] as $fdoc) {
               $rec_id = $fdoc[FIELD_REC_ID];
               $unit_id = self::scalar_or_first_elem($fdoc[FIELD_UNIT_ID]);
@@ -1313,31 +1307,35 @@ class OpenSearch extends webServiceServer {
     $namespace = getenv('POD_NAMESPACE') ?: 'NO_NAMESPACE';
     return $namespace . '-' .$pod_name;
   }
+
+  /** \brief Build Solr filter_query parm
+   *
+   * @param array $collection_identifiers - The sources that the profile contatins
+   * @return string - the SOLR filter query that represent the profile
+   */
+  private function solr_profile_filter($collection_identifiers) {
+    return $collection_identifiers ? '({!terms f=' . FIELD_COLLECTION_INDEX . '}' . implode(",", $collection_identifiers) . ')' : '';
+  }
+
   /** \brief Build Solr filter_query parm
    *
    * @param array $profile - the users search profile
    * @param string $add_relation_sources - include sources using relations
    * @return string - the SOLR filter query that represent the profile
    */
-
   private function set_solr_filter($profile, $add_relation_sources = FALSE) {
-    $collection_query = $this->repository['collection_query'] ?? '';
     $ret = [];
     if (is_array($profile)) {
-      $this->collection_alias = self::set_collection_alias($profile);
       foreach ($profile as $p) {
         if (self::xs_boolean($p['sourceSearchable']) || ($add_relation_sources && isset($p['relation']) && count($p['relation']))) {
           $source_id = $p['sourceIdentifier'] ?? '';
-          if (isset($collection_query[$source_id])) {
-            $ret[] = '(' . FIELD_COLLECTION_INDEX . ':' . $collection_query[$source_id] . AND_OP . $filter_query . ')';
-          }
-          else {
-            $ret[] = FIELD_COLLECTION_INDEX . ':' . $source_id;
+          if(@$p['sourceIdentifier']) {
+            $ret[] = $p['sourceIdentifier'];
           }
         }
       }
     }
-    return implode(OR_OP, $ret);
+    return $this->solr_profile_filter($ret);
   }
 
   /** \brief Build bq (BoostQuery) as field:content^weight
@@ -1378,6 +1376,9 @@ class OpenSearch extends webServiceServer {
   private function is_agency_catalog_source($source) {
     return $source == $this->agency . '-katalog' ||
            $source == $this->agency . '-komplet' ||
+           $source == $this->agency . '-aktive' ||
+           $source == $this->agency . '-egne' ||
+           $source == $this->agency . '-inaktive' ||
            $source == '870970-basis';
   }
 
@@ -1388,54 +1389,23 @@ class OpenSearch extends webServiceServer {
    * @return string - the SOLR filter query that represent the profile
    */
   private function split_collections_for_holdingsitem($profile, $add_relation_sources = FALSE) {
-    $collection_query = $this->repository['collection_query'] ?? '';
-    $filtered_collections = $normal_collections = [];
+    $bibliographic_collections = $holdings_collections = [];
     if (is_array($profile)) {
-      $this->collection_alias = self::set_collection_alias($profile);
       foreach ($profile as $p) {
         $source_id = $p['sourceIdentifier'] ?? '';
         if (self::xs_boolean($p['sourceSearchable']) || ($add_relation_sources && count($p['relation']))) {
           if (self::is_agency_catalog_source($source_id)) {
-            $filtered_collections[] = $source_id;
-          }
-          else {
-            if (isset($collection_query[$source_id])) {
-              $normal_collections[] = '(' . FIELD_COLLECTION_INDEX . ':' . $source_id . AND_OP . $collection_query[$source_id] . ')';
-            }
-            else {
-              $normal_collections[] = $source_id;
-            }
+            $holdings_collections[] = $source_id;
+          } else {
+            $bibliographic_collections[] = $source_id;
           }
         }
       }
     }
-    return
-      ($normal_collections ? FIELD_COLLECTION_INDEX . ':(' . implode(' OR ', $normal_collections) . ') OR ' : '') .
-      ($filtered_collections ? '(' . FIELD_COLLECTION_INDEX . ':(' . implode(' OR ', $filtered_collections) . ') AND %s)' : '%s');
-  }
-
-  /** \brief Set list of collection alias' depending on the user search profile
-   * - in repository: ['collection_alias']['870876-anmeld'] = '870976-allanmeld';
-   *
-   * @param array $profile - the users search profile
-   * @return array - collection alias'
-   */
-  private function set_collection_alias($profile) {
-    $collection_alias = [];
-    $r_cl = $this->repository['collection_alias'] ?? '';
-    $alias = is_array($r_cl) ? array_flip($r_cl) : [];
-    foreach ($profile as $p) {
-      if (self::xs_boolean($p['sourceSearchable'])) {
-        $si = $p['sourceIdentifier'];
-        if (empty($alias[$si])) {
-          $collection_alias[$si] = $si;
-        }
-        elseif (empty($collection_alias[$alias[$si]])) {
-          $collection_alias[$alias[$si]] = $si;
-        }
-      }
-    }
-    return $collection_alias;
+    return array(
+      'bibliographic' => $this->solr_profile_filter($bibliographic_collections),
+      'holdings' => $this->solr_profile_filter($holdings_collections),
+    );
   }
 
 
@@ -1460,8 +1430,7 @@ class OpenSearch extends webServiceServer {
         }
       }
       $handler_format = &$this->repository['handler_format'];
-      if (!empty($handler_format['use_holding_block_join']) && is_array($handler_format['holding_block_join'])) {
-        $handler_format['holding'] = $handler_format['holding_block_join'];
+      if(is_array($handler_format)) {
         foreach ($handler_format['holding'] as &$format) {
           $format = urldecode($format);
         }
@@ -1596,6 +1565,7 @@ class OpenSearch extends webServiceServer {
     foreach ($solr['docs'] as $idx => $solr_doc) {
       $pos = $solr['start'] + $idx + 1;
       if (empty($collections[$pos])) {
+        $collections[$pos] = new StdClass();
         _Object::set_value($collection, 'resultPosition', $pos);
         _Object::set_value($collection, 'numberOfObjects', '1');
         _Object::set_value($collections[$pos]->_value, 'collection', $collection);
@@ -1645,7 +1615,7 @@ class OpenSearch extends webServiceServer {
             $format_pids[$o_key] = $obj->_value->identifier->_value ?? '';
           }
 // need to sort objects to put data correct
-          if (is_array($manifestation->manifestation) && count($manifestation->manifestation) > 1) {
+          if (is_array(@$manifestation->manifestation) && count(@$manifestation->manifestation) > 1) {
             ksort($manifestation->manifestation);
           }
           $c->_value->formattedCollection = new stdClass();
@@ -1866,7 +1836,7 @@ class OpenSearch extends webServiceServer {
         foreach ($docbook_filters as $section_path => $match) {
           list($part, $item) = explode('/', $section_path);
           foreach ($article->$part as $idx => $section) {
-            if ($section->_value->$item->_value == $match) {
+            if (@$section->_value->$item->_value == $match) {
               unset($article->{$part}[$idx]);
             }
           }
@@ -2002,18 +1972,17 @@ class OpenSearch extends webServiceServer {
       $q = $chk_query['edismax'];
       $rows = (substr_count($add_query, OR_OP) + 3) * 250;
       $solr_url = self::create_solr_url($q, 0, $rows, $filter_q);
-      list($solr_host, $solr_parm) = explode('?', $solr_url['url'], 2);
-      $solr_parm .= '&fl=' . FIELD_COLLECTION_INDEX . ',unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
-      VerboseJson::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_parm) . '&debugQuery=on');
+      $solr_url['q'] .= '&fl=' . FIELD_COLLECTION_INDEX . ',unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
+      VerboseJson::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_url['q']) . '&debugQuery=on');
       if (DEBUG_ON) {
         echo 'post_array: ' . $solr_url['url'] . PHP_EOL;
       }
 
       $curl = new curl();
       $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
-      $curl->set_post($solr_parm); // use post here because query can be very long
+      $curl->set_post($solr_url['q']); // use post here because query can be very long
       $curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded; charset=utf-8'], 0);
-      $solr_result = $curl->get($solr_host);
+      $solr_result = $curl->get($solr_url['url']);
       $curl->close();
       if (!($solr_arr[$add_idx] = unserialize($solr_result))) {
         VerboseJson::log(FATAL, 'Internal problem: Cannot decode Solr re-search');
@@ -2044,7 +2013,7 @@ class OpenSearch extends webServiceServer {
    * @return integer
    */
   private function get_num_found($solr_arr) {
-    return $solr_arr['response']['numFound'];
+    return $solr_arr['response']['numFound'] ?? 0;
   }
 
   /** \brief Encapsules extraction of ids (unitId or workId) solr result
@@ -2107,14 +2076,17 @@ class OpenSearch extends webServiceServer {
     }
     foreach ($guess as $idx => $g) {
       $filter = implode('&fq=', $g['filter']);
-      $solr_urls[]['url'] = $this->repository['solr'] .
-        '?q=' . $g['register'] . '%3A(' . urlencode($q) . ')&fq=' . $filter . '&start=1&rows=0&wt=phps';
+      $solr_urls[] = [ 'url' => $this->repository['solr'],
+                       'q' => 'q=' . $g['register'] . '%3A(' . urlencode($q) . ')&fq=' . $filter . '&start=1&rows=0&wt=phps'];
       $ret[$idx] = 0;
     }
     $err = self::do_solr($solr_urls, $solr_arr);
     $n = 0;
     foreach ($guess as $idx => $g) {
-      $ret[$idx] = self::get_num_found($solr_arr[$n++]);
+      $tmp = @$solr_arr[$n++];
+      if ($tmp) {
+        $ret[$idx] = self::get_num_found($tmp);
+      }
     }
     return $ret;
   }
@@ -2152,16 +2124,14 @@ class OpenSearch extends webServiceServer {
         $filter .= '&' . $par . '=' . rawurlencode($val);
       }
     }
-    $url = $this->repository['solr'] .
-      '?q=' . urlencode($q) .
-      '&fq=' . $filter .
-      '&start=' . $start . $sort . $rank . $boost . $facets . $handler_var .
-      '&defType=edismax' .
-      '&fl=' . FIELD_REPOSITORY_ID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . ',' . FIELD_COLLECTION_INDEX;
-    $debug_url = $url . '&rows=1&debugQuery=on';
-    $url .= '&wt=phps&rows=' . $rows . ($this->debug_query ? '&debugQuery=on' : '');
-
-    return ['url' => $url, 'debug' => $debug_url];
+    $q = 'q=' . urlencode($q) .
+    '&fq=' . $filter .
+    '&start=' . $start . $sort . $rank . $boost . $facets . $handler_var .
+    '&defType=edismax' .
+    '&fl=' . FIELD_REPOSITORY_ID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . ',' . FIELD_COLLECTION_INDEX;
+    $debug_q = $q . '&rows=1&debugQuery=on';
+    $q .= '&wt=phps&rows=' . $rows . ($this->debug_query ? '&debugQuery=on' : ''); 
+    return ['url' => $this->repository['solr'], 'q' => $q, 'debug' => $debug_q];
   }
 
   /** \brief send one or more requests to Solr
@@ -2174,10 +2144,12 @@ class OpenSearch extends webServiceServer {
     VerboseJson::log(DEBUG, 'do_solr with ' . count($urls) . ' urls');
     $solr_appid = self::set_app_id();
     foreach ($urls as $no => $url) {
-      $url['url'] .= '&trackingId=' . VerboseJson::$tracking_id . '&appId=' . $solr_appid;
-      VerboseJson::log(TRACE, 'Query: ' . $url['url']);
+      VerboseJson::log(@$url['q'] ? DEBUG : ERROR, "url = " . json_encode($url));
+      $url['q'] .= '&trackingId=' . VerboseJson::$tracking_id . '&appId=' . $solr_appid;
+      VerboseJson::log(TRACE, 'Query: ' . $url['q']);
       if (isset($url['debug'])) VerboseJson::log(DEBUG, 'Query: ' . $url['debug']);
       $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded; charset=utf-8'], $no);
+      $this->curl->set_post($url['q'], $no);
       $this->curl->set_url($url['url'], $no);
     }
     $this->watch->start('solr');
@@ -2187,20 +2159,20 @@ class OpenSearch extends webServiceServer {
     if (empty($solr_results))
       return 'Internal problem: No answer from Solr';
     if (count($urls) > 1) {
-      foreach ($solr_results as &$solr_result) {
-        if (!$solr_arr[] = unserialize($solr_result)) {
-          VerboseJson::log(WARNING, 'Unable to parse solr result' . $solr_results);
+      foreach ($solr_results as $solr_result) {
+        if (!$solr_arr[] = @unserialize($solr_result)) {
+          VerboseJson::log(WARNING, 'Unable to parse solr result' . json_encode($solr_results));
           return 'Internal problem: Cannot decode Solr result';
         }
       }
     }
-    elseif (!$solr_arr = unserialize($solr_results)) {
-        VerboseJson::log(WARNING, 'Unable to parse solr result' . $solr_results);
+    elseif (!$solr_arr = @unserialize($solr_results)) {
+      VerboseJson::log(WARNING, 'Unable to parse solr result' . json_encode($solr_results));
       return 'Internal problem: Cannot decode Solr result';
     }
     elseif (!empty($solr_arr['error'])) {
       $err = $solr_arr['error'];
-      VerboseJson::log(FATAL, 'Solr result in error: (' . $err['code'] . ') ' . preg_replace('/\s+/', ' ', $err['msg']));
+      VerboseJson::log(FATAL, 'Solr result in error: (' . $err['code'] . ') ' . preg_replace('/\s+/', ' ', $err['msg']) . ' for queries ' . json_encode($urls));
       return 'Internal problem: Solr result contains error';
     }
     VerboseJson::log(DEBUG, 'do_solr results count: ' . count($solr_arr));
@@ -3313,9 +3285,6 @@ class OpenSearch extends webServiceServer {
    */
   private function extract_record(&$dom, $rec_id) {
     $record_source = self::record_source_from_pid($rec_id);
-    if (isset($this->collection_alias[$record_source])) {
-      $record_source = $this->collection_alias[$record_source];
-    }
     $ret = new stdClass();
     foreach ($this->format as $format_name => $format_arr) {
       switch ($format_name) {
@@ -3401,6 +3370,7 @@ class OpenSearch extends webServiceServer {
    *   - term
    */
   private function parse_for_facets(&$solr_arr) {
+    $ret = new stdClass();
     if (is_array($solr_arr['facet_counts']['facet_fields'])) {
       foreach ($solr_arr['facet_counts']['facet_fields'] as $facet_name => $facet_field) {
         _Object::set_value($facet, 'facetName', $facet_name);
@@ -3768,7 +3738,7 @@ class OpenSearch extends webServiceServer {
    */
   protected function showCqlFile() {
     //$repositories = $this->config->get_value('repository', 'setup');
-    $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
+    $repos = self::value_or_default(@$_GET['repository'], $this->config->get_value('default_repository', 'setup'));
     self::set_repositories($repos, FALSE);
     if ($file = $this->repository['cql_settings']) {
       header('Content-Type: application/xml; charset=utf-8');
@@ -3785,7 +3755,7 @@ class OpenSearch extends webServiceServer {
    */
   protected function showExplainXslFile() {
     //$repositories = $this->config->get_value('repository', 'setup');
-    $repos = self::value_or_default($_GET['repository'], $this->config->get_value('default_repository', 'setup'));
+    $repos = self::value_or_default(@$_GET['repository'], $this->config->get_value('default_repository', 'setup'));
     self::set_repositories($repos, FALSE);
     if ($file = self::get_solr_file('solr_file', 'explain.xsl')) {
       header('Content-Type: application/xslt+xml; charset=utf-8');
