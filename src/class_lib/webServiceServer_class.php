@@ -59,7 +59,7 @@ abstract class webServiceServer {
   protected $debug; ///< -
   protected $url_override; ///< array with special url-commands for the actual service
   protected $api_used; ///< example-soap, example-xml, raw-soap, raw-xml, file-soap, file-xml, rest or post
-
+  protected $version; ///< -
 
 
   /** \brief Webservice constructer
