@@ -134,8 +134,9 @@ abstract class webServiceServer {
       $this->api_used = 'file';
       self::soap_request($xml);
     }
-    elseif (!empty($_SERVER['QUERY_STRING']) && ($_REQUEST['action'] || $_REQUEST['json'])) {
-      $this->api_used = 'rest';
+#    elseif (!empty($_SERVER['QUERY_STRING']) && ($_REQUEST['action'] || $_REQUEST['json'])) {
+    elseif (!empty($_SERVER['QUERY_STRING']) && (array_key_exists('action', $_REQUEST) || array_key_exists('json', $_REQUEST))) {
+        $this->api_used = 'rest';
       self::rest_request();
     }
     elseif (!empty($_POST)) {
@@ -348,12 +349,16 @@ abstract class webServiceServer {
       $line = substr($line, 0, $s) . substr($line, $s + 2);
       if (($e = strpos($line, '__')) !== FALSE) {
         $var = substr($line, $s, $e - $s);
-        list($key, $section) = explode('.', $var, 2);
+        @list($key, $section) = explode('.', $var, 2);
         $val = $this->config->get_value($key, $section);
         if (is_array($val)) {
           $val = self::implode_ini_array($val);
         }
-        $line = str_replace($var . '__', $val, $line);
+        if($val != null) {
+          $line = str_replace($var . '__', $val, $line);
+        } else {
+          $line = $var . '__';
+        }
       }
     }
     return $line;
