@@ -117,10 +117,9 @@ class SolrQuery {
   /** \brief Parse a cql-query and build the solr edismax search string
    *
    * @param $query string
-   * @param $holdings_filter string
    * @return struct
    */
-  public function parse($query, $holdings_filter = '') {
+  public function parse($query) {
     $parser = new CQL_parser();
     $parser->set_prefix_namespaces($this->cqlns);
     $parser->set_indexes($this->indexes);
