@@ -107,7 +107,7 @@ function set_elk_parms($date, $search_after = []) {
     "query": {
       "bool": {
         "filter": [
-          {"match_phrase": {"action": "search"}},
+          {"match_phrase": {"operation": "search"}},
           {"match_phrase": {"level": "STAT"}},
           {"range": {
             "timestamp": {
