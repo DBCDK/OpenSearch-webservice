@@ -10,6 +10,7 @@ pipeline {
   environment {
     YESTERDATE = new Date().previous().format("yyyy-MM-dd")
     LOG_QUERIES = "os_daily_queries.${YESTERDATE}"
+    TEN_LINES = "ten_lines.${YESTERDATE}"
     ELK_URI = "https://elk.dbc.dk:9100"
     ELK_CREDENTIALS = credentials('elk_user');
     ARTIFACTORY_GENERIC = "https://artifactory.dbccloud.dk/artifactory/generic-fbiscrum-production/opensearch/"
@@ -35,8 +36,10 @@ pipeline {
     stage("Check empty file") {
       steps {
         script {
-          def logFile = readFile("${LOG_QUERIES}")
-          if (logFile.size() == 0) {
+          sh "head -10 ${LOG_QUERIES} > ${TEN_LINES}"
+          def help = readFile("${TEN_LINES}")
+          println "TEN_LINES size: ${help.size()}"
+          if (help.size() == 0) {
             error("Job fails with empty logfile")
           }
         }
