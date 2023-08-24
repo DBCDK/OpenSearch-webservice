@@ -22,7 +22,7 @@ pipeline {
         DOCKER_BUILD_TAG = "${env.BUILD_TAG}"
 
         // This is how we wish to mark the pushed tags
-        DOCKER_PUSH_TAG = "${env.BUILD_NUMBER}"
+        DOCKER_PUSH_TAG = "${env.BRANCH_NAME}" == 'master' ? "${env.BUILD_NUMBER}" : "${env.BRANCH_NAME.toLowerCase()}-${env.BUILD_NUMBER}"
 
         // BUILD_NUMBER is used later in the build process
         BUILD_NUMBER = "${env.BUILD_NUMBER}"
@@ -146,14 +146,16 @@ pipeline {
                             docker tag "${buildTag}" "${pushTag}"
                         """
                         }
-                        // This project also needs a latest tag.
-                        pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, "latest")
-                        echo "Retagging $buildTag to $pushTag"
-                        ansiColor("xterm") {
-                            sh """#!/usr/bin/env bash
-                            set -e
-                            docker tag "${buildTag}" "${pushTag}"
-                        """
+                        if ("${env.BRANCH_NAME}" == 'master') {
+                            // This project also needs a latest tag.
+                            pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, "latest")
+                            echo "Retagging $buildTag to $pushTag"
+                            ansiColor("xterm") {
+                                sh """#!/usr/bin/env bash
+                                set -e
+                                docker tag "${buildTag}" "${pushTag}"
+                            """
+                            }
                         }
 
                     }
@@ -168,15 +170,16 @@ pipeline {
                             image.push()
                         }
                         echo "Image pushed with tag $pushTag"
-                        // And a latest push
-                        pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, "latest")
-                        // Wrap the images in docker abstractions.
-                        image = docker.image(pushTag)
-                        docker.withRegistry(registry, registryCredential) {
-                            image.push()
+                        if ("${env.BRANCH_NAME}" == 'master') {
+                            // And a latest push
+                            pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, "latest")
+                            // Wrap the images in docker abstractions.
+                            image = docker.image(pushTag)
+                            docker.withRegistry(registry, registryCredential) {
+                                image.push()
+                            }
+                            echo "Image pushed with tag $pushTag"
                         }
-                        echo "Image pushed with tag $pushTag"
-
                     }
 
                     // And, finally, an overview.
@@ -186,10 +189,11 @@ pipeline {
                         def buildTag = tags[i]
                         def pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, DOCKER_PUSH_TAG)
                         echo "=>  $pushTag"
-                        // Latest added...
-                        pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, "latest")
-                        echo "=>  $pushTag"
-
+                        if ("${env.BRANCH_NAME}" == 'master') {
+                            // Latest added...
+                            pushTag = toPushTag(buildTag, DOCKER_BUILD_PREFIX, DOCKER_PUSH_PREFIX, DOCKER_BUILD_TAG, "latest")
+                            echo "=>  $pushTag"
+                        }
                     }
                     currentBuild.displayName = "Pushed *-${VERSION}:${DOCKER_PUSH_TAG}"
                 }
