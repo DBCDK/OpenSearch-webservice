@@ -4,6 +4,9 @@ pipeline {
     agent {
         label "devel11"
     }
+    parameters {
+        string(name: 'push_docker', defaultValue: '', description: '')
+    }
     environment {
         // Set the version - this is appended to image names, before push.
         VERSION = "5.2"
@@ -114,7 +117,10 @@ pipeline {
         stage("Docker Push") {
             // If, we are on branch master, and tests passed, push to artifactory, using "push names"
             when {
-                branch "master"
+                anyOf {
+                    branch "master";
+                    expression{params.push_docker != ''}
+                }
             }
             steps {
                 script {
