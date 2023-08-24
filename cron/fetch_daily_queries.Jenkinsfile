@@ -34,9 +34,11 @@ pipeline {
     }
     stage("Check empty file") {
       steps {
-        def logFile = readFile("${LOG_QUERIES}")
-        if (logFile.size() == 0) {
-          error("Job fails with empty logfile")
+        script {
+          def logFile = readFile("${LOG_QUERIES}")
+          if (logFile.size() == 0) {
+            error("Job fails with empty logfile")
+          }
         }
       }
     }
