@@ -22,7 +22,7 @@ pipeline {
         DOCKER_BUILD_TAG = "${env.BUILD_TAG}"
 
         // This is how we wish to mark the pushed tags
-        DOCKER_PUSH_TAG = "${env.BRANCH_NAME}" == 'master' ? "${env.BUILD_NUMBER}" : "${env.BRANCH_NAME.toLowerCase()}-${env.BUILD_NUMBER}"
+        DOCKER_PUSH_TAG = ("${env.BRANCH_NAME}" == 'master') ? "${env.BUILD_NUMBER}" : "${env.BRANCH_NAME.toLowerCase()}-${env.BUILD_NUMBER}"
 
         // BUILD_NUMBER is used later in the build process
         BUILD_NUMBER = "${env.BUILD_NUMBER}"
