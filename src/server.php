@@ -2131,7 +2131,7 @@ class OpenSearch extends webServiceServer {
     '&fl=' . FIELD_REPOSITORY_ID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . ',' . FIELD_COLLECTION_INDEX;
     $debug_q = $q . '&rows=1&debugQuery=on';
     $q .= '&wt=phps&rows=' . $rows . ($this->debug_query ? '&debugQuery=on' : ''); 
-    return ['url' => $this->repository['solr'], 'q' => $q, 'debug' => $debug_q];
+    return ['url' => $eq['url'] ?? $this->repository['solr'], 'q' => $q, 'debug' => $debug_q];
   }
 
   /** \brief send one or more requests to Solr

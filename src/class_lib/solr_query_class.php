@@ -117,10 +117,9 @@ class SolrQuery {
   /** \brief Parse a cql-query and build the solr edismax search string
    *
    * @param $query string
-   * @param $holdings_filter string
    * @return struct
    */
-  public function parse($query, $holdings_filter = '') {
+  public function parse($query) {
     $parser = new CQL_parser();
     $parser->set_prefix_namespaces($this->cqlns);
     $parser->set_indexes($this->indexes);
@@ -239,6 +238,10 @@ class SolrQuery {
         $q[] = $this->profile_filters['holdings'];
         $handler_q = implode(' AND ', $q);
         $solr_nodes['handler_var'][$handler] = 'fq_' . $handler . '=' . urlencode($handler_q);
+
+        if(@$this->search_term_format[$handler]['url']) {
+          $solr_nodes['url'] = $this->search_term_format[$handler]['url'];
+        }
       } else { // No holdings-filtered sources in profile
         $solr_nodes[$type][$last_idx] = $this->profile_filters['bibliographic'];
       }

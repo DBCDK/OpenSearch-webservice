@@ -34,6 +34,7 @@ LABEL maintainer="Team Search <os-team@dbc.dk>" \
       REPOSITORY_NAME="Some name describind the repository, like cisterne, mytest" \
       SERVICE_LOCATION="The url to the service. Used as endpoint in the wsdl-file. Default to the actual location" \
       SOLR="Url to the solr server" \
+      SOLR_WITH_HOLDINGS="Url to the solr server that includes holdings" \
       VERBOSE_LEVEL="List of log levels needed, maximum as: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG"
 
 
@@ -80,4 +81,5 @@ ENV AGENCY_FALLBACK="" \
     RAW_RECORD_REPOSITORY_NAME="rawrepo" \
     REPOSITORY_NAME="test" \
     SERVICE_LOCATION="" \
-    VERBOSE_LEVEL="WARNING+ERROR+FATAL+STAT+TIMER"
+    VERBOSE_LEVEL="WARNING+ERROR+FATAL+STAT+TIMER" \
+    SOLR_WITH_HOLDINGS=""

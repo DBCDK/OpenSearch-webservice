@@ -204,6 +204,7 @@ repository['${REPOSITORY_NAME}']['sort']['exclude'][] = solr_docid_ascending
 
 repository['${REPOSITORY_NAME}']['handler_format']['holding']['fq'] = {!parent which="t:m" v=%s}
 repository['${REPOSITORY_NAME}']['handler_format']['holding']['q'] = _query_:%22{!parent which="t:m" v=%s}%22
+repository['${REPOSITORY_NAME}']['handler_format']['holding']['url'] = ${SOLR_WITH_HOLDINGS}
 
 
 ; Filtering in marcxchange records kan be done by defining a filter mask
