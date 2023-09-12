@@ -173,7 +173,7 @@ class SolrQuery {
     $ret['handler'] = $ret;
     $add_params = array();
     foreach ($trees as $idx => $tree) {
-      list($edismax, $handler, $type, $rank_field) = self::tree_2_edismax($tree, $add_params);
+      list($edismax, $handler, $type, $rank_field) = self::tree_2_edismax($tree, $add_params, $ret);
       if ($rank_field) {
         $ret['ranking'][$idx] = $rank_field;
       }
@@ -251,10 +251,11 @@ class SolrQuery {
   /** \brief convert on cql-tree to edismax-string
    * @param $node array - of tree
    * @param $add_params - extra parameters for embedded (parent) queries ie fh0, fh1, ...
+   * @param $solr_nodes - collection parameters
    * @param $level integer - level of recursion
    * @return array - The term, the associated search handler and the query type (q or fq)
    */
-  private function tree_2_edismax($node, &$add_params, $level = 0) {
+  private function tree_2_edismax($node, &$add_params, &$solr_nodes, $level = 0) {
     static $q_type, $ranking;
     $term_handler = null;
     if ($level == 0) {
@@ -262,20 +263,28 @@ class SolrQuery {
       $ranking = '';
     }
     if ($node['type'] == 'boolean') {
-      list($left_term, $left_handler) = self::tree_2_edismax($node['left'], $add_params, $level + 1);
-      list($right_term, $right_handler) = self::tree_2_edismax($node['right'], $add_params, $level + 1);
+      list($left_term, $left_handler) = self::tree_2_edismax($node['left'], $add_params, $solr_nodes, $level + 1);
+      list($right_term, $right_handler) = self::tree_2_edismax($node['right'], $add_params, $solr_nodes, $level + 1);
       if ($left_handler == $right_handler) {
         $term_handler = $right_handler;
       }
       else {
         $fh = 'fh' . count($add_params);
         if (@$this->search_term_format[$left_handler]) {
-          $add_params[$fh] = $left_term;
-          $left_term = sprintf($this->search_term_format[$left_handler]['q'], '$' . $fh);
+          if ($left_handler == 'holding') {
+            $this->holdings_subquery($left_term, $add_params, $fh, $solr_nodes);
+          } else {
+            $add_params[$fh] = $left_term;
+            $left_term = sprintf($this->search_term_format[$left_handler]['q'], '$' . $fh);
+          }
         }
         elseif (@$this->search_term_format[$right_handler]) {
-          $add_params[$fh] = $right_term;
-          $right_term = sprintf($this->search_term_format[$right_handler]['q'], '$' . $fh);
+          if ($right_handler == 'holding') {
+            $this->holdings_subquery($right_term, $add_params, $fh, $solr_nodes);
+          } else {
+            $add_params[$fh] = $right_term;
+            $right_term = sprintf($this->search_term_format[$right_handler]['q'], '$' . $fh);
+          }
         }
         else {
           $this->error[] = self::set_error(18, self::node_2_index($node['left']) . ', ' . self::node_2_index($node['right']));
@@ -292,6 +301,28 @@ class SolrQuery {
     }
     $ranking = self::use_rank($node, $ranking);
     return array($ret, $term_handler, $q_type, $ranking);
+  }
+
+  /** \brief modifies slop if word or string modifier is used
+   * @param $term string - the query
+   * @param $add_params array - additional query parameters
+   * @param $fh string - name of parameter top store query in
+   * @param $solr_nodes array - where nested queries url is stored
+   */
+  private function holdings_subquery(&$term, &$add_params, $fh, &$solr_nodes) {
+    if($this->profile_filters['holdings']) {
+      $add_params[$fh] = '(' . $this->profile_filters['holdings'] . ' AND (' . $term . '))';
+      $term = sprintf($this->search_term_format['holding']['q'], '$' . $fh);
+      if($this->profile_filters['bibliographic']) {
+        // Has both holdings-filtered and "ordinary" sources
+        $term = '(' . $this->profile_filters['bibliographic'] . ' OR ' . $term . ')';
+      }
+    } else { // No holdings-filtered sources in profile
+      $term = $this->profile_filters['bibliographic'];
+    }
+    if(@$this->search_term_format['holding']['url']) {
+      $solr_nodes['url'] = $this->search_term_format['holding']['url'];
+    }
   }
 
   /** \brief modifies slop if word or string modifier is used
