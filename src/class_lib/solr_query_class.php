@@ -303,7 +303,7 @@ class SolrQuery {
     return array($ret, $term_handler, $q_type, $ranking);
   }
 
-  /** \brief modifies slop if word or string modifier is used
+  /** \brief holdings query including only manifestations that uses holdings
    * @param $term string - the query
    * @param $add_params array - additional query parameters
    * @param $fh string - name of parameter top store query in
@@ -313,15 +313,11 @@ class SolrQuery {
     if($this->profile_filters['holdings']) {
       $add_params[$fh] = '(' . $this->profile_filters['holdings'] . ' AND (' . $term . '))';
       $term = sprintf($this->search_term_format['holding']['q'], '$' . $fh);
-      if($this->profile_filters['bibliographic']) {
-        // Has both holdings-filtered and "ordinary" sources
-        $term = '(' . $this->profile_filters['bibliographic'] . ' OR ' . $term . ')';
+      if(@$this->search_term_format['holding']['url']) {
+        $solr_nodes['url'] = $this->search_term_format['holding']['url'];
       }
     } else { // No holdings-filtered sources in profile
-      $term = $this->profile_filters['bibliographic'];
-    }
-    if(@$this->search_term_format['holding']['url']) {
-      $solr_nodes['url'] = $this->search_term_format['holding']['url'];
+      $this->error[] = self::set_error(16, 'No sources available in profile that provides holdings indexes');
     }
   }
 
@@ -361,7 +357,8 @@ class SolrQuery {
   private function set_error($no, $details = '') {
     /* Total list at: http://www.loc.gov/standards/sru/diagnostics/diagnosticsList.html */
     static $message =
-      array(18 => 'Unsupported combination of indexes',
+      array(16 => 'Unsupported index',
+            18 => 'Unsupported combination of indexes',
             21 => 'Unsupported combination of relation modifers');
     return array('no' => $no, 'description' => $message[$no], 'details' => $details);  // pos is not defined
   }
