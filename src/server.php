@@ -1746,7 +1746,7 @@ class OpenSearch extends webServiceServer {
                 VerboseJson::log(FATAL, 'openFormat Invalid XML: ' . $format_response->formatted);
                 _Object::set_value($doc_target->_value, $format, "Invalid XML in response from formatting service");
               } else {
-                $formatted = $this->xmlconvert->xml2obj($dom, $this->xmlns['of']);
+                $formatted = $this->xmlconvert->xml2obj($dom, '', $this->xmlns['of']);
                 _Object::set_value($doc_target->_value, $format, $formatted->display->_value);
               }
             } else {

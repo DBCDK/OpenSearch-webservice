@@ -53,9 +53,10 @@ class xmlconvert {
    *
    * @param $domobj
    * @param string $force_NS
+   * @param string $fallbacl_NS Namespace from root to 1st declared namespace
    * @return mixed
    */
-  public function xml2obj($domobj, $force_NS = '') {
+  public function xml2obj($domobj, $force_NS = '', $fallback_NS = '') {
     $ret = new stdClass();
     foreach ($domobj->childNodes as $node) {
       $subnode = new stdClass();
@@ -68,6 +69,9 @@ class xmlconvert {
       elseif ($node->namespaceURI) {
         $subnode->_namespace = htmlspecialchars($node->namespaceURI);
       }
+      elseif ($fallback_NS) {
+        $subnode->_namespace = htmlspecialchars($fallback_NS);
+      }
       if ($node->nodeName == '#text' || $node->nodeName == '#cdata-section') {
         if (trim($node->nodeValue) == '') {
           continue;
@@ -77,7 +81,8 @@ class xmlconvert {
       }
       else {
         $localName = $node->localName;
-        $subnode->_value = $this->xml2obj($node, $force_NS);
+        // If a namespace has been declared, then no fallback ns below
+        $subnode->_value = $this->xml2obj($node, $force_NS, $node->namespaceURI ? '' : $fallback_NS);
         if ($node->hasAttributes()) {
           $subnode->_attributes = new stdClass();
           foreach ($node->attributes as $attr) {
