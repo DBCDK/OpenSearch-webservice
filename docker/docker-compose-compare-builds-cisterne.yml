@@ -32,7 +32,7 @@ x-info:
     MY_DOMAIN_IP_LIST: 172.16.0.0-172.20.255.255;192.168.0.0-192.168.255.255;10.127.0.0-10.127.255.255
     SOLR: http://cisterne.solr.dbc.dk:8983/solr/cisterne-corepo-searcher/select
     VERBOSE_LEVEL: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
-    OPEN_FORMAT: http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
+    OPEN_FORMAT: http://open-format-broker.cisterne.svc.cloud.dbc.dk/api/v1/format
     URL_PATH: ''
   anchors:
     - &TESTED docker-de.artifacts.dbccloud.dk/opensearch-webservice-5.2:389

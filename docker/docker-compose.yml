@@ -16,7 +16,7 @@ x-info:
     AGENCY_FALLBACK: 100200
     AGENCY_PROFILE_FALLBACK: test
     VERBOSE_LEVEL: WARNING+ERROR+FATAL+STAT+TIMER+TRACE+DEBUG
-    OPEN_FORMAT: http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php
+    OPEN_FORMAT: http://open-format-broker.cisterne.svc.cloud.dbc.dk/api/v1/format
     AAA_IDP_URL: http://idpservice.fbiscrum-prod.svc.cloud.dbc.dk/api/v1/
     URL_PATH: ""
     SERVICE_LOCATION: ""
