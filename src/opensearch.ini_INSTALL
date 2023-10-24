@@ -752,38 +752,6 @@ frequency_filter[] = term.date:[\'1940 TO *\']
 
 ; ==============
 
-[format]
-; if ws_open_format_uri is not defined (or blank) in the ['setup'] section, openformat functionality
-; will be included in opensearch and the settings in this section will be used. Unlesss you want to
-; run openFormat on a different server than this on, you should use this section
-
-; list of java/javacript formatters
-; Adding more than 1 js_server will parallelize formating over these servers
-; - if the js_server has more than 1 cpu, parallelizing can be done by adding the same server several times
-;
-;js_server[] = some_server.dk:8018/openformat
-;js_server[] = some_server.dk:8018/openformat
-;js_server[] = some_server.dk:8018/openformat
-;js_server[] = some_server.dk:8018/openformat
-;js_server[] = some_other_server.dk:8018/openformat
-;js_server[] = some_other_server.dk:8018/openformat
-${FORMAT_JS_SERVER_BLOCK}
-
-
-; timeout in seconds for java/javascript formatters
-curl_timeout = ${FORMAT_CURL_TIMEOUT}
-
-; cache setting for the format part
-; - cache_host: name of cache server, use localhost in caching is done locally
-; - cache_port: port for caching host
-; - cache_expire: number of seconds before a cached entry will expire
-;cache_host = localhost
-;cache_port = 11211
-;cache_expire = 600
-${FORMAT_CACHE_SETTINGS_BLOCK}
-
-; ==============
-
 [service_registry]
 ; section to set up data for registry
 
