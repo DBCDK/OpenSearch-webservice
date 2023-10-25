@@ -298,7 +298,6 @@ vipcore['memcached']['expire'] = ${VIPCORE_CACHE_EXPIRE}
 ; --------------
 ; holding db - return number of items in stock and number of items available for lending
 ; ex: 
-;   holdings_db = http://myServer.dbc.dk:9080/holdingsdb/availability?pid=%s
 ;   holdings_db = http://myServer.dbc.dk:8080/holdings-service/getAllAvailability?pid=%s
 ;
 holdings_db = ${HOLDINGS_DB}
@@ -306,17 +305,14 @@ holdings_db = ${HOLDINGS_DB}
 
 ; --------------
 ; open format - address to openFormat service
-; Use ws_open_format_uri if you want to run openFormat (php) on a different server than this one
-; otherwise set ws_open_format_uri to space and define the ['format'] section below thereby including openformat directly in opensearch
+; Use ws_open_format_uri to set the openFormat (rest service) server address
 ; ex:
-;   ws_open_format_uri = http://openformat.addi.dk/0.2/
+;   ws_open_format_uri = http://open-format-broker.domain/api/v1/format
 ws_open_format_uri = ${OPEN_FORMAT}
 
 ; formats supported by openFormat and possible name mapping
 ; open_format['openSearch_format_name']['format'] = openFormat format name
 ;
-; You can override the ws_open_format_uri for a specific format like this:
-;   open_format['specialFormatTest['uri'] =  http://openformat.addi.dk/0.1/
 open_format['bibliotekdkWorkDisplay']['format'] = bibliotekdkWorkDisplay
 open_format['briefWorkDisplay']['format'] = briefWorkDisplay
 open_format['marc21ToDm2']['format'] = marc21ToDm2
@@ -330,20 +326,7 @@ open_format['netpunkt_dm2']['format'] = netpunkt_dm2
 open_format['netpunkt_emne']['format'] = netpunkt_emne
 open_format['kb_marc21']['format'] = kb_marc21
 open_format['bibdkWorkDisplay']['format'] = bibdkWorkDisplay
-
-; set namespace for these formats
-; open_format_force_namespace['open_format_name'] = namespace_prefix_from_xmlns
-; Skip namespace setting (changes) on formats, by setting it to SKIP (uppercase) like:
-; open_format_force_namespace['open_format_skip_namespace'] = SKIP
-; This effectively assumes that the formats returned from openFormat are OK.
-open_format_force_namespace['bibliotekdkWorkDisplay'] = of
-open_format_force_namespace['briefWorkDisplay'] = of
-open_format_force_namespace['refWorks'] = of
-open_format_force_namespace['ris'] = of
-open_format_force_namespace['bob_detail'] = of
-open_format_force_namespace['netpunkt_brief'] = of
-open_format_force_namespace['netpunkt_standard'] = of
-open_format_force_namespace['netpunkt_marc21'] = of
+open_format['_liveness']['format'] = echo
 
 ; --------------
 ; formats supported by solr-indexes. Comma separated list of solr tags
@@ -752,38 +735,6 @@ frequency_filter[] = term.date:[\'1940 TO *\']
 
 ; ==============
 
-[format]
-; if ws_open_format_uri is not defined (or blank) in the ['setup'] section, openformat functionality
-; will be included in opensearch and the settings in this section will be used. Unlesss you want to
-; run openFormat on a different server than this on, you should use this section
-
-; list of java/javacript formatters
-; Adding more than 1 js_server will parallelize formating over these servers
-; - if the js_server has more than 1 cpu, parallelizing can be done by adding the same server several times
-;
-;js_server[] = some_server.dk:8018/openformat
-;js_server[] = some_server.dk:8018/openformat
-;js_server[] = some_server.dk:8018/openformat
-;js_server[] = some_server.dk:8018/openformat
-;js_server[] = some_other_server.dk:8018/openformat
-;js_server[] = some_other_server.dk:8018/openformat
-${FORMAT_JS_SERVER_BLOCK}
-
-
-; timeout in seconds for java/javascript formatters
-curl_timeout = ${FORMAT_CURL_TIMEOUT}
-
-; cache setting for the format part
-; - cache_host: name of cache server, use localhost in caching is done locally
-; - cache_port: port for caching host
-; - cache_expire: number of seconds before a cached entry will expire
-;cache_host = localhost
-;cache_port = 11211
-;cache_expire = 600
-${FORMAT_CACHE_SETTINGS_BLOCK}
-
-; ==============
-
 [service_registry]
 ; section to set up data for registry
 
@@ -933,6 +884,6 @@ showinfo[] = </pre>
 
 [howru]
 server_name = localhost:8080
-test[] = search&query=peale&agency=100200&profile=test&stepValue=1&surveil=1
+test[] = search&query=peale&agency=100200&profile=test&objectFormat=_liveness&stepValue=1&surveil=1
 preg_match[] = hitCount
 error[] = ERROR searching for peale

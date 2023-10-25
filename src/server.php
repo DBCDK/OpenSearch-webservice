@@ -1677,6 +1677,7 @@ class OpenSearch extends webServiceServer {
     return $mani;
   }
 
+
   /** \brief Setup call to OpenFormat and execute the format request
    * If ws_open_format_uri is set, the format request is send to that server otherwise
    * openformat is included using the [format] section from config
@@ -1684,87 +1685,73 @@ class OpenSearch extends webServiceServer {
    * @param array $collections - the structure is modified
    */
   private function format_records(&$collections) {
-    static $formatRecords;
+
     $this->watch->start('format');
+    $open_format_uri = $this->config->get_value('ws_open_format_uri', 'setup');
+    if(!$open_format_uri) {
+      header('HTTP/1.0 500 Internal Server Error');
+      die('HTTP/1.0 500 Internal Server Error OpenFormat Configuration Required');
+    }
+
+    $open_format_request = array(
+      "formats" => [],
+      "objects" => [],
+      "trackingId" => VerboseJson::$tracking_id
+    );
     foreach ($this->format as $format_name => $format_arr) {
       if (!empty($format_arr['is_open_format'])) {
-        if ($open_format_uri = $this->config->get_value('ws_open_format_uri', 'setup')) {
-          _Object::set_namespace($f_obj, 'formatRequest', $this->xmlns['of']);
-          _Object::set($f_obj->formatRequest->_value, 'originalData', $collections);
-          // need to set correct namespace
-          foreach ($f_obj->formatRequest->_value->originalData as $i => &$oD) {
-            $save_ns[$i] = $oD->_namespace ?? null;
-            $oD->_namespace = $this->xmlns['of'];
-          }
-          _Object::set_namespace($f_obj->formatRequest->_value, 'outputFormat', $this->xmlns['of']);
-          _Object::set_value($f_obj->formatRequest->_value, 'outputFormat', $format_arr['format_name']);
-          _Object::set_namespace($f_obj->formatRequest->_value, 'outputType', $this->xmlns['of']);
-          _Object::set_value($f_obj->formatRequest->_value, 'outputType', 'php');
-          _Object::set_value($f_obj->formatRequest->_value, 'trackingId', VerboseJson::$tracking_id);
-          $f_xml = $this->objconvert->obj2soap($f_obj);
-          $this->curl->set_post($f_xml, 0);
-          $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: text/xml; charset=UTF-8'], 0);
-          VerboseJson::log(DEBUG, 'openFormat: ' . $f_xml);
-          VerboseJson::log(TRACE, 'openFormat: ' . $format_arr['uri'] ? $format_arr['uri'] : $open_format_uri);
-          $f_result = $this->curl->get($format_arr['uri'] ? $format_arr['uri'] : $open_format_uri);
-          $this->curl->set_option(CURLOPT_POST, 0, 0);
-          $force_namespace = $format_arr['force_namespace'] ?? 'of';
-          if ($force_namespace == 'SKIP') {
-            $fr_obj = @unserialize($f_result);
-          }
-          else {
-            $fr_obj = $this->objconvert->set_obj_namespace_v2(@unserialize($f_result), $this->xmlns[$force_namespace]);
-          }
-          // need to restore correct namespace
-          foreach ($f_obj->formatRequest->_value->originalData as $i => &$oD) {
-            $oD->_namespace = $save_ns[$i];
-          }
-          if (!$fr_obj) {
-            $curl_err = $this->curl->get_status();
-            VerboseJson::log(FATAL, 'openFormat http-error: ' . $curl_err['http_code'] . ' from: ' . $curl_err['url']);
-          }
-          else {
-            $struct = key(get_mangled_object_vars($fr_obj->formatResponse->_value));
-            // if ($struct == 'error') ... 
-            foreach ($collections as $idx => &$c) {
-              $c->_value->formattedCollection = new stdClass();
-              _Object::set($c->_value->formattedCollection->_value, $struct, $fr_obj->formatResponse->_value->{$struct}[$idx]);
-            }
-          }
-          $this->curl->close();
+        $open_format_request['formats'][] = $format_arr['format_name'];
+      }
+    }
+
+    if(!empty($open_format_request['formats'])) {
+      foreach ($collections as $collection) {
+        foreach($collection->_value->collection->_value->object as $k => $v) {
+          _Object::set($obj, 'object', $v);
+          $open_format_request['objects'][] = array("object" => $this->objconvert->obj2xmlNs($obj));
         }
-        else {
-          require_once('OLS_class_lib/format_class.php');
-          if (empty($formatRecords)) {
-            $formatRecords = new FormatRecords($this->config->get_section('format'), $this->xmlns['of'], $this->objconvert, $this->xmlconvert, $this->watch);
-          }
-          _Object::set_value($param, 'outputFormat', $format_arr['format_name']);
-          _Object::set_namespace($param, 'outputFormat', $this->xmlns['of']);
-          $param->originalData = $collections;
-          // need to set correct namespace
-          foreach ($param->originalData as $i => &$oD) {
-            $save_ns[$i] = $oD->_namespace;
-            $oD->_namespace = $this->xmlns['of'];
-          }
-          $f_result = $formatRecords->format($param->originalData, $param);
-          if ($format_arr['force_namespace'] && $this->xmlns[$format_arr['force_namespace']]) {
-            $fr_obj = $this->objconvert->set_obj_namespace($f_result, $this->xmlns[$format_arr['force_namespace']]);
-          }
-          else {
-            $fr_obj = $this->objconvert->set_obj_namespace($f_result, $this->xmlns['os'], FALSE);
-          }
-          // need to restore correct namespace
-          foreach ($param->originalData as $i => &$oD) {
-            $oD->_namespace = $save_ns[$i];
-          }
-          if (!$fr_obj) {
-            $curl_err = $formatRecords->get_status();
-            VerboseJson::log(FATAL, 'openFormat http-error: ' . $curl_err[0]['http_code'] . ' - check [format] settings in ini-file');
-          }
-          else {
-            $struct = key($fr_obj[0]);
-            foreach ($collections as $idx => &$c) {
-              _Object::set($c->_value->formattedCollection->_value, $struct, $fr_obj[$idx]->{$struct});
+      }
+      VerboseJson::log(DEBUG, json_encode($open_format_request));
+
+      $this->curl->set_post(json_encode($open_format_request), 0);
+      $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/json'], 0);
+      $open_format_response_raw = $this->curl->get($open_format_uri);
+      $open_format_response_status = $this->curl->get_status();
+      $this->curl->set_option(CURLOPT_POST, 0, 0);
+      $this->curl->close();
+
+      VerboseJson::log(DEBUG, json_encode($open_format_response_status));
+      $open_format_response = @json_decode($open_format_response_raw);
+      if(!$open_format_response) {
+        VerboseJson::log(FATAL, 'openFormat http-error: ' . $open_format_response_status['http_code'] .
+                                ' from: ' . $open_format_response_status['url'] .
+                                ' with content: ' . $open_format_response_raw);
+      } else {
+        VerboseJson::log(DEBUG, $open_format_response);
+        foreach ($collections as $idx => &$c) { # Foreach record
+          $doc_target = $c->_value->formattedCollection = new stdClass();
+
+          foreach ($open_format_response->objects[$idx] as $format => $format_response) { # Foreach corrosponding format responses
+            _Object::set_namespace($doc_target->_value, $format, $this->xmlns['of']);
+            $format_target = $doc_target->_value->$format;
+
+            if(isset($format_response->error)) {
+              VerboseJson::log(FATAL, 'openFormat format-error: ' . $format_response->error);
+              _Object::set_value($doc_target->_value, $format, $format_response->error);
+            } else if(isset($format_response->formatted)) {
+              VerboseJson::log(DEBUG, $format_response);
+              $dom = new DomDocument();
+              $dom->preserveWhiteSpace = false;
+              if(!@$dom->loadXML($format_response->formatted)) {
+                VerboseJson::log(FATAL, 'openFormat Invalid XML: ' . $format_response->formatted);
+                _Object::set_value($doc_target->_value, $format, "Invalid XML in response from formatting service");
+              } else {
+                $formatted = $this->xmlconvert->xml2obj($dom, '', $this->xmlns['of']);
+                _Object::set_value($doc_target->_value, $format, $formatted->display->_value);
+              }
+            } else {
+              VerboseJson::log(FATAL, 'openFormat neither formatted nor error');
+              _Object::set_value($doc_target->_value, $format, "Invalid response from formatting service");
             }
           }
         }
