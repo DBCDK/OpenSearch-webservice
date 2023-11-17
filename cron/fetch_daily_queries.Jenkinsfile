@@ -17,6 +17,9 @@ pipeline {
     ARTIFACTORY_CREDENTIALS = credentials("artifactory_login")
 
   }
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '30'))
+  }
   stages {
     stage("Clear workspace") {
       steps {
