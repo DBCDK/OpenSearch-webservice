@@ -1704,14 +1704,21 @@ class OpenSearch extends webServiceServer {
       }
     }
 
+    $object_target = []; // Where does each response go
+
     if(!empty($open_format_request['formats'])) {
       foreach ($collections as $collection) {
-        foreach($collection->_value->collection->_value->object as $k => $v) {
+        $formattedCollection = new stdClass();
+        $formattedCollection->_value = new stdClass();
+        $collection->_value->formattedCollection = $formattedCollection;
+        foreach($collection->_value->collection->_value->object as $k => &$v) {
           _Object::set($obj, 'object', $v);
           $open_format_request['objects'][] = array("object" => $this->objconvert->obj2xmlNs($obj));
+          $object_target[] = $formattedCollection;
         }
       }
-      VerboseJson::log(DEBUG, json_encode($open_format_request));
+
+      VerboseJson::log(DEBUG, $open_format_request);
 
       $this->curl->set_post(json_encode($open_format_request), 0);
       $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/json'], 0);
@@ -1728,36 +1735,59 @@ class OpenSearch extends webServiceServer {
                                 ' with content: ' . $open_format_response_raw);
       } else {
         VerboseJson::log(DEBUG, $open_format_response);
-        foreach ($collections as $idx => &$c) { # Foreach record
-          $doc_target = $c->_value->formattedCollection = new stdClass();
-
-          foreach ($open_format_response->objects[$idx] as $format => $format_response) { # Foreach corrosponding format responses
-            _Object::set_namespace($doc_target->_value, $format, $this->xmlns['of']);
-            $format_target = $doc_target->_value->$format;
-
+        foreach($open_format_response->objects as $idx => $response) {
+          $doc_target = $object_target[$idx];
+          foreach($open_format_request['formats'] as $format) {
+            if(!isset($doc_target->_value->$format)) {
+              $doc_target->_value->$format = new StdClass();
+              $doc_target->_value->$format->_namespace = $this->xmlns['of'];
+              $doc_target->_value->$format->_value = new StdClass();
+            }
+          }
+          foreach ($open_format_response->objects[$idx] as $format => $format_response) {
+            $target = new StdClass();
+            $target->_namespace = $this->xmlns['of'];
             if(isset($format_response->error)) {
               VerboseJson::log(FATAL, 'openFormat format-error: ' . $format_response->error);
-              _Object::set_value($doc_target->_value, $format, $format_response->error);
+              _Object::set_value($target->_value, $format, $format_response->error);
             } else if(isset($format_response->formatted)) {
               VerboseJson::log(DEBUG, $format_response);
               $dom = new DomDocument();
               $dom->preserveWhiteSpace = false;
               if(!@$dom->loadXML($format_response->formatted)) {
                 VerboseJson::log(FATAL, 'openFormat Invalid XML: ' . $format_response->formatted);
-                _Object::set_value($doc_target->_value, $format, "Invalid XML in response from formatting service");
+                _Object::set_value($target->_value, $format, "Invalid XML in response from formatting service");
               } else {
                 $formatted = $this->xmlconvert->xml2obj($dom, '', $this->xmlns['of']);
-                _Object::set_value($doc_target->_value, $format, $formatted->display->_value);
+                $target = $formatted->display;
               }
             } else {
               VerboseJson::log(FATAL, 'openFormat neither formatted nor error');
-              _Object::set_value($doc_target->_value, $format, "Invalid response from formatting service");
+              _Object::set_value($target->_value, $format, "Invalid response from formatting service");
             }
+            self::add_to_array($doc_target->_value->$format, $target);
           }
         }
       }
     }
     $this->watch->stop('format');
+  }
+
+  /** \brief Add a repeated element to output xml
+   *
+   * @param array $node where in output tp palace it under
+   * @param array $value what to place there
+   */
+  private function add_to_array(&$node, $value) {
+    foreach($value->_value as $k => $v) {
+      if(!str_starts_with($k, '_')) {
+        if(!isset($node->_value->$k)) {
+          $node->_value->$k = [];
+        }
+        $node->_value->$k[] = $v;
+        return;
+      }
+    }
   }
 
   /** \brief Remove not asked for formats from result
