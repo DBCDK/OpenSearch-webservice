@@ -1782,12 +1782,15 @@ class OpenSearch extends webServiceServer {
     foreach($value->_value as $k => $v) {
       if(!str_starts_with($k, '_')) {
         if(!isset($node->_value->$k)) {
-          $node->_value->$k = [];
+          $node->_value->$k = $v;
+        } else {
+          if(!is_array($node->_value->$k))
+            $node->_value->$k = [ $node->_value->$k ];
+          if(!is_array($v))
+            $v = [$v];
+          foreach($v as $v1)
+            $node->_value->$k[] = $v1;
         }
-        if(!is_array($v))
-          $v = [$v];
-        foreach($v as $v1)
-          $node->_value->$k[] = $v1;
         return;
       }
     }
