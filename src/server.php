@@ -1784,7 +1784,10 @@ class OpenSearch extends webServiceServer {
         if(!isset($node->_value->$k)) {
           $node->_value->$k = [];
         }
-        $node->_value->$k[] = $v;
+        if(!is_array($v))
+          $v = [$v];
+        foreach($v as $v1)
+          $node->_value->$k[] = $v1;
         return;
       }
     }
