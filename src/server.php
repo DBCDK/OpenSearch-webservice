@@ -1779,7 +1779,6 @@ class OpenSearch extends webServiceServer {
    * @param array $value what to place there
    */
   private function add_to_array(&$node, $value) {
-    VerboseJson::log(FATAL, $value);
     if(is_string($value->_value)) {
       $node->_value = (is_string($node->_value) ? $node->_value : '') . $value->_value;
       return;
