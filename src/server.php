@@ -1713,7 +1713,7 @@ class OpenSearch extends webServiceServer {
         $collection->_value->formattedCollection = $formattedCollection;
         foreach($collection->_value->collection->_value->object as $k => &$v) {
           _Object::set($obj, 'object', $v);
-          $open_format_request['objects'][] = array("object" => $this->objconvert->obj2xmlNs($obj));
+          $open_format_request['objects'][] = array("object" => $this->objconvert->obj2xmlNs($obj, false));
           $object_target[] = $formattedCollection;
         }
       }

@@ -173,15 +173,16 @@ class objconvert {
 
   /** \brief Convert ols-object to xml with namespaces
    * @param $obj object -
+   * @param $include_header boolean - include <?xml...
    * @return string
    */
-  public function obj2xmlNs($obj) {
+  public function obj2xmlNs($obj, $include_header = true) {
     $this->used_namespaces = array();
     $xml = $this->obj2xml($obj);
     $used_ns = $this->get_used_namespaces_as_header();
     if ($used_ns && $i = strpos($xml, '>'))
       $xml = substr($xml, 0, $i) . $used_ns . substr($xml, $i);
-    return $this->xml_header() . $xml;
+    return ($include_header ? $this->xml_header() : '') . $xml;
   }
 
   /** \brief Convert ols-object to soap
