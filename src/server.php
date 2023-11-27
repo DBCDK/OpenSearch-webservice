@@ -1718,7 +1718,7 @@ class OpenSearch extends webServiceServer {
         }
       }
 
-      VerboseJson::log(DEBUG, $open_format_request);
+      VerboseJson::log(DEBUG, json_encode($open_format_request));
 
       $this->curl->set_post(json_encode($open_format_request), 0);
       $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/json'], 0);
@@ -1734,7 +1734,7 @@ class OpenSearch extends webServiceServer {
                                 ' from: ' . $open_format_response_status['url'] .
                                 ' with content: ' . $open_format_response_raw);
       } else {
-        VerboseJson::log(DEBUG, $open_format_response);
+        VerboseJson::log(DEBUG, json_encode($open_format_response));
         foreach($open_format_response->objects as $idx => $response) {
           $doc_target = $object_target[$idx];
           foreach($open_format_request['formats'] as $format) {
@@ -1779,6 +1779,9 @@ class OpenSearch extends webServiceServer {
    * @param array $value what to place there
    */
   private function add_to_array(&$node, $value) {
+    if(is_null($value->_value)) {
+      return;
+    }
     if(is_string($value->_value)) {
       $node->_value = (is_string($node->_value) ? $node->_value : '') . $value->_value;
       return;
