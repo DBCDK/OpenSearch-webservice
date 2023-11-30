@@ -220,6 +220,8 @@ def response(msg: str) -> None:
 def retrieve_requests_files(request_folder):
     """ Generator function that yields request file paths"""
     trace()
+    if os.path.isfile(request_folder):
+        yield request_folder
     for root, dirs, files in os.walk(request_folder):
         if '.svn' in dirs:
             dirs.remove('.svn')
@@ -511,7 +513,7 @@ def get_args() -> argparse.Namespace:
                         help="Output trace information - implies debug")
     parser.add_argument("-r", "--response", action="store_true",
                         help="Output response from each call")
-    parser.add_argument("-l", "--limit", default=1000000, type=int,
+    parser.add_argument("-l", "--limit", default=2, type=int,
                         help="Limit number of tests to this limit [1000000]")
     parser.description = "Runs all the requests in the requests folder against both urls, compare results."
     parser.epilog = """
