@@ -27,7 +27,7 @@ x-info:
     SOLR: http://cisterne.solr.dbc.dk:8983/solr/cisterne-corepo-searcher/select
     HOLDINGS_DB: http://holdings-service.cisterne.svc.cloud.dbc.dk/api/getAllAvailability?pid=%s
     HOLDINGS_ITEMS_INDEX: cisterne-corepo-searcher
-    RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.cisterne.svc.cloud.dbc.dk/RawRepoContentService
+    RAW_RECORD_CONTENT_SERVICE: http://rawrepo-record-service.cisterne.svc.cloud.dbc.dk/api/v1/RawRepoContentService
     RAW_RECORD_SOLR: http://cisterne.rawrepo.solr.dbc.dk:8983/solr/cisterne-rawrepo-searcher/select
     RAW_RECORD_REPOSITORY_NAME: prod-rawrecords
     REPOSITORY_NAME: prod
@@ -36,7 +36,7 @@ x-info:
     SOLR: http://boblebad.solr.dbc.dk:8983/solr/boblebad-corepo-searcher/select
     HOLDINGS_DB: http://holdings-service.boblebad.svc.cloud.dbc.dk/api/getAllAvailability?pid=%s
     HOLDINGS_ITEMS_INDEX: boblebad-corepo-searcher
-    RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.boblebad.svc.cloud.dbc.dk/RawRepoContentService
+    RAW_RECORD_CONTENT_SERVICE: http://rawrepo-record-service.boblebad.svc.cloud.dbc.dk/api/v1/RawRepoContentService
     RAW_RECORD_SOLR: http://boblebad.rawrepo.solr.dbc.dk:8983/solr/boblebad-rawrepo-searcher/select
     RAW_RECORD_REPOSITORY_NAME: staging-rawrecords
     REPOSITORY_NAME: staging
@@ -45,7 +45,7 @@ x-info:
     SOLR: http://fbstest.solr.dbc.dk:8983/solr/fbstest-corepo-searcher/select
     HOLDINGS_DB: holdings-service.fbstest.svc.cloud.dbc.dk/api/getAllAvailability?pid=%s
     HOLDINGS_ITEMS_INDEX: fbstest-corepo-searcher
-    RAW_RECORD_CONTENT_SERVICE: http://rawrepo-content-service.fbstest.svc.cloud.dbc.dk/RawRepoContentService
+    RAW_RECORD_CONTENT_SERVICE: http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk/api/v1/RawRepoContentService
     RAW_RECORD_SOLR: http://fbstest.rawrepo.solr.dbc.dk:8983/solr/fbstest-rawrepo-searcher/select
     RAW_RECORD_REPOSITORY_NAME: raw_repo_ext_test
     REPOSITORY_NAME: external_test
