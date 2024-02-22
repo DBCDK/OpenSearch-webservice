@@ -237,7 +237,7 @@ repository['${REPOSITORY_NAME}']['filter']['870976-anmeld']['docbook']['section/
 ; repository for Raw repository, a sql base indexed by solr
 ; Using "rawrepo" as repository parameter, will trigger the use of raw record solr core and raw repo content service
 ;repository['rawrecords']['solr'] = http://mysolr.dk/solr-version/select
-;repository['rawrecords']['rawrepo'] = http://someserver.dbc.dk/rawrepo-content/RawRepoContentService
+;repository['rawrecords']['rawrepo'] = http://someserver.dbc.dk/api/v1/RawRepoContentService
 ;repository['rawrecords']['cql_file'] = rawrecord_cql.xml
 ;
 

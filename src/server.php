@@ -2573,29 +2573,36 @@ class OpenSearch extends webServiceServer {
     $r_mask = '<record><bibliographicRecordId>%s</bibliographicRecordId><agencyId>%s</agencyId><mode>%s</mode><allowDeleted>true</allowDeleted><includeAgencyPrivate>true</includeAgencyPrivate></record>';
     $ret = [];
     $rec_pos = $solr_response['start'] ?? 0;
-    $post = '';
+    $json = array();
     foreach ($solr_response['docs'] as $solr_doc) {
       $bib = self::scalar_or_first_elem($solr_doc[RR_MARC_001_B]);
-      $post .= sprintf($r_mask, self::scalar_or_first_elem($solr_doc[RR_MARC_001_A]), $bib, ($bib == '870970' ? 'MERGED' : 'RAW')) . PHP_EOL;
+      array_push($json, array('bibliographicRecordId' => self::scalar_or_first_elem($solr_doc[RR_MARC_001_A]),
+                              'agencyId' => $bib,
+                              'mode' => $bib == '870970' ? 'MERGED' : 'RAW'));
     }
-    $this->curl->set_post(sprintf($p_mask, $post), 0); // use post here because query can be very long
-    $this->curl->set_option(CURLOPT_HTTPHEADER, ['Accept:application/xml;', 'Content-Type: text/xml; charset=utf-8'], 0);
-    VerboseJson::log(TRACE, array('message' => 'rawrepo_read: ' . $rr_service, 'post' => $post));
+    $json = json_encode(array('records' => $json));
+
+    $this->curl->set_post($json, 0);
+    $this->curl->set_option(CURLOPT_HTTPHEADER, ['Content-Type: application/json'], 0);
+    VerboseJson::log(TRACE, array('message' => 'rawrepo_read: ' . $rr_service, 'post' => $json));
     $result = $this->curl->get($rr_service);
+    $http_code = $this->curl->get_status('http_code');
     $this->curl->set_option(CURLOPT_POST, 0, 0);
-    $dom = new DomDocument();
-    @ $dom->loadXml($result);
-    if ($records = $dom->getElementsByTagName('records')->item(0)) {
+    #VerboseJson::log(TRACE, $result);
+
+    if ($http_code != 200) {
+      VerboseJson::log(ERROR, 'No record(s) found. http_code: ' . $http_code . ' post: ' . sprintf($p_mask, $post));
+    }
+    else if (($result = json_decode($result)) && ($records = $result->records)) {
+      $dom = new DomDocument();
       foreach ($solr_response['docs'] as $solr_doc) {
         $found_record = FALSE;
         $solr_id = self::scalar_or_first_elem($solr_doc[RR_MARC_001_A]);
         $solr_agency = self::scalar_or_first_elem($solr_doc[RR_MARC_001_B]);
-        foreach ($records->getElementsByTagName('record') as $record) {
-          $id = self::get_dom_element($record, 'bibliographicRecordId');
-          $agency = self::get_dom_element($record, 'agencyId');
-          if (($solr_id == $id) && ($solr_agency == $agency)) {
+        foreach ($records as $record) {
+          if (($solr_id == $record->bibliographicRecordId) && ($solr_agency == $record->agencyId)) {
             $found_record = TRUE;
-            $bib_record = self::get_dom_element($record, 'data');
+            $bib_record = $record->content->data;
             if (!empty($bib_record) && (!$data = base64_decode($bib_record))) {
               VerboseJson::log(FATAL, 'Internal problem: Cannot decode record ' . $solr_id . ':' . $solr_agency . ' in rawrepo');
             }
@@ -2640,7 +2647,7 @@ class OpenSearch extends webServiceServer {
       }
     }
     else {
-      VerboseJson::log(ERROR, 'No record(s) found. http_code: ' . $this->curl->get_status('http_code') . ' post: ' . sprintf($p_mask, $post) . ' result: ' . $result);
+      VerboseJson::log(ERROR, 'No record(s) found. http_code: ' . $http_code . ' post: ' . sprintf($p_mask, $post) . ' result: ' . $result);
     }
     $this->curl->close();
     return $ret;
