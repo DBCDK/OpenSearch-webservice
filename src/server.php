@@ -2701,7 +2701,7 @@ class OpenSearch extends webServiceServer {
     $index_of = array_combine(array_map(function($v) {return $v['sourceIdentifier'];}, $sum),
                          array_keys($sum));
     foreach ($sum as $extra) {
-      $idx = $index_of[$extra['sourceIdentifier']];
+      $idx = @$index_of[$extra['sourceIdentifier']];
       if(isset($idx)) {
         if (self::xs_boolean($extra['sourceSearchable'])) {
           $sum[$idx]['sourceSearchable'] = '1';
