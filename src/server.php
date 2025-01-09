@@ -2697,25 +2697,34 @@ class OpenSearch extends webServiceServer {
     if (count($sum) <> count($add)) {
       VerboseJson::log(FATAL, 'Search profiles for ' . $agency . 'has different length?');
     }
-    foreach ($sum as $idx => $sum_collection) {
-      if (self::xs_boolean($add[$idx]['sourceSearchable'])) {
-        $sum[$idx]['sourceSearchable'] = '1';
-      }
-      if (@$add[$idx]['relation']) {
-        foreach ($add[$idx]['relation'] as $add_rel) {
-          $add_rel_to_sum = TRUE;
-          if (@$sum[$idx]['relation']) {
-            foreach ($sum[$idx]['relation'] as $sum_rel) {
-              if ($add_rel == $sum_rel) {
-                $add_rel_to_sum = FALSE;
-                break;
+
+    $index_of = array_combine(array_map(function($v) {return $v['sourceIdentifier'];}, $sum),
+                         array_keys($sum));
+    foreach ($add as $extra) {
+      $idx = @$index_of[$extra['sourceIdentifier']];
+      if(isset($idx)) {
+        if (self::xs_boolean($extra['sourceSearchable'])) {
+          $sum[$idx]['sourceSearchable'] = '1';
+        }
+        if (@$extra['relation']) {
+          foreach ($extra['relation'] as $add_rel) {
+            $add_rel_to_sum = TRUE;
+            if (@$sum[$idx]['relation']) {
+              foreach ($sum[$idx]['relation'] as $sum_rel) {
+                if ($add_rel == $sum_rel) {
+                  $add_rel_to_sum = FALSE;
+                  break;
+                }
               }
-            }
-            if ($add_rel_to_sum) {
-              $sum[$idx]['relation'][] = $add_rel;
+              if ($add_rel_to_sum) {
+                $sum[$idx]['relation'][] = $add_rel;
+              }
             }
           }
         }
+      } else {
+        // Does not exist in $sum, so add it
+        array_push($sum, $extra);
       }
     }
   }
