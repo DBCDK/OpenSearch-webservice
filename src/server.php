@@ -3613,7 +3613,7 @@ class OpenSearch extends webServiceServer {
         unset($rels);
         unset($coll);
       }
-      if (is_array($all_relations)) {
+      if (@is_array($all_relations)) {
         $rels = new StdClass();
         ksort($all_relations);
         foreach ($all_relations as $rel) {
