@@ -4,6 +4,8 @@
 
 The OpenSearch webservice can be used to perform searches in the DBC datawell.
 
+OpenSearch er under udfasning, vi henviser til SimpleSearch og ComplexSearch via FBI-API (Fælles BiblioteksInfrastruktur). 
+
 ## License
 
 DBC-Software Copyright © 2009-2020, Danish Library Center, dbc as.
