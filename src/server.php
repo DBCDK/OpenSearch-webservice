@@ -995,6 +995,7 @@ class OpenSearch extends webServiceServer {
         '&rows=500' .
         '&defType=edismax' .
         '&fl=' . FIELD_COLLECTION_INDEX . ',' . FIELD_WORK_ID . ',' . FIELD_REPOSITORY_ID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
+        '&appId=' . $solr_appid .
         $add_fl . '&trackingId=' . VerboseJson::$tracking_id;
     VerboseJson::log(TRACE, 'Search for pids in Solr: ' . $this->repository['solr'] . str_replace('wt=phps', '?', $solr_q));
     $curl = new curl();
@@ -1980,6 +1981,7 @@ class OpenSearch extends webServiceServer {
    * @return mixed - error string or SOLR array
    */
   private function do_add_queries($add_queries, $query, $all_objects, $filter_q, $add_field_list = '') {
+    $solr_appid = self::set_app_id();
     foreach ($add_queries as $add_idx => $add_query) {
       if ($this->separate_field_query_style) {
         $add_q = '(' . $add_query . ')';
@@ -2003,6 +2005,7 @@ class OpenSearch extends webServiceServer {
       $rows = (substr_count($add_query, OR_OP) + 3) * 250;
       $solr_url = self::create_solr_url($q, 0, $rows, $filter_q);
       $solr_url['q'] .= '&fl=' . FIELD_COLLECTION_INDEX . ',unit.isPrimaryObject,' . FIELD_UNIT_ID . ',sort.complexKey' . $add_field_list;
+      $solr_url['q'] .= '&trackingId=' . VerboseJson::$tracking_id . '&appId=' . $solr_appid;
       VerboseJson::log(DEBUG, 'Re-search: ' . $this->repository['solr'] . '?' . str_replace('&wt=phps', '', $solr_url['q']) . '&debugQuery=on');
       if (DEBUG_ON) {
         echo 'post_array: ' . $solr_url['url'] . PHP_EOL;
@@ -2134,6 +2137,7 @@ class OpenSearch extends webServiceServer {
    * @return array - then SOLR url and url for debug purposes
    */
   private function create_solr_url($eq, $start, $rows, $filter, $sort = '', $rank = '', $facets = '', $boost = '') {
+    $solr_appid = self::set_app_id();
     $q = '(' . implode(')' . AND_OP . '(', $eq['q']) . ')';   // force parenthesis around each AND-node, to fix SOLR problem. BUG: 20957
     $handler_var = '';
     if (isset($eq['handler_var']) && is_array($eq['handler_var'])) {
@@ -2158,7 +2162,8 @@ class OpenSearch extends webServiceServer {
     '&fq=' . $filter .
     '&start=' . $start . $sort . $rank . $boost . $facets . $handler_var .
     '&defType=edismax' .
-    '&fl=' . FIELD_REPOSITORY_ID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . ',' . FIELD_COLLECTION_INDEX;
+    '&fl=' . FIELD_REPOSITORY_ID . ',' . FIELD_UNIT_ID . ',' . FIELD_WORK_ID . ',' . FIELD_REC_ID . ',' . FIELD_COLLECTION_INDEX .
+    '&trackingId=' . VerboseJson::$tracking_id . '&appId=' . $solr_appid;
     $debug_q = $q . '&rows=1&debugQuery=on';
     $q .= '&wt=phps&rows=' . $rows . ($this->debug_query ? '&debugQuery=on' : ''); 
     return ['url' => $eq['url'] ?? $this->repository['solr'], 'q' => $q, 'debug' => $debug_q];
