@@ -996,8 +996,8 @@ class OpenSearch extends webServiceServer {
         '&rows=500' .
         '&defType=edismax' .
         '&fl=' . FIELD_COLLECTION_INDEX . ',' . FIELD_WORK_ID . ',' . FIELD_REPOSITORY_ID . ',rec.id,' . FIELD_UNIT_ID . ',unit.isPrimaryObject' .
-        '&appId=' . $solr_appid .
-        $add_fl . '&trackingId=' . VerboseJson::$tracking_id;
+        $add_fl . '&trackingId=' . VerboseJson::$tracking_id .
+        '&appId=' . $solr_appid;
     VerboseJson::log(TRACE, 'Search for pids in Solr: ' . $this->repository['solr'] . str_replace('wt=phps', '?', $solr_q));
     $curl = new curl();
     $curl->set_option(CURLOPT_TIMEOUT, self::value_or_default($this->config->get_value('curl_timeout', 'setup'), 20));
