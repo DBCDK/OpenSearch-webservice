@@ -760,6 +760,7 @@ class OpenSearch extends webServiceServer {
   public function getObject($param) {
     _Object::set_value($ret_error, 'searchResponse', new stdClass());
     _Object::set_value($ret_error->searchResponse->_value, 'error', new stdClass());
+    $solr_appid = self::set_app_id();
 
      // Add custom headers *always* - to allow SLA
     self::add_dbc_sla_header_action("getObject");
