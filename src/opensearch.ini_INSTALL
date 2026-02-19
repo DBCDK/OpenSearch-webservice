@@ -298,7 +298,7 @@ vipcore['memcached']['expire'] = ${VIPCORE_CACHE_EXPIRE}
 ; --------------
 ; holding db - return number of items in stock and number of items available for lending
 ; ex: 
-;   holdings_db = http://myServer.dbc.dk:8080/holdings-service/getAllAvailability?pid=%s
+;   holdings_db = http://myServer.dbc.dk:8080/api/v1/holdings-service/allAvailability?pid=%s
 ;
 holdings_db = ${HOLDINGS_DB}
 

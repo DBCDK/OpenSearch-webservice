@@ -2966,17 +2966,10 @@ class OpenSearch extends webServiceServer {
     if ($holdings_urls) {
       $res_holdings = self::read_record_repo_all_urls($holdings_urls);
       // var_dump($work_ids); var_dump($holdings_urls); var_dump($ret_holdings); die();
-      $dom = new DomDocument();
-      $dom->preserveWhiteSpace = FALSE;
       foreach ($res_holdings as $u_id => &$holds) {
-        if (@ $dom->loadXML($holds)) {
-          $ret_holdings[$u_id] = ['have' => self::get_dom_element($dom, 'librariesHave'),
-                                 'lend' => self::get_dom_element($dom, 'librariesLend')];
-        }
-        else {
-          VerboseJson::log(ERROR, 'Cannot load xml for unit ' . $u_id . ' from ' . $holdings_urls[$u_id]);
-          $ret_holdings[$u_id] = ['have' => 0, 'lend' => 0];
-        }
+        $hold_response = @json_decode($holds);
+        $ret_holdings[$u_id] = ['have' => $hold_response->librariesHave ?? 0,
+                                'lend' => $hold_response->librariesLend ?? 0];
       }
     }
     $this->watch->stop('collect_holdings');
