@@ -16,7 +16,7 @@
   "repositories": [
   {
     "type": "git",
-    "url": "https://gitlab-ci-token:glpat-5xSDMRz165RsXAAYuyhz@gitlab.dbc.dk/pu/vip-core/vip-core-php.git"
+    "url": "https://gitlab-ci-token:glpat-sC7dcL_I1Oe2i2aL04uKDG86MQp1OjhvCA.01.0y045ar1k@gitlab.dbc.dk/pu/vip-core/vip-core-php.git"
   }
   ],
   "require": {
